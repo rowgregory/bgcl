@@ -1,12 +1,13 @@
 {
   "name": "bgcl",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate": "prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
