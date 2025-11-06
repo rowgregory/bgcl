@@ -1,0 +1,93 @@
+import {
+  Users,
+  Rocket,
+  Sliders,
+  Satellite,
+  Globe,
+  Radio,
+  DollarSign,
+  Target,
+  ScanLine,
+  BrainCircuit,
+} from "lucide-react";
+
+export const adminNavLinks = [
+  {
+    id: "mission-control",
+    label: "Mission Control",
+    icon: Rocket,
+    description: "Dashboard",
+    linkKey: "/admin/mission-control",
+  },
+  {
+    id: "family-constellations",
+    label: "Family Constellations",
+    icon: Users,
+    description: "Parents & Children",
+    linkKey: "/admin/family-constellations",
+  },
+  {
+    id: "squad-unit",
+    label: "Squad Unit",
+    icon: Users,
+    description: "Member Directory",
+    linkKey: "/admin/squad-unit",
+  },
+  {
+    id: "launch-pad",
+    label: "The Launch Pad",
+    icon: Target,
+    description: "Program Enrollment",
+    linkKey: "/admin/launch-pad",
+  },
+  {
+    id: "capsule",
+    label: "The Capsule",
+    icon: Satellite,
+    description: "Event Management",
+    linkKey: "/admin/capsule/core",
+  },
+  {
+    id: "communications",
+    label: "Communications",
+    icon: Radio,
+    description: "Announcements & Alerts",
+    linkKey: "/admin/communications",
+  },
+  {
+    id: "fuel-station",
+    label: "The Fuel Station",
+    icon: DollarSign,
+    description: "Payments & Donations",
+    linkKey: "/admin/fuel-station/energy-hub",
+  },
+  {
+    id: "star-map",
+    label: "Star Map",
+    icon: Globe,
+    description: "Public Site Content",
+    linkKey: "/admin/star-map",
+  },
+  {
+    id: "operations-panel",
+    label: "Operation Panel",
+    icon: Sliders,
+    description: "System Settings",
+    linkKey: "/admin/operations-panel",
+  },
+  {
+    id: "mother",
+    label: "Mother",
+    icon: BrainCircuit,
+    description:
+      "Central intelligence system providing insights across all platforms",
+    linkKey: "/admin/mother",
+  },
+  {
+    id: "cryo-chamber",
+    label: "Cryo Chamber",
+    icon: ScanLine,
+    description: "Future features in stasis",
+    linkKey: "/admin/cryo-chamber",
+  },
+];
