@@ -71,7 +71,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             parent: true,
             youth: true,
             staff: true,
-            admin: true,
           },
         });
 
@@ -132,7 +131,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               parent: true,
               youth: true,
               staff: true,
-              admin: true,
             },
           });
 
@@ -147,8 +145,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               token.name = `${dbUser.youth.firstName} ${dbUser.youth.lastName}`;
             } else if (dbUser.staff) {
               token.name = `${dbUser.staff.firstName} ${dbUser.staff.lastName}`;
-            } else if (dbUser.admin) {
-              token.name = `${dbUser.admin.firstName} ${dbUser.admin.lastName}`;
             }
           }
         } catch (error) {
