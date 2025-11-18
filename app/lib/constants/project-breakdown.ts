@@ -9,14 +9,19 @@ import {
   Database,
   DatabaseIcon,
   Edit,
+  Flame,
   FlaskConical,
   Gamepad,
   Heart,
+  Languages,
+  Layout,
   MessageSquare,
   QrCode,
   Rocket,
+  Server,
   Shield,
   Star,
+  Triangle,
   Users,
 } from "lucide-react";
 
@@ -30,6 +35,15 @@ export const coreFeatures = [
     cost: "$490",
   },
   {
+    icon: Layout,
+    title: "Complete UI Design & Development",
+    description:
+      "Professional design and development of all frontend pages (home, about, programs, events, contact, user portals) and all backend admin pages (dashboard, user management, payments, communications, settings, etc.) with custom UI/UX, responsive layouts, interactive components, custom drawers, modals, and forms",
+    hours: "20-30 hours",
+    cost: "$400",
+  },
+
+  {
     icon: Shield,
     title: "Simple & Secure Login System",
     description:
@@ -38,19 +52,47 @@ export const coreFeatures = [
     cost: "$385",
   },
   {
-    icon: Users,
-    title: "User Account Management",
-    description: "Member profiles can access their login info",
-    hours: "4-5 hours",
-    cost: "$315",
-  },
-  {
     icon: Database,
     title: "Secure Data Storage & Backup",
     description:
       "Professional cloud database that stores all member information safely with automatic backups and fast performance",
     hours: "3-4 hours",
     cost: "$245",
+  },
+];
+
+export const requiredThirdPartyServices = [
+  {
+    icon: Server,
+    title: "Railway",
+    description:
+      "Cloud-based backend hosting for databases, serverless functions, and environment management",
+    hours: "—",
+    cost: "Varies by usage",
+  },
+  {
+    icon: Triangle,
+    title: "Vercel",
+    description:
+      "High-performance hosting for your Next.js frontend with built-in CI/CD and global edge network",
+    hours: "—",
+    cost: "Varies by usage",
+  },
+  {
+    icon: Flame,
+    title: "Google Firebase",
+    description:
+      "Authentication, file storage, and real-time services used for secure user accounts and app functionality",
+    hours: "—",
+    cost: "Varies by usage",
+  },
+  {
+    icon: Languages,
+    title: "Weglot",
+    description:
+      "Professional translation service for multilingual support with automatic detection and language routing. 3 translated languages - 50,000 words",
+    hours: "—",
+    cost: "$35",
   },
 ];
 
@@ -63,8 +105,8 @@ export const additionalFeatures: IFeature[] = [
     description:
       "Admin panel to manage ALL website content, members, programs, payments, and donations, events — no coding needed.",
     details: [
-      "Analytics & Reporting dashboard shell (The Observatory required)",
-      "Staff & Board of Directors management (The Nebula required)",
+      "Analytics & Reporting dashboard shell (The Observatory module required)",
+      "Staff & Board of Directors management (The Nebula module required)",
       "Program Hub – modern, concise, central place for all program actions.",
       "Create and update news articles displayed on the website",
       "Newsletter system to capture emails for admin review and export",
@@ -73,11 +115,11 @@ export const additionalFeatures: IFeature[] = [
       "Volunteer applications management",
       "Resource links management",
       "Awards & recognition management (Honorees, Youth of the Year, etc.)",
-      "View and manage all parent sign-ups (The Family Launch Station required)",
+      "View and manage all parent sign-ups (The Family Launch Station module required)",
       "Access all child profiles linked to parents",
       "Track program registrations",
-      "Monitor payments and billing for members and programs (The Credit Orb required)",
-      "View and manage donation history and donor info (Fundraising & Donor Portal required)",
+      "Monitor payments and billing for members and programs (The Credit Orb module required)",
+      "View and manage donation history and donor info (Fundraising & Donor Portal module required)",
     ],
     hours: "45-60 hours",
     cost: 3640,
@@ -91,6 +133,7 @@ export const additionalFeatures: IFeature[] = [
       "Full-featured portal where parents manage their children's club experience, communicate with staff, and stay engaged.",
     details: [
       "Parent snapshot dashboard",
+      "Complete parent profile",
       "Multiple child profiles",
       "Program enrollment & waitlists",
       "Digital permission slips",

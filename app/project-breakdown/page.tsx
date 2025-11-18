@@ -19,6 +19,8 @@ import {
   Sparkles,
   Target,
   TrendingUp,
+  Server,
+  Lock,
 } from "lucide-react";
 import Link from "next/link";
 import MinNMatchExplaination from "../components/project-breakdown/MinNMatchExplaination";
@@ -26,6 +28,7 @@ import CoreFeature from "../components/project-breakdown/CoreFeature";
 import {
   additionalFeatures,
   coreFeatures,
+  requiredThirdPartyServices,
 } from "../lib/constants/project-breakdown";
 import AdditionalFeature from "../components/project-breakdown/AdditionalFeature";
 import FixedBottomPricingBar from "../components/project-breakdown/FixedBottomPricingBar";
@@ -55,42 +58,42 @@ const ProjectBreakdown = () => {
 
     if (count === 0)
       return {
-        text: "Select some features to see your custom quote!",
+        text: "Select features to build your custom Boys & Girls Club system!",
         color: "text-neutral-400",
       };
     if (count <= 2)
       return {
-        text: "Great start! Consider adding 1-2 more for better value.",
+        text: "Great start! Add a few more features to maximize impact for your members.",
         color: "text-violet-400",
       };
     if (count <= 4)
       return {
-        text: "Perfect balance of features and budget!",
+        text: "Perfect balance for a solid club management system!",
         color: "text-green-400",
       };
     if (count === 5)
       return {
-        text: "Excellent choice! Almost the full experience.",
+        text: "Excellent choice! Your club is getting powerful tools.",
         color: "text-purple-400",
       };
     if (count <= 7)
       return {
-        text: "You’re building a powerhouse networking app!",
+        text: "You're building a comprehensive youth development platform!",
         color: "text-yellow-400",
       };
     if (count <= 10)
       return {
-        text: "Nearly everything included — networking unleashed!",
+        text: "Nearly complete — empowering staff, parents, and kids alike!",
         color: "text-orange-400",
       };
     if (count <= 14)
       return {
-        text: "All-in premium package, the ultimate networking experience!",
+        text: "All-in premium system — the ultimate club management solution!",
         color: "text-red-400",
       };
     if (count === 15)
       return {
-        text: "Complete feature set selected — nothing left to add!",
+        text: "Complete feature set selected — full Boys & Girls Club ecosystem!",
         color: "text-pink-400",
       };
   };
@@ -185,6 +188,46 @@ const ProjectBreakdown = () => {
                         <span className="bg-gradient-to-r from-indigo-500 to-violet-600 text-white text-xs px-2 py-1 rounded-full font-medium">
                           15% OFF
                         </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Required Third-Party Services Grid */}
+            <section className="mb-12">
+              <div className="bg-neutral-950 border border-neutral-800 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-neutral-800 rounded-lg">
+                    <Server className="w-6 h-6 text-neutral-300" />
+                  </div>
+                  <h2 className="text-2xl font-semibold text-neutral-100">
+                    Required Third-Party Services (monthly)
+                  </h2>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  {requiredThirdPartyServices.map((service, index) => (
+                    <CoreFeature key={index} index={index} feature={service} />
+                  ))}
+                </div>
+
+                <div className="mt-6 bg-neutral-900 border border-neutral-700 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-neutral-100">
+                        Third-Party Services Total
+                      </h3>
+                      <p className="text-neutral-400 text-sm">
+                        {requiredThirdPartyServices.length} services
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center gap-2 justify-end">
+                        <div className="text-2xl font-bold text-indigo-400">
+                          $35
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -394,10 +437,17 @@ const ProjectBreakdown = () => {
                   <h2 className="text-3xl font-bold text-white mb-3">
                     🚀 Suggested Phase 1 Launch Package
                   </h2>
-                  <p className="text-neutral-300 text-lg max-w-3xl mx-auto">
+                  <p className="text-neutral-300 text-lg max-w-3xl mx-auto mb-2">
                     Based on our experience with youth organizations, we
                     recommend starting with these essential features to maximize
                     early engagement and value
+                  </p>
+                  <p className="text-neutral-400 text-sm max-w-2xl mx-auto">
+                    <span className="inline-flex items-center gap-1">
+                      <Lock className="w-3 h-3" />
+                      This is a curated package — additional features cannot be
+                      added or removed
+                    </span>
                   </p>
                 </div>
 
@@ -463,15 +513,7 @@ const ProjectBreakdown = () => {
                         </div>
                         <div className="flex items-center gap-2 text-sm text-neutral-300">
                           <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div>
-                          <span>Admin Dashboard & CMS</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-neutral-300">
-                          <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div>
                           <span>Mobile-First Design</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-neutral-300">
-                          <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div>
-                          <span>Push Notifications</span>
                         </div>
                       </div>
                     </div>
@@ -708,11 +750,6 @@ const ProjectBreakdown = () => {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* Pay in Full - Featured */}
                   <div className="relative bg-gradient-to-br from-indigo-900/40 to-violet-900/40 border-2 border-indigo-400 rounded-xl p-6 transform hover:scale-105 transition-all shadow-lg shadow-indigo-500/20">
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-gradient-to-r from-indigo-500 to-violet-500 text-white text-xs px-3 py-1 rounded-full font-bold">
-                        BEST VALUE
-                      </span>
-                    </div>
                     <div className="text-center mb-4">
                       <div className="text-indigo-400 font-bold text-sm mb-2">
                         Pay in Full

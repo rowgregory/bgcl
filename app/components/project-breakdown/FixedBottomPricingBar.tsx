@@ -94,7 +94,8 @@ const FixedBottomPricingBar: FC<{
               <div className="flex items-center gap-2">
                 <Server className="w-4 h-4 text-emerald-400" />
                 <span className="text-sm text-neutral-300">
-                  ${Math.round(calculateSelectedTotal() * 0.025)}/mo hosting
+                  ${Math.round(calculateSelectedTotal() * 0.025) + 35}/mo
+                  hosting
                 </span>
               </div>
             </div>
