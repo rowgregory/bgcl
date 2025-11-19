@@ -1,15 +1,19 @@
 import { Clock, Rocket, Server } from "lucide-react";
 import React, { FC } from "react";
 
-const FixedBottomPricingBar: FC<{
-  calculateSelectedTotal: () => number;
-  totalPrice: number;
-  selectedFeatures: string[];
+interface IFixedBottomPricingBar {
+  totalWithDiscount: number;
+  totalWithoutDiscount: number;
+  selectedFeaturesCount: number;
+  monthlyHostingCost: number;
   phase1Discount: boolean;
-}> = ({
-  calculateSelectedTotal,
-  totalPrice,
-  selectedFeatures,
+}
+
+const FixedBottomPricingBar: FC<IFixedBottomPricingBar> = ({
+  totalWithDiscount,
+  totalWithoutDiscount,
+  selectedFeaturesCount,
+  monthlyHostingCost,
   phase1Discount,
 }) => {
   return (
@@ -22,18 +26,14 @@ const FixedBottomPricingBar: FC<{
             <div className="flex items-center justify-between">
               <div className="flex flex-col">
                 <span className="text-xs text-neutral-400 line-through">
-                  ${(calculateSelectedTotal() + totalPrice).toLocaleString()}
+                  ${totalWithoutDiscount.toLocaleString()}
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-bold text-white">
-                    $
-                    {(
-                      (calculateSelectedTotal() + totalPrice) *
-                      (phase1Discount ? 0.7 : 0.85)
-                    ).toLocaleString()}
+                    ${totalWithDiscount.toLocaleString()}
                   </span>
                   <span className="bg-gradient-to-r from-violet-500 to-indigo-600 text-white text-xs px-2 py-1 rounded-full font-medium">
-                    15% OFF
+                    {phase1Discount ? 20 : 15}% OFF
                   </span>
                 </div>
               </div>
@@ -44,12 +44,9 @@ const FixedBottomPricingBar: FC<{
 
             {/* Info Row */}
             <div className="flex justify-between text-xs text-neutral-400 border-t border-neutral-800 pt-2">
-              <span>{selectedFeatures.length} features</span>
-              <span>6-8 weeks</span>
-              <span>
-                Hosting: ${Math.round(calculateSelectedTotal() * 0.025)}
-                /mo
-              </span>
+              <span>{selectedFeaturesCount} features</span>
+              <span>8-12 weeks</span>
+              <span>Hosting: ${monthlyHostingCost}/mo</span>
             </div>
           </div>
 
@@ -59,19 +56,14 @@ const FixedBottomPricingBar: FC<{
             <div className="flex items-center gap-6">
               <div className="flex flex-col">
                 <span className="text-sm text-neutral-400 line-through">
-                  Regular: $
-                  {(calculateSelectedTotal() + totalPrice).toLocaleString()}
+                  Regular: ${totalWithoutDiscount.toLocaleString()}
                 </span>
                 <div className="flex items-center gap-3">
                   <span className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
-                    $
-                    {(
-                      (calculateSelectedTotal() + totalPrice) *
-                      (phase1Discount ? 0.7 : 0.85)
-                    ).toLocaleString()}
+                    ${totalWithDiscount.toLocaleString()}
                   </span>
                   <span className="bg-gradient-to-r from-violet-500 to-indigo-600 text-white text-sm px-3 py-1 rounded-full font-medium">
-                    {phase1Discount ? "30" : "15"}% LOCAL DISCOUNT
+                    {phase1Discount ? "20" : "15"}% LOCAL DISCOUNT
                   </span>
                 </div>
               </div>
@@ -82,7 +74,7 @@ const FixedBottomPricingBar: FC<{
               <div className="flex items-center gap-2">
                 <Rocket className="w-4 h-4 text-violet-400" />
                 <span className="text-sm text-neutral-300">
-                  {selectedFeatures.length} features selected
+                  {selectedFeaturesCount} features selected
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -94,8 +86,7 @@ const FixedBottomPricingBar: FC<{
               <div className="flex items-center gap-2">
                 <Server className="w-4 h-4 text-emerald-400" />
                 <span className="text-sm text-neutral-300">
-                  ${Math.round(calculateSelectedTotal() * 0.025) + 35}/mo
-                  hosting
+                  ${monthlyHostingCost}/mo hosting
                 </span>
               </div>
             </div>

@@ -15,6 +15,7 @@ import {
   Heart,
   Languages,
   Layout,
+  LucideIcon,
   MessageSquare,
   QrCode,
   Rocket,
@@ -25,14 +26,20 @@ import {
   Users,
 } from "lucide-react";
 
-export const coreFeatures = [
+export const coreFeatures: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  hours: string;
+  cost: number;
+}[] = [
   {
     icon: Rocket,
     title: "Modern Web Application Foundation",
     description:
       "Fast, responsive web app that works on all devices (phones, tablets, computers) with secure cloud hosting",
     hours: "6-8 hours",
-    cost: "$490",
+    cost: 490,
   },
   {
     icon: Layout,
@@ -40,7 +47,7 @@ export const coreFeatures = [
     description:
       "Professional design and development of all frontend pages (home, about, programs, events, contact, user portals) and all backend admin pages (dashboard, user management, payments, communications, settings, etc.) with custom UI/UX, responsive layouts, interactive components, custom drawers, modals, and forms",
     hours: "20-30 hours",
-    cost: "$400",
+    cost: 400,
   },
 
   {
@@ -49,7 +56,7 @@ export const coreFeatures = [
     description:
       "Easy sign-in with Google accounts or magic email links (no passwords needed!), different access levels for staff, parents, and youth members",
     hours: "5-6 hours",
-    cost: "$385",
+    cost: 385,
   },
   {
     icon: Database,
@@ -57,7 +64,7 @@ export const coreFeatures = [
     description:
       "Professional cloud database that stores all member information safely with automatic backups and fast performance",
     hours: "3-4 hours",
-    cost: "$245",
+    cost: 245,
   },
 ];
 
@@ -67,24 +74,24 @@ export const requiredThirdPartyServices = [
     title: "Railway",
     description:
       "Cloud-based backend hosting for databases, serverless functions, and environment management",
-    hours: "—",
-    cost: "Varies by usage",
+    hours: "-",
+    cost: 0,
   },
   {
     icon: Triangle,
     title: "Vercel",
     description:
       "High-performance hosting for your Next.js frontend with built-in CI/CD and global edge network",
-    hours: "—",
-    cost: "Varies by usage",
+    hours: "-",
+    cost: 0,
   },
   {
     icon: Flame,
     title: "Google Firebase",
     description:
       "Authentication, file storage, and real-time services used for secure user accounts and app functionality",
-    hours: "—",
-    cost: "Varies by usage",
+    hours: "-",
+    cost: 0,
   },
   {
     icon: Languages,
@@ -92,7 +99,7 @@ export const requiredThirdPartyServices = [
     description:
       "Professional translation service for multilingual support with automatic detection and language routing. 3 translated languages - 50,000 words",
     hours: "—",
-    cost: "$35",
+    cost: 35,
   },
 ];
 
@@ -122,7 +129,7 @@ export const additionalFeatures: IFeature[] = [
       "View and manage donation history and donor info (Fundraising & Donor Portal module required)",
     ],
     hours: "45-60 hours",
-    cost: 3640,
+    cost: 3500,
   },
   {
     id: "parent-portal",
@@ -146,9 +153,8 @@ export const additionalFeatures: IFeature[] = [
       "Push notifications for updates (Multi-Channel Communication module required)",
     ],
     hours: "110-130 hours",
-    cost: 8400,
+    cost: 8000,
   },
-
   {
     id: "youth-portal",
     system: "The Launch Pad",
@@ -167,12 +173,12 @@ export const additionalFeatures: IFeature[] = [
       "Share updates, photos, and achievements in a moderated member feed (The Nebula required)",
     ],
     hours: "60-80 hours",
-    cost: 4900,
+    cost: 4700,
   },
   {
     id: "hero-studio",
     system: "The Orbital Deck",
-    icon: Star, // replace with your icon component
+    icon: Star,
     title: "Hero Studio & Campaign Visuals",
     description:
       "Create dynamic hero sections for campaigns, events, and fundraising with pre-built interactive components.",
@@ -187,7 +193,7 @@ export const additionalFeatures: IFeature[] = [
       "Preview before publishing",
     ],
     hours: "40-50 hours",
-    cost: 4500,
+    cost: 4300,
   },
   {
     id: "check-in-system",
@@ -205,7 +211,7 @@ export const additionalFeatures: IFeature[] = [
       "Daily attendance reports",
     ],
     hours: "50-60 hours",
-    cost: 3850,
+    cost: 3700,
   },
   {
     id: "communication-hub",
@@ -221,12 +227,12 @@ export const additionalFeatures: IFeature[] = [
       "Translation services (continuing to use Weglot)",
     ],
     hours: "26-32 hours",
-    cost: 2030,
+    cost: 1950,
   },
   {
     id: "historical-data-migration",
     system: "The Black Hole",
-    icon: DatabaseIcon, // replace with your icon component
+    icon: DatabaseIcon,
     title: "Historical Data Migration",
     description:
       "Completely import and preserve all historical program, attendance, member, and content data into the new system, ensuring accuracy and integrity.",
@@ -260,7 +266,7 @@ export const additionalFeatures: IFeature[] = [
       "Visual dashboards with charts, graphs, and key performance indicators (KPIs)",
     ],
     hours: "25-30 hours",
-    cost: 2100,
+    cost: 2000,
   },
   {
     id: "donor-management",
@@ -278,7 +284,7 @@ export const additionalFeatures: IFeature[] = [
       "Segment donors by giving level, campaign, or engagement for targeted outreach",
     ],
     hours: "24-34 hours",
-    cost: 1960,
+    cost: 1900,
   },
   {
     id: "media-storage",
@@ -295,7 +301,7 @@ export const additionalFeatures: IFeature[] = [
       "Optimized media delivery for web and mobile",
     ],
     hours: "15-20 hours",
-    cost: 1190,
+    cost: 1150,
   },
   {
     id: "payment-processing",
@@ -313,12 +319,12 @@ export const additionalFeatures: IFeature[] = [
       "Integrate with event registrations and donations for consolidated reporting",
     ],
     hours: "35-45 hours",
-    cost: 3100,
+    cost: 3000,
   },
   {
     id: "achievement-badges",
     system: "The Badge Bay",
-    icon: Badge, // replace with your icon component
+    icon: Badge,
     title: "Achievement Badge & Gamification System",
     description:
       "Reward members with badges, points, and levels for participation, engagement, and achievements.",
@@ -330,7 +336,7 @@ export const additionalFeatures: IFeature[] = [
       "Motivates engagement and participation",
     ],
     hours: "30-40 hours",
-    cost: 2450,
+    cost: 2350,
   },
   {
     id: "space-lab",
@@ -348,7 +354,7 @@ export const additionalFeatures: IFeature[] = [
       "Optional integration with Hero Studio to showcase top coding projects (The Orbital Deck required)",
     ],
     hours: "18-22 hours",
-    cost: 1650,
+    cost: 1600,
   },
   {
     id: "event-management",
@@ -369,7 +375,7 @@ export const additionalFeatures: IFeature[] = [
       "Automated confirmation emails and receipts (Multi-Channel Communication System)",
     ],
     hours: "30-50 hours",
-    cost: 2800,
+    cost: 2700,
   },
   {
     id: "game-center",
@@ -387,7 +393,7 @@ export const additionalFeatures: IFeature[] = [
       "Access seasonal or event-based space missions for extra fun",
     ],
     hours: "60-80 hours",
-    cost: 4900,
+    cost: 4700,
   },
   {
     id: "ai-integration",
@@ -406,6 +412,6 @@ export const additionalFeatures: IFeature[] = [
       "Integration with all existing modules to streamline workflows and reduce manual tasks",
     ],
     hours: "80-100 hours",
-    cost: 6200,
+    cost: 5950,
   },
 ];

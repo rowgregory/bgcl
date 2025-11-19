@@ -1,21 +1,19 @@
 import { LucideIcon } from "lucide-react";
 import React, { FC } from "react";
 
-const CoreFeature: FC<{
-  index: number;
+interface ICoreFeature {
   feature: {
     icon: LucideIcon;
     title: string;
     description: string;
     hours: string;
-    cost: string;
+    cost: number;
   };
-}> = ({ index, feature }) => {
+}
+
+const CoreFeature: FC<ICoreFeature> = ({ feature }) => {
   return (
-    <div
-      key={index}
-      className="bg-neutral-900 border border-neutral-700 rounded-lg p-4 hover:bg-neutral-800 transition-colors"
-    >
+    <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-4 hover:bg-neutral-800 transition-colors">
       <div className="flex items-start gap-3">
         <div className="p-2 bg-violet-600/20 rounded-lg border border-violet-500/30 flex-shrink-0">
           <feature.icon className="w-4 h-4 text-violet-400" />
@@ -30,7 +28,7 @@ const CoreFeature: FC<{
           <div className="flex justify-between items-center">
             <span className="text-xs text-neutral-400">{feature.hours}</span>
             <span className="font-semibold text-emerald-400 text-sm">
-              {feature.cost}
+              ${feature.cost}
             </span>
           </div>
         </div>
