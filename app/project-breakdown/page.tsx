@@ -120,7 +120,7 @@ const ProjectBreakdown = () => {
       .reduce((total, feature) => total + feature.cost, 0);
 
     return (
-      Math.round((selectedTotal + totalCoreFeaturesPriceWithDiscount) * 0.035) +
+      Math.round((selectedTotal + totalCoreFeaturesPriceWithDiscount) * 0.05) +
       35
     );
   };
