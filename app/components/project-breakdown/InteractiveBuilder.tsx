@@ -1,27 +1,24 @@
-import { IFeature } from "@/types/project-breakdown";
 import { Gamepad2, RotateCcw, ShoppingCart } from "lucide-react";
 import React, { FC } from "react";
 import AdditionalFeature from "./AdditionalFeature";
+import { additionalFeatures } from "@/app/lib/constants/project-breakdown";
 
 interface IInteractiveBuilder {
-  additionalFeatures: IFeature[];
   selectedFeatures: string[];
   toggleFeature: (featureId: string) => void;
-  totalCoreFeaturesPriceWithDiscount: number;
-  calculateAdditionalFeaturesSelectedTotal: () => number;
+  calculateAdditionalFeaturesSelectedTotal: number;
   calculateTotalWithoutDiscount: () => number;
   phase1Discount: boolean;
   calculateDiscountAmount: () => number;
   calculateTotalWithDiscount: () => number;
   getRecommendation: () => { color: string; text: string } | undefined;
   resetSelection: () => void;
+  totalCoreFeaturesPrice: number;
 }
 
 const InteractiveBuilder: FC<IInteractiveBuilder> = ({
-  additionalFeatures,
   selectedFeatures,
   toggleFeature,
-  totalCoreFeaturesPriceWithDiscount,
   calculateAdditionalFeaturesSelectedTotal,
   calculateTotalWithoutDiscount,
   phase1Discount,
@@ -29,10 +26,11 @@ const InteractiveBuilder: FC<IInteractiveBuilder> = ({
   calculateTotalWithDiscount,
   getRecommendation,
   resetSelection,
+  totalCoreFeaturesPrice,
 }) => {
   return (
     <section className="mb-12">
-      <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 border-2 border-violet-500/30 rounded-xl p-6">
+      <div className="bg-linear-to-br from-neutral-900 to-neutral-800 border-2 border-violet-500/30 rounded-xl p-6">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-violet-600/20 border border-violet-500/30 rounded-full px-4 py-2 mb-4">
             <Gamepad2 className="w-4 h-4 text-violet-400" />
@@ -114,7 +112,7 @@ const InteractiveBuilder: FC<IInteractiveBuilder> = ({
                     Required Core Features
                   </span>
                   <span className="text-neutral-300">
-                    ${totalCoreFeaturesPriceWithDiscount.toLocaleString()}
+                    ${totalCoreFeaturesPrice.toLocaleString()}
                   </span>
                 </div>
 
@@ -126,7 +124,7 @@ const InteractiveBuilder: FC<IInteractiveBuilder> = ({
                     </span>
                     <span className="text-neutral-300">
                       $
-                      {calculateAdditionalFeaturesSelectedTotal().toLocaleString()}
+                      {calculateAdditionalFeaturesSelectedTotal.toLocaleString()}
                     </span>
                   </div>
                 )}
@@ -141,16 +139,13 @@ const InteractiveBuilder: FC<IInteractiveBuilder> = ({
                   </span>
                 </div>
 
-                {/* Discount */}
                 <div className="flex justify-between items-center mb-3">
                   <span
                     className={
                       phase1Discount ? "text-amber-400" : "text-emerald-400"
                     }
                   >
-                    {phase1Discount
-                      ? "Phase One Discount (20%)"
-                      : "Local Business Discount (15%)"}
+                    {phase1Discount ? "Phase One Discount (15%)" : ""}
                   </span>
                   <span
                     className={
@@ -167,7 +162,7 @@ const InteractiveBuilder: FC<IInteractiveBuilder> = ({
                     Total Cost:
                   </span>
                   <span className="font-bold text-indigo-400 text-2xl">
-                    ${calculateTotalWithDiscount().toLocaleString()}
+                    ${Math.round(calculateTotalWithDiscount()).toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -190,10 +185,7 @@ const InteractiveBuilder: FC<IInteractiveBuilder> = ({
                     Your Investment:
                   </div>
                   <div className="text-2xl font-bold text-white">
-                    ${calculateTotalWithDiscount().toLocaleString()}
-                  </div>
-                  <div className="text-xs text-emerald-400 mt-1">
-                    Save ${calculateDiscountAmount().toLocaleString()}
+                    ${Math.round(calculateTotalWithDiscount()).toLocaleString()}
                   </div>
                 </div>
               )}

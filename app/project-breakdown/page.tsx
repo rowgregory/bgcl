@@ -36,37 +36,11 @@ const ProjectBreakdown = () => {
     0
   );
 
-  const totalCoreFeaturesPriceWithDiscount = totalCoreFeaturesPrice * 0.85;
-
-  // Phase 1 specific calculation
-  const calculatePhaseOneTotal = (includeDiscount: boolean = false) => {
-    const phase1Indices = [0, 1, 4, 5, 7, 8, 9, 10, 13];
-    const blackHoleIndex = 6;
-    const blackHoleCost = additionalFeatures[blackHoleIndex]?.cost ?? 0;
-
-    // Calculate Phase 1 additional features cost (excluding Black Hole)
-    const phase1AdditionalCost = phase1Indices.reduce(
-      (sum, index) => sum + (additionalFeatures[index]?.cost ?? 0),
-      0
-    );
-
-    const totalBeforeDiscount =
-      totalCoreFeaturesPrice + blackHoleCost + phase1AdditionalCost;
-
-    if (!includeDiscount) {
-      return totalBeforeDiscount;
-    }
-
-    // With Phase 1 discount
-    // Core features: 15% discount
-    // Black Hole: 15% discount
-    // Other Phase 1 features: 20% discount
-    return (
-      totalCoreFeaturesPrice * 0.85 +
-      blackHoleCost * 0.85 +
-      phase1AdditionalCost * 0.8
-    );
-  };
+  // Phase 1 feature indices
+  const phase1Indices = [0, 3, 7, 9, 10, 13];
+  const phase1FeatureIds = phase1Indices
+    .map((index) => additionalFeatures[index]?.id)
+    .filter(Boolean);
 
   // Calculate total without discount (for display purposes)
   const calculateTotalWithoutDiscount = () => {
@@ -77,40 +51,53 @@ const ProjectBreakdown = () => {
     return totalCoreFeaturesPrice + selectedAdditionalCost;
   };
 
-  // Calculate total with discount applied
+  // Calculate total with discount applied (only if phase1Discount is true)
   const calculateTotalWithDiscount = () => {
-    // Core features always get 15% discount
-    const coreWithDiscount = totalCoreFeaturesPrice * 0.85;
-
-    // Additional features discount logic
     const additionalWithDiscount = additionalFeatures
       .filter((feature) => selectedFeatures.includes(feature.id))
       .reduce((total, feature) => {
-        // Black Hole (index 6) always gets 15% discount
-        // All other features get 20% if phase1Discount, otherwise 15%
-        const isBlackHole = feature.id === additionalFeatures[6]?.id;
-        const discountRate = isBlackHole || !phase1Discount ? 0.85 : 0.8;
-
+        // Only apply 15% discount if phase1Discount is enabled AND it's a Phase 1 feature
+        const isPhase1Feature = phase1FeatureIds.includes(feature.id);
+        const discountRate = phase1Discount && isPhase1Feature ? 0.85 : 1.0;
         return total + feature.cost * discountRate;
       }, 0);
 
-    return coreWithDiscount + additionalWithDiscount;
+    return totalCoreFeaturesPrice + additionalWithDiscount;
   };
 
   // Calculate discount amount for display
   const calculateDiscountAmount = () => {
+    if (!phase1Discount) return 0;
     return calculateTotalWithoutDiscount() - calculateTotalWithDiscount();
   };
 
-  // Calculate selected additional features total (with discount)
+  // Calculate selected additional features total (with discount if applicable)
   const calculateAdditionalFeaturesSelectedTotal = () => {
     return additionalFeatures
       .filter((feature) => selectedFeatures.includes(feature.id))
       .reduce((total, feature) => {
-        const isBlackHole = feature.id === additionalFeatures[6]?.id;
-        const discountRate = isBlackHole || !phase1Discount ? 0.85 : 0.8;
+        // Only apply 15% discount if phase1Discount is enabled AND it's a Phase 1 feature
+        const isPhase1Feature = phase1FeatureIds.includes(feature.id);
+        const discountRate = phase1Discount && isPhase1Feature ? 0.85 : 1.0;
         return total + feature.cost * discountRate;
       }, 0);
+  };
+
+  // Phase 1 specific calculation (keeping your original)
+  const calculatePhaseOneTotal = (includeDiscount: boolean = false) => {
+    const phase1AdditionalCost = phase1Indices.reduce(
+      (sum, index) => sum + (additionalFeatures[index]?.cost ?? 0),
+      0
+    );
+
+    const totalBeforeDiscount = totalCoreFeaturesPrice + phase1AdditionalCost;
+
+    if (!includeDiscount) {
+      return totalBeforeDiscount;
+    }
+
+    // With Phase 1 discount: Core features no discount, Phase 1 features 15% off
+    return totalCoreFeaturesPrice + phase1AdditionalCost * 0.85;
   };
 
   // Calculate monthly hosting cost
@@ -119,10 +106,7 @@ const ProjectBreakdown = () => {
       .filter((feature) => selectedFeatures.includes(feature.id))
       .reduce((total, feature) => total + feature.cost, 0);
 
-    return (
-      Math.round((selectedTotal + totalCoreFeaturesPriceWithDiscount) * 0.05) +
-      35
-    );
+    return Math.round((selectedTotal + totalCoreFeaturesPrice) * 0.06);
   };
 
   const getRecommendation = () => {
@@ -189,7 +173,7 @@ const ProjectBreakdown = () => {
           <div className="text-center">
             <h1 className="text-4xl lg:text-6xl font-bold text-white mb-4 leading-tight">
               Boys & Girls Club of Lynn{" "}
-              <span className="bg-gradient-to-r from-indigo-400 to-violet-500 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-indigo-400 to-violet-500 bg-clip-text text-transparent">
                 Platform
               </span>
             </h1>
@@ -210,38 +194,27 @@ const ProjectBreakdown = () => {
             </section>
 
             {/* Core Features Grid */}
-            <CoreFeaturesGrid
-              totalCoreFeaturesPrice={totalCoreFeaturesPrice}
-              totalCoreFeaturesPriceWithDiscount={
-                totalCoreFeaturesPriceWithDiscount
-              }
-            />
+            <CoreFeaturesGrid totalCoreFeaturesPrice={totalCoreFeaturesPrice} />
 
             {/* Required Third-Party Services Grid */}
             <RequiredThirdPartyServicesGrid />
 
             {/* Interactive Builder */}
             <InteractiveBuilder
-              additionalFeatures={additionalFeatures}
-              calculateAdditionalFeaturesSelectedTotal={
-                calculateAdditionalFeaturesSelectedTotal
-              }
-              calculateDiscountAmount={calculateDiscountAmount}
-              calculateTotalWithDiscount={calculateTotalWithDiscount}
-              calculateTotalWithoutDiscount={calculateTotalWithoutDiscount}
-              getRecommendation={getRecommendation}
-              phase1Discount={phase1Discount}
-              resetSelection={resetSelection}
               selectedFeatures={selectedFeatures}
               toggleFeature={toggleFeature}
-              totalCoreFeaturesPriceWithDiscount={
-                totalCoreFeaturesPriceWithDiscount
-              }
+              calculateAdditionalFeaturesSelectedTotal={calculateAdditionalFeaturesSelectedTotal()}
+              calculateTotalWithoutDiscount={calculateTotalWithoutDiscount}
+              phase1Discount={phase1Discount}
+              calculateDiscountAmount={calculateDiscountAmount}
+              calculateTotalWithDiscount={calculateTotalWithDiscount}
+              getRecommendation={getRecommendation}
+              resetSelection={resetSelection}
+              totalCoreFeaturesPrice={totalCoreFeaturesPrice}
             />
 
             {/* Phase 1 Recommendations */}
             <PhaseOne
-              additionalFeatures={additionalFeatures}
               setSelectedFeatures={setSelectedFeatures}
               setPhase1Discount={setPhase1Discount}
               phaseOneTotal={calculatePhaseOneTotal(false)}

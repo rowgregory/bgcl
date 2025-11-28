@@ -1,6 +1,5 @@
-import { IFeature } from "@/types/project-breakdown";
+import { additionalFeatures } from "@/app/lib/constants/project-breakdown";
 import {
-  CheckCircle,
   DollarSign,
   Lightbulb,
   Lock,
@@ -14,7 +13,6 @@ import {
 import React, { FC } from "react";
 
 interface IPhaseOne {
-  additionalFeatures: IFeature[];
   setSelectedFeatures: (ids: string[]) => void;
   setPhase1Discount: (value: boolean) => void;
   phaseOneTotal: number;
@@ -22,7 +20,6 @@ interface IPhaseOne {
 }
 
 const PhaseOne: FC<IPhaseOne> = ({
-  additionalFeatures,
   setSelectedFeatures,
   setPhase1Discount,
   phaseOneTotal,
@@ -32,7 +29,7 @@ const PhaseOne: FC<IPhaseOne> = ({
 
   return (
     <section className="mb-12">
-      <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 border border-indigo-500/30 rounded-xl p-8">
+      <div className="bg-linear-to-br from-neutral-900 to-neutral-950 border border-indigo-500/30 rounded-xl p-8">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-indigo-600/20 border border-indigo-500/30 rounded-full px-4 py-2 mb-4">
             <Lightbulb className="w-4 h-4 text-indigo-400" />
@@ -78,23 +75,23 @@ const PhaseOne: FC<IPhaseOne> = ({
                 ${phaseOneTotal.toLocaleString()}
               </div>
               <div className="text-3xl font-bold text-indigo-400">
-                ${phaseOneTotalWithDiscount.toLocaleString()}
+                ${Math.round(phaseOneTotalWithDiscount).toLocaleString()}
               </div>
               <div className="text-xs text-indigo-300">
-                with 20% discount on all recommended features
+                with 15% discount on all recommended features
               </div>
             </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
-            {/* Included Core Features */}
+            {/* Recommended Add-Ons */}
             <div>
               <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-indigo-400" />
-                Core Features (Included)
+                <Sparkles className="w-5 h-5 text-indigo-400" />
+                Recommended Features
               </h4>
               <div className="space-y-2">
-                {[6].map((index) => {
+                {[0, 3, 7, 9, 10, 13].map((index) => {
                   const feature = additionalFeatures[index];
                   if (!feature) return null;
 
@@ -103,7 +100,7 @@ const PhaseOne: FC<IPhaseOne> = ({
                       key={index}
                       className="flex items-start gap-2 text-sm text-indigo-200"
                     >
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 flex-shrink-0 mt-0.5" />
+                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <div className="font-medium">{feature.system}</div>
                         <div className="text-xs text-neutral-500">
@@ -123,59 +120,24 @@ const PhaseOne: FC<IPhaseOne> = ({
                 })}
               </div>
             </div>
-
-            {/* Recommended Add-Ons */}
-            <div>
-              <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-indigo-400" />
-                Recommended Features
-              </h4>
-              <div className="space-y-2">
-                {[0, 1, 4, 5, 7, 8, 9, 10, 13].map((index) => {
-                  const feature = additionalFeatures[index];
-                  if (!feature) return null;
-
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-start gap-2 text-sm text-indigo-200"
-                    >
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 flex-shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <div className="font-medium">{feature.system}</div>
-                        <div className="text-xs text-neutral-500">
-                          {feature.title}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xs text-neutral-500 line-through">
-                          ${feature.cost.toLocaleString()}
-                        </div>
-                        <div className="text-xs text-indigo-300 font-semibold">
-                          ${(feature.cost * 0.8).toLocaleString()}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
           </div>
 
           <div className="bg-neutral-900/50 border border-indigo-500/20 rounded-lg p-4 mb-4">
             <div className="flex items-start gap-3">
-              <Target className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" />
+              <Target className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
               <div>
                 <h5 className="text-white font-semibold mb-1">
                   Why This Package?
                 </h5>
                 <p className="text-sm text-neutral-300 leading-relaxed">
-                  We recommend a suite of systems to streamline operations and
-                  support families. Mission Control handles admin and content
-                  management, The Family Launch Station connects parents to
-                  programs, The Comm Station manages communications, The
-                  Starforge powers fundraising, and The Credit Orb handles
-                  payments and billing.
+                  We recommend a suite of systems designed to streamline
+                  operations and support families. Mission Control manages
+                  administration and content, The Orbital links social media
+                  marketing to the main hero section, The Observatory serves as
+                  the Analytics & Reporting Dashboard for all events, The Nebula
+                  is the Media Storage & Management System, The Credit Orb
+                  manages payments and billing, and The Orbital Hall oversees
+                  all event coordination.
                 </p>
               </div>
             </div>
@@ -186,19 +148,15 @@ const PhaseOne: FC<IPhaseOne> = ({
               onClick={() => {
                 setSelectedFeatures([
                   additionalFeatures[0].id,
-                  additionalFeatures[1].id,
-                  additionalFeatures[4].id,
-                  additionalFeatures[5].id,
-                  additionalFeatures[6].id,
+                  additionalFeatures[3].id,
                   additionalFeatures[7].id,
-                  additionalFeatures[8].id,
                   additionalFeatures[9].id,
                   additionalFeatures[10].id,
                   additionalFeatures[13].id,
                 ]);
                 setPhase1Discount(true);
               }}
-              className="flex-1 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold py-4 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+              className="flex-1 bg-linear-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold py-4 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
             >
               <Rocket className="w-5 h-5" />
               Select Phase 1 Package

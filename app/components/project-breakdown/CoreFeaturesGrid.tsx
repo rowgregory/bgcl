@@ -5,12 +5,10 @@ import CoreFeature from "./CoreFeature";
 
 interface ICoreFeaturesGrid {
   totalCoreFeaturesPrice: number;
-  totalCoreFeaturesPriceWithDiscount: number;
 }
 
 const CoreFeaturesGrid: FC<ICoreFeaturesGrid> = ({
   totalCoreFeaturesPrice,
-  totalCoreFeaturesPriceWithDiscount,
 }) => {
   return (
     <section className="mb-12">
@@ -41,16 +39,10 @@ const CoreFeaturesGrid: FC<ICoreFeaturesGrid> = ({
               </p>
             </div>
             <div className="text-right">
-              <div className="text-sm text-neutral-400 line-through mb-1">
-                ${totalCoreFeaturesPrice.toLocaleString()}
-              </div>
               <div className="flex items-center gap-2 justify-end">
                 <div className="text-2xl font-bold text-indigo-400">
-                  ${totalCoreFeaturesPriceWithDiscount.toLocaleString()}
+                  ${totalCoreFeaturesPrice.toLocaleString()}
                 </div>
-                <span className="bg-gradient-to-r from-indigo-500 to-violet-600 text-white text-xs px-2 py-1 rounded-full font-medium">
-                  15% OFF
-                </span>
               </div>
             </div>
           </div>

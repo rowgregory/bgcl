@@ -26,15 +26,17 @@ const FixedBottomPricingBar: FC<IFixedBottomPricingBar> = ({
             <div className="flex items-center justify-between">
               <div className="flex flex-col">
                 <span className="text-xs text-neutral-400 line-through">
-                  ${totalWithoutDiscount.toLocaleString()}
+                  ${Math.round(totalWithoutDiscount).toLocaleString()}
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-bold text-white">
-                    ${totalWithDiscount.toLocaleString()}
+                    ${Math.round(totalWithDiscount).toLocaleString()}
                   </span>
-                  <span className="bg-gradient-to-r from-violet-500 to-indigo-600 text-white text-xs px-2 py-1 rounded-full font-medium">
-                    {phase1Discount ? 20 : 15}% OFF
-                  </span>
+                  {phase1Discount && (
+                    <span className="bg-linear-to-r from-violet-500 to-indigo-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+                      15% OFF
+                    </span>
+                  )}
                 </div>
               </div>
               <button className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
@@ -45,7 +47,7 @@ const FixedBottomPricingBar: FC<IFixedBottomPricingBar> = ({
             {/* Info Row */}
             <div className="flex justify-between text-xs text-neutral-400 border-t border-neutral-800 pt-2">
               <span>{selectedFeaturesCount} features</span>
-              <span>8-12 weeks</span>
+              <span>6-8 weeks</span>
               <span>Hosting: ${monthlyHostingCost}/mo</span>
             </div>
           </div>
@@ -56,15 +58,17 @@ const FixedBottomPricingBar: FC<IFixedBottomPricingBar> = ({
             <div className="flex items-center gap-6">
               <div className="flex flex-col">
                 <span className="text-sm text-neutral-400 line-through">
-                  Regular: ${totalWithoutDiscount.toLocaleString()}
+                  Regular: ${Math.round(totalWithoutDiscount).toLocaleString()}
                 </span>
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
-                    ${totalWithDiscount.toLocaleString()}
+                  <span className="text-3xl font-bold bg-linear-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
+                    ${Math.round(totalWithDiscount).toLocaleString()}
                   </span>
-                  <span className="bg-gradient-to-r from-violet-500 to-indigo-600 text-white text-sm px-3 py-1 rounded-full font-medium">
-                    {phase1Discount ? "20" : "15"}% LOCAL DISCOUNT
-                  </span>
+                  {phase1Discount && (
+                    <span className="bg-linear-to-r from-violet-500 to-indigo-600 text-white text-sm px-3 py-1 rounded-full font-medium">
+                      15 % DISCOUNT
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -101,7 +105,7 @@ const FixedBottomPricingBar: FC<IFixedBottomPricingBar> = ({
                   Exclusive License
                 </div>
               </div>
-              <button className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg">
+              <button className="bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg">
                 Get Sqysh&apos;d
               </button>
             </div>

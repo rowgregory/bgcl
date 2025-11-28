@@ -71,18 +71,11 @@ const AdditionalFeature: FC<IAdditionalFeature> = ({
         <div className="flex flex-col">
           <div className="flex items-center gap-x-2">
             <span
-              className={`text-sm font-bold line-through ${
-                isSelected ? "text-violet-300" : "text-neutral-500"
-              }`}
-            >
-              ${feature.cost.toLocaleString()}
-            </span>
-            <span
               className={`text-sm font-bold ${
                 isSelected ? "text-violet-300" : "text-neutral-500"
               }`}
             >
-              ${(feature.cost * 0.85).toLocaleString()}
+              ${feature.cost.toLocaleString()}
             </span>
           </div>
           <span

@@ -65,9 +65,11 @@ model Parent {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  firstName                      String
-  lastName                       String
-  phone                          String?
+  firstName String
+  lastName  String
+  phone     String // Made required - critical for check-in notifications
+  email     String? // Denormalized from User for faster access
+
   dateOfBirth                    DateTime?
   gender                         Gender?
   maritalStatus                  MaritalStatus?
@@ -83,11 +85,15 @@ model Parent {
   militaryBranch                 String?
   isHouseholdOnMilitaryBase      YesNo?
 
-  addresses Address[]
-  children  Youth[]
+  addresses         Address[]
+  children          Youth[]
+  authorizedPickups AuthorizedPickup[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([phone])
+  @@index([lastName, firstName])
 }
 
 model Youth {
@@ -102,6 +108,13 @@ model Youth {
   lastName    String
   dateOfBirth DateTime
   gender      Gender?
+
+  // Check-in system fields
+  pin            String? @unique // 4-6 digit PIN for turnstile
+  photoUrl       String? // For facial recognition check-in
+  qrCode         String? @unique // Alternative check-in method
+  isActive       Boolean @default(true) // Quick filter for active members
+  canCheckInSelf Boolean @default(false) // Can they check in without staff?
 
   // Membership
   status         YouthStatus @default(ACTIVE)
@@ -149,13 +162,20 @@ model Youth {
   requiresPGPickup Boolean?
 
   // Relationships
-  enrollments ProgramEnrollment[]
+  enrollments       ProgramEnrollment[]
+  checkIns          CheckIn[]
+  authorizedPickups AuthorizedPickup[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([status])
-  @@index([lastName, firstName])
+  // Optimized indexes for check-in system
+  @@index([pin]) // Instant PIN lookup
+  @@index([qrCode]) // Instant QR code lookup
+  @@index([isActive, status]) // Filter active members
+  @@index([parentId]) // Fast parent lookup
+  @@index([lastName, firstName]) // Name search
+  @@index([isActive, lastName, firstName]) // Composite for active name search
 }
 
 model Staff {
@@ -174,10 +194,80 @@ model Staff {
   status     StaffStatus @default(ACTIVE)
 
   // Relationships
-  programAssignments StaffAssignment[] // Changed from programs to programAssignments
+  programAssignments StaffAssignment[]
+  manualCheckIns     CheckIn[]         @relation("StaffCheckIns")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+// New models for check-in system
+
+model CheckIn {
+  id String @id @default(cuid())
+
+  youthId String
+  youth   Youth  @relation(fields: [youthId], references: [id], onDelete: Cascade)
+
+  checkInTime  DateTime  @default(now())
+  checkOutTime DateTime?
+
+  // Check-in details
+  method   CheckInMethod // How they checked in
+  location String? // Which entrance/turnstile
+  notes    String? // Any special notes
+
+  // For quick "who's here now" queries
+  isCheckedOut Boolean @default(false)
+
+  // If manually checked in/out by staff
+  checkedInByStaffId  String?
+  checkedInByStaff    Staff?  @relation("StaffCheckIns", fields: [checkedInByStaffId], references: [id])
+  checkedOutByStaffId String?
+
+  // Parent notification tracking
+  parentNotifiedCheckIn  Boolean @default(false)
+  parentNotifiedCheckOut Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  // Critical indexes for performance
+  @@index([youthId, isCheckedOut]) // Find if youth is checked in
+  @@index([isCheckedOut, checkInTime]) // "Who's here now" query
+  @@index([checkInTime]) // Daily reports
+  @@index([youthId, checkInTime]) // Youth history
+}
+
+model AuthorizedPickup {
+  id String @id @default(cuid())
+
+  youthId String
+  youth   Youth  @relation(fields: [youthId], references: [id], onDelete: Cascade)
+
+  parentId String?
+  parent   Parent? @relation(fields: [parentId], references: [id])
+
+  firstName    String
+  lastName     String
+  phone        String
+  relationship String // Mom, Dad, Grandmother, etc.
+  photoUrl     String? // For verification at checkout
+
+  // Security
+  pin      String? // Optional PIN for pickup
+  isActive Boolean @default(true)
+
+  // Notes
+  specialInstructions String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([youthId, isActive])
+  @@index([phone])
+  @@index([pin])
 }
 
 model Address {
@@ -342,6 +432,30 @@ model ProgramEnrollment {
   @@index([paymentStatus])
 }
 
+enum CheckInMethod {
+  PIN // Youth enters PIN at turnstile
+  QR_CODE // Youth scans QR code
+  PHOTO // Facial recognition
+  CARD // Membership card scan
+  MANUAL // Staff manually checks in
+  PARENT_APP // Parent checks in via app
+}
+
+enum YouthStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  EXPELLED
+  GRADUATED
+}
+
+enum StaffStatus {
+  ACTIVE
+  INACTIVE
+  ON_LEAVE
+  TERMINATED
+}
+
 enum MembershipStatus {
   PENDING
   ACTIVE
@@ -433,13 +547,6 @@ enum ProgramStatus {
   ARCHIVED
 }
 
-enum YouthStatus {
-  ACTIVE
-  INACTIVE
-  SUSPENDED
-  GRADUATED
-}
-
 enum EnrollmentStatus {
   PENDING
   ACTIVE
@@ -454,10 +561,4 @@ enum PaymentStatus {
   PAID
   REFUNDED
   WAIVED
-}
-
-enum StaffStatus {
-  ACTIVE
-  ON_LEAVE
-  TERMINATED
 }
