@@ -17,7 +17,7 @@ import {
   MoreVertical,
   Plus,
 } from "lucide-react";
-import { containerVariants, itemVariants } from "@/app/lib/motion";
+import { containerVariants, itemVariants } from "@/app/lib/constants/motion";
 
 const stats = [
   {
@@ -303,7 +303,7 @@ const TheCapsuleCore = () => {
                           initial={{ width: 0 }}
                           animate={{ width: `${progress}%` }}
                           transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
-                          className={`h-full bg-gradient-to-r ${event.color} rounded-full`}
+                          className={`h-full bg-linear-to-r ${event.color} rounded-full`}
                         />
                       </div>
 
@@ -341,14 +341,14 @@ const TheCapsuleCore = () => {
                 >
                   {/* Gradient border */}
                   <div
-                    className={`absolute inset-0 bg-gradient-to-r ${action.color} opacity-50 group-hover:opacity-100 transition-opacity`}
+                    className={`absolute inset-0 bg-linear-to-r ${action.color} opacity-50 group-hover:opacity-100 transition-opacity`}
                   />
-                  <div className="absolute inset-[1px] bg-zinc-900 rounded-lg" />
+                  <div className="absolute inset-px bg-zinc-900 rounded-lg" />
 
                   {/* Content */}
                   <div className="relative px-4 py-3 flex items-center space-x-3">
                     <div
-                      className={`p-2 rounded-lg bg-gradient-to-br ${action.color}`}
+                      className={`p-2 rounded-lg bg-linear-to-br ${action.color}`}
                     >
                       <action.icon className="w-5 h-5" />
                     </div>
@@ -387,7 +387,7 @@ const TheCapsuleCore = () => {
                 >
                   <div className="flex items-start space-x-3">
                     <div
-                      className={`p-1.5 rounded-full flex-shrink-0 ${
+                      className={`p-1.5 rounded-full shrink-0 ${
                         activity.type === "sale"
                           ? "bg-green-500/20 text-green-400"
                           : activity.type === "registration"

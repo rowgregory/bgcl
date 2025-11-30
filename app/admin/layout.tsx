@@ -1,41 +1,44 @@
-import React, { FC, ReactNode } from "react";
-// import { cookies } from "next/headers";
+import React, { FC } from "react";
 import AdminLayoutClient from "./admin-layout-client";
+// import { getAdminData } from "../lib/actions/getAdminData";
+import { ILayout } from "@/types/common";
 
-// const asyncFetch = async (
-//   apiPath: string,
-//   fetchOptions: RequestInit | undefined
-// ) => {
-//   const response = await fetch(
-//     `${process.env.NEXTAUTH_URL}/api/admin/${apiPath}`,
-//     fetchOptions
-//   );
+const AdminLayout: FC<ILayout> = async ({ children }) => {
+  // Check authentication first
+  // const session = await auth();
 
-//   return response;
-// };
+  // if (!session || !session.user) {
+  //   redirect("/login");
+  // }
 
-const AdminLayout: FC<{ children: ReactNode }> = async ({ children }) => {
-  //   const cookieStore = await cookies();
+  // Fetch all admin data
+  // const result = await getAdminData();
 
-  //   const fetchOptions = {
-  //     cache: "no-store" as RequestCache,
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Cookie: cookieStore.toString(),
-  //     },
-  //   };
+  // If unauthorized (not admin), redirect
+  // if (!result.success) {
+  //   redirect("/auth/login");
+  // }
 
-  //   const adminOverviewResponse = await asyncFetch("overview", fetchOptions);
-  //   console.log("Admin overview response status:", adminOverviewResponse.status);
+  // Extract the data
+  // const data = {
+  //   users: result.data?.users?.users || null,
+  //   usersPagination: result.data?.users?.pagination || null,
+  //   events: result.data?.events?.events || null,
+  //   eventsPagination: result.data?.events?.pagination || null,
+  //   heroes: result.data?.heroes || null,
+  //   stats: result.data?.stats || null,
+  //   user: null,
+  // };
 
-  //   if (!adminOverviewResponse.ok) {
-  //     const errorText = await adminOverviewResponse.text();
-  //     console.error("Admin API error:", errorText);
-  //     return <div>Error loading admin overview</div>;
-  //   }
-
-  //   const data = await adminOverviewResponse.json();
-  const data = { users: null, user: null };
+  const data = {
+    users: null,
+    usersPagination: null,
+    events: null,
+    eventsPagination: null,
+    heroes: null,
+    stats: null,
+    user: null,
+  };
 
   return <AdminLayoutClient data={data}>{children}</AdminLayoutClient>;
 };

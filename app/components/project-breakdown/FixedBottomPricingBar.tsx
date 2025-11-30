@@ -1,13 +1,6 @@
+import { IFixedBottomPricingBar } from "@/types/project-breakdown";
 import { Clock, Rocket, Server } from "lucide-react";
 import React, { FC } from "react";
-
-interface IFixedBottomPricingBar {
-  totalWithDiscount: number;
-  totalWithoutDiscount: number;
-  selectedFeaturesCount: number;
-  monthlyHostingCost: number;
-  phase1Discount: boolean;
-}
 
 const FixedBottomPricingBar: FC<IFixedBottomPricingBar> = ({
   totalWithDiscount,

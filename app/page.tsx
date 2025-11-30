@@ -233,7 +233,7 @@ const PinDemo = () => {
             <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8">
               Let&apos;s build something amazing together
             </p>
-            <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 sm:px-12 py-3 sm:py-4 rounded-full text-lg sm:text-xl font-bold hover:scale-105 transition-transform">
+            <button className="bg-linear-to-r from-purple-500 to-pink-500 text-white px-8 sm:px-12 py-3 sm:py-4 rounded-full text-lg sm:text-xl font-bold hover:scale-105 transition-transform">
               Get in Touch
             </button>
           </div>

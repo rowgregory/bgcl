@@ -3,11 +3,13 @@ import { Reducer, createSlice } from "@reduxjs/toolkit";
 export interface AppStatePayload {
   mobileNavigation: boolean;
   navigationDrawer: boolean;
+  heroStudio: boolean;
 }
 
 const initialAppState: AppStatePayload = {
   mobileNavigation: false,
   navigationDrawer: false,
+  heroStudio: false,
 };
 
 export const appSlice = createSlice({
@@ -26,6 +28,12 @@ export const appSlice = createSlice({
     setCloseNavigationDrawer: (state) => {
       state.navigationDrawer = false;
     },
+    setOpenHeroStudio: (state) => {
+      state.heroStudio = true;
+    },
+    setCloseHeroStudio: (state) => {
+      state.heroStudio = false;
+    },
   },
 });
 
@@ -36,4 +44,6 @@ export const {
   setCloseMobileNavigation,
   setOpenNavigationDrawer,
   setCloseNavigationDrawer,
+  setCloseHeroStudio,
+  setOpenHeroStudio,
 } = appSlice.actions;

@@ -15,7 +15,7 @@ const CoreFeature: FC<ICoreFeature> = ({ feature }) => {
   return (
     <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-4 hover:bg-neutral-800 transition-colors">
       <div className="flex items-start gap-3">
-        <div className="p-2 bg-violet-600/20 rounded-lg border border-violet-500/30 flex-shrink-0">
+        <div className="p-2 bg-violet-600/20 rounded-lg border border-violet-500/30 shrink-0">
           <feature.icon className="w-4 h-4 text-violet-400" />
         </div>
         <div className="flex-1 min-w-0">

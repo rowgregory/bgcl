@@ -398,7 +398,7 @@ const MemberDirectoryAdmin = () => {
             {/* Add Member Button */}
             <button
               onClick={() => openModal()}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all duration-200"
             >
               <UserPlus className="w-5 h-5" />
               Add Member
@@ -425,7 +425,7 @@ const MemberDirectoryAdmin = () => {
               >
                 {/* Header with role badge */}
                 <div
-                  className={`bg-gradient-to-r from-${roleColor}-600 to-${roleColor}-700 p-4`}
+                  className={`bg-linear-to-r from-${roleColor}-600 to-${roleColor}-700 p-4`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -456,7 +456,7 @@ const MemberDirectoryAdmin = () => {
                   {/* Avatar */}
                   <div className="flex justify-center mb-4">
                     <div
-                      className={`w-20 h-20 rounded-full bg-gradient-to-br from-${roleColor}-500 to-${roleColor}-600 flex items-center justify-center`}
+                      className={`w-20 h-20 rounded-full bg-linear-to-br from-${roleColor}-500 to-${roleColor}-600 flex items-center justify-center`}
                     >
                       <span className="text-white font-bold text-2xl">
                         {member.firstName[0]}
@@ -711,7 +711,7 @@ const MemberDirectoryAdmin = () => {
                   </button>
                   <button
                     onClick={handleSave}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all duration-200"
+                    className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all duration-200"
                   >
                     <Save className="w-4 h-4" />
                     {editingMember ? "Update" : "Create"}

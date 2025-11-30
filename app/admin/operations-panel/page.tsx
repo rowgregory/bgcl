@@ -471,7 +471,7 @@ const OperationsPanel: React.FC = () => {
         >
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg">
+              <div className="p-3 bg-linear-to-br from-indigo-600 to-purple-600 rounded-lg">
                 <Settings className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -496,7 +496,7 @@ const OperationsPanel: React.FC = () => {
                 </button>
                 <button
                   onClick={handleSave}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-semibold transition-all duration-200"
+                  className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-semibold transition-all duration-200"
                 >
                   <Save className="w-4 h-4" />
                   Save Changes
@@ -514,7 +514,7 @@ const OperationsPanel: React.FC = () => {
           className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 mb-6"
         >
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+            <AlertTriangle className="w-5 h-5 text-yellow-400 shrink-0 mt-0.5" />
             <div>
               <h3 className="text-sm font-semibold text-yellow-400 mb-1">
                 Careful with System Settings

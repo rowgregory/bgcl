@@ -2,10 +2,7 @@ import { coreFeatures } from "@/app/lib/constants/project-breakdown";
 import { Calculator } from "lucide-react";
 import React, { FC } from "react";
 import CoreFeature from "./CoreFeature";
-
-interface ICoreFeaturesGrid {
-  totalCoreFeaturesPrice: number;
-}
+import { ICoreFeaturesGrid } from "@/types/project-breakdown";
 
 const CoreFeaturesGrid: FC<ICoreFeaturesGrid> = ({
   totalCoreFeaturesPrice,

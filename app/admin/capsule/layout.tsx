@@ -1,10 +1,10 @@
 "use client";
 
-import SubNavLink from "@/app/components/SubNavLink";
+import React, { FC, ReactNode } from "react";
 import { glossyLowbitObscureBleep } from "@/app/lib/constants/sound-effects";
 import useCustomPathname from "@/hooks/useCustomPathname";
 import useSoundEffect from "@/hooks/useSoundEffect";
-import React, { FC, ReactNode } from "react";
+import SubNavLink from "@/app/components/navigation/SubNavLink";
 
 const theCapsuleNavLinks = (path: string) => [
   {

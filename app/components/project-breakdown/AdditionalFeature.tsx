@@ -20,7 +20,7 @@ const AdditionalFeature: FC<IAdditionalFeature> = ({
       <div className="flex items-start gap-3 mb-3">
         {/* Feature Icon */}
         <div
-          className={`p-2 rounded-lg border flex-shrink-0 ${
+          className={`p-2 rounded-lg border shrink-0 ${
             isSelected
               ? "bg-violet-600/20 border-violet-500/30"
               : "bg-neutral-800/50 border-neutral-700"

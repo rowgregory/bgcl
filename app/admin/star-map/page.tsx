@@ -573,7 +573,7 @@ const StarMap: React.FC = () => {
         >
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg">
+              <div className="p-3 bg-linear-to-br from-indigo-600 to-purple-600 rounded-lg">
                 <Globe className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -610,7 +610,7 @@ const StarMap: React.FC = () => {
                   </button>
                   <button
                     onClick={handleSave}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-semibold transition-all duration-200"
+                    className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-semibold transition-all duration-200"
                   >
                     <Save className="w-4 h-4" />
                     Save Changes
@@ -637,7 +637,7 @@ const StarMap: React.FC = () => {
                   onClick={() => setSelectedPage(page.id)}
                   className={`flex items-center gap-3 p-4 rounded-lg font-medium transition-all duration-200 ${
                     selectedPage === page.id
-                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
+                      ? "bg-linear-to-r from-indigo-600 to-purple-600 text-white"
                       : "bg-neutral-800 text-neutral-400 hover:text-white border border-neutral-700"
                   }`}
                 >
@@ -743,7 +743,7 @@ const StarMap: React.FC = () => {
                     {"hero" in currentPageContent &&
                       currentPageContent.hero && (
                         <div className="mb-8">
-                          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg p-8 text-white text-center">
+                          <div className="bg-linear-to-r from-indigo-600 to-purple-600 rounded-lg p-8 text-white text-center">
                             <h1 className="text-3xl font-bold mb-3">
                               {currentPageContent.hero.heading}
                             </h1>

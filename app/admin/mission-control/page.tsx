@@ -178,7 +178,7 @@ const MissionControl = () => {
                   initial={{ width: 0 }}
                   animate={{ width: "75%" }}
                   transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full h-2"
+                  className="bg-linear-to-r from-indigo-600 to-purple-600 rounded-full h-2"
                 />
               </div>
               <div className="flex items-center gap-1">
@@ -218,7 +218,7 @@ const MissionControl = () => {
                   initial={{ width: 0 }}
                   animate={{ width: "82%" }}
                   transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-                  className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full h-2"
+                  className="bg-linear-to-r from-purple-600 to-indigo-600 rounded-full h-2"
                 />
               </div>
               <div className="flex items-center gap-1">
@@ -258,7 +258,7 @@ const MissionControl = () => {
                   initial={{ width: 0 }}
                   animate={{ width: "71%" }}
                   transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full h-2"
+                  className="bg-linear-to-r from-indigo-600 to-purple-600 rounded-full h-2"
                 />
               </div>
               <div className="flex items-center gap-1">
@@ -298,7 +298,7 @@ const MissionControl = () => {
                   initial={{ width: 0 }}
                   animate={{ width: "78%" }}
                   transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-                  className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full h-2"
+                  className="bg-linear-to-r from-purple-600 to-indigo-600 rounded-full h-2"
                 />
               </div>
               <div className="flex items-center gap-1">
@@ -666,7 +666,7 @@ const MissionControl = () => {
           transition={{ delay: 0.8, duration: 0.5 }}
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
-          <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-lg p-6 border border-indigo-500/50">
+          <div className="bg-linear-to-br from-indigo-600 to-indigo-700 rounded-lg p-6 border border-indigo-500/50">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-indigo-200 text-sm font-medium uppercase tracking-wide mb-2">
@@ -681,7 +681,7 @@ const MissionControl = () => {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg p-6 border border-purple-500/50">
+          <div className="bg-linear-to-br from-purple-600 to-purple-700 rounded-lg p-6 border border-purple-500/50">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-200 text-sm font-medium uppercase tracking-wide mb-2">
@@ -698,7 +698,7 @@ const MissionControl = () => {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg p-6 border border-indigo-500/50">
+          <div className="bg-linear-to-br from-indigo-600 to-purple-600 rounded-lg p-6 border border-indigo-500/50">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-indigo-200 text-sm font-medium uppercase tracking-wide mb-2">

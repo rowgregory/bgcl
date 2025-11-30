@@ -228,7 +228,7 @@ const CryoChamber = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.2 }}
                 whileHover={{ y: -4, scale: 1.01 }} // Add hover lift effect
-                className="border border-white/10 bg-white/[0.02] rounded-2xl p-8 shadow-lg backdrop-blur-sm hover:bg-white/[0.05] hover:border-white/20 transition-all duration-300"
+                className="border border-white/10 bg-white/2 rounded-2xl p-8 shadow-lg backdrop-blur-sm hover:bg-white/5 hover:border-white/20 transition-all duration-300"
               >
                 <div className="space-y-6 flex flex-col h-full justify-between">
                   <div className="space-y-6">
@@ -237,7 +237,7 @@ const CryoChamber = () => {
                       <motion.div
                         whileHover={{ rotate: 360 }}
                         transition={{ duration: 0.6 }}
-                        className={`p-3 rounded-xl bg-gradient-to-r ${feature.gradient} shadow-lg`}
+                        className={`p-3 rounded-xl bg-linear-to-r ${feature.gradient} shadow-lg`}
                       >
                         <IconComponent className="w-6 h-6 text-white" />
                       </motion.div>
@@ -275,7 +275,7 @@ const CryoChamber = () => {
                           className="flex items-start space-x-3 group"
                         >
                           <div
-                            className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 transition-all group-hover:scale-150`}
+                            className={`w-2 h-2 rounded-full mt-2 shrink-0 transition-all group-hover:scale-150`}
                             style={{
                               backgroundColor: `var(--${feature.accentColor})`,
                             }}
@@ -303,7 +303,7 @@ const CryoChamber = () => {
                     </div>
 
                     {/* Pricing with better visual hierarchy */}
-                    <div className="bg-white/[0.03] border border-white/10 rounded-lg p-4 space-y-2">
+                    <div className="bg-white/3 border border-white/10 rounded-lg p-4 space-y-2">
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-400">
                           Initial Build
@@ -331,7 +331,7 @@ const CryoChamber = () => {
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className={`w-full px-4 py-2.5 rounded-lg bg-gradient-to-r ${feature.gradient} hover:shadow-xl text-sm font-medium text-white transition-all duration-200`}
+                        className={`w-full px-4 py-2.5 rounded-lg bg-linear-to-r ${feature.gradient} hover:shadow-xl text-sm font-medium text-white transition-all duration-200`}
                       >
                         {feature.status === "not_purchased"
                           ? `Purchase ${feature.name}`

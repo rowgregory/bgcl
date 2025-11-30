@@ -4,24 +4,17 @@ import React from "react";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import PageWrapper from "./page-wrapper";
-import { IUser } from "@/types/entities";
+import { IHeroEntity } from "@/types/entities/hero";
 
 interface ReduxWrapperProps {
   children: React.ReactNode;
-  initialData?: { users: IUser[] };
-  error?: { status: number; message: string } | null;
+  data: { hero: IHeroEntity | null };
 }
 
-export default function ReduxWrapper({
-  children,
-  initialData,
-  error,
-}: ReduxWrapperProps) {
+export default function ReduxWrapper({ children, data }: ReduxWrapperProps) {
   return (
     <Provider store={store}>
-      <PageWrapper initialData={initialData} error={error}>
-        {children}
-      </PageWrapper>
+      <PageWrapper data={data}>{children}</PageWrapper>
     </Provider>
   );
 }

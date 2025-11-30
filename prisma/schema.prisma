@@ -41,249 +41,33 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Core auth table
 model User {
-  id             String    @id @default(cuid())
-  email          String    @unique
-  role           Role
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  emailVerified  DateTime?
-  lastLoginAt    DateTime?
-  hasLoginAccess Boolean   @default(false)
+  id          String    @id @default(cuid())
+  email       String    @unique
+  role        Role
+  lastLoginAt DateTime?
+
+  // Generic person info (optional)
+  firstName String?
+  lastName  String?
+  phone     String?
+
+  // Staff-only fields (optional)
+  position    String?
+  department  String?
+  hireDate    DateTime?
+  staffStatus StaffStatus?
+
+  // Flexible user-specific data
+  metadata Json? // ← Future-proof
 
   accounts Account[]
   sessions Session[]
-
-  parent Parent?
-  youth  Youth?
-  staff  Staff?
-}
-
-model Parent {
-  id     String @id @default(cuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  firstName String
-  lastName  String
-  phone     String // Made required - critical for check-in notifications
-  email     String? // Denormalized from User for faster access
-
-  dateOfBirth                    DateTime?
-  gender                         Gender?
-  maritalStatus                  MaritalStatus?
-  employer                       String?
-  employerPhone                  String?
-  annualHouseholdIncome          String?
-  hasHouseholdMembersOver65      Boolean?
-  hasHouseholdMembersHandicapped Boolean?
-  currentHeadOfHousehold         Gender?
-  isCurrentSingleParent          YesNo?
-  howManyInHousehold             String?
-  howManyUnder18InHousehold      String?
-  militaryBranch                 String?
-  isHouseholdOnMilitaryBase      YesNo?
-
-  addresses         Address[]
-  children          Youth[]
-  authorizedPickups AuthorizedPickup[]
+  events   Event[]
+  orders   Order[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([phone])
-  @@index([lastName, firstName])
-}
-
-model Youth {
-  id     String  @id @default(cuid())
-  userId String? @unique
-  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  parentId String
-  parent   Parent @relation(fields: [parentId], references: [id])
-
-  firstName   String
-  lastName    String
-  dateOfBirth DateTime
-  gender      Gender?
-
-  // Check-in system fields
-  pin            String? @unique // 4-6 digit PIN for turnstile
-  photoUrl       String? // For facial recognition check-in
-  qrCode         String? @unique // Alternative check-in method
-  isActive       Boolean @default(true) // Quick filter for active members
-  canCheckInSelf Boolean @default(false) // Can they check in without staff?
-
-  // Membership
-  status         YouthStatus @default(ACTIVE)
-  membershipType String?
-  joinDate       DateTime    @default(now())
-
-  // School
-  school        String?
-  schoolTeacher String?
-  schoolGrade   String?
-
-  // Demographics
-  race      String?
-  ethnicity String?
-
-  // Permissions
-  canAppearInMedia            Boolean? @default(false)
-  canParticipateOnOffPremises Boolean? @default(false)
-
-  // Special needs
-  hasDisabilityIEP504      String?
-  isEnglishLanguageLearner Boolean?
-
-  // Program
-  transportationPlan String?
-  attendanceSchedule String?
-
-  // Health
-  physicalRecordsVerified  Boolean? @default(false)
-  canAdministerCPRFirstAid Boolean?
-  covidVaxStatus           String?
-  canSwim                  Boolean?
-
-  // Living situation
-  livesWithMom          Boolean?
-  livesWithDad          Boolean?
-  livesWithGrandparents Boolean?
-  livesWithStepmother   Boolean?
-  livesWithStepfather   Boolean?
-  livesWithFoster       Boolean?
-  livesWithOther        String?
-  isHomeless            Boolean?
-  isInFosterCare        Boolean?
-
-  requiresPGPickup Boolean?
-
-  // Relationships
-  enrollments       ProgramEnrollment[]
-  checkIns          CheckIn[]
-  authorizedPickups AuthorizedPickup[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Optimized indexes for check-in system
-  @@index([pin]) // Instant PIN lookup
-  @@index([qrCode]) // Instant QR code lookup
-  @@index([isActive, status]) // Filter active members
-  @@index([parentId]) // Fast parent lookup
-  @@index([lastName, firstName]) // Name search
-  @@index([isActive, lastName, firstName]) // Composite for active name search
-}
-
-model Staff {
-  id     String @id @default(cuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  firstName String
-  lastName  String
-  phone     String?
-
-  // Employment
-  position   String
-  department String?
-  hireDate   DateTime
-  status     StaffStatus @default(ACTIVE)
-
-  // Relationships
-  programAssignments StaffAssignment[]
-  manualCheckIns     CheckIn[]         @relation("StaffCheckIns")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([status])
-}
-
-// New models for check-in system
-
-model CheckIn {
-  id String @id @default(cuid())
-
-  youthId String
-  youth   Youth  @relation(fields: [youthId], references: [id], onDelete: Cascade)
-
-  checkInTime  DateTime  @default(now())
-  checkOutTime DateTime?
-
-  // Check-in details
-  method   CheckInMethod // How they checked in
-  location String? // Which entrance/turnstile
-  notes    String? // Any special notes
-
-  // For quick "who's here now" queries
-  isCheckedOut Boolean @default(false)
-
-  // If manually checked in/out by staff
-  checkedInByStaffId  String?
-  checkedInByStaff    Staff?  @relation("StaffCheckIns", fields: [checkedInByStaffId], references: [id])
-  checkedOutByStaffId String?
-
-  // Parent notification tracking
-  parentNotifiedCheckIn  Boolean @default(false)
-  parentNotifiedCheckOut Boolean @default(false)
-
-  createdAt DateTime @default(now())
-
-  // Critical indexes for performance
-  @@index([youthId, isCheckedOut]) // Find if youth is checked in
-  @@index([isCheckedOut, checkInTime]) // "Who's here now" query
-  @@index([checkInTime]) // Daily reports
-  @@index([youthId, checkInTime]) // Youth history
-}
-
-model AuthorizedPickup {
-  id String @id @default(cuid())
-
-  youthId String
-  youth   Youth  @relation(fields: [youthId], references: [id], onDelete: Cascade)
-
-  parentId String?
-  parent   Parent? @relation(fields: [parentId], references: [id])
-
-  firstName    String
-  lastName     String
-  phone        String
-  relationship String // Mom, Dad, Grandmother, etc.
-  photoUrl     String? // For verification at checkout
-
-  // Security
-  pin      String? // Optional PIN for pickup
-  isActive Boolean @default(true)
-
-  // Notes
-  specialInstructions String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([youthId, isActive])
-  @@index([phone])
-  @@index([pin])
-}
-
-model Address {
-  id        String       @id @default(cuid())
-  street    String
-  city      String
-  state     String
-  zipCode   String
-  country   String       @default("United States")
-  type      AddressType?
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-
-  // Relation to Parent (not User)
-  parentId String
-  parent   Parent @relation(fields: [parentId], references: [id], onDelete: Cascade)
 }
 
 model Newsletter {
@@ -314,14 +98,13 @@ model Event {
   description          String?
   category             String
   type                 String
-  cost                 String?
   dresscode            String?
   date                 DateTime
   time                 String
   duration             String
   location             String
   maxAttendees         Int?
-  attendees            Int?
+  attendees            Int         @default(0)
   status               EventStatus @default(UPCOMING)
   featured             Boolean     @default(false)
   host                 String?
@@ -331,122 +114,253 @@ model Event {
   meetingUrl           String?
   viewCount            Int         @default(0)
   clickCount           Int         @default(0)
-  chapterId            String
   isPublic             Boolean     @default(true)
   requiresRSVP         Boolean     @default(false)
   registrationDeadline DateTime    @default(now())
+
+  // Event-level settings
+  allowMultipleTickets Boolean   @default(false) // Can user buy multiple ticket types
+  salesStartDate       DateTime? // When tickets go on sale
+  salesEndDate         DateTime? // When ticket sales close
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relations
+  tickets Ticket[] // ← NEW: One event has many ticket types
+  orders  Order[] // ← NEW: One event has many orders
+
+  @@index([date])
+  @@index([status])
+  @@index([status, date])
+  @@index([featured, status, date])
+  @@index([isPublic, status, date])
+  @@index([category, date])
+  @@index([type, date])
+  @@index([requiresRSVP, registrationDeadline])
+  @@index([salesStartDate])
+  @@index([salesEndDate])
 }
 
-model Program {
-  id          String          @id @default(cuid())
-  name        String
-  description String?         @db.Text
-  category    ProgramCategory
-  status      ProgramStatus   @default(ACTIVE)
-
-  // Capacity and enrollment
-  capacity Int
-  enrolled Int @default(0)
-  waitlist Int @default(0)
-
-  // Schedule
-  startDate   DateTime
-  endDate     DateTime
-  schedule    String?  @db.Text // JSON string for recurring schedule
-  meetingDays String? // e.g., "Monday, Wednesday, Friday"
-  startTime   String? // e.g., "3:00 PM"
-  endTime     String? // e.g., "5:00 PM"
-  location    String?
-
-  // Age requirements
-  minAge Int
-  maxAge Int
-
-  // Pricing
-  fee Decimal @db.Decimal(10, 2)
-
-  // Relationships
-  enrollments      ProgramEnrollment[]
-  staffAssignments StaffAssignment[]
-
+model Ticket {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([category])
-  @@index([status])
-  @@index([startDate])
+  // Ticket details
+  name        String // e.g., "Table of 12", "VIP Seat", "General Admission"
+  description String? // e.g., "Includes premium seating and dinner"
+  price       Float // Price in cents or dollars (e.g., 180000 cents = $1800)
+
+  // Inventory management
+  totalQuantity    Int // Total available (e.g., 12 tables)
+  quantitySold     Int @default(0) // How many sold
+  quantityReserved Int @default(0) // How many in pending carts
+
+  // Ticket constraints
+  minPerOrder Int  @default(1) // Minimum tickets per order
+  maxPerOrder Int? // Maximum tickets per order (null = unlimited)
+
+  // Ticket availability
+  isAvailable    Boolean   @default(true) // Can be toggled on/off
+  salesStartDate DateTime? // When this ticket type goes on sale
+  salesEndDate   DateTime? // When this ticket type stops selling
+
+  // Ticket metadata
+  sortOrder        Int     @default(0) // Display order in ticket selection
+  requiresApproval Boolean @default(false) // Admin must approve purchase
+
+  // Relations
+  eventId    String
+  event      Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[] // ← Tickets purchased in orders
+
+  @@index([eventId])
+  @@index([eventId, isAvailable])
+  @@index([eventId, salesStartDate])
+  @@index([salesEndDate])
 }
 
-model StaffAssignment {
-  id String @id @default(cuid())
+model Order {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  programId String
-  program   Program @relation(fields: [programId], references: [id], onDelete: Cascade)
-
-  staffId String
-  staff   Staff  @relation(fields: [staffId], references: [id], onDelete: Cascade)
-
-  role      String? // e.g., "Lead Instructor", "Assistant", "Volunteer"
-  isPrimary Boolean @default(false) // Mark one staff as primary contact
-
-  assignedAt DateTime @default(now())
-
-  @@unique([programId, staffId])
-  @@index([programId])
-  @@index([staffId])
-}
-
-model ProgramEnrollment {
-  id String @id @default(cuid())
-
-  // Youth and Program
-  youthId   String
-  youth     Youth   @relation(fields: [youthId], references: [id], onDelete: Cascade)
-  programId String
-  program   Program @relation(fields: [programId], references: [id], onDelete: Cascade)
-
-  // Enrollment details
-  status     EnrollmentStatus @default(PENDING)
-  enrolledAt DateTime         @default(now())
-  startDate  DateTime
-  endDate    DateTime?
+  // Order details
+  orderNumber String      @unique // Human-readable order number
+  status      OrderStatus @default(PENDING)
 
   // Payment
-  paymentStatus PaymentStatus @default(PENDING)
-  amountPaid    Decimal       @default(0) @db.Decimal(10, 2)
+  totalAmount     Float // Total cost
+  paymentMethod   String? // "stripe", "paypal", "cash", etc.
+  paymentIntentId String? // Stripe payment intent ID
+  paidAt          DateTime? // When payment was completed
 
-  // Emergency contact for this enrollment
-  emergencyContact String?
-  emergencyPhone   String?
+  // Customer info (denormalized for easy access)
+  customerEmail String
+  customerName  String
+  customerPhone String?
 
-  // Medical info
-  medicalNotes String? @db.Text
-  allergies    String? @db.Text
-  medications  String? @db.Text
+  // Billing info
+  billingAddress Json? // Store as JSON
 
+  // Event info (denormalized)
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  // User info (nullable - guest checkout allowed)
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Relations
+  orderItems OrderItem[]
+
+  @@index([orderNumber])
+  @@index([status])
+  @@index([eventId])
+  @@index([userId])
+  @@index([customerEmail])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Item details
+  quantity     Int
+  pricePerUnit Float // Price at time of purchase
+  totalPrice   Float // quantity * pricePerUnit
+
+  // Ticket info (denormalized for historical record)
+  ticketName        String // Store name in case ticket is deleted
+  ticketDescription String?
+
+  // Relations
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+
+  @@index([orderId])
+  @@index([ticketId])
+}
+
+model Hero {
+  id     String     @id @default(cuid())
+  name   String
+  status HeroStatus @default(DRAFT)
+
+  // Layout & Height
+  minHeight    String @default("screen") // screen, half, full
+  actualHeight String @default("100vh")
+
+  // Background
+  backgroundType     String @default("gradient") // color, gradient, image, video
+  backgroundColor    String @default("#0a0a0a")
+  gradientFrom       String @default("#1e1b4b")
+  gradientTo         String @default("#0f172a")
+  backgroundImage    String @default("")
+  backgroundVideo    String @default("")
+  backgroundSize     String @default("cover") // cover, contain, auto
+  backgroundPosition String @default("center") // center, top, bottom, left, right, top-left, top-right, bottom-left, bottom-right
+  overlayOpacity     Float  @default(0.5)
+
+  // Content
+  title              String  @default("Welcome to Our Mission")
+  titleColor         String  @default("#ffffff")
+  titleGradientWord  String  @default("") // Word to gradient
+  titleGradientFrom  String  @default("#6366f1") // Gradient start
+  titleGradientTo    String  @default("#ec4899") // Gradient end
+  titleUseGradient   Boolean @default(false) // Enable gradient
+  titleLineHeight    String  @default("1.2")
+  titleFontSize      String  @default("4rem")
+  subtitle           String  @default("Join us in making a difference")
+  subtitleColor      String  @default("#a3a3a3")
+  subtitleLineHeight String  @default("1.5")
+  subtitleFontSize   String  @default("1.5rem")
+
+  // Animations
+  titleAnimation          String @default("fade-up") // fade-up, fade-down, fade-left, fade-right, scale, bounce, none
+  subtitleAnimation       String @default("fade-up")
+  ctaAnimation            String @default("fade-up")
+  floatingButtonAnimation String @default("pulse") // pulse, bounce, shake, none
+
+  // Layout
+  layout String @default("side-by-side") // side-by-side, stacked-center, stacked-left, stacked-right
+
+  // CTA Button
+  ctaText            String @default("Get Started")
+  ctaLink            String @default("/")
+  ctaBackgroundColor String @default("#6366f1")
+  ctaTextColor       String @default("#ffffff")
+  ctaBorderRadius    String @default("50")
+
+  // Thermometer Widget
+  showThermometer     Boolean @default(false)
+  thermometerGoal     Int     @default(100000)
+  thermometerCurrent  Int     @default(45000)
+  thermometerColor    String  @default("#6366f1")
+  thermometerPosition String  @default("right") // left, center, right
+
+  // Countdown Widget
+  showCountdown     Boolean @default(false)
+  countdownDate     String  @default("2025-12-31")
+  countdownLabel    String  @default("Event Starts In")
+  countdownPosition String  @default("right") // left, center, right
+  countdownColor    String  @default("#6366f1")
+
+  // Growth Tree Widget
+  showGrowthTree     Boolean @default(false)
+  growthTreeCurrent  Int     @default(8234)
+  growthTreeGoal     Int     @default(10000)
+  growthTreeLabel    String  @default("Community Members")
+  growthTreePosition String  @default("right") // left, center, right
+  growthTreeColor    String  @default("#10b981")
+
+  // Floating Button
+  showFloatingButton         Boolean @default(false)
+  floatingButtonText         String  @default("Get Help")
+  floatingButtonPosition     String  @default("bottom-right") // top-left, top-right, bottom-left, bottom-right
+  floatingButtonBgColor      String  @default("#6366f1")
+  floatingButtonTextColor    String  @default("#ffffff")
+  floatingButtonBorderRadius String  @default("50")
+  floatingButtonAction       String  @default("modal") // internal, external, modal, drawer
+  floatingButtonLink         String  @default("/contact")
+  floatingButtonIcon         String  @default("chat") // none, arrow, phone, email, chat, info, help
+
+  // Top Banner
+  showTopBanner      Boolean @default(false)
+  topBannerText      String  @default("Click here to learn about our Capital Campaign")
+  topBannerHeight    String  @default("40")
+  topBannerBgColor   String  @default("#6366f1")
+  topBannerTextColor String  @default("#ffffff")
+  topBannerFontSize  String  @default("0.875")
+  topBannerBold      Boolean @default(false)
+  topBannerLinkType  String  @default("none") // none, internal, external
+  topBannerLink      String  @default("")
+
+  // Metadata
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([youthId, programId])
+  @@index([createdAt])
   @@index([status])
-  @@index([paymentStatus])
 }
 
-enum CheckInMethod {
-  PIN // Youth enters PIN at turnstile
-  QR_CODE // Youth scans QR code
-  PHOTO // Facial recognition
-  CARD // Membership card scan
-  MANUAL // Staff manually checks in
-  PARENT_APP // Parent checks in via app
+enum Role {
+  STAFF
+  VOLUNTEER
+  ADMIN
+  SUPERUSER
+  SUPPORTER
 }
 
-enum YouthStatus {
+enum HeroStatus {
+  DRAFT
   ACTIVE
-  INACTIVE
-  SUSPENDED
-  EXPELLED
-  GRADUATED
+  ARCHIVED
 }
 
 enum StaffStatus {
@@ -454,20 +368,6 @@ enum StaffStatus {
   INACTIVE
   ON_LEAVE
   TERMINATED
-}
-
-enum MembershipStatus {
-  PENDING
-  ACTIVE
-  INACTIVE
-  SUSPENDED
-  EXPIRED
-  CANCELLED
-  REJECTED
-  INITIAL_REVIEW
-  BACKGROUND_CHECK
-  FINAL_DECISION
-  FLAGGED
 }
 
 enum NotificationType {
@@ -479,7 +379,6 @@ enum NotificationType {
 }
 
 enum EventStatus {
-  DRAFT
   UPCOMING
   ONGOING
   COMPLETED
@@ -487,78 +386,11 @@ enum EventStatus {
   POSTPONED
 }
 
-enum MaritalStatus {
-  SINGLE
-  MARRIED
-  DIVORCED
-  WIDOWED
-  SEPARATED
-  DOMESTIC_PARTNERSHIP
-  PREFER_NOT_TO_SAY
-}
-
-enum AddressType {
-  HOME
-  WORK
-  BILLING
-  SHIPPING
-  OTHER
-}
-
-enum Gender {
-  MALE
-  FEMALE
-  NON_BINARY
-  PREFER_NOT_TO_SAY
-  OTHER
-}
-
-enum YesNo {
-  YES
-  NO
-}
-
-enum Role {
-  PARENT
-  YOUTH
-  STAFF
-  VOLUNTEER
-  ADMIN
-  SUPERUSER
-}
-
-enum ProgramCategory {
-  SPORTS
-  ARTS
-  STEM
-  LEADERSHIP
-  ACADEMIC
-  RECREATION
-  SUMMER_CAMP
-  AFTER_SCHOOL
-  OTHER
-}
-
-enum ProgramStatus {
-  ACTIVE
-  DRAFT
-  COMPLETED
-  CANCELLED
-  ARCHIVED
-}
-
-enum EnrollmentStatus {
-  PENDING
-  ACTIVE
-  COMPLETED
-  DROPPED
-  WAITLISTED
-}
-
-enum PaymentStatus {
-  PENDING
-  PARTIAL
-  PAID
-  REFUNDED
-  WAIVED
+enum OrderStatus {
+  PENDING // Cart/checkout in progress
+  PROCESSING // Payment being processed
+  CONFIRMED // Payment successful
+  CANCELLED // Order cancelled
+  REFUNDED // Order refunded
+  FAILED // Payment failed
 }

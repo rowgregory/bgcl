@@ -1,4 +1,5 @@
 import { additionalFeatures } from "@/app/lib/constants/project-breakdown";
+import { IPhaseOne } from "@/types/project-breakdown";
 import {
   DollarSign,
   Lightbulb,
@@ -11,13 +12,6 @@ import {
   Users,
 } from "lucide-react";
 import React, { FC } from "react";
-
-interface IPhaseOne {
-  setSelectedFeatures: (ids: string[]) => void;
-  setPhase1Discount: (value: boolean) => void;
-  phaseOneTotal: number;
-  phaseOneTotalWithDiscount: number;
-}
 
 const PhaseOne: FC<IPhaseOne> = ({
   setSelectedFeatures,

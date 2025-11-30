@@ -4,7 +4,7 @@ import { Session } from "next-auth";
 
 export interface INavigationLink {
   id: string;
-  linkKey: string;
+  linkKey?: string;
   label: string;
   icon: LucideIcon;
   description?: string;

@@ -4,7 +4,7 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 // import { Resend } from "resend";
 // import magicLinkTemplate from "./app/lib/email-templates/magic-link";
-import { createLog } from "./app/lib/api/createLog";
+import { createLog } from "./app/lib/actions/createLog";
 import { Role } from "@prisma/client";
 
 // const resend = new Resend(process.env.RESEND_API_KEY);
@@ -67,11 +67,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       try {
         const dbUser = await prisma.user.findUnique({
           where: { email: user.email! },
-          include: {
-            parent: true,
-            youth: true,
-            staff: true,
-          },
         });
 
         if (!dbUser) {
@@ -82,26 +77,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return false;
         }
 
-        // Check if user has login access enabled
-        if (!dbUser.hasLoginAccess) {
-          await createLog(
-            "warn",
-            "Sign-in attempt by user without login access",
-            {
-              userId: dbUser.id,
-              email: user.email,
-              role: dbUser.role,
-            }
-          );
-          return false;
-        }
-
         // Update last login
         await prisma.user.update({
           where: { id: dbUser.id },
           data: {
             lastLoginAt: new Date(),
-            emailVerified: new Date(),
           },
         });
 
@@ -127,25 +107,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         try {
           const dbUser = await prisma.user.findUnique({
             where: { email: user.email! },
-            include: {
-              parent: true,
-              youth: true,
-              staff: true,
-            },
           });
 
           if (dbUser) {
             token.userId = dbUser.id;
             token.role = dbUser.role as Role;
-
-            // Get name from appropriate model
-            if (dbUser.parent) {
-              token.name = `${dbUser.parent.firstName} ${dbUser.parent.lastName}`;
-            } else if (dbUser.youth) {
-              token.name = `${dbUser.youth.firstName} ${dbUser.youth.lastName}`;
-            } else if (dbUser.staff) {
-              token.name = `${dbUser.staff.firstName} ${dbUser.staff.lastName}`;
-            }
+            token.name = `${dbUser.firstName} ${dbUser.lastName}`;
           }
         } catch (error) {
           await createLog("error", "JWT callback error", {

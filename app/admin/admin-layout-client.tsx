@@ -1,52 +1,35 @@
 "use client";
 
-import React, { FC, useEffect, useState } from "react";
-import FixedLeftNavigationPanel from "../components/FixedLeftNavigationPanel";
+import React, { FC, useState } from "react";
 import useCustomPathname from "@/hooks/useCustomPathname";
-// import { useSession } from "next-auth/react";
-import getCurrentPageId from "../lib/common/getCurrentPageId";
-// import { useAppDispatch } from "../redux/store";
+import getCurrentPageId from "../lib/utils/getCurrentPageId";
 import { motion } from "framer-motion";
-// import { setHydrateUsers, setUser } from "../redux/features/userSlice";
-import { adminNavLinks } from "../lib/navigation/adminNavLinks";
-import adminActionItems from "../lib/navigation/adminActionItems";
-import FixedHeader from "../components/FixedHeader";
-import { ILayoutClient } from "@/types/common";
+import { adminNavLinks } from "../lib/constants/adminNavLinks";
+import adminActionItems from "../lib/constants/adminActionItems";
+import HeroStudio from "../components/studios/HeroStudio";
+import FixedLeftNavigationPanel from "../components/navigation/FixedLeftNavigationPanel";
+import FixedHeader from "../components/navigation/FixedHeader";
+import { IAdminLayoutClient } from "@/types/admin";
+import { useHydrateAdminData } from "@/hooks/useHydrateAdminData";
 
-const AdminLayoutClient: FC<ILayoutClient> = ({ data, children }) => {
+const AdminLayoutClient: FC<IAdminLayoutClient> = ({ children, data }) => {
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false);
   const path = useCustomPathname();
-  //   const session = useSession();
   const selectedPage = getCurrentPageId(path, adminNavLinks);
-  // const dispatch = useAppDispatch();
 
-  //   useEffect(() => {
-  //     if (data) {
-  //       dispatch(setHydrateUsers(data?.users));
-  //       dispatch(setUser(data?.user));
-  //     }
-  //   }, [dispatch, data]);
-
-  useEffect(() => {
-    if (selectedPage) {
-      console.log("selected page: ", selectedPage);
-    } else {
-      console.log("ADMIN LAYOUT CLIENT: ", data);
-    }
-  }, [selectedPage, data]);
-
-  const session = null;
+  useHydrateAdminData(data);
 
   return (
     <>
       {/* <MobileNavigationDrawer links={adminNavLinks} /> */}
+      <HeroStudio />
       <div className="min-h-screen bg-neutral-950 flex">
         <FixedLeftNavigationPanel
           isNavigationCollapsed={isNavigationCollapsed}
           setIsNavigationCollapsed={setIsNavigationCollapsed}
           selectedPage={selectedPage}
           links={adminNavLinks}
-          data={session}
+          data={null}
         />
 
         {/* Main Content Area */}

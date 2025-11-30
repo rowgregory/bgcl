@@ -1,5 +1,5 @@
 // app/api/profile/route.ts
-import { createLog } from "@/app/lib/api/createLog";
+import { createLog } from "@/app/lib/actions/createLog";
 import { auth } from "@/auth";
 import prisma from "@/prisma/client";
 import { NextResponse } from "next/server";
@@ -17,17 +17,10 @@ export async function GET() {
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      include: {
-        parent: {
-          include: {
-            addresses: true,
-            children: true,
-          },
-        },
-      },
+      include: {},
     });
 
-    if (!user || !user.parent) {
+    if (!user) {
       await createLog("warn", "Parent profile not found", {
         userId: session.user.id,
       });
@@ -36,7 +29,6 @@ export async function GET() {
 
     await createLog("info", "Profile retrieved successfully", {
       userId: session.user.id,
-      parentId: user.parent.id,
     });
 
     return NextResponse.json(user);

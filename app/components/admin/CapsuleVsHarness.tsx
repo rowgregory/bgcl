@@ -14,7 +14,7 @@ import {
   ArrowRight,
   AlertCircle,
 } from "lucide-react";
-import { containerVariants, itemVariants } from "@/app/lib/motion";
+import { containerVariants, itemVariants } from "@/app/lib/constants/motion";
 
 const costComparison = {
   harness: {
@@ -205,7 +205,7 @@ const CapsuleVsHarness = () => {
             </div>
 
             {/* The Capsule Pricing */}
-            <div className="bg-gradient-to-br from-blue-950/50 to-purple-950/50 backdrop-blur-sm rounded-xl p-8 border border-blue-800/50 relative overflow-hidden">
+            <div className="bg-linear-to-br from-blue-950/50 to-purple-950/50 backdrop-blur-sm rounded-xl p-8 border border-blue-800/50 relative overflow-hidden">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold">The Capsule</h3>
                 <Lock className="w-6 h-6 text-blue-400" />
@@ -259,7 +259,7 @@ const CapsuleVsHarness = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4 }}
-            className="bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 rounded-xl p-8"
+            className="bg-linear-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 rounded-xl p-8"
           >
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold mb-2">Total Cost Savings</h3>
@@ -309,7 +309,7 @@ const CapsuleVsHarness = () => {
 
             <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
               <div className="flex items-start space-x-3">
-                <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm text-zinc-300">
                     <strong>What&apos;s Included:</strong> The $250/month covers
@@ -343,7 +343,7 @@ const CapsuleVsHarness = () => {
                 className="bg-zinc-900/90 backdrop-blur-sm rounded-xl p-6 border border-zinc-800 hover:border-zinc-700 transition-all"
               >
                 <div
-                  className={`w-12 h-12 rounded-lg bg-gradient-to-br ${advantage.color} p-3 mb-4`}
+                  className={`w-12 h-12 rounded-lg bg-linear-to-br ${advantage.color} p-3 mb-4`}
                 >
                   <advantage.icon className="w-full h-full" />
                 </div>
@@ -422,7 +422,7 @@ const CapsuleVsHarness = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
-          className="mt-16 bg-gradient-to-r from-indigo-600/20 to-violet-600/20 border border-blue-500/30 rounded-xl p-12 text-center"
+          className="mt-16 bg-linear-to-r from-indigo-600/20 to-violet-600/20 border border-blue-500/30 rounded-xl p-12 text-center"
         >
           <h2 className="text-3xl font-bold mb-4">Ready to Make the Switch?</h2>
           <p className="text-xl text-zinc-400 mb-8 max-w-2xl mx-auto">
@@ -432,7 +432,7 @@ const CapsuleVsHarness = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-lg font-bold text-lg flex items-center space-x-2 mx-auto hover:shadow-xl transition-all"
+            className="px-8 py-4 bg-linear-to-r from-violet-600 to-indigo-600 rounded-lg font-bold text-lg flex items-center space-x-2 mx-auto hover:shadow-xl transition-all"
           >
             <span>Get Started with The Capsule</span>
             <ArrowRight className="w-5 h-5" />

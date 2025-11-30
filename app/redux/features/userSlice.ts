@@ -1,47 +1,27 @@
-import { IUser, Role } from "@/types/entities";
+import { IUser } from "@/types/entities/user";
 import { Reducer, createSlice } from "@reduxjs/toolkit";
 
-export interface UserState {
+export interface UserStatePayload {
   // Core data
   users: IUser[];
   user: IUser | null;
-  success: boolean;
 
   // UI state
   loading: boolean;
-  submitting: boolean;
-  addUserDrawer: boolean;
-  editUserDrawer: boolean;
-  viewUserDrawer: boolean;
-  noUsers: boolean;
-
-  searchQuery: string;
+  hasUsers: boolean;
 
   // Error handling
   error: string | null;
 }
 
-export const initialUserState: UserState = {
+export const initialUserState: UserStatePayload = {
   // Core data
   users: [],
-  user: {
-    id: "",
-    email: "",
-    role: Role.PARENT,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    hasLoginAccess: false,
-  },
-  success: false,
+  user: null,
 
   // UI state
   loading: false,
-  submitting: false,
-  addUserDrawer: false,
-  editUserDrawer: false,
-  viewUserDrawer: false,
-  noUsers: false,
-  searchQuery: "",
+  hasUsers: false,
 
   // Error handling
   error: null,
@@ -51,22 +31,16 @@ export const userSlice = createSlice({
   name: "user",
   initialState: initialUserState,
   reducers: {
-    setOpenAddUserDrawer: (state) => {
-      state.addUserDrawer = true;
+    hydrateUsers: (state, { payload }) => {
+      state.users = payload;
+      state.hasUsers = payload?.length === 0;
     },
-    setCloseAddUserDrawer: (state) => {
-      state.addUserDrawer = false;
+    hydrateUser: (state, { payload }) => {
+      state.user = payload;
     },
     resetUser: (state) => {
       state.error = null;
       state.user = null;
-    },
-    setUsers: (state, { payload }) => {
-      state.users = payload;
-      state.noUsers = payload?.length === 0;
-    },
-    setUser: (state, { payload }) => {
-      state.user = payload;
     },
     addUserToState: (state, { payload }) => {
       state.users.push(payload);
@@ -85,22 +59,16 @@ export const userSlice = createSlice({
         (user: { id: string }) => user?.id !== action.payload
       );
     },
-    setHydrateUsers: (state, { payload }) => {
-      state.users = payload;
-    },
   },
 });
 
-export const userReducer = userSlice.reducer as Reducer<UserState>;
+export const userReducer = userSlice.reducer as Reducer<UserStatePayload>;
 
 export const {
-  setOpenAddUserDrawer,
-  setCloseAddUserDrawer,
+  hydrateUsers,
+  hydrateUser,
   resetUser,
-  setUsers,
-  setUser,
   addUserToState,
   updateUserInState,
   removeUserFromState,
-  setHydrateUsers,
 } = userSlice.actions;

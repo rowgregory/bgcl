@@ -12,6 +12,8 @@ import { toastReduer } from "./features/toastSlice";
 import { settingsReducer } from "./features/settingsSlice";
 import { appReducer } from "./features/appSlice";
 import { dashboardReducer } from "./features/dashboardSlice";
+import { eventReducer } from "./features/eventSlice";
+import { statsReducer } from "./features/statsSlice";
 
 const rootReducer = combineReducers({
   form: formReducer,
@@ -22,6 +24,8 @@ const rootReducer = combineReducers({
   settings: settingsReducer,
   app: appReducer,
   dashboard: dashboardReducer,
+  event: eventReducer,
+  stats: statsReducer,
   [api.reducerPath]: api.reducer,
 });
 
@@ -52,3 +56,7 @@ export const useSettingsSelector = () =>
 export const useFormSelector = () => useAppSelector((state) => state.form);
 export const useDashboardSelector = () =>
   useAppSelector((state) => state.dashboard);
+export const useEventSelector = () => useAppSelector((state) => state.event);
+export const useApplicationSelector = () =>
+  useAppSelector((state) => state.app);
+export const useStatsSelector = () => useAppSelector((state) => state.stats);

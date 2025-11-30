@@ -104,7 +104,7 @@ const Login = () => {
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ duration: 0.8, type: "spring" }}
-            className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-full mb-8"
+            className="inline-flex items-center justify-center w-24 h-24 bg-linear-to-br from-indigo-500 to-indigo-700 rounded-full mb-8"
           >
             <Rocket className="w-12 h-12 text-white" />
           </motion.div>
@@ -155,7 +155,7 @@ const Login = () => {
         >
           {/* Mobile logo */}
           <div className="lg:hidden text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-full mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-indigo-500 to-indigo-700 rounded-full mb-4">
               <Rocket className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-white">BGCL PORTAL</h1>
@@ -233,7 +233,7 @@ const Login = () => {
                   whileTap={{ scale: 0.98 }}
                   onClick={handleMagicLink}
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-linear-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <motion.div
@@ -263,7 +263,7 @@ const Login = () => {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                  className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full mb-4"
+                  className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-indigo-500 to-indigo-600 rounded-full mb-4"
                 >
                   <Mail className="w-8 h-8 text-white" />
                 </motion.div>

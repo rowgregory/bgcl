@@ -4,6 +4,8 @@ import "./globals.css";
 // import { SessionProvider } from "next-auth/react";
 // import { auth } from "@/auth";
 import ReduxWrapper from "./redux-wrapper";
+import { getActiveHero } from "./lib/actions/getActiveHero";
+import { ReactNode } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,20 +26,18 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   // const session = await auth();
-  const initialData = { users: [] };
-  const error = null;
+  const hero = await getActiveHero();
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {/* <SessionProvider session={session}>*/}
-        <ReduxWrapper initialData={initialData} error={error}>
-          {children}
-        </ReduxWrapper>
+        <ReduxWrapper data={{ hero }}>{children}</ReduxWrapper>
         {/*  </SessionProvider> */}
       </body>
     </html>

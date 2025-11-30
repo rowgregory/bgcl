@@ -51,7 +51,7 @@ const CircularActivityMonitor = ({}) => {
 
         {/* Inner pulsing circle */}
         <motion.div
-          className="absolute w-32 h-32 rounded-full bg-gradient-to-br from-cyan-500/30 via-blue-500/20 to-purple-500/30 border-2 border-cyan-400/50 flex items-center justify-center shadow-[0_0_40px_rgba(6,182,212,0.4),inset_0_0_40px_rgba(6,182,212,0.2)]"
+          className="absolute w-32 h-32 rounded-full bg-linear-to-br from-cyan-500/30 via-blue-500/20 to-purple-500/30 border-2 border-cyan-400/50 flex items-center justify-center shadow-[0_0_40px_rgba(6,182,212,0.4),inset_0_0_40px_rgba(6,182,212,0.2)]"
           transition={{
             duration: 1,
             repeat: Infinity,
@@ -69,19 +69,19 @@ const CircularActivityMonitor = ({}) => {
 
       {/* Mini stats */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="text-center p-3 bg-gradient-to-br from-cyan-900/50 to-zinc-900/50 rounded-xl border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+        <div className="text-center p-3 bg-linear-to-br from-cyan-900/50 to-zinc-900/50 rounded-xl border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
           <div className="text-lg font-bold text-cyan-400 drop-shadow-[0_0_5px_rgba(6,182,212,0.5)]">
             2.4k
           </div>
           <div className="text-xs text-zinc-400">Sessions</div>
         </div>
-        <div className="text-center p-3 bg-gradient-to-br from-purple-900/50 to-zinc-900/50 rounded-xl border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
+        <div className="text-center p-3 bg-linear-to-br from-purple-900/50 to-zinc-900/50 rounded-xl border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
           <div className="text-lg font-bold text-purple-400 drop-shadow-[0_0_5px_rgba(168,85,247,0.5)]">
             98%
           </div>
           <div className="text-xs text-zinc-400">Uptime</div>
         </div>
-        <div className="text-center p-3 bg-gradient-to-br from-blue-900/50 to-zinc-900/50 rounded-xl border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+        <div className="text-center p-3 bg-linear-to-br from-blue-900/50 to-zinc-900/50 rounded-xl border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
           <div className="text-lg font-bold text-blue-400 drop-shadow-[0_0_5px_rgba(59,130,246,0.5)]">
             156
           </div>

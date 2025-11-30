@@ -2,19 +2,7 @@ import { Gamepad2, RotateCcw, ShoppingCart } from "lucide-react";
 import React, { FC } from "react";
 import AdditionalFeature from "./AdditionalFeature";
 import { additionalFeatures } from "@/app/lib/constants/project-breakdown";
-
-interface IInteractiveBuilder {
-  selectedFeatures: string[];
-  toggleFeature: (featureId: string) => void;
-  calculateAdditionalFeaturesSelectedTotal: number;
-  calculateTotalWithoutDiscount: () => number;
-  phase1Discount: boolean;
-  calculateDiscountAmount: () => number;
-  calculateTotalWithDiscount: () => number;
-  getRecommendation: () => { color: string; text: string } | undefined;
-  resetSelection: () => void;
-  totalCoreFeaturesPrice: number;
-}
+import { IInteractiveBuilder } from "@/types/project-breakdown";
 
 const InteractiveBuilder: FC<IInteractiveBuilder> = ({
   selectedFeatures,
