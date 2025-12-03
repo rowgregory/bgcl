@@ -43,7 +43,6 @@ export const adminNavLinks = [
     description: "Member Directory",
     linkKey: "/admin/squad-unit",
   },
-
   {
     id: "operations-panel",
     label: "Operation Panel",

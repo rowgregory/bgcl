@@ -5,34 +5,7 @@ import { glossyLowbitObscureBleep } from "@/app/lib/constants/sound-effects";
 import useCustomPathname from "@/hooks/useCustomPathname";
 import useSoundEffect from "@/hooks/useSoundEffect";
 import SubNavLink from "@/app/components/navigation/SubNavLink";
-
-const theCapsuleNavLinks = (path: string) => [
-  {
-    textKey: "The Core",
-    linkKey: "/admin/capsule/core",
-    isActive: path === "/admin/capsule/core",
-  },
-  {
-    textKey: "Manifest",
-    linkKey: "/admin/capsule/manifest",
-    isActive: path === "/admin/capsule/manifest",
-  },
-  {
-    textKey: "Revenue Bay",
-    linkKey: "/admin/capsule/revenue-bay",
-    isActive: path === "/admin/capsule/revenue-bay",
-  },
-  {
-    textKey: "Gate Control",
-    linkKey: "/admin/capsule/gate-control",
-    isActive: path === "/admin/capsule/gate-control",
-  },
-  {
-    textKey: "Intel Hub",
-    linkKey: "/admin/capsule/intel-hub",
-    isActive: path === "/admin/capsule/intel-hub",
-  },
-];
+import getTheCapsuleNavLinks from "@/app/lib/utils/navigation/getTheCapsuleNavLinks";
 
 const TheCapsuleLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const path = useCustomPathname();
@@ -45,7 +18,7 @@ const TheCapsuleLayout: FC<{ children: ReactNode }> = ({ children }) => {
         <div className="px-2 xs:px-3 sm:px-6">
           <nav className="flex items-center py-2 xs:py-3 sm:py-4 overflow-x-auto scrollbar-none">
             <div className="flex items-center space-x-2 xs:space-x-3 sm:space-x-6 lg:space-x-8 min-w-max">
-              {theCapsuleNavLinks(path).map((item) => (
+              {getTheCapsuleNavLinks(path).map((item) => (
                 <SubNavLink
                   key={item.linkKey}
                   handleNav={() => play()}

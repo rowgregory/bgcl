@@ -1,20 +1,17 @@
-import { EventStatus, IEvent } from "@/types/entities/event";
+import { EventStatus, IEvent } from '@/types/entities/event'
 
-export const initialEventConfig: IEvent = {
-  id: "",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  title: "",
+// Initial state for creating events
+export const initialEventState: Omit<IEvent, 'id' | 'createdAt' | 'updatedAt' | 'userId'> = {
+  title: '',
   description: null,
-  category: "",
-  type: "",
+  category: '',
+  type: '',
   dresscode: null,
   date: new Date(),
-  time: "",
-  duration: "",
-  location: "",
+  time: '18:00',
+  duration: '2 hours',
+  location: '',
   maxAttendees: null,
-  attendees: 0,
   status: EventStatus.UPCOMING,
   featured: false,
   host: null,
@@ -22,13 +19,12 @@ export const initialEventConfig: IEvent = {
   materials: null,
   registrationUrl: null,
   meetingUrl: null,
-  viewCount: 0,
-  clickCount: 0,
   isPublic: true,
   requiresRSVP: false,
   registrationDeadline: new Date(),
   allowMultipleTickets: false,
-  salesStartDate: new Date(),
-  salesEndDate: new Date(),
-  userId: "",
-};
+  salesStartDate: null,
+  salesEndDate: null,
+  capacity: 0,
+  attendeeCount: 0
+}

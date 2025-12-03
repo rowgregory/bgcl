@@ -4,13 +4,14 @@ import React, { FC, useState } from "react";
 import useCustomPathname from "@/hooks/useCustomPathname";
 import getCurrentPageId from "../lib/utils/getCurrentPageId";
 import { motion } from "framer-motion";
-import { adminNavLinks } from "../lib/constants/adminNavLinks";
+import { adminNavLinks } from "../lib/constants/navigation/adminNavLinks";
 import adminActionItems from "../lib/constants/adminActionItems";
 import HeroStudio from "../components/studios/HeroStudio";
 import FixedLeftNavigationPanel from "../components/navigation/FixedLeftNavigationPanel";
 import FixedHeader from "../components/navigation/FixedHeader";
 import { IAdminLayoutClient } from "@/types/admin";
 import { useHydrateAdminData } from "@/hooks/useHydrateAdminData";
+import EventDrawer from "../components/drawers/EventDrawer";
 
 const AdminLayoutClient: FC<IAdminLayoutClient> = ({ children, data }) => {
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false);
@@ -21,8 +22,8 @@ const AdminLayoutClient: FC<IAdminLayoutClient> = ({ children, data }) => {
 
   return (
     <>
-      {/* <MobileNavigationDrawer links={adminNavLinks} /> */}
       <HeroStudio />
+      <EventDrawer />
       <div className="min-h-screen bg-neutral-950 flex">
         <FixedLeftNavigationPanel
           isNavigationCollapsed={isNavigationCollapsed}

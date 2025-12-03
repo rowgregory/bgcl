@@ -1,96 +1,84 @@
 // app/admin/types.ts
-import { Prisma, Hero } from "@prisma/client";
-import { ReactNode } from "react";
+import { Prisma, Hero, Event } from '@prisma/client'
+import { ReactNode } from 'react'
 
 // Exact type that matches the getAllUsers select
 export type UserWithCounts = Prisma.UserGetPayload<{
   select: {
-    id: true;
-    email: true;
-    role: true;
-    createdAt: true;
-    updatedAt: true;
-    lastLoginAt: true;
-    firstName: true;
-    lastName: true;
-    phone: true;
-    position: true;
-    department: true;
-    hireDate: true;
-    staffStatus: true;
+    id: true
+    email: true
+    role: true
+    createdAt: true
+    updatedAt: true
+    lastLoginAt: true
+    firstName: true
+    lastName: true
+    phone: true
+    position: true
+    department: true
+    hireDate: true
+    staffStatus: true
     _count: {
       select: {
-        events: true;
-        accounts: true;
-        sessions: true;
-      };
-    };
-  };
-}>;
+        events: true
+        accounts: true
+        sessions: true
+      }
+    }
+  }
+}>
 
 // Exact type that matches the getAllEvents include
-export type EventWithUser = Prisma.EventGetPayload<{
-  include: {
-    user: {
-      select: {
-        id: true;
-        email: true;
-        firstName: true;
-        lastName: true;
-        role: true;
-      };
-    };
-  };
-}>;
+export type EventType = Event
 
 // Hero type from Prisma
-export type HeroType = Hero;
+export type HeroType = Hero
 
 // Session user type (adjust based on your auth setup)
 export interface SessionUser {
-  id: string;
-  email: string;
-  name?: string | null;
-  image?: string | null;
+  id: string
+  email: string
+  name?: string | null
+  image?: string | null
 }
 
 export interface Pagination {
-  page: number;
-  limit: number;
-  totalCount: number;
-  totalPages: number;
+  page: number
+  limit: number
+  totalCount: number
+  totalPages: number
 }
 
 export interface AdminStats {
   users: {
-    total: number;
-    supporters: number;
-    staff: number;
-    admins: number;
-    growth: number;
-  };
+    total: number
+    supporters: number
+    staff: number
+    admins: number
+    growth: number
+  }
   events: {
-    total: number;
-    recentWeek: number;
-  };
+    total: number
+    recentWeek: number
+  }
   heroes: {
-    total: number;
-    active: number;
-    activeHeroId?: string;
-  };
+    total: number
+    active: number
+    activeHeroId?: string
+  }
 }
 
 export interface AdminLayoutData {
-  users: UserWithCounts[] | null; // Changed: allow null
-  usersPagination: Pagination | null;
-  events: EventWithUser[] | null; // Changed: allow null
-  eventsPagination: Pagination | null;
-  heroes: HeroType[] | null; // Changed: allow null
-  stats: AdminStats | null;
-  user: SessionUser | null; // Changed: allow null
+  users: UserWithCounts[] | null // Changed: allow null
+  usersPagination: Pagination | null
+  events: EventType[] | null // Changed: allow null
+  eventsPagination: Pagination | null
+  heroes: HeroType[] | null // Changed: allow null
+  stats: AdminStats | null
+  user: SessionUser | null // Changed: allow null
 }
 
 export interface IAdminLayoutClient {
-  children: ReactNode;
-  data: AdminLayoutData;
+  children: ReactNode
+  data: AdminLayoutData
 }

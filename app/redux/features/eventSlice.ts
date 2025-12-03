@@ -9,6 +9,7 @@ export interface EventStatePayload {
   // UI state
   loading: boolean;
   hasEvents: boolean;
+  eventDrawer: boolean;
 
   // Error handling
   error: string | null;
@@ -22,6 +23,7 @@ const initialEventState: EventStatePayload = {
   // UI state
   loading: false,
   hasEvents: false,
+  eventDrawer: false,
 
   // Error handling
   error: null,
@@ -34,6 +36,12 @@ export const eventSlice = createSlice({
     addEventToState: (state, { payload }) => {
       state.events.push(payload);
     },
+    hydrateEvent: (state, { payload }) => {
+      state.event = payload;
+    },
+    hydrateEvents: (state, { payload }) => {
+      state.events = payload;
+    },
     removeEventFromState: (state, action) => {
       state.events = state.events.filter(
         (event: { id: string }) => event?.id !== action.payload
@@ -43,11 +51,11 @@ export const eventSlice = createSlice({
       state.error = null;
       state.event = null;
     },
-    hydrateEvent: (state, { payload }) => {
-      state.event = payload;
+    setOpenEventDrawer: (state) => {
+      state.eventDrawer = true;
     },
-    hydrateEvents: (state, { payload }) => {
-      state.events = payload;
+    setCloseEventDrawer: (state) => {
+      state.eventDrawer = false;
     },
     updateEventInState: (state, { payload }) => {
       const index = state.events.findIndex(
@@ -65,9 +73,11 @@ export const eventReducer = eventSlice.reducer as Reducer<EventStatePayload>;
 
 export const {
   addEventToState,
-  removeEventFromState,
-  resetEvent,
   hydrateEvent,
   hydrateEvents,
+  removeEventFromState,
+  resetEvent,
+  setCloseEventDrawer,
+  setOpenEventDrawer,
   updateEventInState,
 } = eventSlice.actions;

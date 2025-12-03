@@ -1,55 +1,45 @@
-"use client";
+'use client'
 
-import React, { useState } from "react";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import MinNMatchExplaination from "../components/project-breakdown/MinNMatchExplaination";
-import {
-  additionalFeatures,
-  coreFeatures,
-} from "../lib/constants/project-breakdown";
-import FixedBottomPricingBar from "../components/project-breakdown/FixedBottomPricingBar";
-import PhaseOne from "../components/project-breakdown/PhaseOne";
-import CoreFeaturesGrid from "../components/project-breakdown/CoreFeaturesGrid";
-import RequiredThirdPartyServicesGrid from "../components/project-breakdown/RequiredThirdPartyServicesGrid";
-import InteractiveBuilder from "../components/project-breakdown/InteractiveBuilder";
+import React, { useState } from 'react'
+import { ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
+import MinNMatchExplaination from '../components/project-breakdown/MinNMatchExplaination'
+import { additionalFeatures, coreFeatures } from '../lib/constants/project-breakdown'
+import FixedBottomPricingBar from '../components/project-breakdown/FixedBottomPricingBar'
+import PhaseOne from '../components/project-breakdown/PhaseOne'
+import CoreFeaturesGrid from '../components/project-breakdown/CoreFeaturesGrid'
+import RequiredThirdPartyServicesGrid from '../components/project-breakdown/RequiredThirdPartyServicesGrid'
+import InteractiveBuilder from '../components/project-breakdown/InteractiveBuilder'
 
 const ProjectBreakdown = () => {
-  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
-  const [phase1Discount, setPhase1Discount] = useState<boolean>(false);
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([])
+  const [phase1Discount, setPhase1Discount] = useState<boolean>(false)
 
   const toggleFeature = (featureId: string) => {
     setSelectedFeatures((prev) =>
-      prev.includes(featureId)
-        ? prev.filter((id) => id !== featureId)
-        : [...prev, featureId]
-    );
-  };
+      prev.includes(featureId) ? prev.filter((id) => id !== featureId) : [...prev, featureId]
+    )
+  }
 
   const resetSelection = () => {
-    setSelectedFeatures([]);
-    setPhase1Discount(false);
-  };
+    setSelectedFeatures([])
+    setPhase1Discount(false)
+  }
 
-  const totalCoreFeaturesPrice = coreFeatures.reduce(
-    (acc, item) => acc + item.cost,
-    0
-  );
+  const totalCoreFeaturesPrice = coreFeatures.reduce((acc, item) => acc + item.cost, 0)
 
   // Phase 1 feature indices
-  const phase1Indices = [0, 3, 7, 9, 10, 13];
-  const phase1FeatureIds = phase1Indices
-    .map((index) => additionalFeatures[index]?.id)
-    .filter(Boolean);
+  const phase1Indices = [0, 3, 9, 12, 15]
+  const phase1FeatureIds = phase1Indices.map((index) => additionalFeatures[index]?.id).filter(Boolean)
 
   // Calculate total without discount (for display purposes)
   const calculateTotalWithoutDiscount = () => {
     const selectedAdditionalCost = additionalFeatures
       .filter((feature) => selectedFeatures.includes(feature.id))
-      .reduce((total, feature) => total + feature.cost, 0);
+      .reduce((total, feature) => total + feature.cost, 0)
 
-    return totalCoreFeaturesPrice + selectedAdditionalCost;
-  };
+    return totalCoreFeaturesPrice + selectedAdditionalCost
+  }
 
   // Calculate total with discount applied (only if phase1Discount is true)
   const calculateTotalWithDiscount = () => {
@@ -57,19 +47,19 @@ const ProjectBreakdown = () => {
       .filter((feature) => selectedFeatures.includes(feature.id))
       .reduce((total, feature) => {
         // Only apply 15% discount if phase1Discount is enabled AND it's a Phase 1 feature
-        const isPhase1Feature = phase1FeatureIds.includes(feature.id);
-        const discountRate = phase1Discount && isPhase1Feature ? 0.85 : 1.0;
-        return total + feature.cost * discountRate;
-      }, 0);
+        const isPhase1Feature = phase1FeatureIds.includes(feature.id)
+        const discountRate = phase1Discount && isPhase1Feature ? 0.85 : 1.0
+        return total + feature.cost * discountRate
+      }, 0)
 
-    return totalCoreFeaturesPrice + additionalWithDiscount;
-  };
+    return totalCoreFeaturesPrice + additionalWithDiscount
+  }
 
   // Calculate discount amount for display
   const calculateDiscountAmount = () => {
-    if (!phase1Discount) return 0;
-    return calculateTotalWithoutDiscount() - calculateTotalWithDiscount();
-  };
+    if (!phase1Discount) return 0
+    return calculateTotalWithoutDiscount() - calculateTotalWithDiscount()
+  }
 
   // Calculate selected additional features total (with discount if applicable)
   const calculateAdditionalFeaturesSelectedTotal = () => {
@@ -77,92 +67,86 @@ const ProjectBreakdown = () => {
       .filter((feature) => selectedFeatures.includes(feature.id))
       .reduce((total, feature) => {
         // Only apply 15% discount if phase1Discount is enabled AND it's a Phase 1 feature
-        const isPhase1Feature = phase1FeatureIds.includes(feature.id);
-        const discountRate = phase1Discount && isPhase1Feature ? 0.85 : 1.0;
-        return total + feature.cost * discountRate;
-      }, 0);
-  };
+        const isPhase1Feature = phase1FeatureIds.includes(feature.id)
+        const discountRate = phase1Discount && isPhase1Feature ? 0.85 : 1.0
+        return total + feature.cost * discountRate
+      }, 0)
+  }
 
   // Phase 1 specific calculation (keeping your original)
   const calculatePhaseOneTotal = (includeDiscount: boolean = false) => {
-    const phase1AdditionalCost = phase1Indices.reduce(
-      (sum, index) => sum + (additionalFeatures[index]?.cost ?? 0),
-      0
-    );
+    const phase1AdditionalCost = phase1Indices.reduce((sum, index) => sum + (additionalFeatures[index]?.cost ?? 0), 0)
 
-    const totalBeforeDiscount = totalCoreFeaturesPrice + phase1AdditionalCost;
+    const totalBeforeDiscount = totalCoreFeaturesPrice + phase1AdditionalCost
 
     if (!includeDiscount) {
-      return totalBeforeDiscount;
+      return totalBeforeDiscount
     }
 
     // With Phase 1 discount: Core features no discount, Phase 1 features 15% off
-    return totalCoreFeaturesPrice + phase1AdditionalCost * 0.85;
-  };
+    return totalCoreFeaturesPrice + phase1AdditionalCost * 0.85
+  }
 
   // Calculate monthly hosting cost
   const calculateMonthlyHostingCost = () => {
     const selectedTotal = additionalFeatures
       .filter((feature) => selectedFeatures.includes(feature.id))
-      .reduce((total, feature) => total + feature.cost, 0);
+      .reduce((total, feature) => total + feature.cost, 0)
 
-    return Math.round((selectedTotal + totalCoreFeaturesPrice) * 0.06);
-  };
+    return Math.round((selectedTotal + totalCoreFeaturesPrice) * 0.07)
+  }
 
   const getRecommendation = () => {
-    const count = selectedFeatures.length;
+    const count = selectedFeatures.length
 
     if (count === 0)
       return {
-        text: "Select features to build your custom Boys & Girls Club system!",
-        color: "text-neutral-400",
-      };
+        text: 'Select features to build your custom Boys & Girls Club system!',
+        color: 'text-neutral-400'
+      }
     if (count <= 2)
       return {
-        text: "Great start! Add a few more features to maximize impact for your members.",
-        color: "text-violet-400",
-      };
+        text: 'Great start! Add a few more features to maximize impact for your members.',
+        color: 'text-violet-400'
+      }
     if (count <= 4)
       return {
-        text: "Perfect balance for a solid club management system!",
-        color: "text-green-400",
-      };
+        text: 'Perfect balance for a solid club management system!',
+        color: 'text-green-400'
+      }
     if (count === 5)
       return {
-        text: "Excellent choice! Your club is getting powerful tools.",
-        color: "text-purple-400",
-      };
+        text: 'Excellent choice! Your club is getting powerful tools.',
+        color: 'text-purple-400'
+      }
     if (count <= 7)
       return {
         text: "You're building a comprehensive youth development platform!",
-        color: "text-yellow-400",
-      };
+        color: 'text-yellow-400'
+      }
     if (count <= 10)
       return {
-        text: "Nearly complete — empowering staff, parents, and kids alike!",
-        color: "text-orange-400",
-      };
+        text: 'Nearly complete — empowering staff, parents, and kids alike!',
+        color: 'text-orange-400'
+      }
     if (count <= 14)
       return {
-        text: "All-in premium system — the ultimate club management solution!",
-        color: "text-red-400",
-      };
+        text: 'All-in premium system — the ultimate club management solution!',
+        color: 'text-red-400'
+      }
     if (count === 15)
       return {
-        text: "Complete feature set selected — full Boys & Girls Club ecosystem!",
-        color: "text-pink-400",
-      };
-  };
+        text: 'Complete feature set selected — full Boys & Girls Club ecosystem!',
+        color: 'text-pink-400'
+      }
+  }
 
   return (
     <div className="min-h-screen bg-neutral-950">
       <div className="p-4 lg:p-8">
         {/* Back Button */}
         <div className="max-w-[1500px] mx-auto mb-8">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors group"
-          >
+          <Link href="/" className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors group">
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             <span>Home</span>
           </Link>
@@ -172,7 +156,7 @@ const ProjectBreakdown = () => {
         <div className="max-w-[1500px] mx-auto mb-12">
           <div className="text-center">
             <h1 className="text-4xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-              Boys & Girls Club of Lynn{" "}
+              Boys & Girls Club of Lynn{' '}
               <span className="bg-linear-to-r from-indigo-400 to-violet-500 bg-clip-text text-transparent">
                 Platform
               </span>
@@ -236,7 +220,7 @@ const ProjectBreakdown = () => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProjectBreakdown;
+export default ProjectBreakdown

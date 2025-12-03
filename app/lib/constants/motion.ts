@@ -1,6 +1,6 @@
 export const drawerVariants = {
   closed: {
-    x: "-100%",
+    x: "100%",
     transition: {
       type: "spring" as const,
       stiffness: 400,

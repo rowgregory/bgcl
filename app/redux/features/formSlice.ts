@@ -1,167 +1,168 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+
+// export type Inputs = Record<string, string | number | boolean | Date>;
 
 export type Inputs = {
-  [key: string]: string | number | boolean | undefined;
-};
-
-export type Errors = {
-  [key: string]: string;
-};
-
-interface SetInputProps {
-  formName: string;
-  data: Inputs;
+  [key: string]: string | number | boolean | Date | null
 }
 
+export type Errors = {
+  [key: string]: string
+}
+
+interface SetInputProps {
+  formName: string
+  data: Inputs
+}
 interface SetErrorsProps {
-  formName: string;
-  errors: Errors;
+  formName: string
+  errors: Errors
 }
 
 interface HandleInputProps {
-  formName: string;
-  name: string;
-  value: string | number | boolean;
+  formName: string
+  name: string
+  value: string | number | boolean
 }
 
 interface HandleSelectProps {
-  formName: string;
-  name: string;
-  value: string;
+  formName: string
+  name: string
+  value: string
 }
 
 interface HandleToggleProps {
-  formName: string;
-  name: string;
-  checked: boolean;
+  formName: string
+  name: string
+  checked: boolean
 }
 
 interface FormData {
-  inputs: Inputs;
-  errors: Errors;
+  inputs: Inputs
+  errors: Errors
 }
 
 interface InitialFormState {
-  progress: number;
-  isEditing: boolean;
-  [formName: string]: FormData | number | boolean; // Allow multiple types for index signature
+  progress: number
+  isEditing: boolean
+  forms: { [formName: string]: FormData }
 }
 
 const formInitialState: InitialFormState = {
   progress: 0,
   isEditing: false,
-};
+  forms: {
+    eventForm: { inputs: {}, errors: {} }
+  }
+}
 
 const formSlice = createSlice({
-  name: "form",
+  name: 'form',
   initialState: formInitialState,
   reducers: {
     setIsEditing: (state) => {
-      state.isEditing = true;
+      state.isEditing = true
     },
     setIsNotEditing: (state) => {
-      state.isEditing = false;
+      state.isEditing = false
     },
     resetForm: (state, { payload }: PayloadAction<string>) => {
-      const form = state[payload];
-      if (form && typeof form === "object" && "inputs" in form) {
-        form.inputs = {};
-        form.errors = {};
+      const form = state.forms[payload]
+      if (form && typeof form === 'object' && 'inputs' in form) {
+        form.inputs = {}
+        form.errors = {}
       }
     },
     setInputs: (state, { payload }: PayloadAction<SetInputProps>) => {
-      const { formName, data } = payload;
-      const form = state[formName];
-
-      if (!form || typeof form !== "object" || !("inputs" in form)) {
-        state[formName] = { inputs: {}, errors: {} };
+      const { formName, data } = payload
+      if (!state.forms[formName]) {
+        state.forms[formName] = { inputs: {}, errors: {} }
       }
-
-      const currentForm = state[formName] as FormData;
-      currentForm.inputs = { ...currentForm.inputs, ...data };
-    },
-    clearInputs: (state, { payload }: PayloadAction<{ formName: string }>) => {
-      const { formName } = payload;
-      const form = state[formName];
-      if (form && typeof form === "object" && "inputs" in form) {
-        form.inputs = {};
-      }
-    },
-    clearErrors: (state, { payload }: PayloadAction<{ formName: string }>) => {
-      const { formName } = payload;
-      const form = state[formName];
-      if (form && typeof form === "object" && "errors" in form) {
-        form.errors = {};
+      state.forms[formName].inputs = {
+        ...state.forms[formName].inputs,
+        ...data
       }
     },
     setErrors: (state, { payload }: PayloadAction<SetErrorsProps>) => {
-      const { formName, errors } = payload;
-      const form = state[formName];
-      if (form && typeof form === "object" && "errors" in form) {
-        form.errors = errors;
+      const { formName, errors } = payload
+      if (!state.forms[formName]) {
+        state.forms[formName] = { inputs: {}, errors: {} }
+      }
+      state.forms[formName].errors = errors
+    },
+    clearInputs: (state, { payload }: PayloadAction<{ formName: string }>) => {
+      const { formName } = payload
+      const form = state.forms[formName]
+      if (form && typeof form === 'object' && 'inputs' in form) {
+        form.inputs = {}
+      }
+    },
+    clearErrors: (state, { payload }: PayloadAction<{ formName: string }>) => {
+      const { formName } = payload
+      const form = state.forms[formName]
+      if (form && typeof form === 'object' && 'errors' in form) {
+        form.errors = {}
       }
     },
     handleInput: (state, action: PayloadAction<HandleInputProps>) => {
-      const { formName, name, value } = action.payload;
-      const form = state[formName];
+      const { formName, name, value } = action.payload
+      const form = state.forms[formName]
 
-      if (!form || typeof form !== "object" || !("inputs" in form)) return;
+      if (!form || typeof form !== 'object' || !('inputs' in form)) return
 
-      (state[formName] as FormData) = {
+      ;(state.forms[formName] as FormData) = {
         ...form,
         inputs: {
           ...form.inputs,
-          [name]: value,
+          [name]: value
         },
         errors: {
-          ...form.errors,
-        },
-      };
+          ...form.errors
+        }
+      }
     },
     handleSelect: (state, { payload }: PayloadAction<HandleSelectProps>) => {
-      const { formName, name, value } = payload;
-      const form = state[formName];
-      if (form && typeof form === "object" && "inputs" in form) {
-        form.inputs[name] = value;
+      const { formName, name, value } = payload
+      const form = state.forms[formName]
+      if (form && typeof form === 'object' && 'inputs' in form) {
+        form.inputs[name] = value
       }
     },
     handleToggle: (state, { payload }: PayloadAction<HandleToggleProps>) => {
-      const { formName, name, checked } = payload;
-      const form = state[formName];
+      const { formName, name, checked } = payload
+      const form = state.forms[formName]
 
-      if (!form || typeof form !== "object" || !("inputs" in form)) return;
+      if (!form || typeof form !== 'object' || !('inputs' in form)) return
 
-      (state[formName] as FormData) = {
+      ;(state.forms[formName] as FormData) = {
         ...form,
         inputs: {
           ...form.inputs,
-          [name]: checked,
+          [name]: checked
         },
         errors: {
-          ...form.errors,
-        },
-      };
+          ...form.errors
+        }
+      }
     },
     setUploadProgress: (state, { payload }: PayloadAction<number>) => {
-      state.progress = payload;
-    },
-  },
-});
+      state.progress = payload
+    }
+  }
+})
 
-type AppDispatch = (action: { type: string; payload?: unknown }) => void;
+type AppDispatch = (action: { type: string; payload?: unknown }) => void
 
 export const createFormActions = (formName: string, dispatch: AppDispatch) => ({
-  setInputs: (data: Inputs) =>
-    dispatch(formSlice.actions.setInputs({ formName, data })),
+  setInputs: (data: Inputs) => dispatch(formSlice.actions.setInputs({ formName, data })),
   clearInputs: () => dispatch(formSlice.actions.clearInputs({ formName })),
-  setErrors: (errors: Errors) =>
-    dispatch(formSlice.actions.setErrors({ formName, errors })),
+  setErrors: (errors: Errors) => dispatch(formSlice.actions.setErrors({ formName, errors })),
   handleInput: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     dispatch(
       formSlice.actions.handleInput({
         formName,
         name: e.target.name,
-        value: e.target.value,
+        value: e.target.value
       })
     ),
   handleSelect: (e: React.ChangeEvent<HTMLSelectElement>) =>
@@ -169,7 +170,7 @@ export const createFormActions = (formName: string, dispatch: AppDispatch) => ({
       formSlice.actions.handleSelect({
         formName,
         name: e.target.name,
-        value: e.target.value,
+        value: e.target.value
       })
     ),
   handleToggle: (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -177,19 +178,11 @@ export const createFormActions = (formName: string, dispatch: AppDispatch) => ({
       formSlice.actions.handleToggle({
         formName,
         name: e.target.name,
-        checked: e.target.checked,
+        checked: e.target.checked
       })
     ),
-  handleUploadProgress: (progress: number) =>
-    dispatch(formSlice.actions.setUploadProgress(progress)),
-});
+  handleUploadProgress: (progress: number) => dispatch(formSlice.actions.setUploadProgress(progress))
+})
 
-export const {
-  resetForm,
-  setInputs,
-  clearInputs,
-  clearErrors,
-  setIsEditing,
-  setIsNotEditing,
-} = formSlice.actions;
-export const formReducer = formSlice.reducer;
+export const { resetForm, setInputs, clearInputs, clearErrors, setIsEditing, setIsNotEditing } = formSlice.actions
+export const formReducer = formSlice.reducer

@@ -1,7 +1,7 @@
-import React, { FC } from "react";
-import AdminLayoutClient from "./admin-layout-client";
-// import { getAdminData } from "../lib/actions/getAdminData";
-import { ILayout } from "@/types/common";
+import React, { FC } from 'react'
+import AdminLayoutClient from './admin-layout-client'
+import { getAdminData } from '../lib/actions/getAdminData'
+import { ILayout } from '@/types/common'
 
 const AdminLayout: FC<ILayout> = async ({ children }) => {
   // Check authentication first
@@ -12,7 +12,7 @@ const AdminLayout: FC<ILayout> = async ({ children }) => {
   // }
 
   // Fetch all admin data
-  // const result = await getAdminData();
+  const result = await getAdminData()
 
   // If unauthorized (not admin), redirect
   // if (!result.success) {
@@ -33,14 +33,14 @@ const AdminLayout: FC<ILayout> = async ({ children }) => {
   const data = {
     users: null,
     usersPagination: null,
-    events: null,
+    events: result.data?.events?.events || null,
     eventsPagination: null,
     heroes: null,
     stats: null,
-    user: null,
-  };
+    user: null
+  }
 
-  return <AdminLayoutClient data={data}>{children}</AdminLayoutClient>;
-};
+  return <AdminLayoutClient data={data}>{children}</AdminLayoutClient>
+}
 
-export default AdminLayout;
+export default AdminLayout
