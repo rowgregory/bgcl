@@ -1,45 +1,45 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import './globals.css'
 // import { SessionProvider } from "next-auth/react";
 // import { auth } from "@/auth";
-import ReduxWrapper from "./redux-wrapper";
-import { getActiveHero } from "./lib/actions/getActiveHero";
-import { ReactNode } from "react";
+import ReduxWrapper from './redux-wrapper'
+import { getActiveHero } from './lib/actions/getActiveHero'
+import { ReactNode } from 'react'
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+  preload: false
+})
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+  preload: false
+})
 
 export const metadata: Metadata = {
-  title: "Boys and Girls Club of Lynn",
+  title: 'Boys and Girls Club of Lynn',
   description:
-    "A full stack web application built for the Boys & Girls Club of Lynn to streamline member management, events, and resources, improving communication and engagement between staff, youth, and the community.",
-};
+    'A full stack web application built for the Boys & Girls Club of Lynn to streamline member management, events, and resources, improving communication and engagement between staff, youth, and the community.'
+}
 
 export default async function RootLayout({
-  children,
+  children
 }: Readonly<{
-  children: ReactNode;
+  children: ReactNode
 }>) {
   // const session = await auth();
-  const hero = await getActiveHero();
+  const hero = await getActiveHero()
 
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {/* <SessionProvider session={session}>*/}
         <ReduxWrapper data={{ hero }}>{children}</ReduxWrapper>
         {/*  </SessionProvider> */}
       </body>
     </html>
-  );
+  )
 }

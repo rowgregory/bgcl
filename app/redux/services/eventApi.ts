@@ -5,10 +5,6 @@ const BASE_URL = '/event'
 export const eventApi = api.injectEndpoints({
   overrideExisting: true,
   endpoints: (build) => ({
-    getEvents: build.query({
-      query: () => BASE_URL,
-      providesTags: ['Event']
-    }),
     createEvent: build.mutation({
       query: ({ ...event }) => ({
         url: BASE_URL,
@@ -17,20 +13,11 @@ export const eventApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Event']
     }),
-    updateEvent: build.mutation({
-      query: ({ eventId, ...updateData }) => ({
-        url: `${BASE_URL}/${eventId}`,
-        method: 'PATCH',
-        body: { ...updateData }
-      }),
-      invalidatesTags: ['Event']
-    }),
-
-    updateEventStatus: build.mutation({
-      query: ({ eventId, status }) => ({
-        url: `${BASE_URL}/${eventId}/activate`,
+    createEventTicket: build.mutation({
+      query: ({ id, ...eventTicket }) => ({
+        url: `${BASE_URL}/${id}/ticket`,
         method: 'POST',
-        body: { status }
+        body: eventTicket
       }),
       invalidatesTags: ['Event']
     }),
@@ -40,14 +27,44 @@ export const eventApi = api.injectEndpoints({
         method: 'DELETE'
       }),
       invalidatesTags: ['Event']
+    }),
+    getEvents: build.query({
+      query: () => BASE_URL,
+      providesTags: ['Event']
+    }),
+    updateEventTicket: build.mutation({
+      query: ({ id, ...eventTicket }) => ({
+        url: `${BASE_URL}/${id}/ticket`,
+        method: 'PUT',
+        body: eventTicket
+      }),
+      invalidatesTags: ['Event']
+    }),
+    updateEvent: build.mutation({
+      query: ({ eventId, ...updateData }) => ({
+        url: `${BASE_URL}/${eventId}`,
+        method: 'PUT',
+        body: updateData
+      }),
+      invalidatesTags: ['Event']
+    }),
+    updateEventStatus: build.mutation({
+      query: ({ eventId, status }) => ({
+        url: `${BASE_URL}/${eventId}/activate`,
+        method: 'PATCH',
+        body: { status }
+      }),
+      invalidatesTags: ['Event']
     })
   })
 })
 
 export const {
-  useGetEventsQuery,
   useCreateEventMutation,
+  useCreateEventTicketMutation,
+  useDeleteEventMutation,
+  useGetEventsQuery,
   useUpdateEventMutation,
   useUpdateEventStatusMutation,
-  useDeleteEventMutation
+  useUpdateEventTicketMutation
 } = eventApi

@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion'
-import { Save, X } from 'lucide-react'
+import { Save } from 'lucide-react'
 import { ChangeEvent, FC, useState } from 'react'
 import { IForm } from '@/types/common'
 import {
@@ -12,6 +11,8 @@ import {
   templates
 } from '@/app/lib/constants/events'
 import EventTemplates from './EventTemplates'
+import CloseDrawerButton from '../../common/CloseDrawerButton'
+import { formatDateForInput } from '@/app/lib/utils/dateHelpers'
 
 const EventForm: FC<IForm> = ({
   errors,
@@ -75,6 +76,8 @@ const EventForm: FC<IForm> = ({
     })
   }
 
+  console.log(inputs)
+
   return (
     <div className="flex flex-col h-full bg-neutral-900">
       {/* Top Bar */}
@@ -86,17 +89,7 @@ const EventForm: FC<IForm> = ({
           </div>
 
           {/* Close Button */}
-          <motion.button
-            whileHover={{ scale: 1.1, rotate: 90 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={onClose}
-            className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-700 rounded-lg transition-all"
-            initial={{ opacity: 0, rotate: -90 }}
-            animate={{ opacity: 1, rotate: 0 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
-          >
-            <X className="w-5 h-5" />
-          </motion.button>
+          <CloseDrawerButton onClose={onClose} />
         </div>
       </div>
 
@@ -217,11 +210,7 @@ const EventForm: FC<IForm> = ({
                     <input
                       type="date"
                       name="date"
-                      value={
-                        inputs?.date instanceof Date
-                          ? inputs.date.toISOString().split('T')[0]
-                          : (inputs?.date as string) || ''
-                      }
+                      value={formatDateForInput(inputs?.date as Date | string | null | undefined)}
                       onChange={handleInput}
                       className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     />
@@ -439,6 +428,19 @@ const EventForm: FC<IForm> = ({
                     />
                     {errors?.meetingUrl && <p className="mt-2 text-sm text-red-400">{errors.meetingUrl}</p>}
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-300 mb-2">Registration Deadline *</label>
+                    <input
+                      type="date"
+                      name="registrationDeadline"
+                      value={formatDateForInput(inputs?.registrationDeadline as Date | string | null | undefined)}
+                      onChange={handleInput}
+                      className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    />
+                    {errors?.registrationDeadline && (
+                      <p className="mt-2 text-sm text-red-400">{errors.registrationDeadline}</p>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -520,8 +522,15 @@ const EventForm: FC<IForm> = ({
           </div>
 
           {/* Fixed Footer with Submit Button */}
-          <div className="bg-neutral-800 border-t border-neutral-700 px-8 py-4">
-            <div className="max-w-4xl mx-auto flex items-center justify-end">
+          <div className="shrink-0 border-t border-neutral-700 bg-neutral-800 px-8 py-4">
+            <div className="max-w-5xl mx-auto flex items-center justify-between">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-6 py-2.5 text-sm font-medium text-neutral-300 hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
               <button
                 type="submit"
                 disabled={isLoading}

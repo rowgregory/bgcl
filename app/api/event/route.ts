@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
 
     const dateTimeString = `${body.date}T${body.time}:00Z` // "2025-12-16T18:00:00Z"
-
+    console.log('body.registrationDeadline: ', body.registrationDeadline)
     const event = await prisma.event.create({
       data: {
         title: body.title,
@@ -53,10 +53,10 @@ export async function POST(req: NextRequest) {
         meetingUrl: body.meetingUrl,
         isPublic: body.isPublic ?? true,
         requiresRSVP: body.requiresRSVP ?? true,
-        registrationDeadline: body.registrationDeadline ? new Date(body.registrationDeadline) : undefined,
+        registrationDeadline: new Date(body.registrationDeadline),
         allowMultipleTickets: body.allowMultipleTickets ?? true,
-        salesStartDate: body.salesStartDate ? new Date(body.salesStartDate) : undefined,
-        salesEndDate: body.salesEndDate ? new Date(body.salesEndDate) : undefined,
+        salesStartDate: body.salesStartDate ? new Date(body.salesStartDate) : null,
+        salesEndDate: body.salesEndDate ? new Date(body.salesEndDate) : null,
         capacity: body.capacity,
         attendeeCount: body.attendeeCount
       }

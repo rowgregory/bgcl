@@ -157,7 +157,8 @@ export async function getAllEvents(params?: {
         take: limit,
         orderBy: { createdAt: 'desc' },
         include: {
-          attendees: true
+          attendees: true,
+          tickets: true
         }
       }),
       prisma.event.count({ where })

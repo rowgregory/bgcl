@@ -1,29 +1,31 @@
-"use client";
+'use client'
 
-import React, { FC, useState } from "react";
-import useCustomPathname from "@/hooks/useCustomPathname";
-import getCurrentPageId from "../lib/utils/getCurrentPageId";
-import { motion } from "framer-motion";
-import { adminNavLinks } from "../lib/constants/navigation/adminNavLinks";
-import adminActionItems from "../lib/constants/adminActionItems";
-import HeroStudio from "../components/studios/HeroStudio";
-import FixedLeftNavigationPanel from "../components/navigation/FixedLeftNavigationPanel";
-import FixedHeader from "../components/navigation/FixedHeader";
-import { IAdminLayoutClient } from "@/types/admin";
-import { useHydrateAdminData } from "@/hooks/useHydrateAdminData";
-import EventDrawer from "../components/drawers/EventDrawer";
+import React, { FC, useState } from 'react'
+import useCustomPathname from '@/hooks/useCustomPathname'
+import getCurrentPageId from '../lib/utils/getCurrentPageId'
+import { motion } from 'framer-motion'
+import { adminNavLinks } from '../lib/constants/navigation/adminNavLinks'
+import adminActionItems from '../lib/constants/adminActionItems'
+import HeroStudio from '../components/studios/HeroStudio'
+import FixedLeftNavigationPanel from '../components/navigation/FixedLeftNavigationPanel'
+import FixedHeader from '../components/navigation/FixedHeader'
+import { IAdminLayoutClient } from '@/types/admin'
+import { useHydrateAdminData } from '@/hooks/useHydrateAdminData'
+import EventDrawer from '../components/drawers/EventDrawer'
+import EventTicketDrawer from '../components/drawers/EventTicketDrawer'
 
 const AdminLayoutClient: FC<IAdminLayoutClient> = ({ children, data }) => {
-  const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false);
-  const path = useCustomPathname();
-  const selectedPage = getCurrentPageId(path, adminNavLinks);
+  const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false)
+  const path = useCustomPathname()
+  const selectedPage = getCurrentPageId(path, adminNavLinks)
 
-  useHydrateAdminData(data);
+  useHydrateAdminData(data)
 
   return (
     <>
       <HeroStudio />
       <EventDrawer />
+      <EventTicketDrawer />
       <div className="min-h-screen bg-neutral-950 flex">
         <FixedLeftNavigationPanel
           isNavigationCollapsed={isNavigationCollapsed}
@@ -34,9 +36,7 @@ const AdminLayoutClient: FC<IAdminLayoutClient> = ({ children, data }) => {
         />
 
         {/* Main Content Area */}
-        <div
-          className={`${isNavigationCollapsed ? "lg:ml-20" : "lg:ml-[280px]"} flex-1 flex flex-col`}
-        >
+        <div className={`${isNavigationCollapsed ? 'lg:ml-20' : 'lg:ml-[280px]'} flex-1 flex flex-col`}>
           {/* Fixed Header */}
           <FixedHeader
             isNavigationCollapsed={isNavigationCollapsed}
@@ -59,7 +59,7 @@ const AdminLayoutClient: FC<IAdminLayoutClient> = ({ children, data }) => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default AdminLayoutClient;
+export default AdminLayoutClient

@@ -2,31 +2,37 @@
 
 import { AnimatePresence } from 'framer-motion'
 import React from 'react'
-import validateEventForm from '@/app/lib/validations/event'
-import { addEventToState, setCloseEventDrawer, updateEventInState } from '@/app/redux/features/eventSlice'
+import {
+  addEventTicketToState,
+  setCloseEventTicketDrawer,
+  updateEventTicketInState
+} from '@/app/redux/features/eventSlice'
 import { createFormActions, resetForm } from '@/app/redux/features/formSlice'
 import { showToast } from '@/app/redux/features/toastSlice'
-import { useCreateEventMutation, useUpdateEventMutation } from '@/app/redux/services/eventApi'
 import { useAppDispatch, useEventSelector, useFormSelector } from '@/app/redux/store'
-
 import Backdrop from '../common/Backdrop'
-import EventForm from '../forms/event/EventForm'
 import SplitViewDrawer from '../common/SplitViewDrawer'
+import EventTicketsForm from '../forms/event/EventTicketForm'
+import { useCreateEventTicketMutation, useUpdateEventTicketMutation } from '@/app/redux/services/eventApi'
+import validateEventTicketForm from '@/app/lib/validations/eventTicket'
 
-const EventDrawer = () => {
+const EventTicketDrawer = () => {
   const dispatch = useAppDispatch()
   const onClose = () => {
-    dispatch(resetForm('eventForm'))
-    dispatch(setCloseEventDrawer())
+    dispatch(resetForm('eventTicketForm'))
+    dispatch(setCloseEventTicketDrawer())
   }
-  const { eventDrawer } = useEventSelector()
+  const { eventTicketDrawer } = useEventSelector()
+
   const { forms } = useFormSelector()
-  const inputs = forms.eventForm.inputs
-  const errors = forms.eventForm.errors
-  const { handleInput, setErrors, handleToggle, handleSelect } = createFormActions('eventForm', dispatch)
-  const [createEvent, { isLoading: isCreating }] = useCreateEventMutation()
-  const [updateEvent, { isLoading: isUpdating }] = useUpdateEventMutation()
+  const inputs = forms.eventTicketForm?.inputs
+  const errors = forms.eventTicketForm?.errors
+  const { handleInput, setErrors, handleToggle, handleSelect } = createFormActions('eventTicketForm', dispatch)
+  const [createEventTicket, { isLoading: isCreating }] = useCreateEventTicketMutation()
+  const [updateEventTicket, { isLoading: isUpdating }] = useUpdateEventTicketMutation()
   const isLoading = isCreating || isUpdating
+
+  if (!eventTicketDrawer) return
 
   // console.log('isLoading: ', isLoading)
   // console.log('inputs: ', inputs)
@@ -34,23 +40,23 @@ const EventDrawer = () => {
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
 
-    if (!validateEventForm(inputs, setErrors)) return
+    if (!validateEventTicketForm(inputs, setErrors)) return
 
     try {
-      const eventData = {
+      const eventTicketData = {
         ...inputs
       }
 
       if (inputs?.isUpdating) {
-        const updated = await updateEvent({
+        const updated = await updateEventTicket({
           eventId: inputs?.id,
-          ...eventData
+          ...eventTicketData
         }).unwrap()
         console.log('updated: ', updated)
-        dispatch(updateEventInState(updated?.event))
+        dispatch(updateEventTicketInState(updated?.event))
       } else {
-        const created = await createEvent(eventData).unwrap()
-        dispatch(addEventToState(created?.event))
+        const created = await createEventTicket(eventTicketData).unwrap()
+        dispatch(addEventTicketToState(created?.event))
       }
 
       onClose()
@@ -58,10 +64,10 @@ const EventDrawer = () => {
       dispatch(
         showToast({
           type: 'success',
-          message: `${inputs?.isUpdating ? 'Event Updated!' : 'Event Created!'}`,
+          message: `${inputs?.isUpdating ? 'Event Ticket Updated!' : 'Event Ticket Created!'}`,
           description: inputs?.isUpdating
-            ? 'Your event has been successfully updated.'
-            : 'Your event has been successfully created!'
+            ? 'Your event ticket has been successfully updated.'
+            : 'Your event ticket has been successfully created!'
         })
       )
     } catch (error: unknown) {
@@ -78,16 +84,18 @@ const EventDrawer = () => {
       dispatch(
         showToast({
           type: 'error',
-          message: `${inputs?.isUpdating ? 'Update' : 'Create'} Event Failed`,
+          message: `${inputs?.isUpdating ? 'Update' : 'Create'} Event Ticket Failed`,
           description: errorMessage
         })
       )
     }
   }
 
+  console.log('INPUTS: ', inputs)
+
   return (
     <AnimatePresence>
-      {eventDrawer && (
+      {eventTicketDrawer && (
         <>
           {/* Backdrop Overlay */}
           <Backdrop onClose={onClose} />
@@ -95,7 +103,7 @@ const EventDrawer = () => {
           {/* Drawer */}
           <SplitViewDrawer>
             {/* Form */}
-            <EventForm
+            <EventTicketsForm
               errors={errors}
               handleInput={handleInput}
               handleSubmit={handleSubmit}
@@ -113,4 +121,4 @@ const EventDrawer = () => {
   )
 }
 
-export default EventDrawer
+export default EventTicketDrawer

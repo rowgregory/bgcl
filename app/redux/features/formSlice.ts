@@ -1,19 +1,16 @@
+import { Ticket } from '@prisma/client'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 // export type Inputs = Record<string, string | number | boolean | Date>;
 
 export type Inputs = {
-  [key: string]: string | number | boolean | Date | null
+  [key: string]: string | number | boolean | Date | Ticket[] | null
 }
 
 export type Errors = {
   [key: string]: string
 }
 
-interface SetInputProps {
-  formName: string
-  data: Inputs
-}
 interface SetErrorsProps {
   formName: string
   errors: Errors
@@ -52,7 +49,8 @@ const formInitialState: InitialFormState = {
   progress: 0,
   isEditing: false,
   forms: {
-    eventForm: { inputs: {}, errors: {} }
+    eventForm: { inputs: {}, errors: {} },
+    eventTicketForm: { inputs: {}, errors: {} }
   }
 }
 
@@ -73,7 +71,7 @@ const formSlice = createSlice({
         form.errors = {}
       }
     },
-    setInputs: (state, { payload }: PayloadAction<SetInputProps>) => {
+    setInputs: (state, { payload }) => {
       const { formName, data } = payload
       if (!state.forms[formName]) {
         state.forms[formName] = { inputs: {}, errors: {} }
@@ -109,7 +107,6 @@ const formSlice = createSlice({
       const form = state.forms[formName]
 
       if (!form || typeof form !== 'object' || !('inputs' in form)) return
-
       ;(state.forms[formName] as FormData) = {
         ...form,
         inputs: {
@@ -133,7 +130,6 @@ const formSlice = createSlice({
       const form = state.forms[formName]
 
       if (!form || typeof form !== 'object' || !('inputs' in form)) return
-
       ;(state.forms[formName] as FormData) = {
         ...form,
         inputs: {

@@ -15,8 +15,11 @@ export enum EventStatus {
 export type IEvent = Event
 
 // Event with tickets
-export interface EventWithTickets extends Event {
+export type EventWithTickets = Event & {
   tickets: Ticket[]
+  _count?: {
+    rsvps: number
+  }
 }
 
 // Event with attendees
@@ -154,10 +157,6 @@ export interface EventTemplate {
     requiresRSVP: boolean
     allowMultipleTickets: boolean
   }
-}
-
-export interface EventTemplatesProps {
-  onSelectTemplate: (templateData: EventTemplate['data']) => void
 }
 
 // Helper functions

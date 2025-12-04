@@ -14,11 +14,11 @@ import {
   AlertCircle,
   ArrowUpRight,
   ArrowDownRight,
-  MoreVertical,
-  Plus
+  Plus,
+  Edit
 } from 'lucide-react'
 import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
-import { setOpenEventDrawer } from '@/app/redux/features/eventSlice'
+import { setOpenEventDrawer, setOpenEventTicketDrawer } from '@/app/redux/features/eventSlice'
 import { useAppDispatch, useEventSelector } from '@/app/redux/store'
 import { setInputs } from '@/app/redux/features/formSlice'
 
@@ -199,7 +199,7 @@ const getStatusBadge = (status: string) => {
 const TheCapsuleCore = () => {
   const dispatch = useAppDispatch()
   const { events } = useEventSelector()
-  console.log('Events:: ', events)
+
   return (
     <div className="mx-auto text-white">
       <div className="flex flex-col lg:flex-row">
@@ -263,12 +263,7 @@ const TheCapsuleCore = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 + index * 0.1 }}
-                    whileHover={{ x: 4 }}
-                    className="p-5 bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-all border border-zinc-700/50 hover:border-zinc-600 cursor-pointer"
-                    onClick={() => {
-                      dispatch(setOpenEventDrawer())
-                      dispatch(setInputs({ formName: 'eventForm', data: { ...event, isUpdating: true } }))
-                    }}
+                    className="p-5 bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-all border border-zinc-700/50 hover:border-zinc-600"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
@@ -281,7 +276,7 @@ const TheCapsuleCore = () => {
                         <div className="flex items-center space-x-4 text-sm text-zinc-400">
                           <span className="flex items-center">
                             <Calendar className="w-4 h-4 mr-1" />
-                            {event.date.toLocaleDateString()}
+                            {new Date(event.date).toLocaleDateString()}
                           </span>
                           <span className="flex items-center">
                             <Clock className="w-4 h-4 mr-1" />
@@ -293,9 +288,39 @@ const TheCapsuleCore = () => {
                           </span>
                         </div>
                       </div>
-                      <button className="p-2 hover:bg-zinc-700 rounded-lg transition-colors">
-                        <MoreVertical className="w-4 h-4" />
-                      </button>
+
+                      {/* Action Buttons */}
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            dispatch(setOpenEventDrawer())
+                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                            const { tickets, ...eventData } = event
+                            dispatch(setInputs({ formName: 'eventForm', data: { ...eventData, isUpdating: true } }))
+                          }}
+                          className="p-2 hover:bg-zinc-700 rounded-lg transition-colors group"
+                          title="Edit Event"
+                        >
+                          <Edit className="w-4 h-4 text-zinc-400 group-hover:text-white" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            dispatch(setOpenEventTicketDrawer())
+                            dispatch(
+                              setInputs({
+                                formName: 'eventTicketForm',
+                                data: { id: event.id, title: event.title, tickets: event.tickets }
+                              })
+                            )
+                          }}
+                          className="p-2 hover:bg-zinc-700 rounded-lg transition-colors group"
+                          title="Manage Tickets"
+                        >
+                          <Ticket className="w-4 h-4 text-zinc-400 group-hover:text-purple-400" />
+                        </button>
+                      </div>
                     </div>
 
                     <div className="space-y-3">
@@ -314,11 +339,6 @@ const TheCapsuleCore = () => {
                           className={`h-full bg-linear-to-r from-purple-600 to-blue-600 rounded-full`}
                         />
                       </div>
-
-                      {/* <div className="flex justify-between items-center pt-2">
-                        <span className="text-sm text-zinc-400">Revenue</span>
-                        <span className="text-lg font-bold text-green-400">${event.revenue.toLocaleString()}</span>
-                      </div> */}
                     </div>
                   </motion.div>
                 )
