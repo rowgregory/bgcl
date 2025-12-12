@@ -89,8 +89,8 @@ const validateEventTicketForm = (inputs: Inputs, setErrors: (newErrors: Errors) 
   }
 
   // Event ID validation (required for creating tickets)
-  if (!inputs?.eventId || typeof inputs.eventId !== 'string' || !inputs.eventId.trim()) {
-    newErrors.eventId = 'Event ID is required'
+  if (!inputs?.id || typeof inputs.id !== 'string' || !inputs.id.trim()) {
+    newErrors.id = 'Event ID is required'
   }
 
   setErrors(newErrors)

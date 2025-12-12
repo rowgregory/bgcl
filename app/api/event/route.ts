@@ -31,7 +31,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
 
     const dateTimeString = `${body.date}T${body.time}:00Z` // "2025-12-16T18:00:00Z"
-    console.log('body.registrationDeadline: ', body.registrationDeadline)
     const event = await prisma.event.create({
       data: {
         title: body.title,

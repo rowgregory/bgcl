@@ -4,26 +4,37 @@ import { RouteParams } from '@/types/common'
 import { NextRequest, NextResponse } from 'next/server'
 
 // POST /api/event/[id]/ticket - Create new event ticket
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest, { params }: { params: Promise<RouteParams> }) {
   try {
+    const { id } = await params
     const body = await req.json()
+
+    const event = await prisma.event.findUnique({
+      where: { id }
+    })
+
+    if (!event) {
+      return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+    }
 
     const eventTicket = await prisma.ticket.create({
       data: {
         name: body.name,
         description: body.description,
-        price: body.price,
-        totalQuantity: body.totalQuantity,
-        quantitySold: body.quantitySold,
-        quantityReserved: body.quantityReserved,
-        minPerOrder: body.minPerOrder,
-        maxPerOrder: body.maxPerOrder,
-        isAvailable: body.isAvailable,
+        price: Number(body.price),
+        totalQuantity: Number(body.totalQuantity),
+        quantitySold: body.quantitySold ?? 0,
+        quantityReserved: body.quantityReserved ?? 0,
+        minPerOrder: Number(body.minPerOrder),
+        maxPerOrder: body.maxPerOrder ? Number(body.maxPerOrder) : null,
+        isAvailable: body.isAvailable ?? true,
         salesStartDate: new Date(body.salesStartDate),
         salesEndDate: new Date(body.salesEndDate),
-        sortOrder: body.sortOrder,
-        requiresApproval: body.requiresApproval,
-        eventId: body.eventId
+        sortOrder: body.sortOrder ? Number(body.sortOrder) : 0,
+        requiresApproval: body.requiresApproval ?? false,
+        event: {
+          connect: { id }
+        }
       }
     })
 
@@ -61,7 +72,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<RouteP
 
     if (!existingEventTicket) {
       await createLog('warn', 'Event ticket not found for update', {
-        eventId: id
+        id
       })
       return NextResponse.json({ success: false, error: 'Event ticket not found' }, { status: 404 })
     }

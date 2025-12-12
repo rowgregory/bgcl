@@ -10,7 +10,7 @@ const SplitViewDrawer: FC<ILayout> = ({ children }) => {
       initial="closed"
       animate="open"
       exit="closed"
-      className="fixed right-0 top-0 h-full w-full max-w-5xl bg-white z-50 flex flex-col shadow-2xl overflow-hidden"
+      className="fixed right-0 top-0 h-full w-full max-w-6xl bg-white z-50 flex flex-col shadow-2xl overflow-hidden"
     >
       {children}
     </motion.div>

@@ -76,8 +76,6 @@ const EventForm: FC<IForm> = ({
     })
   }
 
-  console.log(inputs)
-
   return (
     <div className="flex flex-col h-full bg-neutral-900">
       {/* Top Bar */}

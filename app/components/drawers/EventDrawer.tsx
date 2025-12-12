@@ -8,10 +8,10 @@ import { createFormActions, resetForm } from '@/app/redux/features/formSlice'
 import { showToast } from '@/app/redux/features/toastSlice'
 import { useCreateEventMutation, useUpdateEventMutation } from '@/app/redux/services/eventApi'
 import { useAppDispatch, useEventSelector, useFormSelector } from '@/app/redux/store'
-
 import Backdrop from '../common/Backdrop'
 import EventForm from '../forms/event/EventForm'
 import SplitViewDrawer from '../common/SplitViewDrawer'
+import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
 
 const EventDrawer = () => {
   const dispatch = useAppDispatch()
@@ -28,9 +28,6 @@ const EventDrawer = () => {
   const [updateEvent, { isLoading: isUpdating }] = useUpdateEventMutation()
   const isLoading = isCreating || isUpdating
 
-  // console.log('isLoading: ', isLoading)
-  // console.log('inputs: ', inputs)
-
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
 
@@ -46,7 +43,6 @@ const EventDrawer = () => {
           eventId: inputs?.id,
           ...eventData
         }).unwrap()
-        console.log('updated: ', updated)
         dispatch(updateEventInState(updated?.event))
       } else {
         const created = await createEvent(eventData).unwrap()
@@ -65,15 +61,7 @@ const EventDrawer = () => {
         })
       )
     } catch (error: unknown) {
-      const errorMessage =
-        error &&
-        typeof error === 'object' &&
-        'data' in error &&
-        error.data &&
-        typeof error.data === 'object' &&
-        'message' in error.data
-          ? String(error.data.message)
-          : 'Unable to process request.'
+      const errorMessage = extractErrorMessage(error)
 
       dispatch(
         showToast({

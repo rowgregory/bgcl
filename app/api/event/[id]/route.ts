@@ -25,8 +25,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<RouteP
     delete body.attendees
     delete body.isUpdating
 
-    console.log('BODY: ', body)
-
     const { date, registrationDeadline, salesStartDate, salesEndDate, ...restBody } = body
 
     const event = await prisma.event.update({

@@ -1,31 +1,31 @@
-import React, { FC } from "react";
-import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Crown, Shield } from "lucide-react";
-import Link from "next/link";
-import { IFixedLeftNavigationPanel } from "@/types/navigation";
-import useSoundEffect from "@/hooks/useSoundEffect";
-import { magicChargeMana2 } from "@/app/lib/constants/sound-effects";
-import { useAppDispatch } from "@/app/redux/store";
-import { itemVariants } from "@/app/lib/constants/motion";
-import { setOpenHeroStudio } from "@/app/redux/features/appSlice";
+import React, { FC } from 'react'
+import { motion } from 'framer-motion'
+import { ChevronLeft, ChevronRight, Crown, Shield } from 'lucide-react'
+import Link from 'next/link'
+import { IFixedLeftNavigationPanel } from '@/types/navigation'
+import useSoundEffect from '@/hooks/useSoundEffect'
+import { magicChargeMana2 } from '@/app/lib/constants/sound-effects'
+import { useAppDispatch } from '@/app/redux/store'
+import { itemVariants } from '@/app/lib/constants/motion'
+import { setOpenHeroStudio } from '@/app/redux/features/appSlice'
 
 const FixedLeftNavigationPanel: FC<IFixedLeftNavigationPanel> = ({
   isNavigationCollapsed,
   setIsNavigationCollapsed,
   selectedPage,
   links,
-  data,
+  user
 }) => {
-  const { play: cryo } = useSoundEffect(magicChargeMana2, true);
-  const dispatch = useAppDispatch();
+  const { play: cryo } = useSoundEffect(magicChargeMana2, true)
+  const dispatch = useAppDispatch()
 
   return (
     <motion.div
       initial={false}
       animate={{
-        width: isNavigationCollapsed ? "80px" : "280px",
+        width: isNavigationCollapsed ? '80px' : '280px'
       }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
       className="lg:fixed left-0 top-0 h-full bg-neutral-900 border-r border-neutral-800 z-20 hidden lg:flex flex-col"
     >
       {/* Navigation Header */}
@@ -56,11 +56,7 @@ const FixedLeftNavigationPanel: FC<IFixedLeftNavigationPanel> = ({
           onClick={() => setIsNavigationCollapsed(!isNavigationCollapsed)}
           className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg transition-colors"
         >
-          {isNavigationCollapsed ? (
-            <ChevronRight className="w-5 h-5" />
-          ) : (
-            <ChevronLeft className="w-5 h-5" />
-          )}
+          {isNavigationCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
         </button>
       </div>
 
@@ -71,9 +67,7 @@ const FixedLeftNavigationPanel: FC<IFixedLeftNavigationPanel> = ({
             item.linkKey ? (
               <Link href={item.linkKey} key={item.id}>
                 <motion.div
-                  onClick={
-                    item.label === "Cryo Chamber" ? () => cryo() : () => {}
-                  }
+                  onClick={item.label === 'Cryo Chamber' ? () => cryo() : () => {}}
                   key={item.id}
                   variants={itemVariants}
                   initial="closed"
@@ -83,8 +77,8 @@ const FixedLeftNavigationPanel: FC<IFixedLeftNavigationPanel> = ({
               w-full flex items-center justify-center space-x-3 px-3 py-3 rounded-xl transition-all
               ${
                 selectedPage === item.label
-                  ? "bg-linear-to-r from-violet-600/20 via-indigo-600/20 to-indigo-600/20 text-violet-400 border border-purple-600/30"
-                  : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                  ? 'bg-linear-to-r from-violet-600/20 via-indigo-600/20 to-indigo-600/20 text-violet-400 border border-purple-600/30'
+                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
               }
             `}
                   whileHover={{ scale: 1.02 }}
@@ -101,7 +95,7 @@ const FixedLeftNavigationPanel: FC<IFixedLeftNavigationPanel> = ({
                       <div className="font-medium">{item.label}</div>
                       {item.description && (
                         <div
-                          className={`${selectedPage === item.label ? "text-violet-300" : "text-neutral-400"} text-xs mt-0.5`}
+                          className={`${selectedPage === item.label ? 'text-violet-300' : 'text-neutral-400'} text-xs mt-0.5`}
                         >
                           {item.description}
                         </div>
@@ -122,8 +116,8 @@ const FixedLeftNavigationPanel: FC<IFixedLeftNavigationPanel> = ({
               w-full flex items-center justify-center space-x-3 px-3 py-3 rounded-xl transition-all cursor-pointer
               ${
                 selectedPage === item.label
-                  ? "bg-linear-to-r from-violet-600/20 via-indigo-600/20 to-indigo-600/20 text-violet-400 border border-purple-600/30"
-                  : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                  ? 'bg-linear-to-r from-violet-600/20 via-indigo-600/20 to-indigo-600/20 text-violet-400 border border-purple-600/30'
+                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
               }
             `}
                 whileHover={{ scale: 1.02 }}
@@ -140,7 +134,7 @@ const FixedLeftNavigationPanel: FC<IFixedLeftNavigationPanel> = ({
                     <div className="font-medium">{item.label}</div>
                     {item.description && (
                       <div
-                        className={`${selectedPage === item.label ? "text-violet-300" : "text-neutral-400"} text-xs mt-0.5`}
+                        className={`${selectedPage === item.label ? 'text-violet-300' : 'text-neutral-400'} text-xs mt-0.5`}
                       >
                         {item.description}
                       </div>
@@ -163,21 +157,17 @@ const FixedLeftNavigationPanel: FC<IFixedLeftNavigationPanel> = ({
         >
           <div className="flex items-center space-x-3 p-3 bg-neutral-800/50 rounded-xl">
             <div className="w-8 h-8 bg-linear-to-r from-violet-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold">
-              {data?.user?.role === "SUPERUSER" ? (
+              {user?.role === 'SUPERUSER' ? (
                 <Crown className="w-4 h-4" />
-              ) : data?.user?.role === "ADMIN" ? (
+              ) : user?.role === 'ADMIN' ? (
                 <Shield className="w-4 h-4" />
               ) : (
-                data?.user?.name?.charAt(0)
+                user?.firstName?.charAt(0)
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white text-sm font-medium truncate">
-                {data?.user?.name}
-              </p>
-              <p className="text-neutral-400 text-xs truncate">
-                {data?.user?.email}
-              </p>
+              <p className="text-white text-sm font-medium truncate">{user?.firstName}</p>
+              <p className="text-neutral-400 text-xs truncate">{user?.email}</p>
             </div>
           </div>
         </motion.div>
@@ -190,19 +180,19 @@ const FixedLeftNavigationPanel: FC<IFixedLeftNavigationPanel> = ({
         >
           <div className="py-3 flex items-center justify-center bg-neutral-800/50 rounded-xl">
             <div className="w-8 h-8 bg-linear-to-r from-violet-500 via-indigo-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold">
-              {data?.user?.role === "SUPERUSER" ? (
+              {user?.role === 'SUPERUSER' ? (
                 <Crown className="w-4 h-4" />
-              ) : data?.user?.role === "ADMIN" ? (
+              ) : user?.role === 'ADMIN' ? (
                 <Shield className="w-4 h-4" />
               ) : (
-                data?.user?.name?.charAt(0)
+                user?.firstName?.charAt(0)
               )}
             </div>
           </div>
         </motion.div>
       )}
     </motion.div>
-  );
-};
+  )
+}
 
-export default FixedLeftNavigationPanel;
+export default FixedLeftNavigationPanel

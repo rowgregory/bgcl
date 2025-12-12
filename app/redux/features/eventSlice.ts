@@ -39,7 +39,7 @@ export const eventSlice = createSlice({
     addEventTicketToState: (state, { payload }) => {
       const event = state.events.find((e) => e.id === payload.eventId)
       if (event) {
-        event.tickets.push(payload.ticket)
+        event.tickets.push(payload)
       }
     },
     addEventToState: (state, { payload }) => {
@@ -49,8 +49,12 @@ export const eventSlice = createSlice({
     deleteEventTicket: (state, { payload }) => {
       const event = state.events.find((e) => e.id === payload.eventId)
       if (event) {
-        event.tickets = event.tickets.filter((t) => t.id !== payload.ticketId)
+        event.tickets = event.tickets.filter((t) => t.id !== payload.id)
       }
+    },
+    //  Delete event
+    deleteEvent: (state, { payload }) => {
+      state.events = state.events.filter((t) => t.id !== payload.id)
     },
     hydrateEvent: (state, { payload }) => {
       state.event = payload
@@ -77,8 +81,8 @@ export const eventSlice = createSlice({
     setCloseEventTicketDrawer: (state) => {
       state.eventTicketDrawer = false
     },
+    // Update an existing event
     updateEventInState: (state, { payload }) => {
-      console.log('payload: ', payload)
       const index = state.events.findIndex((p: { id: string }) => p.id === payload.id)
 
       if (index !== -1) {
@@ -89,11 +93,11 @@ export const eventSlice = createSlice({
     updateEventTicketInState: (state, { payload }) => {
       const event = state.events.find((e) => e.id === payload.eventId)
       if (event) {
-        const ticketIndex = event.tickets.findIndex((t) => t.id === payload.ticketId)
+        const ticketIndex = event.tickets.findIndex((t) => t.id === payload.id)
         if (ticketIndex !== -1) {
           event.tickets[ticketIndex] = {
             ...event.tickets[ticketIndex],
-            ...payload.updates
+            ...payload
           }
         }
       }
@@ -107,6 +111,7 @@ export const {
   addEventTicketToState,
   addEventToState,
   deleteEventTicket,
+  deleteEvent,
   hydrateEvent,
   hydrateEvents,
   removeEventFromState,

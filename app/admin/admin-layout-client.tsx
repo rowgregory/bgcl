@@ -5,7 +5,6 @@ import useCustomPathname from '@/hooks/useCustomPathname'
 import getCurrentPageId from '../lib/utils/getCurrentPageId'
 import { motion } from 'framer-motion'
 import { adminNavLinks } from '../lib/constants/navigation/adminNavLinks'
-import adminActionItems from '../lib/constants/adminActionItems'
 import HeroStudio from '../components/studios/HeroStudio'
 import FixedLeftNavigationPanel from '../components/navigation/FixedLeftNavigationPanel'
 import FixedHeader from '../components/navigation/FixedHeader'
@@ -13,12 +12,13 @@ import { IAdminLayoutClient } from '@/types/admin'
 import { useHydrateAdminData } from '@/hooks/useHydrateAdminData'
 import EventDrawer from '../components/drawers/EventDrawer'
 import EventTicketDrawer from '../components/drawers/EventTicketDrawer'
+import { useUserSelector } from '../redux/store'
 
 const AdminLayoutClient: FC<IAdminLayoutClient> = ({ children, data }) => {
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false)
   const path = useCustomPathname()
   const selectedPage = getCurrentPageId(path, adminNavLinks)
-
+  const { user } = useUserSelector()
   useHydrateAdminData(data)
 
   return (
@@ -32,7 +32,7 @@ const AdminLayoutClient: FC<IAdminLayoutClient> = ({ children, data }) => {
           setIsNavigationCollapsed={setIsNavigationCollapsed}
           selectedPage={selectedPage}
           links={adminNavLinks}
-          data={null}
+          user={user}
         />
 
         {/* Main Content Area */}
@@ -42,7 +42,6 @@ const AdminLayoutClient: FC<IAdminLayoutClient> = ({ children, data }) => {
             isNavigationCollapsed={isNavigationCollapsed}
             selectedPage={selectedPage}
             links={adminNavLinks}
-            actionItems={adminActionItems}
           />
 
           <main className="flex-1 pt-[68px] overflow-hidden">

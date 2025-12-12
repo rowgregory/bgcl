@@ -1,8 +1,10 @@
-import { ChangeEvent, FC } from 'react'
+import { FC } from 'react'
 import { IForm } from '@/types/common'
 import EventTicketList from './EventTicketList'
 import { Ticket } from '@prisma/client'
 import CloseDrawerButton from '../../common/CloseDrawerButton'
+import { setInputs } from '@/app/redux/features/formSlice'
+import { useAppDispatch } from '@/app/redux/store'
 
 const EventTicketForm: FC<IForm> = ({
   errors,
@@ -15,14 +17,10 @@ const EventTicketForm: FC<IForm> = ({
   isUpdating
 }) => {
   const tickets = (inputs?.tickets as Ticket[]) || []
+  const dispatch = useAppDispatch()
 
   const handleSelectTicket = (ticket: Ticket) => {
-    // Prefill all form fields
-    Object.entries(ticket).forEach(([key, value]) => {
-      handleInput({
-        target: { name: key, value }
-      } as ChangeEvent<HTMLInputElement>)
-    })
+    dispatch(setInputs({ formName: 'eventTicketForm', data: { ...ticket, isUpdating: true } }))
   }
 
   return (
@@ -42,7 +40,7 @@ const EventTicketForm: FC<IForm> = ({
 
       {/* Form Content */}
       <div className="flex-1 flex overflow-hidden">
-        <EventTicketList tickets={tickets} onSelectTicket={handleSelectTicket} />
+        <EventTicketList tickets={tickets} onSelectTicket={handleSelectTicket} inputs={inputs} />
 
         <form onSubmit={handleSubmit} className="flex flex-col h-full w-full">
           {/* Scrollable Content */}

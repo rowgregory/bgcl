@@ -1,29 +1,29 @@
-import { Reducer, createSlice } from "@reduxjs/toolkit";
+import { Reducer, createSlice } from '@reduxjs/toolkit'
 
 export interface AdminStatePayload {
-  loading: boolean;
-  selectedTimeframe: string;
-  selectedPage: string;
-  isActionsOpen: boolean;
-  isDrawerOpen: boolean;
+  loading: boolean
+  selectedTimeframe: string
+  selectedPage: string
+  isActionsOpen: boolean
+  isDrawerOpen: boolean
 
   // View drawers
-  familiesViewDrawer: boolean;
-  enrollmentsViewDrawer: boolean;
-  attendanceViewDrawer: boolean;
-  programsManagerDrawer: boolean;
-  eventsManagerDrawer: boolean;
-  donationReportsDrawer: boolean;
+  familiesViewDrawer: boolean
+  enrollmentsViewDrawer: boolean
+  attendanceViewDrawer: boolean
+  programsManagerDrawer: boolean
+  eventsManagerDrawer: boolean
+  donationReportsDrawer: boolean
 
   // Form drawers
-  addStaffDrawer: boolean;
-  announcementDrawer: boolean;
+  addStaffDrawer: boolean
+  announcementDrawer: boolean
 }
 
 const initialAdminState: AdminStatePayload = {
   loading: false,
-  selectedTimeframe: "week",
-  selectedPage: "mission-control",
+  selectedTimeframe: 'week',
+  selectedPage: 'mission-control',
   isActionsOpen: false,
   isDrawerOpen: false,
 
@@ -35,108 +35,108 @@ const initialAdminState: AdminStatePayload = {
   donationReportsDrawer: false,
 
   addStaffDrawer: false,
-  announcementDrawer: false,
-};
+  announcementDrawer: false
+}
 
 export const adminSlice = createSlice({
-  name: "admin",
+  name: 'admin',
   initialState: initialAdminState,
   reducers: {
     setSelectedTimeframe: (state, action) => {
-      state.selectedTimeframe = action.payload;
+      state.selectedTimeframe = action.payload
     },
     setSelectedPage: (state, action) => {
-      state.selectedPage = action.payload;
+      state.selectedPage = action.payload
     },
     toggleActionsDropdown: (state) => {
-      state.isActionsOpen = !state.isActionsOpen;
+      state.isActionsOpen = !state.isActionsOpen
     },
     setCloseActionsDropdown: (state) => {
-      state.isActionsOpen = false;
+      state.isActionsOpen = false
     },
     setOpenActionsDropdown: (state) => {
-      state.isActionsOpen = true;
+      state.isActionsOpen = true
     },
     toggleNavigationDrawer: (state) => {
-      state.isDrawerOpen = !state.isDrawerOpen;
+      state.isDrawerOpen = !state.isDrawerOpen
     },
     setOpenNavigationDrawer: (state) => {
-      state.isDrawerOpen = true;
+      state.isDrawerOpen = true
     },
     setCloseNavigationDrawer: (state) => {
-      state.isDrawerOpen = false;
+      state.isDrawerOpen = false
     },
     setLoading: (state, action) => {
-      state.loading = action.payload;
+      state.loading = action.payload
     },
 
     // Families View
     setOpenFamiliesViewDrawer: (state) => {
-      state.familiesViewDrawer = true;
+      state.familiesViewDrawer = true
     },
     setCloseFamiliesViewDrawer: (state) => {
-      state.familiesViewDrawer = false;
+      state.familiesViewDrawer = false
     },
 
     // Enrollments View
     setOpenEnrollmentsViewDrawer: (state) => {
-      state.enrollmentsViewDrawer = true;
+      state.enrollmentsViewDrawer = true
     },
     setCloseEnrollmentsViewDrawer: (state) => {
-      state.enrollmentsViewDrawer = false;
+      state.enrollmentsViewDrawer = false
     },
 
     // Attendance View
     setOpenAttendanceViewDrawer: (state) => {
-      state.attendanceViewDrawer = true;
+      state.attendanceViewDrawer = true
     },
     setCloseAttendanceViewDrawer: (state) => {
-      state.attendanceViewDrawer = false;
+      state.attendanceViewDrawer = false
     },
 
     // Programs Manager
     setOpenProgramsManagerDrawer: (state) => {
-      state.programsManagerDrawer = true;
+      state.programsManagerDrawer = true
     },
     setCloseProgramsManagerDrawer: (state) => {
-      state.programsManagerDrawer = false;
+      state.programsManagerDrawer = false
     },
 
     // Events Manager
     setOpenEventsManagerDrawer: (state) => {
-      state.eventsManagerDrawer = true;
+      state.eventsManagerDrawer = true
     },
     setCloseEventsManagerDrawer: (state) => {
-      state.eventsManagerDrawer = false;
+      state.eventsManagerDrawer = false
     },
 
     // Donation Reports
     setOpenDonationReportsDrawer: (state) => {
-      state.donationReportsDrawer = true;
+      state.donationReportsDrawer = true
     },
     setCloseDonationReportsDrawer: (state) => {
-      state.donationReportsDrawer = false;
+      state.donationReportsDrawer = false
     },
 
     // Add Staff
     setOpenAddStaffDrawer: (state) => {
-      state.addStaffDrawer = true;
+      state.addStaffDrawer = true
     },
     setCloseAddStaffDrawer: (state) => {
-      state.addStaffDrawer = false;
+      state.addStaffDrawer = false
     },
 
     // Announcement
     setOpenAnnouncementDrawer: (state) => {
-      state.announcementDrawer = true;
+      state.announcementDrawer = true
     },
     setCloseAnnouncementDrawer: (state) => {
-      state.announcementDrawer = false;
-    },
-  },
-});
+      state.announcementDrawer = false
+    }
+  }
+})
 
-export const adminReducer = adminSlice.reducer as Reducer<AdminStatePayload>;
+export const adminReducer = adminSlice.reducer as Reducer<AdminStatePayload>
 
 export const {
   setSelectedTimeframe,
@@ -164,5 +164,5 @@ export const {
   setOpenAddStaffDrawer,
   setCloseAddStaffDrawer,
   setOpenAnnouncementDrawer,
-  setCloseAnnouncementDrawer,
-} = adminSlice.actions;
+  setCloseAnnouncementDrawer
+} = adminSlice.actions

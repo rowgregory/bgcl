@@ -1,29 +1,25 @@
-import React, { FC } from "react";
-import ActionMenuDropdown from "./ActionMenuDropdown";
-import { IFixedHeader } from "@/types/navigation";
-import ActionMenuButton from "../buttons/ActionMenuButton";
-import MobileMenuButton from "../buttons/MobileMenuButton";
-import LogoutButton from "../buttons/LogoutButton";
+import React, { FC } from 'react'
+import ActionMenuDropdown from './ActionMenuDropdown'
+import { IFixedHeader } from '@/types/navigation'
+import ActionMenuButton from '../buttons/ActionMenuButton'
+import MobileMenuButton from '../buttons/MobileMenuButton'
+import LogoutButton from '../buttons/LogoutButton'
+import adminActionItems from '@/app/lib/constants/adminActionItems'
 
-const FixedHeader: FC<IFixedHeader> = ({
-  isNavigationCollapsed,
-  selectedPage,
-  links,
-  actionItems,
-}) => {
+const FixedHeader: FC<IFixedHeader> = ({ isNavigationCollapsed, selectedPage, links }) => {
   const getPageDisplayName = (page: string, isDescription?: boolean) => {
-    const item = links?.find((nav: { label: string }) => nav.label === page);
+    const item = links?.find((nav: { label: string }) => nav.label === page)
 
-    return isDescription ? item?.description : page;
-  };
+    return isDescription ? item?.description : page
+  }
 
   return (
     <>
-      <ActionMenuDropdown actionItems={actionItems} />
+      <ActionMenuDropdown actionItems={adminActionItems} />
       <header
-        className={`${isNavigationCollapsed ? "lg:ml-20" : "lg:ml-[280px]"} fixed left-0 top-0 right-0 bg-neutral-900/95 backdrop-blur-sm border-b border-neutral-800 z-30 h-[69px]`}
+        className={`${isNavigationCollapsed ? 'lg:ml-20' : 'lg:ml-[280px]'} fixed left-0 top-0 right-0 bg-neutral-900/95 backdrop-blur-sm border-b border-neutral-800 z-30 h-[69px]`}
         style={{
-          transition: "left 0.3s ease-in-out",
+          transition: 'left 0.3s ease-in-out'
         }}
       >
         <div className="h-full px-6 flex items-center justify-between">
@@ -34,8 +30,8 @@ const FixedHeader: FC<IFixedHeader> = ({
                 {getPageDisplayName(selectedPage)}
               </h1>
               <p className="text-neutral-400 text-sm hidden lg:block">
-                {selectedPage === "Mission Control"
-                  ? "Overview of operations, analytics, and system status"
+                {selectedPage === 'Mission Control'
+                  ? 'Overview of operations, analytics, and system status'
                   : `Currently viewing: ${getPageDisplayName(selectedPage, true)}`}
               </p>
             </div>
@@ -50,7 +46,7 @@ const FixedHeader: FC<IFixedHeader> = ({
         </div>
       </header>
     </>
-  );
-};
+  )
+}
 
-export default FixedHeader;
+export default FixedHeader
