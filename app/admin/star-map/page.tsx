@@ -485,7 +485,6 @@ const StarMap: React.FC = () => {
     )
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const currentPageContent: any = content[selectedPage]
 
   return (

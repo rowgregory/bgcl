@@ -53,7 +53,6 @@ const UpcomingEvent: FC<IUpcomingEvent> = ({ event, index }) => {
             onClick={(e) => {
               e.stopPropagation()
               dispatch(setOpenEventDrawer())
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               const { tickets, ...eventData } = event
               dispatch(setInputs({ formName: 'eventForm', data: { ...eventData, isUpdating: true } }))
             }}

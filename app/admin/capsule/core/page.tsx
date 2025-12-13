@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react'
 import { motion } from 'framer-motion'
 import { Calendar, DollarSign, Users, TrendingUp, Ticket, CheckCircle, Plus } from 'lucide-react'
 import { containerVariants } from '@/app/lib/constants/motion'
