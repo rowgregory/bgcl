@@ -1,8 +1,9 @@
+import { Event } from '@/types/entities/event'
 import { isValidUrl } from '../utils/isValidUrl'
-import { Errors, Inputs } from '@/app/redux/features/formSlice'
+import { Errors } from '@/app/lib/store/slices/formSlice'
 
-const validateEventForm = (inputs: Inputs, setErrors: (newErrors: Errors) => void) => {
-  const newErrors: Errors = {}
+const validateEventForm = (inputs: Partial<Event | null>, setErrors: (newErrors: Errors) => void) => {
+  const newErrors: Record<string, string> = {}
 
   if (!inputs?.title || typeof inputs.title !== 'string' || !inputs.title.trim()) {
     newErrors.title = 'Please enter valid title'
@@ -56,14 +57,6 @@ const validateEventForm = (inputs: Inputs, setErrors: (newErrors: Errors) => voi
 
   if (inputs?.requiresRSVP && !inputs?.registrationDeadline) {
     newErrors.registrationDeadline = 'Registration deadline required when RSVP is enabled'
-  }
-
-  if (inputs?.salesStartDate && inputs?.salesEndDate) {
-    const start = new Date(inputs.salesStartDate as Date | string)
-    const end = new Date(inputs.salesEndDate as Date | string)
-    if (start >= end) {
-      newErrors.salesEndDate = 'Sales end date must be after start date'
-    }
   }
 
   setErrors(newErrors)

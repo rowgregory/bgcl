@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@theme inline {
+  /* Maps Next.js variables to Tailwind utility classes: font-nunito & font-quicksand */
+  --font-nunito: var(--font-nunito);
+  --font-quicksand: var(--font-quicksand);
+
+  /* Optional: Overrides the default 'font-sans' utility to use Nunito automatically */
+  --font-sans: var(--font-nunito);
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -15,5 +24,8 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Apply your primary font globally using the CSS variable */
+  font-family: var(--font-nunito), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

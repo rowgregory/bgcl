@@ -1,20 +1,13 @@
-import { Role } from "@/types/entities/user";
+import { Role } from '@/types/entities/user'
 
-export const initialUserConfig = {
-  id: "",
-  email: "",
-  role: Role.SUPPORTER,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  emailVerified: null,
-  lastLoginAt: null,
-  hasLoginAccess: false,
+export const initialUserFormState = {
+  id: '',
+  email: '',
+  role: Role.ADMIN,
   firstName: null,
   lastName: null,
   phone: null,
   position: null,
   department: null,
-  hireDate: null,
-  staffStatus: null,
-  metadata: null,
-};
+  staffStatus: null
+}

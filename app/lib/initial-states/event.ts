@@ -1,30 +1,29 @@
-import { EventStatus, IEvent } from '@/types/entities/event'
-
-// Initial state for creating events
-export const initialEventState: Omit<IEvent, 'id' | 'createdAt' | 'updatedAt' | 'userId'> = {
+export const initialEventFormState = {
+  id: '',
   title: '',
-  description: null,
+  description: '',
   category: '',
+  capacity: 200,
+  attendeeCount: 0,
   type: '',
-  dresscode: null,
+  dresscode: '',
   date: new Date(),
-  time: '18:00',
-  duration: '2 hours',
+  time: '',
+  duration: '',
   location: '',
   maxAttendees: null,
-  status: EventStatus.UPCOMING,
+  status: 'UPCOMING',
   featured: false,
-  host: null,
-  requirements: null,
-  materials: null,
-  registrationUrl: null,
-  meetingUrl: null,
+  host: '',
+  requirements: '',
+  materials: '',
+  registrationUrl: '',
+  meetingUrl: '',
   isPublic: true,
   requiresRSVP: false,
   registrationDeadline: new Date(),
   allowMultipleTickets: false,
   salesStartDate: null,
   salesEndDate: null,
-  capacity: 0,
-  attendeeCount: 0
+  isUpdating: false
 }

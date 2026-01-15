@@ -1,29 +1,44 @@
-import React, { FC } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { IActionItems } from "@/types/navigation";
-import { useAppDispatch, useDashboardSelector } from "@/app/redux/store";
-import { setCloseActionMenu } from "@/app/redux/features/dashboardSlice";
-import Backdrop from "../common/Backdrop";
-import { MotionLink } from "../common/MotionLink";
+import { FC } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
+import { IActionItems } from '@/types/navigation'
+import { useAppDispatch, useDashboardSelector } from '@/app/lib/store/store'
+import { setCloseActionMenu, setOpenActionDropdownSubmenu } from '@/app/lib/store/slices/dashboardSlice'
+import Backdrop from '../common/Backdrop'
+import { setInputs } from '@/app/lib/store/slices/formSlice'
+import { ChevronRight } from 'lucide-react'
 
-const ActionMenuDropdown: FC<{ actionItems: IActionItems[] }> = ({
-  actionItems,
-}) => {
-  const dispatch = useAppDispatch();
-  const { push } = useRouter();
-  const onClose = () => dispatch(setCloseActionMenu());
-  const { actionMenu } = useDashboardSelector();
+const ActionMenuDropdown: FC<{ actionItems: IActionItems[] }> = ({ actionItems }) => {
+  const dispatch = useAppDispatch()
+  const { push } = useRouter()
+  const onClose = () => dispatch(setCloseActionMenu())
+  const { actionMenu, itemAction } = useDashboardSelector()
 
-  const handleActionClick = (item: IActionItems) => {
-    if (item.isUnlocked) {
-      dispatch(setCloseActionMenu());
-      onClose();
-      dispatch(item.open());
-    } else {
-      push("/admin/expansion-module");
+  const handleActionClick = (item: any) => {
+    if (item.hasSubmenu) {
+      dispatch(setOpenActionDropdownSubmenu(itemAction === item.action ? null : item.action))
+      return
     }
-  };
+
+    if (item.isUnlocked) {
+      onClose()
+      dispatch(item.open())
+      dispatch(setInputs({ formName: item.formName, data: item.initial }))
+    } else {
+      onClose()
+      push(item.linkKey)
+    }
+  }
+
+  const handleSubmenuClick = (submenuItem: any) => {
+    if (submenuItem.isUnlocked) {
+      onClose()
+      dispatch(submenuItem.open())
+      dispatch(setInputs({ formName: submenuItem.formName, data: submenuItem.initial }))
+    } else {
+      push('/admin/cryo-chamber')
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -32,67 +47,89 @@ const ActionMenuDropdown: FC<{ actionItems: IActionItems[] }> = ({
           <Backdrop onClose={onClose} />
           <motion.div
             initial={{
-              clipPath: "inset(0 0 100% 0)",
-              opacity: 0,
+              clipPath: 'inset(0 0 100% 0)',
+              opacity: 0
             }}
             animate={{
-              clipPath: "inset(0 0 0% 0)",
-              opacity: 1,
+              clipPath: 'inset(0 0 0% 0)',
+              opacity: 1
             }}
             exit={{
-              clipPath: "inset(0 0 100% 0)",
-              opacity: 0,
+              clipPath: 'inset(0 0 100% 0)',
+              opacity: 0
             }}
             transition={{
               clipPath: {
                 duration: 1.35,
-                ease: [0.1, 0, 0.9, 1], // Custom bezier: slow first 75%, fast last 25%
+                ease: [0.1, 0, 0.9, 1] // Custom bezier: slow first 75%, fast last 25%
               },
               opacity: {
                 duration: 1.35,
-                ease: "easeInOut",
-              },
+                ease: 'easeInOut'
+              }
             }}
-            className="absolute z-50 right-18 top-18 w-56 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl overflow-hidden"
+            className="absolute z-50 right-18 top-18 w-60 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl overflow-hidden"
           >
-            <div className="py-2">
+            <div className="py-2 overflow-y-scroll h-[calc(100vh-150px)] sm:h-fit">
               {actionItems?.map((item, i) => (
-                <MotionLink
-                  href={item.linkKey}
-                  key={i}
-                  variants={{
-                    closed: {
-                      x: -20,
-                      opacity: 0,
-                    },
-                    open: (i: number) => ({
-                      x: 0,
-                      opacity: 1,
-                      transition: {
-                        delay: 0.1 + i * 0.15,
-                        duration: 0.3,
-                        ease: "easeOut" as const,
-                      },
-                    }),
-                  }}
-                  initial="closed"
-                  animate="open"
-                  custom={i}
-                  onClick={() => handleActionClick(item)}
-                  className={`w-full px-4 py-3 text-left text-gray-200 hover:text-white transition-all flex items-center justify-between hover:bg-indigo-600/10`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <item.icon className="w-4 h-4 text-indigo-400" />
-                    <span className="font-medium text-sm">{item.label}</span>
-                  </div>
-                </MotionLink>
+                <div key={i} className="relative">
+                  <motion.button
+                    onClick={() => handleActionClick(item)}
+                    className={`w-full px-4 py-3 text-left text-gray-200 hover:text-white transition-all flex items-center justify-between hover:bg-indigo-600/10 ${
+                      item.hasSubmenu && itemAction === item.action ? 'bg-indigo-600/20' : ''
+                    }`}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <item.icon className="w-4 h-4 mt-0.5 text-indigo-400" />
+                      <div className="flex flex-col">
+                        <span className="font-medium text-sm">{item.label}</span>
+                      </div>
+                    </div>
+
+                    {item.hasSubmenu && (
+                      <ChevronRight
+                        className={`w-4 h-4 text-gray-400 transition-transform ${
+                          itemAction === item.action ? 'rotate-90' : ''
+                        }`}
+                      />
+                    )}
+                  </motion.button>
+
+                  {/* Submenu */}
+                  <AnimatePresence>
+                    {item.hasSubmenu && itemAction === item.action && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="bg-gray-900/50 border-t border-gray-700/50"
+                      >
+                        {item.submenu?.map((submenuItem: any, subIndex: number) => (
+                          <motion.button
+                            key={subIndex}
+                            onClick={() => handleSubmenuClick(submenuItem)}
+                            className="w-full pl-10 pr-4 py-2 text-left text-gray-300 hover:text-white transition-all flex items-start space-x-3 hover:bg-indigo-600/10"
+                          >
+                            <div className="flex flex-col">
+                              <span className="text-sm">{submenuItem.label}</span>
+                              {submenuItem.description && (
+                                <span className="text-xs text-gray-500 leading-tight">{submenuItem.description}</span>
+                              )}
+                            </div>
+                          </motion.button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               ))}
             </div>
           </motion.div>
         </>
       )}
     </AnimatePresence>
-  );
-};
+  )
+}
 
-export default ActionMenuDropdown;
+export default ActionMenuDropdown

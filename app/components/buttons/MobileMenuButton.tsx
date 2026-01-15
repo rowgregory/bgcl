@@ -1,11 +1,11 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { useAppDispatch } from "@/app/redux/store";
-import { setOpenMobileNavigation } from "@/app/redux/features/appSlice";
-import { Menu } from "lucide-react";
+import React from 'react'
+import { motion } from 'framer-motion'
+import { useAppDispatch } from '@/app/lib/store/store'
+import { setOpenMobileNavigation } from '@/app/lib/store/slices/appSlice'
+import { Menu } from 'lucide-react'
 
 const MobileMenuButton = () => {
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch()
 
   return (
     <motion.button
@@ -16,7 +16,7 @@ const MobileMenuButton = () => {
     >
       <Menu className="w-5 h-5 text-zinc-400" />
     </motion.button>
-  );
-};
+  )
+}
 
-export default MobileMenuButton;
+export default MobileMenuButton

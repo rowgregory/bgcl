@@ -1,0 +1,8 @@
+export const BGCL_GRADIENT = 'from-cyan-400 to-blue-500'
+export const BGCL_GRADIENT_HOVER = 'from-cyan-300 to-blue-400'
+export const BGCL_COLOR = 'bg-cyan-500'
+export const BGCL_COLOR_HOVER = 'hover:bg-cyan-400'
+export const BGCL_TEXT = 'text-cyan-400'
+export const BGCL_BORDER = 'border-cyan-500'
+export const BGCL_SHADOW = 'shadow-lg shadow-cyan-500/50'
+export const BGCL_GLOW = 'glow-cyan'

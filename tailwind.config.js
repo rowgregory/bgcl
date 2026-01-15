@@ -161,16 +161,10 @@ export const theme = {
     fontSize: {
       '2xs': '0.625rem'
     },
-    keyframes: {
-      shipwheelStorm: {
-        '0%, 100%': { transform: 'rotate(-15deg)' },
-        '25%': { transform: 'rotate(10deg)' },
-        '50%': { transform: 'rotate(-25deg)' },
-        '75%': { transform: 'rotate(20deg)' }
-      }
-    },
-    animation: {
-      shipwheelStorm: 'shipwheelStorm 2.5s ease-in-out infinite'
+    fontFamily: {
+      sans: 'var(--font-nunito)',
+      nunito: 'var(--font-nunito)',
+      quicksand: 'var(--font-quicksand)'
     }
   }
 }

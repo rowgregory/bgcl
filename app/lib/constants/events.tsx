@@ -14,7 +14,7 @@ export const EVENT_CATEGORIES = [
   'Other'
 ]
 
-export const EVENT_TYPES = ['In-Person', 'Virtual', 'Hybrid']
+export const EVENT_TYPES = ['IN_PERSON', 'VIRTUAL', 'HYBRID']
 
 export const DRESS_CODES = [
   'Casual',
@@ -77,7 +77,7 @@ export const templates: EventTemplate[] = [
       title: 'Annual Gala',
       description: 'Join us for an elegant evening of dinner, dancing, and celebration.',
       category: 'Fundraiser',
-      type: 'In-Person',
+      type: EVENT_TYPES['IN_PERSON'],
       dresscode: 'Formal',
       time: '18:00',
       duration: '4 hours',
@@ -99,7 +99,7 @@ export const templates: EventTemplate[] = [
       title: 'Industry Conference',
       description: 'A full-day conference featuring keynote speakers, panel discussions, and networking opportunities.',
       category: 'Conference',
-      type: 'Hybrid',
+      type: EVENT_TYPES['HYBRID'],
       dresscode: 'Business Professional',
       time: '08:00',
       duration: 'Full Day',
@@ -121,7 +121,7 @@ export const templates: EventTemplate[] = [
       title: 'Professional Networking Mixer',
       description: 'Connect with local professionals over drinks and appetizers.',
       category: 'Networking',
-      type: 'In-Person',
+      type: EVENT_TYPES['IN_PERSON'],
       dresscode: 'Business Casual',
       time: '17:30',
       duration: '2 hours',
@@ -143,7 +143,7 @@ export const templates: EventTemplate[] = [
       title: 'Live Music Concert',
       description: 'An unforgettable evening of live music featuring talented performers.',
       category: 'Performance',
-      type: 'In-Person',
+      type: EVENT_TYPES['IN_PERSON'],
       dresscode: 'Casual',
       time: '19:00',
       duration: '3 hours',
@@ -165,7 +165,7 @@ export const templates: EventTemplate[] = [
       title: 'Professional Development Workshop',
       description: 'Hands-on training session to develop new skills and knowledge.',
       category: 'Workshop',
-      type: 'In-Person',
+      type: EVENT_TYPES['IN_PERSON'],
       dresscode: 'Casual',
       time: '09:00',
       duration: 'Half Day',
@@ -187,7 +187,7 @@ export const templates: EventTemplate[] = [
       title: 'Charity Fundraiser',
       description: 'Support a great cause while enjoying an evening of entertainment and community.',
       category: 'Fundraiser',
-      type: 'In-Person',
+      type: EVENT_TYPES['IN_PERSON'],
       dresscode: 'Smart Casual',
       time: '18:30',
       duration: '3 hours',
@@ -209,7 +209,7 @@ export const templates: EventTemplate[] = [
       title: 'Sports Tournament',
       description: 'Compete or spectate in this exciting tournament event.',
       category: 'Social',
-      type: 'In-Person',
+      type: EVENT_TYPES['IN_PERSON'],
       dresscode: 'Athletic',
       time: '10:00',
       duration: 'Full Day',
@@ -231,7 +231,7 @@ export const templates: EventTemplate[] = [
       title: 'Dinner Event',
       description: 'Join us for a memorable evening of fine dining and great company.',
       category: 'Social',
-      type: 'In-Person',
+      type: EVENT_TYPES['IN_PERSON'],
       dresscode: 'Business Casual',
       time: '19:00',
       duration: '2 hours',

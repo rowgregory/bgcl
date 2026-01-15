@@ -1,0 +1,101 @@
+'use server'
+
+import prisma from '@/prisma/client'
+import { stripe } from '../stripe/stripeClient'
+
+interface CheckoutParams {
+  userId?: string
+  email: string
+  amount: number // in cents
+  orderType: 'ONE_TIME_DONATION' | 'RECURRING_DONATION' | 'TICKET_PURCHASE'
+  description: string
+  saveCard?: boolean
+}
+
+export async function createPaymentIntentForCheckout({
+  userId,
+  email,
+  amount,
+  orderType,
+  description,
+  saveCard = false
+}: CheckoutParams) {
+  try {
+    let customerId: string | undefined
+
+    if (userId) {
+      // Logged-in user - use their customer
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { stripeCustomerId: true }
+      })
+
+      if (user?.stripeCustomerId) {
+        customerId = user.stripeCustomerId
+      }
+    } else {
+      // Not logged in - check if user exists by email
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+        select: { stripeCustomerId: true }
+      })
+
+      if (existingUser?.stripeCustomerId) {
+        // User has account and Stripe customer, use it
+        customerId = existingUser.stripeCustomerId
+        console.log('Using existing user Stripe customer:', customerId)
+      } else {
+        // No user record - check Stripe for existing customer by email
+        const stripeCustomers = await stripe.customers.search({
+          query: `email:"${email}"`,
+          limit: 1
+        })
+
+        if (stripeCustomers.data.length > 0) {
+          // Reuse existing Stripe customer (from previous guest donation)
+          customerId = stripeCustomers.data[0].id
+          console.log('Using existing Stripe customer by email:', customerId)
+        } else {
+          // No Stripe customer - create guest customer
+          const customer = await stripe.customers.create({
+            email,
+            metadata: {
+              userId: 'guest',
+              createdAt: new Date().toISOString()
+            }
+          })
+          customerId = customer.id
+          console.log('Guest customer created:', customerId)
+        }
+      }
+    }
+
+    // Create payment intent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: 'usd',
+      customer: customerId,
+      receipt_email: email,
+      description,
+      setup_future_usage: saveCard ? 'on_session' : undefined,
+      metadata: {
+        userId: userId || 'guest',
+        orderType,
+        email,
+        saveCard: saveCard ? 'true' : 'false'
+      }
+    })
+
+    return {
+      success: true,
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id
+    }
+  } catch (error) {
+    console.error('Payment intent creation error:', error)
+    return {
+      success: false,
+      error: 'Failed to create payment'
+    }
+  }
+}

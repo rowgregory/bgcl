@@ -3,12 +3,12 @@
 import { motion } from 'framer-motion'
 import { Calendar, DollarSign, Users, TrendingUp, Ticket, CheckCircle, Plus } from 'lucide-react'
 import { containerVariants } from '@/app/lib/constants/motion'
-import { setOpenEventDrawer } from '@/app/redux/features/eventSlice'
-import { useEventSelector } from '@/app/redux/store'
-import UpcomingEvent from '@/app/components/admin/capsule/UpcomingEvent'
-import Stat from '@/app/components/admin/capsule/Stat'
-import QuickAction from '@/app/components/admin/capsule/QuickAction'
-import RecentActivity from '@/app/components/admin/capsule/RecentActivity'
+import { setOpenEventDrawer } from '@/app/lib/store/slices/eventSlice'
+import UpcomingEvent from '@/app/components/admin/capsule/core/UpcomingEvent'
+import Stat from '@/app/components/admin/capsule/core/Stat'
+import QuickAction from '@/app/components/admin/capsule/core/QuickAction'
+import RecentActivity from '@/app/components/admin/capsule/core/RecentActivity'
+import { EventWithTickets } from '@/types/entities/event'
 
 const stats = [
   {
@@ -48,57 +48,6 @@ const stats = [
     period: 'this month'
   }
 ]
-
-// const upcomingEvents = [
-//   {
-//     id: 1,
-//     name: 'Summer Gala Fundraiser',
-//     date: 'Oct 15, 2025',
-//     time: '6:00 PM',
-//     location: 'Main Hall',
-//     attendees: 156,
-//     capacity: 200,
-//     revenue: 7800,
-//     status: 'on-sale',
-//     color: 'from-purple-600 to-blue-600'
-//   },
-//   {
-//     id: 2,
-//     name: 'Youth Basketball Tournament',
-//     date: 'Oct 18, 2025',
-//     time: '9:00 AM',
-//     location: 'Gymnasium',
-//     attendees: 89,
-//     capacity: 120,
-//     revenue: 2670,
-//     status: 'on-sale',
-//     color: 'from-blue-600 to-cyan-600'
-//   },
-//   {
-//     id: 3,
-//     name: 'Community Art Show',
-//     date: 'Oct 22, 2025',
-//     time: '2:00 PM',
-//     location: 'Arts Center',
-//     attendees: 45,
-//     capacity: 80,
-//     revenue: 1125,
-//     status: 'low-availability',
-//     color: 'from-cyan-600 to-teal-600'
-//   },
-//   {
-//     id: 4,
-//     name: 'Family Movie Night',
-//     date: 'Oct 25, 2025',
-//     time: '7:00 PM',
-//     location: 'Auditorium',
-//     attendees: 180,
-//     capacity: 180,
-//     revenue: 0,
-//     status: 'sold-out',
-//     color: 'from-green-600 to-emerald-600'
-//   }
-// ]
 
 const recentActivity = [
   {
@@ -159,9 +108,7 @@ const quickActions = [
   }
 ]
 
-const TheCapsuleCore = () => {
-  const { events } = useEventSelector()
-
+const TheCapsuleCore = ({ data }) => {
   return (
     <div className="mx-auto text-white">
       <div className="flex flex-col lg:flex-row">
@@ -191,7 +138,7 @@ const TheCapsuleCore = () => {
             </div>
 
             <div className="space-y-4">
-              {events?.map((event, index) => (
+              {data?.map((event: EventWithTickets, index: number) => (
                 <UpcomingEvent key={index} event={event} index={index} />
               ))}
             </div>

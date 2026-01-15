@@ -1,0 +1,30 @@
+import { TeamMemberList } from '@/app/components/admin/the-library/TeamMemberList'
+import { getTeamMembersByRole } from '../actions/getTeamMembersByRole'
+
+export function createMultiRoleAdminPage(roles: Array<{ id: string; label: string }>, pageTitle: string) {
+  return {
+    metadata: { title: `${pageTitle} - Admin` },
+    default: async function Page() {
+      const roleData = await Promise.all(
+        roles.map(async (role) => ({
+          role: role.id,
+          label: role.label,
+          data: await getTeamMembersByRole(role.id)
+        }))
+      )
+
+      return (
+        <div className="min-h-screen bg-neutral-950 p-6 md:p-8">
+          <div className="w-full space-y-12">
+            <div>
+              <h1 className="text-2xl font-semibold text-neutral-100">{pageTitle}</h1>
+            </div>
+            {roleData.map((group) => (
+              <TeamMemberList key={group.role} data={group.data} role={group.role} roleLabel={group.label} />
+            ))}
+          </div>
+        </div>
+      )
+    }
+  }
+}

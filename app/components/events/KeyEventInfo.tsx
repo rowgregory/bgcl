@@ -1,12 +1,14 @@
-import { EventWithTickets } from '@/types/entities/event'
+import { FC } from 'react'
 import { Calendar, Clock, MapPin, Users } from 'lucide-react'
-import React, { FC } from 'react'
+import { splitUTCToDateTime } from '@/app/lib/utils/date-utils'
+import { militaryToRegularTime } from '@/app/lib/utils/time-utils'
 
 interface IKeyEventInfo {
-  event: EventWithTickets
+  event: any
 }
 
 const KeyEventInfo: FC<IKeyEventInfo> = ({ event }) => {
+  const { timeString } = splitUTCToDateTime(event.date)
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
@@ -31,7 +33,7 @@ const KeyEventInfo: FC<IKeyEventInfo> = ({ event }) => {
         </div>
         <div>
           <p className="text-xs text-white/70 font-medium">Time</p>
-          <p className="font-bold text-white">{event.time}</p>
+          <p className="font-bold text-white">{militaryToRegularTime(timeString)}</p>
         </div>
       </div>
 
@@ -52,7 +54,7 @@ const KeyEventInfo: FC<IKeyEventInfo> = ({ event }) => {
         <div>
           <p className="text-xs text-white/70 font-medium">Capacity</p>
           <p className="font-bold text-white">
-            {event.attendeeCount} / {event.capacity}
+            {event.attendeeCount} / {event.maxAttendees}
           </p>
         </div>
       </div>

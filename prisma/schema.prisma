@@ -52,6 +52,8 @@ model User {
   lastName  String?
   phone     String?
 
+  emailVerified DateTime?
+
   // Staff-only fields (optional)
   position    String?
   department  String?
@@ -61,9 +63,11 @@ model User {
   // Flexible user-specific data
   metadata Json? // ← Future-proof
 
-  accounts Account[]
-  sessions Session[]
-  orders   Order[]
+  stripeCustomerId String?
+  paymentMethods   PaymentMethod[]
+  accounts         Account[]
+  sessions         Session[]
+  orders           Order[]
 
   eventsAttended Event[] @relation("EventAttendees")
 
@@ -71,14 +75,32 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-model Newsletter {
-  id                       String   @id @default(cuid())
-  firstName                String   @db.VarChar(255)
-  lastName                 String   @db.VarChar(255)
-  email                    String   @unique @db.VarChar(255)
-  agreedToPrivacyStatement Boolean  @default(false)
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
+model PaymentMethod {
+  id              String @id @default(cuid())
+  stripePaymentId String @unique // stripe_pm_xxxxx
+
+  cardBrand    String // visa, mastercard, etc
+  cardLast4    String // 4242
+  cardExpMonth Int
+  cardExpYear  Int
+
+  isDefault Boolean @default(false)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Subscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  type         String // 'member', 'non-member', 'donor'
+  subscribedAt DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Log {
@@ -100,10 +122,9 @@ model Event {
   category             String
   capacity             Int         @default(200)
   attendeeCount        Int         @default(0)
-  type                 String
+  type                 EventType   @default(IN_PERSON)
   dresscode            String?
   date                 DateTime
-  time                 String
   duration             String
   location             String
   maxAttendees         Int?
@@ -117,6 +138,7 @@ model Event {
   isPublic             Boolean     @default(true)
   requiresRSVP         Boolean     @default(false)
   registrationDeadline DateTime    @default(now())
+  rsvpDeadline         DateTime    @default(now())
 
   // Event-level settings
   allowMultipleTickets Boolean   @default(false) // Can user buy multiple ticket types
@@ -155,18 +177,11 @@ model Ticket {
   quantitySold     Int @default(0) // How many sold
   quantityReserved Int @default(0) // How many in pending carts
 
-  // Ticket constraints
-  minPerOrder Int  @default(1) // Minimum tickets per order
-  maxPerOrder Int? // Maximum tickets per order (null = unlimited)
-
   // Ticket availability
-  isAvailable    Boolean   @default(true) // Can be toggled on/off
-  salesStartDate DateTime? // When this ticket type goes on sale
-  salesEndDate   DateTime? // When this ticket type stops selling
+  isAvailable Boolean @default(true) // Can be toggled on/off
 
   // Ticket metadata
-  sortOrder        Int     @default(0) // Display order in ticket selection
-  requiresApproval Boolean @default(false) // Admin must approve purchase
+  sortOrder Int @default(0) // Display order in ticket selection
 
   // Relations
   eventId    String
@@ -175,8 +190,6 @@ model Ticket {
 
   @@index([eventId])
   @@index([eventId, isAvailable])
-  @@index([eventId, salesStartDate])
-  @@index([salesEndDate])
 }
 
 model Order {
@@ -185,8 +198,8 @@ model Order {
   updatedAt DateTime @updatedAt
 
   // Order details
-  orderNumber String      @unique // Human-readable order number
-  status      OrderStatus @default(PENDING)
+  type   OrderType
+  status OrderStatus @default(PENDING)
 
   // Payment
   totalAmount     Float // Total cost
@@ -202,18 +215,27 @@ model Order {
   // Billing info
   billingAddress Json? // Store as JSON
 
-  // Event info (denormalized)
-  eventId String
-  event   Event  @relation(fields: [eventId], references: [id])
+  // Event info (only for ticket purchases)
+  eventId String?
+  event   Event?  @relation(fields: [eventId], references: [id], onDelete: SetNull)
 
   // User info (nullable - guest checkout allowed)
   userId String?
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
+  // Payment method
+  paymentMethodId String? // stripe payment method ID used
+
+  // Recurring donation fields
+  stripeSubscriptionId String?   @unique // For recurring donations
+  isRecurring          Boolean   @default(false)
+  recurringFrequency   String? // "monthly", "yearly"
+  nextBillingDate      DateTime? // Next charge date
+
   // Relations
   orderItems OrderItem[]
 
-  @@index([orderNumber])
+  @@index([type])
   @@index([status])
   @@index([eventId])
   @@index([userId])
@@ -347,6 +369,195 @@ model Hero {
   @@index([status])
 }
 
+model Program {
+  id             String  @id @default(cuid())
+  name           String
+  description1   String // About what kids do and program details
+  description2   String?
+  description3   String?
+  description4   String?
+  description5   String?
+  image          String?
+  ageGroup       String // e.g., "5-10"
+  location       String // e.g., "Boys & Girls Club of Lynn"
+  frequency      String // e.g., "Daily", "Weekly", "Per Session"
+  dropOffStart   String // e.g., "8:00am"
+  dropOffEnd     String // e.g., "9:00am"
+  pickUpStart    String // e.g., "4:00pm"
+  pickUpEnd      String // e.g., "4:30pm"
+  datesAvailable String? // e.g., "TBA", "June 1 - August 31"
+  license        String? // e.g., "EEC Licensed Ages 5-10"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TeamMember {
+  id      String  @id @default(cuid())
+  name    String
+  title   String?
+  company String?
+  image   String?
+  bio     String?
+  phone   String?
+  email   String?
+  role    String // 'board', 'staff', 'honoree', 'youth'
+  order   Int     @default(0)
+
+  // Youth of the Year fields (optional, only populated when role is 'youth')
+  year       Int?
+  paragraph1 String?
+  paragraph2 String?
+  paragraph3 String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@index([year])
+}
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  month     String // 'January', 'February', etc.
+  year      Int // 2025, 2026, etc.
+  pdfUrl    String // Google Drive link
+  order     Int // for sorting
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([month, year])
+  @@index([year])
+}
+
+model Resource {
+  id    String @id @default(cuid())
+  title String
+  url   String
+  order Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model News {
+  id         String   @id @default(cuid())
+  title      String
+  image      String?
+  paragraph1 String?
+  paragraph2 String?
+  paragraph3 String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([title])
+}
+
+// Page Content
+model Page {
+  id        String  @id @default(cuid())
+  slug      String  @unique
+  content   Json
+  createdBy String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactSubmission {
+  id        String @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String
+  phone     String
+  subject   String
+  message   String
+
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
+}
+
+model JobApplication {
+  id String @id @default(cuid())
+
+  // Personal Information
+  applicantName      String         @db.VarChar(255)
+  email              String         @unique @db.VarChar(255)
+  positionAppliedFor String         @db.VarChar(255)
+  employmentType     EmploymentType
+  hoursAvailable     String         @db.Text
+  languages          String         @db.VarChar(500)
+
+  // References
+  references Reference[]
+
+  // Driving Information
+  hasValidDriverLicense Boolean
+  licenseNumber         String?   @db.VarChar(50)
+  licenseExpiration     DateTime?
+  noLicenseReason       String?   @db.Text
+  licenseSuspended      Boolean   @default(false)
+  suspensionExplanation String?   @db.Text
+  trafficViolations     String?   @db.Text
+
+  // Resume
+  resumeUrl        String?   @db.VarChar(500)
+  resumeFileName   String?   @db.VarChar(255)
+  resumeFileSize   Int? // in bytes
+  resumeUploadedAt DateTime?
+
+  // Application Certification
+  agreeToTerms           Boolean   @default(false)
+  certifyInformation     Boolean   @default(false)
+  authorizeBackground    Boolean   @default(false)
+  understandActiveStatus Boolean   @default(false)
+  signature              String?   @db.VarChar(255)
+  signedAt               DateTime?
+
+  // Application Status
+  status           ApplicationStatus @default(PENDING)
+  submissionStatus SubmissionStatus  @default(INCOMPLETE)
+
+  // Timestamps
+  applicationDate DateTime
+  submittedAt     DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Reference {
+  id               String         @id @default(cuid())
+  jobApplication   JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
+  jobApplicationId String
+
+  // Reference Information
+  name               String @db.VarChar(255)
+  positionAndCompany String @db.VarChar(500)
+  workRelationship   String @db.VarChar(255)
+
+  // Contact Information
+  phone String @db.VarChar(20)
+  email String @db.VarChar(255)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  SEASONAL
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEW
+  APPROVED
+  REJECTED
+}
+
 enum Role {
   STAFF
   VOLUNTEER
@@ -384,6 +595,12 @@ enum EventStatus {
   POSTPONED
 }
 
+enum EventType {
+  IN_PERSON
+  HYBRID
+  VIRTUAL
+}
+
 enum OrderStatus {
   PENDING // Cart/checkout in progress
   PROCESSING // Payment being processed
@@ -391,4 +608,16 @@ enum OrderStatus {
   CANCELLED // Order cancelled
   REFUNDED // Order refunded
   FAILED // Payment failed
+}
+
+enum OrderType {
+  ONE_TIME_DONATION
+  RECURRING_DONATION
+  TICKET_PURCHASE
+}
+
+enum SubmissionStatus {
+  INCOMPLETE
+  COMPLETE
+  SUBMITTED
 }

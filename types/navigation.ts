@@ -1,6 +1,5 @@
 import { ActionCreatorWithoutPayload } from '@reduxjs/toolkit'
 import { LucideIcon } from 'lucide-react'
-import { Session } from 'next-auth'
 import { IUser } from './entities/user'
 
 export interface INavigationLink {
@@ -11,7 +10,7 @@ export interface INavigationLink {
   description?: string
 }
 
-export interface IFixedLeftNavigationPanel {
+export interface IAdminSidebar {
   isNavigationCollapsed: boolean
   setIsNavigationCollapsed: (isNavigationCollapsed: boolean) => void
   selectedPage: string
@@ -19,17 +18,23 @@ export interface IFixedLeftNavigationPanel {
   user: IUser | null
 }
 
-export interface IActionItems {
-  linkKey: string
+export interface SubMenuItem {
   action: string
   label: string
   icon: LucideIcon
-  open: ActionCreatorWithoutPayload
+  open: any
+  formName: string
+  initial: any
   isUnlocked: boolean
 }
 
-export interface IFixedHeader {
-  isNavigationCollapsed: boolean
-  selectedPage: string
-  links: INavigationLink[]
+export interface IActionItems {
+  linkKey?: string
+  action: string
+  label: string
+  icon: LucideIcon
+  open?: ActionCreatorWithoutPayload
+  isUnlocked: boolean
+  hasSubmenu?: boolean
+  submenu?: SubMenuItem[]
 }

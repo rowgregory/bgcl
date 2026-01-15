@@ -1,19 +1,19 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { Plus, ChevronDown } from "lucide-react";
-import { useAppDispatch, useDashboardSelector } from "@/app/redux/store";
-import useSoundEffect from "@/hooks/useSoundEffect";
-import { setOpenActionMenu } from "../../redux/features/dashboardSlice";
+import React from 'react'
+import { motion } from 'framer-motion'
+import { Plus, ChevronDown } from 'lucide-react'
+import { useAppDispatch, useDashboardSelector } from '@/app/lib/store/store'
+import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
+import { setOpenActionMenu } from '../../lib/store/slices/dashboardSlice'
 
 const ActionMenuButton = () => {
-  const dispatch = useAppDispatch();
-  const { actionMenu } = useDashboardSelector();
-  const { play } = useSoundEffect("/sound-effects/action-menu-1.mp3", true);
+  const dispatch = useAppDispatch()
+  const { actionMenu } = useDashboardSelector()
+  const { play } = useSoundEffect('/sound-effects/action-menu-1.mp3', true)
 
   const handleOpenActionMenu = () => {
-    play();
-    dispatch(setOpenActionMenu());
-  };
+    play()
+    dispatch(setOpenActionMenu())
+  }
 
   return (
     <motion.button
@@ -24,11 +24,9 @@ const ActionMenuButton = () => {
     >
       <Plus className="w-4 h-4" />
       <span>Actions</span>
-      <ChevronDown
-        className={`w-4 h-4 transition-transform ${actionMenu ? "rotate-180" : ""}`}
-      />
+      <ChevronDown className={`w-4 h-4 transition-transform ${actionMenu ? 'rotate-180' : ''}`} />
     </motion.button>
-  );
-};
+  )
+}
 
-export default ActionMenuButton;
+export default ActionMenuButton

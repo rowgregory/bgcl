@@ -1,22 +1,23 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Nunito_Sans, Quicksand } from 'next/font/google'
 import './globals.css'
-// import { SessionProvider } from "next-auth/react";
-// import { auth } from "@/auth";
-import ReduxWrapper from './redux-wrapper'
-import { getActiveHero } from './lib/actions/getActiveHero'
+import { SessionProvider } from 'next-auth/react'
+import { auth } from '@/app/lib/auth'
 import { ReactNode } from 'react'
+import RootLayoutWrapper from './root-layout'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const nunito = Nunito_Sans({
   subsets: ['latin'],
-  preload: false
+  weight: ['700', '800', '900', '1000'],
+  display: 'swap',
+  variable: '--font-nunito' // Define CSS variable
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const quicksand = Quicksand({
   subsets: ['latin'],
-  preload: false
+  weight: ['700'],
+  display: 'swap',
+  variable: '--font-quicksand' // Define CSS variable
 })
 
 export const metadata: Metadata = {
@@ -30,15 +31,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: ReactNode
 }>) {
-  // const session = await auth();
-  const hero = await getActiveHero()
-
+  const session = await auth()
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {/* <SessionProvider session={session}>*/}
-        <ReduxWrapper data={{ hero }}>{children}</ReduxWrapper>
-        {/*  </SessionProvider> */}
+      <body className={`${nunito.variable} ${quicksand.variable} antialiased`}>
+        <SessionProvider session={session}>
+          <RootLayoutWrapper>{children}</RootLayoutWrapper>
+        </SessionProvider>
       </body>
     </html>
   )

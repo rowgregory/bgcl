@@ -1,32 +1,33 @@
 'use client'
 
 import { AnimatePresence } from 'framer-motion'
-import React from 'react'
 import validateEventForm from '@/app/lib/validations/event'
-import { addEventToState, setCloseEventDrawer, updateEventInState } from '@/app/redux/features/eventSlice'
-import { createFormActions, resetForm } from '@/app/redux/features/formSlice'
-import { showToast } from '@/app/redux/features/toastSlice'
-import { useCreateEventMutation, useUpdateEventMutation } from '@/app/redux/services/eventApi'
-import { useAppDispatch, useEventSelector, useFormSelector } from '@/app/redux/store'
+import { setCloseEventDrawer } from '@/app/lib/store/slices/eventSlice'
+import { createFormActions, resetForm, setIsLoading } from '@/app/lib/store/slices/formSlice'
+import { showToast } from '@/app/lib/store/slices/toastSlice'
+import { useAppDispatch, useEventSelector, useFormSelector } from '@/app/lib/store/store'
 import Backdrop from '../common/Backdrop'
-import EventForm from '../forms/event/EventForm'
-import SplitViewDrawer from '../common/SplitViewDrawer'
+import EventForm from '../forms/EventForm'
 import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
+import { useRouter } from 'next/navigation'
+import { updateEvent } from '@/app/lib/actions/updateEvent'
+import { createEvent } from '@/app/lib/actions/createEvent'
+import Drawer from '../common/Drawer'
 
 const EventDrawer = () => {
   const dispatch = useAppDispatch()
+  const router = useRouter()
+  const { eventDrawer } = useEventSelector()
+  const { forms, isLoading } = useFormSelector()
+  const inputs = forms.eventForm.inputs
+  const errors = forms.eventForm.errors
+  const isUpdating = !!inputs?.isUpdating
+  const { handleInput, setErrors, handleToggle, handleSelect } = createFormActions('eventForm', dispatch)
+
   const onClose = () => {
     dispatch(resetForm('eventForm'))
     dispatch(setCloseEventDrawer())
   }
-  const { eventDrawer } = useEventSelector()
-  const { forms } = useFormSelector()
-  const inputs = forms.eventForm.inputs
-  const errors = forms.eventForm.errors
-  const { handleInput, setErrors, handleToggle, handleSelect } = createFormActions('eventForm', dispatch)
-  const [createEvent, { isLoading: isCreating }] = useCreateEventMutation()
-  const [updateEvent, { isLoading: isUpdating }] = useUpdateEventMutation()
-  const isLoading = isCreating || isUpdating
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -34,20 +35,15 @@ const EventDrawer = () => {
     if (!validateEventForm(inputs, setErrors)) return
 
     try {
-      const eventData = {
-        ...inputs
-      }
+      dispatch(setIsLoading(true))
 
       if (inputs?.isUpdating) {
-        const updated = await updateEvent({
-          eventId: inputs?.id,
-          ...eventData
-        }).unwrap()
-        dispatch(updateEventInState(updated?.event))
+        await updateEvent(inputs.id, inputs)
       } else {
-        const created = await createEvent(eventData).unwrap()
-        dispatch(addEventToState(created?.event))
+        await createEvent(inputs)
       }
+
+      router.refresh()
 
       onClose()
 
@@ -70,6 +66,8 @@ const EventDrawer = () => {
           description: errorMessage
         })
       )
+    } finally {
+      dispatch(setIsLoading(false))
     }
   }
 
@@ -81,7 +79,7 @@ const EventDrawer = () => {
           <Backdrop onClose={onClose} />
 
           {/* Drawer */}
-          <SplitViewDrawer>
+          <Drawer className="max-w-5xl">
             {/* Form */}
             <EventForm
               errors={errors}
@@ -91,10 +89,10 @@ const EventDrawer = () => {
               handleSelect={handleSelect}
               inputs={inputs}
               isLoading={isLoading}
-              isUpdating={Boolean(inputs?.isUpdating)}
+              isUpdating={isUpdating}
               onClose={onClose}
             />
-          </SplitViewDrawer>
+          </Drawer>
         </>
       )}
     </AnimatePresence>
