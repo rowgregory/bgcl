@@ -21,6 +21,26 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.1.1',
+    date: '2026-01-16',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Enhanced Donation Form',
+        description:
+          'Expanded donation form with comprehensive donor information collection. Added address fields (street, city, state, ZIP, country), campaign selection dropdown with multiple fundraising options, and optional message/notes field for donor comments.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Admin Navigation Updates',
+        description:
+          'Added Changelog to Management section of admin navigation. Updated sidebar styling for better dark/light mode contrast and readability.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.1.0',
     date: '2026-01-16',
     changes: [

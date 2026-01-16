@@ -84,7 +84,7 @@ const Toast: React.FC = () => {
             ease: 'easeInOut'
           }}
           className={`
-          fixed top-4 right-4 left-4 lg:left-auto z-100 ${getBackgroundColor()} backdrop-blur-md rounded-xl border border-white/10 shadow-2xl p-4 lg:max-w-sm
+          fixed top-4 right-4 left-4 lg:left-auto z-150 ${getBackgroundColor()} backdrop-blur-md rounded-xl border border-white/10 shadow-2xl p-4 lg:max-w-sm
         `}
         >
           <div className="flex items-center space-x-3">

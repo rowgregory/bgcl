@@ -15,10 +15,10 @@ const AdminSidebar = () => {
   const onClose = () => store.dispatch(setCloseSidebar())
 
   return (
-    <aside className="w-64 bg-neutral-950 border-r border-neutral-800 h-screen overflow-y-auto flex flex-col">
-      <div className="border-b border-neutral-800">
+    <aside className="w-64 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-r h-screen overflow-y-auto flex flex-col">
+      <div className="dark:border-neutral-800 border-neutral-200 border-b">
         <div className="flex items-center justify-between py-4 px-6">
-          <Link href="/" className="text-lg font-bold text-neutral-100">
+          <Link href="/" className="text-lg font-bold dark:text-neutral-100 text-neutral-900">
             Boys & Girls Club
           </Link>
           {onClose && (
@@ -26,9 +26,9 @@ const AdminSidebar = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={onClose}
-              className="lg:hidden p-2 hover:bg-neutral-800 rounded-lg"
+              className="lg:hidden p-2 dark:hover:bg-neutral-800 hover:bg-neutral-100 rounded-lg transition-colors"
             >
-              <X className="w-5 h-5 text-neutral-100" />
+              <X className="w-5 h-5 dark:text-neutral-100 text-neutral-900" />
             </motion.button>
           )}
         </div>
@@ -37,7 +37,9 @@ const AdminSidebar = () => {
       <nav className="space-y-6 px-6 py-6 flex-1">
         {adminNavigationLinkData(pathname).map((group) => (
           <div key={group.title}>
-            <h3 className="text-xs font-semibold text-neutral-500 uppercase mb-3 px-3">{group.title}</h3>
+            <h3 className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase mb-3 px-3">
+              {group.title}
+            </h3>
             <div className="space-y-1">
               {group.items.map((item) => {
                 const IconComponent = item.icon
@@ -54,8 +56,8 @@ const AdminSidebar = () => {
                       }}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all text-left cursor-pointer ${
                         item.active
-                          ? 'bg-linear-to-r from-purple-600 to-indigo-600 text-white'
-                          : 'text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200'
+                          ? 'dark:bg-linear-to-r dark:from-purple-600 dark:to-indigo-600 bg-linear-to-r from-purple-500 to-indigo-500 text-white'
+                          : 'dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
                       }`}
                     >
                       <IconComponent className="w-4 h-4" />
@@ -70,8 +72,8 @@ const AdminSidebar = () => {
                     href={item.path || ''}
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
                       item.active
-                        ? 'bg-linear-to-r from-purple-600 to-indigo-600 text-white'
-                        : 'text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200'
+                        ? 'dark:bg-linear-to-r dark:from-purple-600 dark:to-indigo-600 bg-linear-to-r from-purple-500 to-indigo-500 text-white'
+                        : 'dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
                     }`}
                   >
                     <IconComponent className="w-4 h-4" />

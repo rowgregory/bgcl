@@ -139,6 +139,7 @@ export default function Header() {
           >
             <a
               href="https://parentportal.bgcl.org/"
+              target="_blank"
               className="dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 dark:text-black text-white font-bold px-8 py-3 rounded-sm transition-colors shadow-lg"
             >
               Parent Portal

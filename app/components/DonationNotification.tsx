@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 interface Donation {
@@ -28,6 +29,7 @@ export default function DonationNotification() {
   const [isVisible, setIsVisible] = useState(true)
   const indexRef = useRef(0)
   const timersRef = useRef<NodeJS.Timeout[]>([])
+  const pathname = usePathname()
 
   useEffect(() => {
     setCurrentDonation(mockDonations[0])
@@ -60,6 +62,8 @@ export default function DonationNotification() {
       timersRef.current = []
     }
   }, [])
+
+  if (pathname.includes('/admin')) return
 
   return (
     <AnimatePresence mode="wait">

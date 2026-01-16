@@ -10,7 +10,7 @@ export default function FloatingDonateButton() {
   const [isHovered, setIsHovered] = useState(false)
   const pathname = usePathname()
 
-  if (pathname === '/donate') return
+  if (pathname === '/donate' || pathname.includes('/admin')) return
 
   return (
     <>

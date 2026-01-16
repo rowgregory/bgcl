@@ -40,9 +40,9 @@ const AdminLayout: FC<ILayout> = ({ children }) => {
       <ActionMenuDropdown actionItems={dropdownActionItems} />
 
       {/* Desktop Fixed Header */}
-      <header className="hidden lg:block fixed top-0 left-64 right-0 bg-neutral-950 border-b border-neutral-800 py-2.5 px-6 z-30 h-15.25">
+      <header className="hidden lg:block fixed top-0 left-64 right-0 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-b py-2.5 px-6 z-30 h-15.25">
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-bold text-neutral-100 capitalize">{selectedPage}</h1>
+          <h1 className="text-lg font-bold dark:text-neutral-100 text-neutral-900 capitalize">{selectedPage}</h1>
           <div className="flex items-center space-x-2 md:space-x-4 h-full">
             <ActionMenuButton />
             <MobileMenuButton />
@@ -51,7 +51,7 @@ const AdminLayout: FC<ILayout> = ({ children }) => {
         </div>
       </header>
 
-      <div className="min-h-screen bg-neutral-950 flex">
+      <div className="min-h-screen dark:bg-neutral-950 bg-white flex">
         {/* Mobile Sidebar Overlay */}
         {sidebar && (
           <motion.div
@@ -59,7 +59,7 @@ const AdminLayout: FC<ILayout> = ({ children }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            className="fixed inset-0 dark:bg-black/50 bg-black/30 z-40 lg:hidden"
           />
         )}
         {/* Sidebar - Hidden on mobile, visible on desktop */}
@@ -80,16 +80,16 @@ const AdminLayout: FC<ILayout> = ({ children }) => {
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto flex flex-col lg:ml-64 lg:mt-15">
           {/* Mobile Header */}
-          <div className="lg:hidden flex items-center justify-between bg-neutral-900 border-b border-neutral-800 px-4 py-4">
+          <div className="lg:hidden flex items-center justify-between dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border-b px-4 py-4">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => store.dispatch(setToggleAdminSidebar(sidebar))}
-              className="p-2 hover:bg-neutral-950 rounded-lg"
+              className="p-2 dark:hover:bg-neutral-950 hover:bg-neutral-100 rounded-lg transition-colors"
             >
-              <Menu className="w-6 h-6 text-white" />
+              <Menu className="w-6 h-6 dark:text-white text-neutral-900" />
             </motion.button>
-            <h1 className="text-lg font-bold text-white capitalize">{selectedPage}</h1>
+            <h1 className="text-lg font-bold dark:text-white text-neutral-900 capitalize">{selectedPage}</h1>
             <div className="w-10" />
           </div>
 

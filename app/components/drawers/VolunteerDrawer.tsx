@@ -182,7 +182,7 @@ export default function VolunteerDrawer() {
                   href="mailto:volunteers@bgcl.org"
                   className="dark:text-sky-400 text-sky-600 hover:dark:text-sky-300 hover:text-sky-700 font-semibold text-sm transition-colors"
                 >
-                  volunteers@bgcl.org
+                  info@bgcl.org
                 </a>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
@@ -39,12 +39,12 @@ const LogoutButton = () => {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onClick={handleLogout}
-      className="relative p-2 bg-zinc-800 border border-zinc-700 rounded-lg hover:bg-zinc-700 transition-all"
+      className="relative p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-zinc-700 bg-neutral-200 border-neutral-300 hover:bg-neutral-300 rounded-lg transition-all"
     >
       {isLoading ? (
-        <div className="w-5 h-5 border-2 border-t-0 border-indigo-500 animate-spin rounded-full" />
+        <div className="w-5 h-5 border-2 border-t-0 dark:border-t-indigo-500 border-t-indigo-600 dark:animate-spin animate-spin rounded-full dark:border-indigo-500 border-indigo-500" />
       ) : (
-        <LogOut className="w-5 h-5 text-zinc-400" />
+        <LogOut className="w-5 h-5 dark:text-zinc-400 text-neutral-700" />
       )}
     </motion.button>
   )
