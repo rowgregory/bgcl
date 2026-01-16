@@ -219,6 +219,10 @@ model Order {
   eventId String?
   event   Event?  @relation(fields: [eventId], references: [id], onDelete: SetNull)
 
+  // Campaign info (NEW)
+  campaignId String?
+  campaign   Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+
   // User info (nullable - guest checkout allowed)
   userId String?
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -265,6 +269,36 @@ model OrderItem {
 
   @@index([orderId])
   @@index([ticketId])
+}
+
+model Campaign {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Basic Info
+  name        String
+  description String
+  image       String?
+
+  // Fundraising Goal
+  goalAmount    Float
+  currentAmount Float @default(0)
+
+  // Campaign Details
+  organizerName String
+  startDate     DateTime
+  endDate       DateTime?
+  isActive      Boolean   @default(true)
+
+  // External Links (for Harness transition)
+  externalLink String?
+
+  // Relations
+  orders Order[]
+
+  @@index([isActive])
+  @@index([createdAt])
 }
 
 model Hero {

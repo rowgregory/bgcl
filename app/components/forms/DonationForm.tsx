@@ -259,12 +259,20 @@ function DonationForm() {
           onClick={() => setDonationType('once')}
           className={`p-3 rounded-lg border-2 transition-all text-center ${
             donationType === 'once'
-              ? 'border-sky-500 bg-sky-500/10'
-              : 'border-zinc-700 bg-zinc-900 hover:border-zinc-600'
+              ? 'dark:border-sky-500 dark:bg-sky-500/10 border-sky-500 bg-sky-500/10'
+              : 'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 border-neutral-200 bg-neutral-100 hover:border-neutral-300'
           }`}
         >
-          <p className="font-semibold text-white text-sm">One-Time</p>
-          <p className="text-xs text-zinc-400">Single donation</p>
+          <p
+            className={`font-semibold text-sm ${donationType === 'once' ? 'dark:text-white text-neutral-900' : 'dark:text-zinc-300 text-neutral-700'}`}
+          >
+            One-Time
+          </p>
+          <p
+            className={`text-xs ${donationType === 'once' ? 'dark:text-zinc-400 text-neutral-600' : 'dark:text-zinc-400 text-neutral-500'}`}
+          >
+            Single donation
+          </p>
         </button>
 
         <button
@@ -272,12 +280,20 @@ function DonationForm() {
           onClick={() => setDonationType('monthly')}
           className={`p-3 rounded-lg border-2 transition-all text-center ${
             donationType === 'monthly'
-              ? 'border-sky-500 bg-sky-500/10'
-              : 'border-zinc-700 bg-zinc-900 hover:border-zinc-600'
+              ? 'dark:border-sky-500 dark:bg-sky-500/10 border-sky-500 bg-sky-500/10'
+              : 'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 border-neutral-200 bg-neutral-100 hover:border-neutral-300'
           }`}
         >
-          <p className="font-semibold text-white text-sm">Monthly</p>
-          <p className="text-xs text-zinc-400">Recurring support</p>
+          <p
+            className={`font-semibold text-sm ${donationType === 'monthly' ? 'dark:text-white text-neutral-900' : 'dark:text-zinc-300 text-neutral-700'}`}
+          >
+            Monthly
+          </p>
+          <p
+            className={`text-xs ${donationType === 'monthly' ? 'dark:text-zinc-400 text-neutral-600' : 'dark:text-zinc-400 text-neutral-500'}`}
+          >
+            Recurring support
+          </p>
         </button>
 
         <button
@@ -285,19 +301,27 @@ function DonationForm() {
           onClick={() => setDonationType('yearly')}
           className={`p-3 rounded-lg border-2 transition-all text-center ${
             donationType === 'yearly'
-              ? 'border-sky-500 bg-sky-500/10'
-              : 'border-zinc-700 bg-zinc-900 hover:border-zinc-600'
+              ? 'dark:border-sky-500 dark:bg-sky-500/10 border-sky-500 bg-sky-500/10'
+              : 'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 border-neutral-200 bg-neutral-100 hover:border-neutral-300'
           }`}
         >
-          <p className="font-semibold text-white text-sm">Yearly</p>
-          <p className="text-xs text-zinc-400">Annual subscription</p>
+          <p
+            className={`font-semibold text-sm ${donationType === 'yearly' ? 'dark:text-white text-neutral-900' : 'dark:text-zinc-300 text-neutral-700'}`}
+          >
+            Yearly
+          </p>
+          <p
+            className={`text-xs ${donationType === 'yearly' ? 'dark:text-zinc-400 text-neutral-600' : 'dark:text-zinc-400 text-neutral-500'}`}
+          >
+            Annual subscription
+          </p>
         </button>
       </div>
 
       {/* Monthly Plans */}
       {donationType === 'monthly' && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-          <p className="text-sm font-medium text-zinc-300">Select a monthly plan:</p>
+          <p className="text-sm font-medium dark:text-zinc-300 text-neutral-700">Select a monthly plan:</p>
           <div className="grid grid-cols-1 gap-3">
             {MONTHLY_PLANS.map((plan) => (
               <button
@@ -306,16 +330,16 @@ function DonationForm() {
                 onClick={() => setSelectedPlan(plan.id)}
                 className={`p-4 rounded-lg border-2 text-left transition-all ${
                   selectedPlan === plan.id
-                    ? 'border-sky-500 bg-sky-500/10'
-                    : 'border-zinc-700 bg-zinc-900 hover:border-zinc-600'
+                    ? 'dark:border-sky-500 dark:bg-sky-500/10 border-sky-500 bg-sky-500/10'
+                    : 'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 border-neutral-200 bg-neutral-100 hover:border-neutral-300'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-semibold text-white">{plan.name}</p>
-                    <p className="text-sm text-zinc-400">{plan.description}</p>
+                    <p className="font-semibold dark:text-white text-neutral-900">{plan.name}</p>
+                    <p className="text-sm dark:text-zinc-400 text-neutral-600">{plan.description}</p>
                   </div>
-                  <p className="text-lg font-bold text-sky-400">${plan.amount}</p>
+                  <p className="text-lg font-bold dark:text-sky-400 text-sky-600">${plan.amount}</p>
                 </div>
               </button>
             ))}
@@ -325,7 +349,7 @@ function DonationForm() {
 
       {donationType === 'yearly' && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-          <p className="text-sm font-medium text-zinc-300">Select a yearly plan:</p>
+          <p className="text-sm font-medium dark:text-zinc-300 text-neutral-700">Select a yearly plan:</p>
           <div className="grid grid-cols-1 gap-3">
             {YEARLY_PLANS.map((plan) => (
               <button
@@ -334,16 +358,16 @@ function DonationForm() {
                 onClick={() => setSelectedPlan(plan.id)}
                 className={`p-4 rounded-lg border-2 text-left transition-all ${
                   selectedPlan === plan.id
-                    ? 'border-sky-500 bg-sky-500/10'
-                    : 'border-zinc-700 bg-zinc-900 hover:border-zinc-600'
+                    ? 'dark:border-sky-500 dark:bg-sky-500/10 border-sky-500 bg-sky-500/10'
+                    : 'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 border-neutral-200 bg-neutral-100 hover:border-neutral-300'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-semibold text-white">{plan.name}</p>
-                    <p className="text-sm text-zinc-400">{plan.description}</p>
+                    <p className="font-semibold dark:text-white text-neutral-900">{plan.name}</p>
+                    <p className="text-sm dark:text-zinc-400 text-neutral-600">{plan.description}</p>
                   </div>
-                  <p className="text-lg font-bold text-sky-400">${plan.amount}/yr</p>
+                  <p className="text-lg font-bold dark:text-sky-400 text-sky-600">${plan.amount}/yr</p>
                 </div>
               </button>
             ))}
@@ -354,7 +378,7 @@ function DonationForm() {
       {/* One-Time Amount */}
       {donationType === 'once' && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-          <p className="text-sm font-medium text-zinc-300">Donation amount:</p>
+          <p className="text-sm font-medium dark:text-zinc-300 text-neutral-700">Donation amount:</p>
           <div className="grid grid-cols-4 gap-2">
             {[25, 50, 100, 250].map((amt) => (
               <button
@@ -363,8 +387,8 @@ function DonationForm() {
                 onClick={() => setAmount(amt)}
                 className={`p-3 rounded-lg border-2 font-semibold transition-all ${
                   amount === amt
-                    ? 'border-sky-500 bg-sky-600 text-white'
-                    : 'border-zinc-700 bg-zinc-900 text-white hover:border-zinc-600'
+                    ? 'dark:border-sky-500 dark:bg-sky-600 dark:text-white border-sky-500 bg-sky-600 text-white'
+                    : 'dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-600 border-neutral-200 bg-neutral-100 text-neutral-900 hover:border-neutral-300'
                 }`}
               >
                 ${amt}
@@ -372,14 +396,14 @@ function DonationForm() {
             ))}
           </div>
           <div>
-            <label className="text-sm font-medium text-zinc-300 block mb-2">Custom amount</label>
+            <label className="text-sm font-medium dark:text-zinc-300 text-neutral-700 block mb-2">Custom amount</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">$</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 dark:text-zinc-500 text-neutral-600">$</span>
               <input
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                className="w-full pl-8 pr-4 py-2.5 border border-zinc-700 bg-zinc-900 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-zinc-600"
+                className="w-full pl-8 pr-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
                 placeholder="0.00"
                 step="0.01"
                 min="0"
@@ -390,50 +414,52 @@ function DonationForm() {
       )}
 
       {/* Contact Information */}
-      <div className="space-y-4 pt-4 border-t border-zinc-700">
+      <div className="space-y-4 pt-4 dark:border-zinc-700 border-t border-neutral-200">
         <div>
-          <label className="block text-sm font-medium text-zinc-300 mb-2">Full Name</label>
+          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">Full Name</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-2.5 border border-zinc-700 bg-zinc-900 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-zinc-600"
+            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
             placeholder="John Doe"
             required
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-zinc-300 mb-2">Email Address</label>
+          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">Email Address</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2.5 border border-zinc-700 bg-zinc-900 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-zinc-600"
+            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
             placeholder="john@example.com"
             required
           />
         </div>
       </div>
 
-      {donationType === 'once' ? (
-        session.status === 'unauthenticated' ? (
-          <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg mb-6">
-            <p className="text-xs text-amber-400">
-              <Link href="/auth/login" className="font-semibold hover:text-amber-300 underline">
-                Sign in
-              </Link>{' '}
-              to save your card for faster donations
-            </p>
-          </div>
-        ) : (
-          <CustomSwitch
-            checked={saveCard}
-            onChange={setSaveCard}
-            label="Save card for future donations"
-            description="One-click checkout next time"
-          />
-        )
-      ) : (
+      {donationType === 'once' && session.status === 'unauthenticated' && (
+        <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg mb-6">
+          <p className="text-xs text-amber-400">
+            <Link href="/auth/login" className="font-semibold hover:text-amber-300 underline">
+              Sign in
+            </Link>{' '}
+            to save your card for faster donations
+          </p>
+        </div>
+      )}
+
+      {donationType === 'once' && session.status === 'authenticated' && (
+        <CustomSwitch
+          checked={saveCard}
+          onChange={setSaveCard}
+          label="Save card for future donations"
+          description="One-click checkout next time"
+        />
+      )}
+
+      {(donationType === 'monthly' || donationType === 'yearly') && (
         <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg mb-6">
           <p className="text-xs text-blue-400">
             Your card will be saved and charged{' '}
@@ -446,16 +472,16 @@ function DonationForm() {
       )}
 
       {/* Payment Information */}
-      <div className="space-y-3 pt-4 border-t border-zinc-700">
-        <p className="text-sm font-medium text-zinc-300">Payment Information</p>
-        <div className="p-4 border border-zinc-700 rounded-lg bg-zinc-900">
+      <div className="space-y-3 pt-4 dark:border-zinc-700 border-t border-neutral-200">
+        <p className="text-sm font-medium dark:text-zinc-300 text-neutral-700">Payment Information</p>
+        <div className="p-4 border dark:border-zinc-700 dark:bg-zinc-900 border-neutral-200 rounded-lg bg-neutral-50">
           <CardElement
             options={{
               style: {
                 base: {
                   fontSize: '16px',
-                  color: '#f4f4f5',
-                  '::placeholder': { color: '#71717a' }
+                  color: '#0a0a0a',
+                  '::placeholder': { color: '#999999' }
                 },
                 invalid: { color: '#fca5a5' }
               }
@@ -479,7 +505,7 @@ function DonationForm() {
       <button
         type="submit"
         disabled={!isValid || loading}
-        className="w-full px-6 py-3 bg-sky-600 hover:bg-sky-700 active:bg-sky-800 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+        className="w-full px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 dark:active:bg-sky-800 dark:disabled:bg-zinc-700 dark:text-white bg-sky-600 hover:bg-sky-700 active:bg-sky-800 disabled:bg-neutral-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
       >
         {loading ? (
           <motion.div
@@ -507,7 +533,7 @@ function DonationForm() {
         </span>
       </button>
 
-      <p className="text-xs text-zinc-500 text-center">Your payment is secure and encrypted</p>
+      <p className="text-xs dark:text-zinc-500 text-neutral-600 text-center">Your payment is secure and encrypted</p>
     </form>
   )
 }

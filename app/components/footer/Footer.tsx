@@ -12,31 +12,24 @@ export function Footer() {
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Add your newsletter API call here
-    console.log('Subscribing:', email)
+
     setSubscribed(true)
     setEmail('')
     setTimeout(() => setSubscribed(false), 3000)
   }
 
   return (
-    <footer className="bg-neutral-950 border-t border-neutral-800">
+    <footer className="dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-t">
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-12 md:py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          <motion.div className="flex space-x-3">
-            <motion.div className="overflow-hidden">
-              <Picture
-                src="/images/logo-1.webp"
-                alt="Boys & Girls Club"
-                className="w-auto h-12 cursor-pointer hover:opacity-80 transition-opacity"
-                priority
-              />
-            </motion.div>
-            <motion.div>
-              <h1 className="text-white font-bold text-lg">Boys & Girls Club</h1>
-              <p className="text-sky-400 text-xs font-semibold tracking-wide">of Lynn</p>
-            </motion.div>
+          <motion.div className="flex space-x-3 w-28 h-auto">
+            <Picture
+              src="/images/logo-2.png"
+              alt="Boys & Girls Club"
+              className="dark:hidden block w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
+              priority
+            />
           </motion.div>
 
           {/* Quick Links */}
@@ -47,25 +40,25 @@ export function Footer() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            <p className="text-white font-semibold text-sm uppercase tracking-wider">Links</p>
-            <ul className="space-y-2 text-sm text-neutral-400">
+            <p className="dark:text-white text-neutral-900 font-semibold text-sm uppercase tracking-wider">Links</p>
+            <ul className="space-y-2 text-sm dark:text-neutral-400 text-neutral-600">
               <li>
-                <Link href="/" className="hover:text-sky-400 transition-colors">
+                <Link href="/" className="dark:hover:text-sky-400 hover:text-sky-600 transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/programs" className="hover:text-sky-400 transition-colors">
+                <Link href="/programs" className="dark:hover:text-sky-400 hover:text-sky-600 transition-colors">
                   Programs
                 </Link>
               </li>
               <li>
-                <Link href="/events" className="hover:text-sky-400 transition-colors">
+                <Link href="/events" className="dark:hover:text-sky-400 hover:text-sky-600 transition-colors">
                   Events
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="hover:text-sky-400 transition-colors">
+                <Link href="/about" className="dark:hover:text-sky-400 hover:text-sky-600 transition-colors">
                   About
                 </Link>
               </li>
@@ -80,22 +73,24 @@ export function Footer() {
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
           >
-            <p className="text-white font-semibold text-sm uppercase tracking-wider">Newsletter</p>
+            <p className="dark:text-white text-neutral-900 font-semibold text-sm uppercase tracking-wider">
+              Newsletter
+            </p>
             <form onSubmit={handleSubscribe} className="space-y-2">
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neutral-600 pointer-events-none" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 dark:text-neutral-600 text-neutral-500 pointer-events-none" />
                 <input
                   type="email"
                   placeholder="Your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full pl-10 pr-3 py-2 bg-neutral-900 border border-neutral-800 rounded-lg text-sm text-white placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-3 py-2 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:placeholder-neutral-600 dark:focus:ring-sky-500 bg-neutral-100 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-600 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full px-3 py-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                className="w-full px-3 py-2 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold rounded-lg transition-colors"
               >
                 Subscribe
               </button>
@@ -113,11 +108,11 @@ export function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-neutral-800 my-8" />
+        <div className="dark:border-neutral-800 border-neutral-200 border-t my-8" />
 
         {/* Bottom Footer */}
         <motion.div
-          className="flex flex-col md:flex-row items-center justify-between text-sm text-neutral-600"
+          className="flex flex-col md:flex-row items-center justify-between text-sm dark:text-neutral-600 text-neutral-500"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -128,7 +123,7 @@ export function Footer() {
             <span>Built by</span>
             <Link
               href="https://sqysh.io?lead_source=bgcl"
-              className="text-sky-400 hover:text-sky-300 transition-colors font-semibold"
+              className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-700 transition-colors font-semibold"
             >
               Sqysh
             </Link>

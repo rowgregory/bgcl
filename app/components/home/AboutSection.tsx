@@ -19,7 +19,7 @@ export const AboutSection = ({
   buttonHref = '#'
 }) => {
   return (
-    <section className="py-20 md:py-40 px-6 md:px-12">
+    <section className="dark:py-20 dark:md:py-40 py-20 md:py-40 dark:px-6 dark:md:px-12 px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
         <motion.div
           className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center"
@@ -50,7 +50,7 @@ export const AboutSection = ({
               <div className="absolute -inset-12 pointer-events-none">
                 {/* Top line */}
                 <motion.div
-                  className="absolute top-0 left-1/4 w-32 h-px bg-linear-to-r from-transparent via-sky-500 to-transparent"
+                  className="absolute top-0 left-1/4 w-32 h-px dark:bg-linear-to-r dark:from-transparent dark:via-sky-500 dark:to-transparent bg-linear-to-r from-transparent via-sky-600 to-transparent"
                   animate={{
                     opacity: [0.3, 0.7, 0.3],
                     scaleX: [0.8, 1, 0.8]
@@ -60,7 +60,7 @@ export const AboutSection = ({
 
                 {/* Right line */}
                 <motion.div
-                  className="absolute right-0 top-1/4 w-px h-32 bg-linear-to-b from-transparent via-indigo-500 to-transparent"
+                  className="absolute right-0 top-1/4 w-px h-32 dark:bg-linear-to-b dark:from-transparent dark:via-indigo-500 dark:to-transparent bg-linear-to-b from-transparent via-sky-500 to-transparent"
                   animate={{
                     opacity: [0.3, 0.7, 0.3],
                     scaleY: [0.8, 1, 0.8]
@@ -70,7 +70,7 @@ export const AboutSection = ({
 
                 {/* Bottom line */}
                 <motion.div
-                  className="absolute bottom-0 right-1/4 w-32 h-px bg-linear-to-r from-transparent via-sky-400 to-transparent"
+                  className="absolute bottom-0 right-1/4 w-32 h-px dark:bg-linear-to-r dark:from-transparent dark:via-sky-400 dark:to-transparent bg-linear-to-r from-transparent via-sky-600 to-transparent"
                   animate={{
                     opacity: [0.3, 0.7, 0.3],
                     scaleX: [0.8, 1, 0.8]
@@ -80,7 +80,7 @@ export const AboutSection = ({
 
                 {/* Left line */}
                 <motion.div
-                  className="absolute left-0 top-1/3 w-px h-32 bg-linear-to-b from-transparent via-indigo-400 to-transparent"
+                  className="absolute left-0 top-1/3 w-px h-32 dark:bg-linear-to-b dark:from-transparent dark:via-indigo-400 dark:to-transparent bg-linear-to-b from-transparent via-sky-500 to-transparent"
                   animate={{
                     opacity: [0.3, 0.7, 0.3],
                     scaleY: [0.8, 1, 0.8]
@@ -113,20 +113,22 @@ export const AboutSection = ({
                 transition={{ duration: 0.6, delay: 0.1 }}
               >
                 <motion.div
-                  className="h-px w-8 bg-sky-400"
+                  className="h-px w-8 dark:bg-sky-400 bg-sky-600"
                   animate={{ scaleX: [0, 1, 1] }}
                   transition={{ duration: 0.8, delay: 0.2 }}
                 />
-                <p className="text-sm font-semibold text-sky-400 uppercase tracking-wider">About BGCL</p>
+                <p className="text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-wider">
+                  About BGCL
+                </p>
               </motion.div>
               <motion.h2
-                className="text-5xl md:text-6xl font-black text-white"
+                className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                {title} <span className="font-light text-neutral-400">{subtitle}</span>
+                {title} <span className="font-light dark:text-neutral-400 text-neutral-600">{subtitle}</span>
               </motion.h2>
             </motion.div>
 
@@ -139,13 +141,13 @@ export const AboutSection = ({
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              <p className="text-lg font-bold text-neutral-100 leading-relaxed">{description}</p>
-              <p className="text-base text-neutral-400 leading-relaxed">{detailedDescription}</p>
+              <p className="text-lg font-bold dark:text-neutral-100 text-neutral-800 leading-relaxed">{description}</p>
+              <p className="text-base dark:text-neutral-400 text-neutral-600 leading-relaxed">{detailedDescription}</p>
             </motion.div>
 
             {/* Stats */}
             <motion.div
-              className="grid grid-cols-3 gap-4 py-8 border-t border-b border-neutral-800"
+              className="grid grid-cols-3 gap-4 py-8 dark:border-neutral-800 border-neutral-200 border-t border-b"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -161,9 +163,9 @@ export const AboutSection = ({
                   transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
                   whileHover={{ scale: 1.05 }}
                 >
-                  <p className="text-sm font-bold text-neutral-400">{stat.label}</p>
+                  <p className="text-sm font-bold dark:text-neutral-400 text-neutral-600">{stat.label}</p>
                   <motion.p
-                    className="text-4xl md:text-5xl font-black bg-linear-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent"
+                    className="text-4xl md:text-5xl font-black dark:bg-linear-to-r dark:from-sky-400 dark:to-indigo-400 bg-linear-to-r from-sky-600 to-sky-700 bg-clip-text text-transparent"
                     whileHover={{ scale: 1.1 }}
                   >
                     {stat.value}
@@ -182,12 +184,12 @@ export const AboutSection = ({
             >
               <motion.a
                 href={buttonHref}
-                className="inline-flex items-center gap-3 px-8 py-4 border-2 border-sky-500 text-sky-400 font-bold uppercase text-sm tracking-wide bg-linear-to-r from-sky-500/10 to-indigo-500/10 rounded-lg overflow-hidden relative group"
+                className="inline-flex items-center gap-3 px-8 py-4 border-2 dark:border-sky-500 dark:text-sky-400 border-sky-600 text-sky-600 font-bold uppercase text-sm tracking-wide dark:bg-linear-to-r dark:from-sky-500/10 dark:to-indigo-500/10 bg-linear-to-r from-sky-500/20 to-sky-600/20 rounded-lg overflow-hidden relative group"
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <motion.div
-                  className="absolute inset-0 bg-linear-to-r from-sky-500 to-indigo-500 -z-10 opacity-0 group-hover:opacity-20"
+                  className="absolute inset-0 dark:bg-linear-to-r dark:from-sky-500 dark:to-indigo-500 bg-linear-to-r from-sky-600 to-sky-700 -z-10 opacity-0 group-hover:opacity-20"
                   transition={{ duration: 0.3 }}
                 />
                 {buttonText}

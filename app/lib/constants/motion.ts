@@ -33,26 +33,22 @@ export const overlayVariants = {
 }
 
 export const itemVariants = {
-  closed: {
-    x: -20,
-    opacity: 0
-  },
-  open: (i: number) => ({
-    x: 0,
+  hidden: { opacity: 0, y: 20 },
+  visible: {
     opacity: 1,
-    transition: {
-      delay: 0.1 + i * 0.05,
-      duration: 0.4,
-      ease: 'easeOut' as const
-    }
-  })
+    y: 0,
+    transition: { duration: 0.5 }
+  }
 }
 
 export const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 }
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
   }
 }
 

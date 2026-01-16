@@ -1,4 +1,4 @@
-import { Rocket, Globe, Satellite, Sliders, ScanLine, Shield, Fuel, Aperture, BookOpen } from 'lucide-react'
+import { Rocket, Globe, Satellite, Sliders, ScanLine, Shield, Fuel, Aperture, BookOpen, GitCommit } from 'lucide-react'
 
 const isStringInPath = (path: string, str: string) => path.includes(str)
 
@@ -47,7 +47,7 @@ export const adminNavigationLinkData = (path: string) => {
     {
       icon: Fuel,
       label: 'The Fuel Tank',
-      path: '/admin/fuel-tank',
+      path: '/admin/fuel-tank/overview',
       description: 'Organize Assets',
       active: isStringInPath(path, 'fuel-tank')
     }
@@ -67,6 +67,13 @@ export const adminNavigationLinkData = (path: string) => {
       path: '/admin/operations-panel',
       description: 'System Settings',
       active: isStringInPath(path, 'operations-panel')
+    },
+    {
+      icon: GitCommit,
+      label: 'Changelog',
+      path: '/admin/changelog',
+      description: 'Version History & Updates',
+      active: isStringInPath(path, 'changelog')
     }
   ]
 

@@ -5,5 +5,6 @@ export const HIDDEN_PATHS = [
   '/checkout',
   '/order-confirmation',
   '/programs/',
-  '/donate'
+  '/donate',
+  '/campaigns/'
 ]

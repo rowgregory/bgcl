@@ -4,21 +4,53 @@
   /* Maps Next.js variables to Tailwind utility classes: font-nunito & font-quicksand */
   --font-nunito: var(--font-nunito);
   --font-quicksand: var(--font-quicksand);
+  --font-lexend: var(--font-lexend);
 
   /* Optional: Overrides the default 'font-sans' utility to use Nunito automatically */
   --font-sans: var(--font-nunito);
 }
 
+@theme {
+  --breakpoint-1200: 1200px;
+}
+
+/* Light mode (default) */
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #09090b;
+    --foreground: #fafafa;
+  }
+}
+
+html.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   /* Apply your primary font globally using the CSS variable */
-  font-family: var(--font-nunito), Arial, Helvetica, sans-serif;
+  font-family: var(--font-lexend), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Hide scrollbars but keep functionality */
+::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

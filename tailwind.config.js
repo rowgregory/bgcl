@@ -13,6 +13,7 @@ export const theme = {
       sm: '640px', // Small devices (tablets)
       md: '768px', // Medium devices (small laptops)
       lg: '1024px', // Large devices (laptops/desktops)
+      'bp-1145': '1145px', // Large devices (laptops/desktops)
       xl: '1280px', // Extra large devices (large desktops)
       '2xl': '1536px', // 2X large devices (larger desktops)
       '3xl': '1700px',

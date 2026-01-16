@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Nunito_Sans, Quicksand } from 'next/font/google'
+import { Lexend, Nunito_Sans, Quicksand } from 'next/font/google'
 import './globals.css'
 import { SessionProvider } from 'next-auth/react'
 import { auth } from '@/app/lib/auth'
@@ -20,6 +20,13 @@ const quicksand = Quicksand({
   variable: '--font-quicksand' // Define CSS variable
 })
 
+const lexend = Lexend({
+  subsets: ['latin'],
+  weight: ['200', '300', '400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+  variable: '--font-lexend' // Define CSS variable
+})
+
 export const metadata: Metadata = {
   title: 'Boys and Girls Club of Lynn',
   description:
@@ -33,8 +40,8 @@ export default async function RootLayout({
 }>) {
   const session = await auth()
   return (
-    <html lang="en">
-      <body className={`${nunito.variable} ${quicksand.variable} antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${nunito.variable} ${quicksand.variable} ${lexend.variable} antialiased`}>
         <SessionProvider session={session}>
           <RootLayoutWrapper>{children}</RootLayoutWrapper>
         </SessionProvider>

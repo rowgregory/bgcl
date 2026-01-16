@@ -10,17 +10,26 @@ import { usePathname } from 'next/navigation'
 import { HIDDEN_PATHS } from './lib/constants/navigation'
 import { LanguageDropdown } from './components/dropdowns/LanguageDropdown'
 import { Footer } from './components/footer/Footer'
+import DonationNotification from './components/DonationNotification'
+import CapitalCampaignDrawer from './components/drawers/CapitalCampaignDrawer'
+import VolunteerDrawer from './components/drawers/VolunteerDrawer'
+import FloatingDonateButton from './components/FloatingButton'
 
 export default function RootLayoutWrapper({ children }) {
   const pathname = usePathname()
 
   const show = !HIDDEN_PATHS.some((path) => pathname.startsWith(path))
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Toast />
         <TicketSelectionDrawer />
         <LanguageDropdown />
+        <DonationNotification />
+        <CapitalCampaignDrawer />
+        <VolunteerDrawer />
+        <FloatingDonateButton />
         {show && <Header />}
         {children}
         {show && <Footer />}

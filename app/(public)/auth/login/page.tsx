@@ -42,8 +42,6 @@ const Login = () => {
         callbackUrl: '/supporter/overview'
       })
 
-      console.log('RESULT: ', result)
-
       if (result?.ok) {
         store.dispatch(showToast({ message: 'Successfully sent magic link' }))
         setEmail('')

@@ -2,303 +2,270 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import Link from 'next/link'
-import { ChevronRight } from 'lucide-react'
 
 export default function AboutPage() {
+  const outcomes = [
+    {
+      title: 'Globally Competitive Graduates',
+      description:
+        "When young people perform well academically, they graduate from high school on time, are motivated to learn and have a plan to succeed in today's modern workforce. Among youth ages 12 to 17 living in households experiencing low income, Club members report higher grades than youth nationally."
+    },
+    {
+      title: '21st Century Leaders',
+      description:
+        'Club youth are the leaders, innovators and problem-solvers of tomorrow - developing skills to be change agents in their communities and beyond. Club members in 8th, 10th and 12th grades volunteer at significantly higher rates than their peers nationally.'
+    },
+    {
+      title: 'A Healthier Generation',
+      description:
+        'When young people live healthy lifestyles, they are able to make decisions that result in their social, emotional and physical well-being. Club teens are less likely to use drugs or alcohol and more likely to engage in regular physical activity than their peers nationally.'
+    }
+  ]
+
+  const covidStats = [
+    { stat: '200K+', label: 'Youth received internet access and technology' },
+    { stat: '24M+', label: 'Emergency meals and snacks served' },
+    { stat: '460K', label: 'Families received wellness checks and support' },
+    { stat: '$10M+', label: 'Economic assistance provided to families' }
+  ]
+
   return (
-    <div className="min-h-screen">
-      <div className="bg-zinc-900 border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-4">
-            <p className="text-sky-400 font-semibold text-sm uppercase tracking-wider">Who We Are</p>
-            <h1 className="text-5xl font-bold text-white">About Our Mission</h1>
-            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-              Boys & Girls Club of Lynn inspires and enables young people to realize their full potential as productive,
-              responsible, and caring citizens.
+    <div className="py-20 px-6 md:px-12">
+      <div className="max-w-7xl mx-auto space-y-16">
+        {/* Header */}
+        <motion.div
+          className="space-y-6"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="space-y-4">
+            <p className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
+              Our Purpose
             </p>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Mission Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32"
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Image */}
-          <div className="relative h-96 rounded-lg overflow-hidden border border-zinc-700">
-            <Image
-              src="/images/img-2.jpg"
-              alt="Our Mission"
-              fill
-              className="object-cover hover:scale-105 transition-transform duration-300"
-              priority
-            />
-          </div>
-
-          {/* Content */}
-          <div className="space-y-6">
-            <div>
-              <p className="text-sky-400 font-semibold text-sm uppercase tracking-wider mb-2">About Us</p>
-              <h2 className="text-4xl font-bold text-white mb-6">Our Mission & Vision</h2>
-            </div>
-
-            <p className="text-zinc-300 text-lg leading-relaxed">
+            <h1 className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
+              Our Mission
+            </h1>
+            <p className="text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
               To inspire and enable all young people, especially those that need us the most, to realize their full
               potential as productive, responsible and caring citizens.
             </p>
+          </div>
+        </motion.div>
 
-            <p className="text-zinc-400 leading-relaxed">
-              Currently, we serve 1,500 members ages 5 to 18 at our main club located on 25 N Common St, Lynn MA. We
-              have more than 250 children walk through our doors daily for various after school programs. Our summer
-              camp program serves over 125 children weekly at Creighton Pond Day Camp in Middleton.
+        {/* Content Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="space-y-6 text-neutral-700 dark:text-neutral-300"
+          >
+            <p className="text-lg leading-relaxed">
+              We stand behind our mission statement by instilling programs that focus on five core areas including
+              Education & Career Development, Character & Leadership Development, Health & Life Skills, the Arts,
+              Sports, Fitness and Recreation activities.
             </p>
 
-            <div className="grid grid-cols-3 gap-6 pt-4">
-              <div className="text-center">
-                <p className="text-3xl font-bold text-sky-400">1,500+</p>
-                <p className="text-zinc-400 text-sm mt-2">Members</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl font-bold text-sky-400">250+</p>
-                <p className="text-zinc-400 text-sm mt-2">Daily Visitors</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl font-bold text-sky-400">125+</p>
-                <p className="text-zinc-400 text-sm mt-2">Summer Camp</p>
-              </div>
-            </div>
-          </div>
+            <p className="text-lg leading-relaxed">
+              The Boys & Girls Club of Lynn strives in enhancing our Youth Development Strategy (YDS) by fully
+              implementing all our values to create an environment that guides boys and girls to achieve and reach their
+              full potential.
+            </p>
+
+            <p className="text-lg leading-relaxed">
+              During the school year we serve 1,500 members ages 5 to 18 at our main club located on 25 N Common St,
+              Lynn MA. We have more than 250 children walk through our doors daily for various after school programs.
+              Our summer camp program serves over 125 children weekly at Creighton Pond Day Camp in Middleton.
+            </p>
+          </motion.div>
+
+          {/* Mission Image */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="relative w-full aspect-square rounded-xl overflow-hidden dark:border dark:border-neutral-800 border border-neutral-200"
+          >
+            <Image
+              src="https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/68ad623aead0f5ba73d87630_Our%20Mission%20img1.jpg"
+              alt="Our Mission"
+              fill
+              className="object-cover"
+            />
+          </motion.div>
         </div>
-      </motion.section>
 
-      {/* History Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="bg-zinc-900 py-32"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Why Choose Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="space-y-12"
+        >
+          <div className="text-center space-y-4">
+            <h2 className="text-4xl md:text-5xl font-black dark:text-white text-neutral-900 leading-tight">
+              Why Choose the Boys & Girls Club of Lynn?
+            </h2>
+            <p className="text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl mx-auto">
+              Check out what separates us from other clubs
+            </p>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Content */}
-            <div className="space-y-6 order-2 lg:order-1">
-              <div>
-                <p className="text-sky-400 font-semibold text-sm uppercase tracking-wider mb-2">Our History</p>
-                <h2 className="text-4xl font-bold text-white mb-6">Our Journey</h2>
-              </div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="relative w-full aspect-square rounded-xl overflow-hidden dark:border dark:border-neutral-800 border border-neutral-200"
+            >
+              <Image
+                src="https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/68ad623ab80b12583f90356c_Our%20Mission%20img2.jpg"
+                alt="Why Choose BGCL"
+                fill
+                className="object-cover"
+              />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-8"
+            >
+              {outcomes.map((outcome, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="space-y-3"
+                >
+                  <h3 className="text-xl font-bold dark:text-white text-neutral-900">{outcome.title}</h3>
+                  <p className="text-base dark:text-neutral-400 text-neutral-600 leading-relaxed">
+                    {outcome.description}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
 
-              <p className="text-zinc-300 text-lg leading-relaxed">
-                The Boys & Girls Club of Lynn has a rich history of serving the youth in our community. Founded with a
-                vision to provide a safe, supportive environment where young people can learn, grow, and thrive, our
-                organization has been instrumental in shaping the lives of thousands of children and teens.
-              </p>
-
-              <p className="text-zinc-400 leading-relaxed">
-                Over the years, we've maintained our commitment to providing youth with the resources, guidance, and
-                support they need to succeed. Our dedicated staff and volunteers work tirelessly to create programs that
-                inspire confidence, foster creativity, and develop the leaders of tomorrow.
-              </p>
-
-              <div className="space-y-3 pt-4">
-                <div className="flex items-start space-x-3">
-                  <ChevronRight className="w-5 h-5 text-sky-400 mt-1 shrink-0" />
-                  <span className="text-zinc-300">Education & Career Development</span>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <ChevronRight className="w-5 h-5 text-sky-400 mt-1 shrink-0" />
-                  <span className="text-zinc-300">Character & Leadership Development</span>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <ChevronRight className="w-5 h-5 text-sky-400 mt-1 shrink-0" />
-                  <span className="text-zinc-300">Health & Life Skills</span>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <ChevronRight className="w-5 h-5 text-sky-400 mt-1 shrink-0" />
-                  <span className="text-zinc-300">Sports, Arts & Recreation</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Image */}
-            <div className="relative h-full rounded-lg overflow-hidden order-1 lg:order-2">
-              <div className="relative h-full rounded-lg overflow-hidden border border-zinc-700">
+          {/* Accreditations */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="dark:bg-neutral-800 bg-white p-8 rounded-xl dark:border dark:border-neutral-700 border border-neutral-200"
+          >
+            <h3 className="text-xl font-bold dark:text-white text-neutral-900 mb-6">
+              Boys & Girls Clubs of America is Highly Respected
+            </h3>
+            <p className="dark:text-neutral-300 text-neutral-700 mb-6 leading-relaxed">
+              BGCA maintains the highest Guidestar Platinum Seal of Transparency and is ranked #11 on the Chronicle of
+              Philanthropy's list of "America's Favorite Charities." Consumer Reports has recognized BGCA as one of the
+              "Best Charities for Your Donations."
+            </p>
+            <div className="flex flex-wrap gap-8 items-center">
+              <div className="relative w-32 h-16">
                 <Image
-                  src="/images/img-3.jpg"
-                  alt="Our Mission"
+                  src="https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/65f7b5d4bb93f0112db17054_candid-platinum-transparency.png"
+                  alt="Candid Platinum Seal"
                   fill
-                  className="object-cover hover:scale-105 transition-transform duration-300"
-                  priority
+                  className="object-contain"
+                />
+              </div>
+              <div className="relative w-32 h-16">
+                <Image
+                  src="https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/65f7b5d402aea38a08323c87_charity-navigator.png"
+                  alt="Charity Navigator"
+                  fill
+                  className="object-contain"
                 />
               </div>
             </div>
+            <p className="text-sm dark:text-neutral-400 text-neutral-600 mt-6">
+              *2020 National Outcomes Report, National Youth Outcomes Initiative, Boys & Girls Clubs of America
+            </p>
+          </motion.div>
+        </motion.div>
+
+        {/* COVID Response Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="space-y-12"
+        >
+          <div className="text-center space-y-4">
+            <h2 className="text-4xl md:text-5xl font-black dark:text-white text-neutral-900 leading-tight">
+              Our Response to COVID-19
+            </h2>
+            <p className="text-xl dark:text-neutral-300 text-neutral-700">
+              Mission Unstoppable: Clubs Transform Operations to Support the Safety & Success of Youth
+            </p>
           </div>
-        </div>
-      </motion.section>
 
-      {/* Why Choose Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32"
-      >
-        <div className="text-center space-y-4 mb-16">
-          <p className="text-sky-400 font-semibold text-sm uppercase tracking-wider">Why Choose Us</p>
-          <h2 className="text-4xl font-bold text-white">What Makes Us Different</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Card 1 */}
-          <motion.div
-            whileHover={{ y: -5 }}
-            className="bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-sky-400 transition-colors"
-          >
-            <div className="h-48 bg-linear-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-              <div className="text-5xl">🎓</div>
-            </div>
-            <div className="p-6 space-y-3">
-              <h3 className="text-xl font-bold text-white">Competitive Graduates</h3>
-              <p className="text-zinc-400">
-                Club members report higher grades and are more motivated to succeed in today's workforce.
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Card 2 */}
-          <motion.div
-            whileHover={{ y: -5 }}
-            className="bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-sky-400 transition-colors"
-          >
-            <div className="h-48 bg-linear-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-              <div className="text-5xl">🚀</div>
-            </div>
-            <div className="p-6 space-y-3">
-              <h3 className="text-xl font-bold text-white">21st Century Leaders</h3>
-              <p className="text-zinc-400">
-                Our youth volunteer at higher rates and become the innovators and problem-solvers of tomorrow.
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Card 3 */}
-          <motion.div
-            whileHover={{ y: -5 }}
-            className="bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-sky-400 transition-colors"
-          >
-            <div className="h-48 bg-linear-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-              <div className="text-5xl">💪</div>
-            </div>
-            <div className="p-6 space-y-3">
-              <h3 className="text-xl font-bold text-white">Healthier Generation</h3>
-              <p className="text-zinc-400">
-                Club teens are less likely to use drugs and more engaged in regular physical activity.
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </motion.section>
-
-      {/* Testimonials Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32"
-      >
-        <div className="text-center space-y-4 mb-16">
-          <p className="text-sky-400 font-semibold text-sm uppercase tracking-wider">Testimonials</p>
-          <h2 className="text-4xl font-bold text-white">What People Say About Us</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[1, 2, 3].map((_, idx) => (
-            <div key={idx} className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 space-y-4">
-              <p className="text-zinc-300 leading-relaxed">
-                "The Boys & Girls Club has been instrumental in helping my child develop confidence and skills. The
-                staff is wonderful and truly cares about each member."
-              </p>
-              <div>
-                <p className="text-white font-bold">Sarah Johnson</p>
-                <p className="text-sky-400 text-sm">Parent & Donor</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* COVID Response */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.7 }}
-        className="bg-zinc-900 py-32"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Content */}
-            <div className="space-y-6">
-              <div>
-                <p className="text-sky-400 font-semibold text-sm uppercase tracking-wider mb-2">Impact</p>
-                <h2 className="text-4xl font-bold text-white mb-6">Our Response to COVID-19</h2>
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-6"
+            >
+              <p className="text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
+                When the COVID-19 pandemic eliminated the structure of the traditional in-person school day and access
+                to safe places, meals, and more for millions of youth, clubs stepped up:
+              </p>
+
+              <div className="grid grid-cols-2 gap-4">
+                {covidStats.map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="dark:bg-neutral-800 bg-neutral-100 p-4 rounded-lg"
+                  >
+                    <div className="text-2xl md:text-3xl font-black dark:text-white text-neutral-900 mb-2">
+                      {item.stat}
+                    </div>
+                    <p className="text-sm dark:text-neutral-400 text-neutral-600 leading-snug">{item.label}</p>
+                  </motion.div>
+                ))}
               </div>
 
-              <div className="space-y-4">
-                <div className="flex items-start space-x-4">
-                  <span className="text-sky-400 text-4xl font-bold shrink-0">200K+</span>
-                  <p className="text-zinc-400">youth received internet access and technology support</p>
-                </div>
-                <div className="flex items-start space-x-4">
-                  <span className="text-sky-400 text-4xl font-bold shrink-0">24M+</span>
-                  <p className="text-zinc-400">emergency meals and snacks provided</p>
-                </div>
-                <div className="flex items-start space-x-4">
-                  <span className="text-sky-400 text-4xl font-bold shrink-0">$10M+</span>
-                  <p className="text-zinc-400">in economic assistance to families</p>
-                </div>
-              </div>
-            </div>
+              <p className="text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
+                Youth pitched in, too - assembling community care packages, writing letters to frontline workers and
+                sharing in community efforts to recover and look beyond the pandemic to hopeful days ahead.
+              </p>
+            </motion.div>
 
-            {/* Image */}
-            <div className="relative h-96 rounded-lg overflow-hidden">
-              <div className="relative rounded-lg overflow-hidden order-1 lg:order-2 w-96 h-96 border border-zinc-700">
-                <Image
-                  src="/images/img-4.jpg"
-                  alt="Our Mission"
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-300"
-                  priority
-                />
-              </div>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="relative w-full aspect-square rounded-xl overflow-hidden dark:border dark:border-neutral-800 border border-neutral-200"
+            >
+              <Image
+                src="https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/65f7b7100e60ce666acfccaf_covid%20blgc%20image-min.jpg"
+                alt="COVID Response"
+                fill
+                className="object-cover"
+              />
+            </motion.div>
           </div>
-        </div>
-      </motion.section>
-
-      {/* CTA Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.9 }}
-        className="bg-linear-to-r from-sky-600 to-sky-700 py-32 mt-20"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-          <h2 className="text-4xl font-bold text-white">Ready to Make a Difference?</h2>
-          <p className="text-sky-100 text-lg max-w-2xl mx-auto">
-            Support our mission to empower youth in our community.
-          </p>
-          <Link
-            href="/donate"
-            className="px-10 py-3 bg-white hover:bg-zinc-100 text-sky-600 font-bold rounded-lg transition-colors inline-block"
-          >
-            Donate Now
-          </Link>
-        </div>
-      </motion.section>
+        </motion.div>
+      </div>
     </div>
   )
 }
