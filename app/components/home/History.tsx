@@ -1,5 +1,7 @@
 'use client'
 
+import { setOpenCapitalCampaignDrawer } from '@/app/lib/store/slices/appSlice'
+import { store } from '@/app/lib/store/store'
 import { motion } from 'framer-motion'
 
 export const HistorySection = () => {
@@ -90,12 +92,11 @@ export const HistorySection = () => {
               including a theater space.
             </p>
 
-            <p className="text-lg dark:text-sky-400 text-sky-600 font-semibold leading-relaxed">
-              To learn more about our Capital Campaign project,{' '}
-              <a href="/capitalcampaign" className="hover:underline">
-                visit our Capital Campaign page
-              </a>
-              .
+            <p
+              onClick={() => store.dispatch(setOpenCapitalCampaignDrawer())}
+              className="text-lg dark:text-sky-400 text-sky-600 font-semibold leading-relaxed cursor-pointer"
+            >
+              To learn more about our Capital Campaign project, visit our Capital Campaign drawer.
             </p>
           </div>
         </motion.div>

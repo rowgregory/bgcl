@@ -4,6 +4,7 @@ import { setCloseCapitalCampaignDrawer } from '@/app/lib/store/slices/appSlice'
 import { store, useApplicationSelector } from '@/app/lib/store/store'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
+import Link from 'next/link'
 
 export default function CapitalCampaignDrawer() {
   const { capitalCampaignDrawer } = useApplicationSelector()
@@ -19,7 +20,7 @@ export default function CapitalCampaignDrawer() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-40"
+            className="fixed inset-0 bg-black/50 z-100 backdrop-blur-sm"
           />
 
           {/* Drawer */}
@@ -28,7 +29,7 @@ export default function CapitalCampaignDrawer() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-screen w-full md:w-150 lg:w-175 dark:bg-neutral-950 bg-white z-50 overflow-y-auto shadow-2xl"
+            className="fixed right-0 top-0 h-screen w-full md:w-150 lg:w-175 dark:bg-neutral-950 bg-white z-110 overflow-y-auto shadow-2xl"
           >
             {/* Header */}
             <div className="sticky top-0 dark:bg-neutral-900 bg-neutral-50 border-b dark:border-neutral-800 border-neutral-200 px-6 py-4 flex items-center justify-between">
@@ -51,7 +52,6 @@ export default function CapitalCampaignDrawer() {
                     height="100%"
                     src="https://www.youtube.com/embed/VIDEO_ID"
                     title="Capital Campaign"
-                    frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                     className="w-full h-full"
@@ -160,9 +160,13 @@ export default function CapitalCampaignDrawer() {
                   We invite you to join us in building a brighter future for youth in Lynn. Your donation will directly
                   support the expansion of our facility and programs.
                 </p>
-                <button className="w-full px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg transition-colors">
+                <Link
+                  href="/donate"
+                  onClick={onClose}
+                  className="w-full block text-center px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg transition-colors"
+                >
                   Donate Now
-                </button>
+                </Link>
               </div>
 
               {/* Contact */}
@@ -181,10 +185,10 @@ export default function CapitalCampaignDrawer() {
                   <p>
                     <span className="font-semibold dark:text-neutral-400 text-neutral-600">Email:</span>
                     <a
-                      href="mailto:development@bgcl.org"
+                      href="mailto:info@bgcl.org"
                       className="dark:text-sky-400 text-sky-600 hover:dark:text-sky-300 hover:text-sky-700 ml-2"
                     >
-                      development@bgcl.org
+                      info@bgcl.org
                     </a>
                   </p>
                 </div>
