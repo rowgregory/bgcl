@@ -5,6 +5,8 @@ import { SessionProvider } from 'next-auth/react'
 import { auth } from '@/app/lib/auth'
 import { ReactNode } from 'react'
 import RootLayoutWrapper from './root-layout'
+import { ThemeProvider } from './lib/providers/theme'
+import { getPrograms } from './lib/actions/getPrograms'
 
 const nunito = Nunito_Sans({
   subsets: ['latin'],
@@ -39,11 +41,14 @@ export default async function RootLayout({
   children: ReactNode
 }>) {
   const session = await auth()
+  const programs = await getPrograms()
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${nunito.variable} ${quicksand.variable} ${lexend.variable} antialiased`}>
         <SessionProvider session={session}>
-          <RootLayoutWrapper>{children}</RootLayoutWrapper>
+          <ThemeProvider>
+            <RootLayoutWrapper programs={programs}>{children}</RootLayoutWrapper>
+          </ThemeProvider>
         </SessionProvider>
       </body>
     </html>

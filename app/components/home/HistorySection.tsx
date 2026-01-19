@@ -4,7 +4,7 @@ import { setOpenCapitalCampaignDrawer } from '@/app/lib/store/slices/appSlice'
 import { store } from '@/app/lib/store/store'
 import { motion } from 'framer-motion'
 
-export const HistorySection = () => {
+export const HistorySection = ({ pageContent }) => {
   const historyImages = [
     {
       src: 'https://cdn.prod.website-files.com/67ca71addbada9cbbd57ace7/67ca72481e4ae8c5331ef3a0_club.jpg',
@@ -56,47 +56,36 @@ export const HistorySection = () => {
               transition={{ duration: 0.8 }}
               style={{ originX: 0 }}
             />
-            <p className="text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-wider">Our Journey</p>
+            <p className="text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-wider">
+              {pageContent?.history?.subheading}
+            </p>
           </div>
           <h2 className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900 mb-6">
-            History of <span className="font-light dark:text-neutral-400 text-neutral-600">BGCL</span>
+            {pageContent?.history?.heading1}{' '}
+            <span className="font-light dark:text-neutral-400 text-neutral-600">{pageContent?.history?.heading1}</span>
           </h2>
           <div className="space-y-4 max-w-4xl">
             <p className="text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-              In 1889, the Boys Club of Lynn was formed which made it one of the first twenty clubs across America to be
-              established. Evolving into the 1930's, our building that resides at 25 North Common Street opened its
-              doors to our club members. Transitioning into 1991, the Boys Club then changed its name to the Boys &
-              Girls Club of Lynn.
+              {pageContent?.history?.paragraph1}
             </p>
 
             <p className="text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-              Presently, the Boys & Girls Club of Lynn has a 50/50 female to male ratio that serves all youth ages 5-18
-              years old. We serve over 1,500 members and have more than 250 children walk through our doors on a daily
-              basis. Most recently, our building underwent a $6.4 million renovation to enhance and modernize its
-              amenities for our members to truly experience a state of the art facility.
+              {pageContent?.history?.paragraph2}
             </p>
 
             <p className="text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-              In June of 2025, we will be embarking on our Phase 2 Capital project. This will be an $18 million project
-              with a 14-month renovation that will unveil our new and improved facility by September 2026. Due to the
-              growth and success of our programs, we have reached capacity. This improvement will enable us to flourish,
-              increase enrollment, and eliminate our waitlists.
+              {pageContent?.history?.paragraph3}
             </p>
 
             <p className="text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-              In addition, we will have the opportunity to expand our network allowing more community partners to
-              utilize the new and improved amenities within our facility. The following upgrades will impact the Drop-In
-              Center, Kids Club, and Teen Center. Such amenities will include a new pool, new game room, updated gym,
-              larger Planet Fitness gym, enhanced dance studio space, a Commercial Kitchen, 2 new Licensed OST
-              classrooms, a Teen wing including a Keystone room, as well as a new gymnasium for our younger members
-              including a theater space.
+              {pageContent?.history?.paragraph1}
             </p>
 
             <p
               onClick={() => store.dispatch(setOpenCapitalCampaignDrawer())}
               className="text-lg dark:text-sky-400 text-sky-600 font-semibold leading-relaxed cursor-pointer"
             >
-              To learn more about our Capital Campaign project, visit our Capital Campaign drawer.
+              {pageContent?.history?.ctaText}
             </p>
           </div>
         </motion.div>
@@ -169,21 +158,28 @@ export const HistorySection = () => {
           transition={{ duration: 0.6, delay: 0.3 }}
         >
           <motion.div className="text-center space-y-2" whileHover={{ scale: 1.05 }}>
-            <p className="text-5xl font-black dark:text-sky-500 text-sky-600">1889</p>
-            <p className="dark:text-neutral-400 text-neutral-600 text-sm">Club Founded</p>
-            <p className="dark:text-neutral-500 text-neutral-500 text-xs">One of the first twenty clubs in America</p>
+            <p className="text-5xl font-black dark:text-sky-500 text-sky-600">
+              {' '}
+              {pageContent?.history?.statOne?.value1}
+            </p>
+            <p className="dark:text-neutral-400 text-neutral-600 text-sm">{pageContent?.history?.statOne?.value2}</p>
+            <p className="dark:text-neutral-500 text-neutral-500 text-xs">{pageContent?.history?.statOne?.value3}</p>
           </motion.div>
 
           <motion.div className="text-center space-y-2" whileHover={{ scale: 1.05 }}>
-            <p className="text-5xl font-black dark:text-sky-500 text-sky-600">1,500+</p>
-            <p className="dark:text-neutral-400 text-neutral-600 text-sm">Members Today</p>
-            <p className="dark:text-neutral-500 text-neutral-500 text-xs">Ages 5-18 with 50/50 gender ratio</p>
+            <p className="text-5xl font-black dark:text-sky-500 text-sky-600">
+              {pageContent?.history?.statTwo?.value1}
+            </p>
+            <p className="dark:text-neutral-400 text-neutral-600 text-sm">{pageContent?.history?.statTwo?.value2}</p>
+            <p className="dark:text-neutral-500 text-neutral-500 text-xs">{pageContent?.history?.statTwo?.value3}</p>
           </motion.div>
 
           <motion.div className="text-center space-y-2" whileHover={{ scale: 1.05 }}>
-            <p className="text-5xl font-black dark:text-sky-500 text-sky-600">$18M</p>
-            <p className="dark:text-neutral-400 text-neutral-600 text-sm">Phase 2 Capital Project</p>
-            <p className="dark:text-neutral-500 text-neutral-500 text-xs">Opening September 2026</p>
+            <p className="text-5xl font-black dark:text-sky-500 text-sky-600">
+              {pageContent?.history?.statThree?.value1}
+            </p>
+            <p className="dark:text-neutral-400 text-neutral-600 text-sm">{pageContent?.history?.statThree?.value2}</p>
+            <p className="dark:text-neutral-500 text-neutral-500 text-xs">{pageContent?.history?.statThree?.value3}</p>
           </motion.div>
         </motion.div>
       </div>

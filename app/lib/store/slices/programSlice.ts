@@ -20,7 +20,7 @@ export const programSlice = createSlice({
     setProgram: (state, action: PayloadAction<IProgram | null>) => {
       state.program = action.payload
     },
-    hydratePrograms: (state, action: PayloadAction<IProgram[]>) => {
+    hydratePrograms: (state, action) => {
       state.programs = action.payload
     },
     setOpenProgramDrawer: (state) => {

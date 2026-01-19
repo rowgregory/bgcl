@@ -1,12 +1,10 @@
-import { TheLibraryProgramsClient } from '@/app/components/pages/TheLibraryProgramsClient'
+import { AdminListPage } from '@/app/components/admin/AdminList'
 import { getPrograms } from '@/app/lib/actions/getPrograms'
 
-export const metadata = {
-  title: 'Programs - Admin'
-}
+export const metadata = { title: 'Programs - Admin' }
 
-export default async function TheLibraryProgramsPage() {
-  const programs = await getPrograms()
+export default async function ProgramsPage() {
+  const data = await getPrograms()
 
-  return <TheLibraryProgramsClient programs={programs} />
+  return <AdminListPage data={data} pageTitle="Programs" itemType="program" />
 }

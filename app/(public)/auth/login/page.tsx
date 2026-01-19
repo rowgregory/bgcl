@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Mail, Rocket, Star } from 'lucide-react'
 import { FloatingStars } from '@/app/components/common/FloatingStars'
 import Link from 'next/link'
@@ -9,11 +9,14 @@ import { signIn } from 'next-auth/react'
 import { store } from '@/app/lib/store/store'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { useSearchParams } from 'next/navigation'
+import { MotionLink } from '@/app/components/common/MotionLink'
+import Picture from '@/app/components/common/Picture'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
   const searchParams = useSearchParams()
   const error = searchParams.get('error')
 
@@ -33,6 +36,11 @@ const Login = () => {
   const handleMagicLink = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
 
+    if (!email) {
+      setErrorMsg('Enter valid email')
+      return
+    }
+
     try {
       setIsSubmitting(true)
 
@@ -45,6 +53,7 @@ const Login = () => {
       if (result?.ok) {
         store.dispatch(showToast({ message: 'Successfully sent magic link' }))
         setEmail('')
+        setErrorMsg('')
       }
     } catch (error) {
       console.error('Magic link error:', error)
@@ -56,8 +65,8 @@ const Login = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Visual/Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-neutral-950 relative overflow-hidden items-center justify-center p-12">
-        {/* Animated gradient orbs */}
+      <div className="hidden lg:flex lg:w-1/2 dark:bg-neutral-950 bg-neutral-50 relative overflow-hidden items-center justify-center p-12">
+        {/* Animated linear orbs */}
         <motion.div
           className="absolute top-1/4 left-1/3 w-96 h-96 bg-sky-600/30 rounded-full blur-3xl"
           animate={{
@@ -84,46 +93,42 @@ const Login = () => {
         {/* Floating stars */}
         <FloatingStars />
         {/* Content */}
-        <div className="relative z-10 text-center">
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ duration: 0.8, type: 'spring' }}
-            className="inline-flex items-center justify-center w-24 h-24 bg-linear-to-br from-sky-500 to-sky-700 rounded-full mb-8"
-          >
-            <Rocket className="w-12 h-12 text-white" />
-          </motion.div>
-
+        <div className="relative z-10 text-center flex items-center justify-center flex-col">
+          <MotionLink href="/" className="flex space-x-3 w-44 h-auto mb-4">
+            <Picture
+              src="/images/vertical-logo-light.png"
+              alt="Boys & Girls Club"
+              className="dark:hidden block w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
+              priority
+            />
+            <Picture
+              src="/images/vertical-logo-dark.png"
+              alt="Boys & Girls Club"
+              className="dark:block hidden w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
+              priority
+            />
+          </MotionLink>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-5xl font-bold text-white mb-4 tracking-tight"
+            className="dark:text-white text-neutral-900 text-5xl font-bold mb-4 tracking-tight"
           >
             BGCL PORTAL
           </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="text-xl text-neutral-300 mb-8"
-          >
-            Mission Control Center
-          </motion.p>
 
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7 }}
-            className="flex items-center justify-center gap-8 text-neutral-400"
+            className="dark:text-neutral-400 text-neutral-600 flex items-center justify-center gap-8"
           >
             <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 text-sky-400" />
+              <Star className="w-5 h-5 text-sky-600" />
               <span className="text-sm">Secure Access</span>
             </div>
             <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 text-sky-400" />
+              <Star className="w-5 h-5 text-sky-600" />
               <span className="text-sm">Real-time Data</span>
             </div>
           </motion.div>
@@ -131,7 +136,7 @@ const Login = () => {
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 bg-neutral-900 flex items-center justify-center p-8">
+      <div className="w-full lg:w-1/2 dark:bg-neutral-900 bg-white flex items-center justify-center p-8">
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -143,19 +148,19 @@ const Login = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-sky-500 to-sky-700 rounded-full mb-4">
               <Rocket className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-white">BGCL PORTAL</h1>
+            <h1 className="dark:text-white text-neutral-900 text-2xl font-bold">BGCL PORTAL</h1>
           </div>
 
           <div>
-            <h2 className="text-3xl font-bold text-white mb-2">Welcome back</h2>
-            <p className="text-neutral-400 mb-8">Sign in to access your mission control</p>
+            <h2 className="dark:text-white text-neutral-900 text-3xl font-bold mb-2">Welcome back</h2>
+            <p className="dark:text-neutral-400 text-neutral-600 mb-8">Sign in to access your mission control</p>
 
             {/* Error Message */}
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm mb-6"
+                className="p-4 dark:bg-red-500/10 dark:border-red-500/30 bg-red-50 border-red-200 rounded-lg dark:text-red-400 text-red-600 text-sm mb-6 border"
               >
                 {error === 'EmailSignInError' && 'Failed to send sign in email. Please try again.'}
                 {error === 'Callback' && 'An error occurred during sign in. Please try again.'}
@@ -183,7 +188,7 @@ const Login = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleGoogleSignIn}
-                  className="w-full bg-white hover:bg-neutral-100 text-neutral-900 font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-3 transition-colors mb-6"
+                  className="w-full dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-900 bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-3 transition-colors mb-6"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
@@ -209,17 +214,49 @@ const Login = () => {
                 {/* Divider */}
                 <div className="relative mb-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-neutral-700"></div>
+                    <div className="w-full dark:border-neutral-700 border-neutral-300 border-t"></div>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-neutral-900 text-neutral-500">or continue with email</span>
+                    <span className="dark:px-2 dark:bg-neutral-900 dark:text-neutral-500 px-2 bg-white text-neutral-600">
+                      or continue with email
+                    </span>
                   </div>
                 </div>
+
+                {/* Success Banner */}
+                <AnimatePresence>
+                  {errorMsg && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                      className="mb-8 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3"
+                    >
+                      <div className="shrink-0">
+                        <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-red-800 dark:text-red-200">Error</p>
+                        <p className="text-xs text-red-700 dark:text-red-300">{errorMsg}</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Magic Link */}
                 <form onSubmit={handleMagicLink}>
                   <div className="mb-6">
-                    <label htmlFor="email" className="block text-sm font-medium text-neutral-300 mb-2">
+                    <label
+                      htmlFor="email"
+                      className="dark:text-neutral-300 text-neutral-700 block text-sm font-medium mb-2"
+                    >
                       Email address
                     </label>
                     <input
@@ -227,9 +264,8 @@ const Login = () => {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      required
                       placeholder="sqysh@sqysh.io"
-                      className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-3 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+                      className="w-full dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-100 border-neutral-300 text-neutral-900 placeholder-neutral-600 focus:ring-sky-500 border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:border-transparent transition-all"
                     />
                   </div>
 
@@ -238,7 +274,7 @@ const Login = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     disabled={isSubmitting}
-                    className="w-full bg-linear-to-r from-sky-600 to-sky-700 hover:from-sky-500 hover:to-sky-600 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full dark:bg-linear-to-r dark:from-sky-600 dark:to-sky-700 dark:hover:from-sky-500 dark:hover:to-sky-600 bg-linear-to-r from-sky-600 to-sky-700 hover:from-sky-500 hover:to-sky-600 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {isSubmitting ? (
                       <motion.div
@@ -273,14 +309,14 @@ const Login = () => {
                 >
                   <Mail className="w-8 h-8 text-white" />
                 </motion.div>
-                <h2 className="text-xl font-bold text-white mb-2">Check your email</h2>
-                <p className="text-neutral-400 mb-6">
+                <h2 className="dark:text-white text-neutral-900 text-xl font-bold mb-2">Check your email</h2>
+                <p className="dark:text-neutral-400 text-neutral-600 mb-6">
                   We sent a magic link to <br />
                   <span className="text-sky-400">{email}</span>
                 </p>
                 <button
                   onClick={() => setEmailSent(false)}
-                  className="text-sky-400 hover:text-sky-300 text-sm transition-colors"
+                  className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-500 text-sm transition-colors"
                 >
                   Try another email
                 </button>
@@ -288,13 +324,16 @@ const Login = () => {
             )}
 
             {/* Footer */}
-            <p className="text-center text-xs text-neutral-500 mt-8">
+            <p className="dark:text-neutral-500 text-neutral-600 text-center text-xs mt-8">
               By signing in, you agree to our{' '}
-              <Link href="/terms" className="text-sky-400 hover:text-sky-300">
+              <Link href="/terms" className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-500">
                 Terms of Service
               </Link>{' '}
               and{' '}
-              <Link href="/privacy-policy" className="text-sky-400 hover:text-sky-300">
+              <Link
+                href="/privacy-policy"
+                className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-500"
+              >
                 Privacy Policy
               </Link>
             </p>

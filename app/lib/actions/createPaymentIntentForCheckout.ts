@@ -10,6 +10,8 @@ interface CheckoutParams {
   orderType: 'ONE_TIME_DONATION' | 'RECURRING_DONATION' | 'TICKET_PURCHASE'
   description: string
   saveCard?: boolean
+  coverFees?: boolean
+  feesCovered?: number
 }
 
 export async function createPaymentIntentForCheckout({
@@ -18,7 +20,9 @@ export async function createPaymentIntentForCheckout({
   amount,
   orderType,
   description,
-  saveCard = false
+  saveCard = false,
+  coverFees = false,
+  feesCovered = 0
 }: CheckoutParams) {
   try {
     let customerId: string | undefined
@@ -82,7 +86,9 @@ export async function createPaymentIntentForCheckout({
         userId: userId || 'guest',
         orderType,
         email,
-        saveCard: saveCard ? 'true' : 'false'
+        saveCard: saveCard ? 'true' : 'false',
+        coverFees: coverFees ? 'true' : 'false',
+        feesCovered: feesCovered.toString()
       }
     })
 

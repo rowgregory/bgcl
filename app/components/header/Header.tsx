@@ -16,16 +16,15 @@ export default function Header() {
   const isAtTop = useIsAtTop()
 
   const handleLaunchApp = () => {
-    // if (status === 'authenticated') {
-    //   if (data.user?.role === 'ADMIN' || data.user?.role === 'SUPERUSER') {
-    //     router.push('/admin/mission-control')
-    //   } else {
-    //     router.push('/supporter/overview')
-    //   }
-    // } else {
-    //   router.push('/auth/login')
-    // }
-    router.push('/admin/mission-control')
+    if (status === 'authenticated') {
+      if (data.user?.role === 'ADMIN' || data.user?.role === 'SUPERUSER') {
+        router.push('/admin/star-map/home')
+      } else {
+        router.push('/supporter/overview')
+      }
+    } else {
+      router.push('/auth/login')
+    }
   }
 
   return (
@@ -90,9 +89,15 @@ export default function Header() {
                 transition={{ duration: 0.3 }}
               >
                 <Picture
-                  src="/images/logo-2.png"
+                  src="/images/vertical-logo-light.png"
                   alt="Boys & Girls Club"
                   className="dark:hidden block w-auto h-full cursor-pointer hover:opacity-80 transition-opacity"
+                  priority
+                />
+                <Picture
+                  src="/images/vertical-logo-dark.png"
+                  alt="Boys & Girls Club"
+                  className="dark:block hidden w-auto h-full cursor-pointer hover:opacity-80 transition-opacity"
                   priority
                 />
               </motion.div>

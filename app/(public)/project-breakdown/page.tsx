@@ -142,7 +142,7 @@ const ProjectBreakdown = () => {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950">
+    <div className="min-h-screen dark:bg-neutral-950 bg-white">
       <div className="p-4 lg:p-8">
         {/* Back Button */}
         <div className="max-w-375 mx-auto mb-8">

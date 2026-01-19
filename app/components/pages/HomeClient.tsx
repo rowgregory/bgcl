@@ -3,19 +3,18 @@
 import { IProgram } from '@/types/entities/program'
 import { Hero } from '../home/Hero'
 import { HomePrograms } from '../home/HomePrograms'
-import { motion } from 'framer-motion'
-import { HistorySection } from '../home/History'
-import Link from 'next/link'
-import { Heart } from 'lucide-react'
-import { store } from '@/app/lib/store/store'
-import { setOpenVolunteerDrawer } from '@/app/lib/store/slices/appSlice'
+import { HistorySection } from '../home/HistorySection'
+import MissionSection from '../home/MissionSection'
+import YouthOfTheYearSection from '../home/YouthOfTheYearSection'
+import { ITeamMember } from '@/types/entities/team-member'
 
 interface HomeClientProps {
   initialPageData?: any
   programs: IProgram[]
+  youth: ITeamMember
 }
 
-const HomeClient = ({ initialPageData, programs }: HomeClientProps) => {
+const HomeClient = ({ initialPageData, programs, youth }: HomeClientProps) => {
   const pageContent = initialPageData?.content
 
   if (!pageContent) {
@@ -28,64 +27,18 @@ const HomeClient = ({ initialPageData, programs }: HomeClientProps) => {
 
       {/* Content that scrolls over */}
       <div className="relative z-10">
-        <HomePrograms title="Our programs" heading="Building" subheading="Skills for Tomorrow" items={programs} />
+        <HomePrograms
+          subheading={pageContent.programs.subheading}
+          heading1={pageContent.programs.heading1}
+          heading2={pageContent.programs.heading2}
+          items={programs}
+        />
 
-        <section className="py-20 px-6 md:px-12 dark:bg-neutral-950 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="dark:bg-linear-to-br dark:from-neutral-900 dark:to-neutral-800 bg-linear-to-br from-neutral-50 to-neutral-100 rounded-2xl p-12 md:p-16 border dark:border-neutral-700 border-neutral-200"
-            >
-              {/* Content */}
-              <div className="text-center space-y-8">
-                {/* Heading */}
-                <div className="space-y-4">
-                  <p className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-                    Our Purpose
-                  </p>
-                  <h2 className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-                    Our Mission
-                  </h2>
-                </div>
+        <MissionSection pageContent={pageContent} />
 
-                {/* Description */}
-                <p className="text-xl md:text-2xl dark:text-neutral-300 text-neutral-700 leading-relaxed max-w-3xl mx-auto">
-                  To inspire and enable all young people, especially those that need us the most, to realize their full
-                  potential as productive responsible and caring citizens.
-                </p>
+        <HistorySection pageContent={pageContent} />
 
-                {/* CTA Buttons */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="flex flex-col sm:flex-row gap-4 justify-center pt-4"
-                >
-                  <button
-                    onClick={() => store.dispatch(setOpenVolunteerDrawer())}
-                    className="cursor-pointer px-8 py-4 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-bold text-lg rounded-lg transition-colors shadow-lg hover:shadow-xl"
-                  >
-                    Volunteer
-                  </button>
-
-                  <Link
-                    href="/donate"
-                    className="px-8 py-4 dark:bg-neutral-800 dark:hover:bg-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:text-white text-neutral-900 font-bold text-lg rounded-lg transition-colors border dark:border-neutral-600 border-neutral-300 flex items-center justify-center gap-2"
-                  >
-                    <Heart className="w-5 h-5" />
-                    Donate
-                  </Link>
-                </motion.div>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        <HistorySection />
+        <YouthOfTheYearSection youth={youth} />
       </div>
     </div>
   )

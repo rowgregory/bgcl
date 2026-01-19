@@ -4,6 +4,10 @@ import { initialProgramFormState } from '@/app/lib/initial-states/program'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { initialUserFormState } from '../../initial-states/user'
 import { initialTeamMemberFormState } from '../../initial-states/team-member'
+import { initialContactSubmissionFormState } from '../../initial-states/contact-submission'
+import { initialNewsFormState } from '../../initial-states/news'
+import { initialNewsletterFormState } from '../../initial-states/newsletter'
+import { initialClubResourceFormState } from '../../initial-states/club-resource'
 
 export type Inputs = {
   [key: string]: any
@@ -49,7 +53,12 @@ const formInitialState: InitialFormState = {
     ticketForm: { inputs: initialTicketFormState, errors: {} },
     programForm: { inputs: initialProgramFormState, errors: {} },
     userForm: { inputs: initialUserFormState, errors: {} },
-    teamMemberForm: { inputs: initialTeamMemberFormState, errors: {} }
+    teamMemberForm: { inputs: initialTeamMemberFormState, errors: {} },
+    volunteerForm: { inputs: initialContactSubmissionFormState, errors: {} },
+    newsForm: { inputs: initialNewsFormState, errors: {} },
+    newsletterForm: { inputs: initialNewsletterFormState, errors: {} },
+    clubResourceForm: { inputs: initialClubResourceFormState, errors: {} },
+    contactForm: { inputs: initialContactSubmissionFormState, errors: {} }
   }
 }
 
@@ -165,7 +174,7 @@ export const createFormActions = (formName: string, dispatch: AppDispatch) => ({
   setInputs: (data: Inputs) => dispatch(formSlice.actions.setInputs({ formName, data })),
   clearInputs: () => dispatch(formSlice.actions.clearInputs({ formName })),
   setErrors: (errors: Errors) => dispatch(formSlice.actions.setErrors({ formName, errors })),
-  handleInput: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+  handleInput: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     dispatch(
       formSlice.actions.handleInput({
         formName,

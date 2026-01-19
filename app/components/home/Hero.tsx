@@ -24,10 +24,10 @@ export const Hero = ({ initialPageData }) => {
             style={{ animationDelay: '0.2s' }}
           >
             <h1 className="text-5xl md:text-6xl lg:text-7xl leading-tight uppercase tracking-tighttext-white font-bold">
-              {initialPageData?.cta?.heading}
+              {initialPageData?.hero?.heading}
             </h1>
 
-            <p className="text-lg text-centertext-white leading-relaxed">{initialPageData?.cta.bodyText}</p>
+            <p className="text-lg text-centertext-white leading-relaxed">{initialPageData?.hero.bodyText}</p>
 
             <div className="flex items-center gap-x-3">
               <a
@@ -37,13 +37,13 @@ export const Hero = ({ initialPageData }) => {
               >
                 Parent Portal
               </a>
-              {initialPageData?.cta && (
+              {initialPageData?.hero && (
                 <Link
-                  href={initialPageData?.cta.buttonLink}
+                  href={initialPageData?.hero.buttonLink}
                   className="inline-flex items-center gap-2 rounded-lg dark:border-sky-600 dark:hover:bg-sky-700 dark:text-white border-white hover:border-sky-600 hover:bg-sky-700 text-white border-2 px-8 py-3 font-bold transition-all duration-300 dark:hover:shadow-lg dark:hover:shadow-sky-500/50 hover:shadow-lg hover:shadow-sky-600/50 group"
                 >
                   <Heart className="text-white w-4 h-4" />
-                  {initialPageData?.cta.buttonText}
+                  {initialPageData?.hero.buttonText}
                 </Link>
               )}
             </div>

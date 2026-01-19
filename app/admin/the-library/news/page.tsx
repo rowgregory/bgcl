@@ -1,5 +1,10 @@
-const News = () => {
-  return <div>News</div>
-}
+import { AdminListPage } from '@/app/components/admin/AdminList'
+import { getNews } from '@/app/lib/actions/getNews'
 
-export default News
+export const metadata = { title: 'News - Admin' }
+
+export default async function NewsPage() {
+  const data = await getNews()
+
+  return <AdminListPage data={data} pageTitle="News" itemType="news" />
+}

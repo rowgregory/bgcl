@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { IActionItems } from '@/types/navigation'
@@ -13,6 +13,18 @@ const ActionMenuDropdown: FC<{ actionItems: IActionItems[] }> = ({ actionItems }
   const { push } = useRouter()
   const onClose = () => dispatch(setCloseActionMenu())
   const { actionMenu, itemAction } = useDashboardSelector()
+
+  useEffect(() => {
+    if (actionMenu) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [actionMenu])
 
   const handleActionClick = (item: any) => {
     if (item.hasSubmenu) {
@@ -61,26 +73,26 @@ const ActionMenuDropdown: FC<{ actionItems: IActionItems[] }> = ({ actionItems }
             transition={{
               clipPath: {
                 duration: 1.35,
-                ease: [0.1, 0, 0.9, 1] // Custom bezier: slow first 75%, fast last 25%
+                ease: [0.1, 0, 0.9, 1]
               },
               opacity: {
                 duration: 1.35,
                 ease: 'easeInOut'
               }
             }}
-            className="absolute z-50 right-18 top-18 w-60 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl overflow-hidden"
+            className="fixed z-50 right-18 top-18 w-60 dark:bg-zinc-800 dark:border-zinc-700 bg-white border-neutral-200 rounded-lg shadow-xl overflow-hidden border"
           >
             <div className="py-2 overflow-y-scroll h-[calc(100vh-150px)] sm:h-fit">
               {actionItems?.map((item, i) => (
                 <div key={i} className="relative">
                   <motion.button
                     onClick={() => handleActionClick(item)}
-                    className={`w-full px-4 py-3 text-left text-gray-200 hover:text-white transition-all flex items-center justify-between hover:bg-indigo-600/10 ${
-                      item.hasSubmenu && itemAction === item.action ? 'bg-indigo-600/20' : ''
+                    className={`w-full px-4 py-3 text-left dark:text-gray-200 dark:hover:text-white text-neutral-700 hover:text-neutral-900 transition-all flex items-center justify-between dark:hover:bg-gray-600/10 hover:bg-gray-500/10 ${
+                      item.hasSubmenu && itemAction === item.action ? 'dark:bg-gray-600/20 bg-gray-500/20' : ''
                     }`}
                   >
                     <div className="flex items-start space-x-3">
-                      <item.icon className="w-4 h-4 mt-0.5 text-indigo-400" />
+                      <item.icon className="w-4 h-4 mt-0.5 text-gray-400" />
                       <div className="flex flex-col">
                         <span className="font-medium text-sm">{item.label}</span>
                       </div>
@@ -88,7 +100,7 @@ const ActionMenuDropdown: FC<{ actionItems: IActionItems[] }> = ({ actionItems }
 
                     {item.hasSubmenu && (
                       <ChevronRight
-                        className={`w-4 h-4 text-gray-400 transition-transform ${
+                        className={`w-4 h-4 dark:text-gray-400 text-neutral-500 transition-transform ${
                           itemAction === item.action ? 'rotate-90' : ''
                         }`}
                       />
@@ -103,18 +115,20 @@ const ActionMenuDropdown: FC<{ actionItems: IActionItems[] }> = ({ actionItems }
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="bg-gray-900/50 border-t border-gray-700/50"
+                        className="dark:bg-gray-900/50 dark:border-gray-700/50 bg-neutral-100 border-neutral-200 border-t"
                       >
                         {item.submenu?.map((submenuItem: any, subIndex: number) => (
                           <motion.button
                             key={subIndex}
                             onClick={() => handleSubmenuClick(submenuItem)}
-                            className="w-full pl-10 pr-4 py-2 text-left text-gray-300 hover:text-white transition-all flex items-start space-x-3 hover:bg-indigo-600/10"
+                            className="w-full pl-10 pr-4 py-2 text-left dark:text-gray-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900 transition-all flex items-start space-x-3 dark:hover:bg-gray-600/10 hover:bg-gray-500/10"
                           >
                             <div className="flex flex-col">
                               <span className="text-sm">{submenuItem.label}</span>
                               {submenuItem.description && (
-                                <span className="text-xs text-gray-500 leading-tight">{submenuItem.description}</span>
+                                <span className="text-xs dark:text-gray-500 text-neutral-500 leading-tight">
+                                  {submenuItem.description}
+                                </span>
                               )}
                             </div>
                           </motion.button>

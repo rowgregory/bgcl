@@ -13,7 +13,7 @@ export interface ILayout {
 
 export interface IForm {
   errors: Errors
-  handleInput: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+  handleInput: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void
   handleSubmit: (e: { preventDefault: () => void }) => Promise<void>
   handleToggle?: (e: ChangeEvent<HTMLInputElement>) => void
   handleSelect?: (e: React.ChangeEvent<HTMLSelectElement> | { name: string; value: string }) => void

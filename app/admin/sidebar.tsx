@@ -56,7 +56,7 @@ const AdminSidebar = () => {
                       }}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all text-left cursor-pointer ${
                         item.active
-                          ? 'dark:bg-linear-to-r dark:from-purple-600 dark:to-indigo-600 bg-linear-to-r from-purple-500 to-indigo-500 text-white'
+                          ? 'dark:bg-linear-to-r dark:from-purple-600 dark:to-indigo-600 bg-linear-to-r from-sky-500 to-sky-600 text-white'
                           : 'dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
                       }`}
                     >
@@ -72,7 +72,7 @@ const AdminSidebar = () => {
                     href={item.path || ''}
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
                       item.active
-                        ? 'dark:bg-linear-to-r dark:from-purple-600 dark:to-indigo-600 bg-linear-to-r from-purple-500 to-indigo-500 text-white'
+                        ? 'dark:bg-linear-to-r dark:from-purple-600 dark:to-indigo-600 bg-linear-to-r from-sky-500 to-sky-600 text-white'
                         : 'dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
                     }`}
                   >

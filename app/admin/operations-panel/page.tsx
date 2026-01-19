@@ -429,7 +429,7 @@ const OperationsPanel: React.FC = () => {
   const currentSection = settings[activeSection]
 
   return (
-    <div className="min-h-screen bg-neutral-950 p-4 md:p-6">
+    <div className="min-h-screen dark:bg-neutral-950 bg-white p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -499,7 +499,7 @@ const OperationsPanel: React.FC = () => {
             transition={{ delay: 0.2 }}
             className="lg:col-span-1"
           >
-            <div className="bg-neutral-900 rounded-lg border border-neutral-800 p-4">
+            <div className="dark:bg-neutral-900 bg-white rounded-lg border border-neutral-800 p-4">
               <h2 className="text-sm font-semibold text-neutral-400 uppercase tracking-wide mb-4">Settings</h2>
               <nav className="space-y-1">
                 {sections.map((section) => {
@@ -551,7 +551,7 @@ const OperationsPanel: React.FC = () => {
             transition={{ delay: 0.3 }}
             className="lg:col-span-3"
           >
-            <div className="bg-neutral-900 rounded-lg border border-neutral-800 p-6">
+            <div className="dark:bg-neutral-900 bg-white rounded-lg border border-neutral-800 p-6">
               {/* Section Header */}
               <div className="mb-6 pb-6 border-b border-neutral-800">
                 <div className="flex items-start gap-3">

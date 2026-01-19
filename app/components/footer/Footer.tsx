@@ -5,17 +5,32 @@ import { Mail } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import Picture from '../common/Picture'
+import { createSubscriber } from '@/app/lib/actions/createSubscriber'
+import { store } from '@/app/lib/store/store'
+import { showToast } from '@/app/lib/store/slices/toastSlice'
+import { useRouter } from 'next/navigation'
 
 export function Footer() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
-  const [subscribed, setSubscribed] = useState(false)
+  const [memberType, setMemberType] = useState<'member' | 'donor' | 'non-member'>('member')
 
-  const handleSubscribe = async (e: React.FormEvent) => {
+  const handleSubscribe = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
 
-    setSubscribed(true)
-    setEmail('')
-    setTimeout(() => setSubscribed(false), 3000)
+    try {
+      const res = await createSubscriber({ email, type: memberType })
+      if (!res.success) {
+        store.dispatch(showToast({ message: 'Failed to create subscriber', type: 'error' }))
+        return
+      }
+      store.dispatch(showToast({ message: 'Successfully created subscriber!' }))
+      router.refresh()
+      setEmail('')
+      setMemberType('member')
+    } catch (err) {
+      store.dispatch(showToast({ message: 'Failed to create subscriber', type: 'error', description: err?.message }))
+    }
   }
 
   return (
@@ -23,11 +38,17 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-12 md:py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          <motion.div className="flex space-x-3 w-28 h-auto">
+          <motion.div className="flex space-x-3 w-40 h-auto">
             <Picture
-              src="/images/logo-2.png"
+              src="/images/vertical-logo-light.png"
               alt="Boys & Girls Club"
               className="dark:hidden block w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
+              priority
+            />
+            <Picture
+              src="/images/vertical-logo-dark.png"
+              alt="Boys & Girls Club"
+              className="dark:block hidden w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
               priority
             />
           </motion.div>
@@ -76,7 +97,8 @@ export function Footer() {
             <p className="dark:text-white text-neutral-900 font-semibold text-sm uppercase tracking-wider">
               Newsletter
             </p>
-            <form onSubmit={handleSubscribe} className="space-y-2">
+            <form onSubmit={handleSubscribe} className="space-y-4">
+              {/* Email Input */}
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 dark:text-neutral-600 text-neutral-500 pointer-events-none" />
                 <input
@@ -88,21 +110,54 @@ export function Footer() {
                   className="w-full pl-10 pr-3 py-2 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:placeholder-neutral-600 dark:focus:ring-sky-500 bg-neutral-100 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-600 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
                 />
               </div>
+
+              {/* Membership Type */}
+              <div className="space-y-3">
+                <p className="text-sm font-medium dark:text-neutral-300 text-neutral-700">
+                  Please specify if you are the following:
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="memberType"
+                      value="member"
+                      defaultChecked
+                      className="w-4 h-4 accent-sky-600"
+                      onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
+                    />
+                    <span className="text-sm dark:text-neutral-300 text-neutral-700">Member/Parent</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="memberType"
+                      value="non-member"
+                      className="w-4 h-4 accent-sky-600"
+                      onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
+                    />
+                    <span className="text-sm dark:text-neutral-300 text-neutral-700">Non-Member</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="memberType"
+                      value="donor"
+                      className="w-4 h-4 accent-sky-600"
+                      onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
+                    />
+                    <span className="text-sm dark:text-neutral-300 text-neutral-700">Donor</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Subscribe Button */}
               <button
                 type="submit"
                 className="w-full px-3 py-2 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold rounded-lg transition-colors"
               >
                 Subscribe
               </button>
-              {subscribed && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-xs text-green-400 text-center"
-                >
-                  Thanks for subscribing!
-                </motion.p>
-              )}
             </form>
           </motion.div>
         </div>

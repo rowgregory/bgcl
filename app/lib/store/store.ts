@@ -20,6 +20,9 @@ import { persistStore, persistReducer } from 'redux-persist'
 import { cartReducer } from './slices/cartSlice'
 import { PersistPartial } from 'redux-persist/es/persistReducer'
 import { teamMemberReducer } from './slices/teamMemberSlice'
+import { newsReducer } from './slices/newsSlice'
+import { newsletterReducer } from './slices/newsletterSlice'
+import { clubResourceReducer } from './slices/clubResourceSlice'
 
 // Create a noop storage for SSR
 const createNoopStorage = () => {
@@ -80,6 +83,9 @@ const rootReducer = combineReducers({
   ticket: ticketReducer,
   cart: cartReducer,
   teamMember: teamMemberReducer,
+  news: newsReducer,
+  newsletter: newsletterReducer,
+  clubResource: clubResourceReducer,
   [api.reducerPath]: api.reducer
 })
 
@@ -121,3 +127,6 @@ export const useProgramSelector = () => useAppSelector((state) => state.program)
 export const useTicketSelector = () => useAppSelector((state) => state.ticket)
 export const useCartSelector = () => useAppSelector((state) => state.cart)
 export const useTeamMemberSelector = () => useAppSelector((state) => state.teamMember)
+export const useNewsSelector = () => useAppSelector((state) => state.news)
+export const useNewsletterSelector = () => useAppSelector((state) => state.newsletter)
+export const useClubResourceSelector = () => useAppSelector((state) => state.clubResource)

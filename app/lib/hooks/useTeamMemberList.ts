@@ -3,7 +3,6 @@ import { startTransition, useState } from 'react'
 import { store } from '../store/store'
 import { showToast } from '../store/slices/toastSlice'
 import { updateTeamMembersOrder } from '../actions/updateTeamMemberOrder'
-import { hydrateTeamMembers } from '../store/slices/teamMemberSlice'
 
 export default function useTeamMemberList(data: any, role: string) {
   const router = useRouter()
@@ -60,8 +59,6 @@ export default function useTeamMemberList(data: any, role: string) {
       displayOrder: index + 1
     }))
 
-    store.dispatch(hydrateTeamMembers(updatedList))
-
     // Save to backend
     startTransition(async () => {
       try {
@@ -77,7 +74,7 @@ export default function useTeamMemberList(data: any, role: string) {
       } catch (error) {
         store.dispatch(
           showToast({
-            message: error instanceof Error ? error.message : 'Failed to update order',
+            message: error instanceof Error ? error.message : 'Failed to update team member',
             type: 'error'
           })
         )

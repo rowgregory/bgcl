@@ -21,16 +21,24 @@ async function createTeamMemberFn(data: TeamMemberInput) {
 
     const nextOrder = (lastMember?.order || 0) + 1
 
+    const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
+      if (value !== null && value !== undefined && key !== 'name') {
+        // Convert year to number if it exists
+        if (key === 'year' && value) {
+          acc[key] = Number(value)
+        } else {
+          acc[key] = value
+        }
+      }
+      return acc
+    }, {} as any)
+
     const newTeamMember = await prisma.teamMember.create({
       data: {
         name: data.name,
+        role: data.role,
         order: nextOrder,
-        ...Object.entries(data).reduce((acc, [key, value]) => {
-          if (value !== null && value !== undefined && key !== 'name') {
-            acc[key] = value
-          }
-          return acc
-        }, {} as any)
+        ...cleanData
       }
     })
 

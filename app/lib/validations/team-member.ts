@@ -21,6 +21,9 @@ const validateTeamMemberForm = (
       'program_staff',
       'maintenance_staff',
       'honoree',
+      'fame',
+      'helping',
+      'commitment',
       'youth'
     ].includes(inputs.role)
   ) {

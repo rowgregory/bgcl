@@ -15,7 +15,7 @@ import CapitalCampaignDrawer from './components/drawers/CapitalCampaignDrawer'
 import VolunteerDrawer from './components/drawers/VolunteerDrawer'
 import FloatingDonateButton from './components/FloatingButton'
 
-export default function RootLayoutWrapper({ children }) {
+export default function RootLayoutWrapper({ children, programs }) {
   const pathname = usePathname()
 
   const show = !HIDDEN_PATHS.some((path) => pathname.startsWith(path))
@@ -28,7 +28,7 @@ export default function RootLayoutWrapper({ children }) {
         <LanguageDropdown />
         <DonationNotification />
         <CapitalCampaignDrawer />
-        <VolunteerDrawer />
+        <VolunteerDrawer programs={programs} />
         <FloatingDonateButton />
         {show && <Header />}
         {children}

@@ -111,7 +111,7 @@ const dropDownActionItems: IActionItems[] = [
     submenu: [
       {
         action: 'activate-admin',
-        label: 'Active Admin',
+        label: 'Activate Admin',
         icon: Crown,
         open: setOpenUserDrawer,
         formName: 'userForm',

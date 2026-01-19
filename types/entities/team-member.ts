@@ -1,12 +1,12 @@
 export interface ITeamMember {
   id?: string
   name: string
+  role: string
   title?: string
   image?: string
   email?: string
   phone?: string
   bio?: string | null
-  role: 'officer' | 'director' | 'corporator' | 'admin_staff' | 'program_staff' | 'honoree' | 'youth'
   order?: number
   year?: number | null
   company?: string

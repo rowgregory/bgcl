@@ -7,6 +7,8 @@ export const initialProgramFormState = {
   description4: undefined,
   description5: undefined,
   image: '',
+  heroImage: '',
+  showAgeGroup: true,
   dropOffStart: '',
   dropOffEnd: '',
   pickUpStart: '',

@@ -26,7 +26,7 @@ const ProgramDetailsClient = ({ program }) => {
       <div
         className="relative overflow-hidden py-40 bg-cover bg-top"
         style={{
-          backgroundImage: `url(${program.image})`
+          backgroundImage: `url(${program.heroImage})`
         }}
       >
         {/* Dark overlay */}
@@ -68,13 +68,17 @@ const ProgramDetailsClient = ({ program }) => {
 
             {/* Program Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Users className="w-6 h-6 text-sky-500" />
-                  <h3 className="text-lg font-bold dark:text-white text-neutral-900">Age Group</h3>
+              {program.showAgeGroup && (
+                <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Users className="w-6 h-6 text-sky-500" />
+                    <h3 className="text-lg font-bold dark:text-white text-neutral-900">Age Group</h3>
+                  </div>
+                  <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">
+                    {program.ageGroup} years
+                  </p>
                 </div>
-                <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">{program.ageGroup} years</p>
-              </div>
+              )}
 
               <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
                 <div className="flex items-center gap-3 mb-4">

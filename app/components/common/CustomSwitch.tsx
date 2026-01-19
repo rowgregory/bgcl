@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { CreditCard } from 'lucide-react'
+import { CreditCard, PersonStanding } from 'lucide-react'
 
 interface CustomSwitchProps {
   checked: boolean
@@ -25,9 +25,15 @@ export default function CustomSwitch({ checked, onChange, label, description }: 
     >
       {/* Left Content */}
       <div className="flex items-center gap-3 flex-1 text-left">
-        <CreditCard
-          className={`w-5 h-5 shrink-0 transition-colors ${checked ? 'dark:text-sky-400 text-sky-600' : 'dark:text-zinc-500 text-neutral-600'}`}
-        />
+        {label === 'Age Group' ? (
+          <PersonStanding
+            className={`w-5 h-5 shrink-0 transition-colors ${checked ? 'dark:text-sky-400 text-sky-600' : 'dark:text-zinc-500 text-neutral-600'}`}
+          />
+        ) : (
+          <CreditCard
+            className={`w-5 h-5 shrink-0 transition-colors ${checked ? 'dark:text-sky-400 text-sky-600' : 'dark:text-zinc-500 text-neutral-600'}`}
+          />
+        )}
         <div>
           <p
             className={`text-sm font-medium ${checked ? 'dark:text-white text-neutral-900' : 'dark:text-zinc-300 text-neutral-700'}`}

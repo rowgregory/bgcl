@@ -4,8 +4,8 @@ import { motion } from 'framer-motion'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import DonationForm from '@/app/components/forms/DonationForm'
-import Link from 'next/link'
 import Picture from '@/app/components/common/Picture'
+import { MotionLink } from '@/app/components/common/MotionLink'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -22,9 +22,20 @@ export default function DonationPage() {
             className="flex flex-col space-y-4 sm:space-y-5"
           >
             {/* Logo */}
-            <Link href="/" className="w-28">
-              <Picture src="/images/logo-2.png" alt="Boys & Girls Club" className="w-full h-full" priority />
-            </Link>
+            <MotionLink href="/" className="flex space-x-3 w-40 h-auto">
+              <Picture
+                src="/images/vertical-logo-light.png"
+                alt="Boys & Girls Club"
+                className="dark:hidden block w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
+                priority
+              />
+              <Picture
+                src="/images/vertical-logo-dark.png"
+                alt="Boys & Girls Club"
+                className="dark:block hidden w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
+                priority
+              />
+            </MotionLink>
 
             {/* Heading */}
             <div className="max-w-2xl space-y-2 sm:space-y-3">

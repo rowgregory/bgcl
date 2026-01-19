@@ -1,5 +1,6 @@
 'use client'
 
+import { useDarkMode } from '@/app/lib/hooks/useDarkMode'
 import { motion } from 'framer-motion'
 import { Heart, TrendingUp, Users, Calendar, ArrowUpRight, Download, Zap } from 'lucide-react'
 import { useState } from 'react'
@@ -85,124 +86,82 @@ export default function FuelTankOverview({ orders }: FuelTankOverviewProps) {
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
   }
 
+  const topStats = [
+    {
+      id: 'total-raised',
+      label: 'Total Raised',
+      value: `$${(stats.totalRaised / 100).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+      description: '+12% vs last period',
+      hoverColor: 'sky',
+      icon: TrendingUp
+    },
+    {
+      id: 'total-donors',
+      label: 'Total Donors',
+      value: stats.total,
+      description: `${stats.activeCount} active`,
+      hoverColor: 'blue',
+      icon: Users
+    },
+    {
+      id: 'avg-donation',
+      label: 'Avg Donation',
+      value: `$${stats.total > 0 ? (stats.totalRaised / stats.total / 100).toFixed(0) : 0}`,
+      description: 'per donor',
+      hoverColor: 'amber',
+      icon: Heart
+    },
+    {
+      id: 'monthly-mrr',
+      label: 'Monthly MRR',
+      value: `$${(stats.monthlyRecurring / 100).toLocaleString('en-US', { maximumFractionDigits: 0 })}/mo`,
+      description: `${stats.monthly} subscriptions`,
+      hoverColor: 'green',
+      icon: Zap
+    },
+    {
+      id: 'annual-arr',
+      label: 'Annual ARR',
+      value: `$${((stats.monthlyRecurring * 12 + stats.yearlyRecurring) / 100).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+      description: `${stats.monthly + stats.yearly} recurring`,
+      hoverColor: 'purple',
+      icon: Calendar
+    },
+    {
+      id: 'retention',
+      label: 'Retention',
+      value: '96%',
+      description: 'month-over-month',
+      hoverColor: 'cyan',
+      icon: TrendingUp
+    }
+  ]
+
+  const isDark = useDarkMode()
+
   return (
     <div className="p-6 space-y-8">
       {/* Top Stats - 6 Columns */}
       <motion.div
-        className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3"
+        className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        {/* Total Raised */}
-        <motion.div
-          className="bg-linear-to-br from-neutral-900 to-neutral-950 border border-neutral-800 rounded-lg p-4 space-y-3 hover:border-sky-500/30 transition-all"
-          variants={itemVariants}
-          whileHover={{ y: -2 }}
-        >
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-neutral-500 uppercase tracking-widest font-semibold">Total Raised</p>
-            <div className="w-8 h-8 rounded bg-sky-500/20 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-sky-400" />
-            </div>
-          </div>
-          <p className="text-2xl font-black text-white">
-            ${(stats.totalRaised / 100).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-          </p>
-          <div className="flex items-center gap-1 text-xs text-green-400">
-            <ArrowUpRight className="w-3 h-3" />
-            <span>+12% vs last period</span>
-          </div>
-        </motion.div>
-
-        {/* Total Donors */}
-        <motion.div
-          className="bg-linear-to-br from-neutral-900 to-neutral-950 border border-neutral-800 rounded-lg p-4 space-y-3 hover:border-blue-500/30 transition-all"
-          variants={itemVariants}
-          whileHover={{ y: -2 }}
-        >
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-neutral-500 uppercase tracking-widest font-semibold">Total Donors</p>
-            <div className="w-8 h-8 rounded bg-blue-500/20 flex items-center justify-center">
-              <Users className="w-4 h-4 text-blue-400" />
-            </div>
-          </div>
-          <p className="text-2xl font-black text-white">{stats.total}</p>
-          <p className="text-xs text-neutral-600">{stats.activeCount} active</p>
-        </motion.div>
-
-        {/* Avg Donation */}
-        <motion.div
-          className="bg-linear-to-br from-neutral-900 to-neutral-950 border border-neutral-800 rounded-lg p-4 space-y-3 hover:border-amber-500/30 transition-all"
-          variants={itemVariants}
-          whileHover={{ y: -2 }}
-        >
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-neutral-500 uppercase tracking-widest font-semibold">Avg Donation</p>
-            <div className="w-8 h-8 rounded bg-amber-500/20 flex items-center justify-center">
-              <Heart className="w-4 h-4 text-amber-400" />
-            </div>
-          </div>
-          <p className="text-2xl font-black text-white">
-            ${stats.total > 0 ? (stats.totalRaised / stats.total / 100).toFixed(0) : 0}
-          </p>
-          <p className="text-xs text-neutral-600">per donor</p>
-        </motion.div>
-
-        {/* Monthly MRR */}
-        <motion.div
-          className="bg-linear-to-br from-neutral-900 to-neutral-950 border border-neutral-800 rounded-lg p-4 space-y-3 hover:border-green-500/30 transition-all"
-          variants={itemVariants}
-          whileHover={{ y: -2 }}
-        >
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-neutral-500 uppercase tracking-widest font-semibold">Monthly MRR</p>
-            <div className="w-8 h-8 rounded bg-green-500/20 flex items-center justify-center">
-              <Zap className="w-4 h-4 text-green-400" />
-            </div>
-          </div>
-          <p className="text-2xl font-black text-white">
-            ${(stats.monthlyRecurring / 100).toLocaleString('en-US', { maximumFractionDigits: 0 })}/mo
-          </p>
-          <p className="text-xs text-neutral-600">{stats.monthly} subscriptions</p>
-        </motion.div>
-
-        {/* Yearly ARR */}
-        <motion.div
-          className="bg-linear-to-br from-neutral-900 to-neutral-950 border border-neutral-800 rounded-lg p-4 space-y-3 hover:border-purple-500/30 transition-all"
-          variants={itemVariants}
-          whileHover={{ y: -2 }}
-        >
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-neutral-500 uppercase tracking-widest font-semibold">Annual ARR</p>
-            <div className="w-8 h-8 rounded bg-purple-500/20 flex items-center justify-center">
-              <Calendar className="w-4 h-4 text-purple-400" />
-            </div>
-          </div>
-          <p className="text-2xl font-black text-white">
-            $
-            {((stats.monthlyRecurring * 12 + stats.yearlyRecurring) / 100).toLocaleString('en-US', {
-              maximumFractionDigits: 0
-            })}
-          </p>
-          <p className="text-xs text-neutral-600">{stats.monthly + stats.yearly} recurring</p>
-        </motion.div>
-
-        {/* Retention Rate */}
-        <motion.div
-          className="bg-linear-to-br from-neutral-900 to-neutral-950 border border-neutral-800 rounded-lg p-4 space-y-3 hover:border-cyan-500/30 transition-all"
-          variants={itemVariants}
-          whileHover={{ y: -2 }}
-        >
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-neutral-500 uppercase tracking-widest font-semibold">Retention</p>
-            <div className="w-8 h-8 rounded bg-cyan-500/20 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-cyan-400" />
-            </div>
-          </div>
-          <p className="text-2xl font-black text-white">96%</p>
-          <p className="text-xs text-neutral-600">month-over-month</p>
-        </motion.div>
+        {topStats.map((stat, index) => (
+          <motion.div
+            key={stat.id}
+            className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-lg p-5 dark:hover:border-neutral-700 hover:border-neutral-300 transition-all border"
+            variants={itemVariants}
+            whileHover={{ y: -2 }}
+          >
+            <p className="text-xs dark:text-neutral-500 text-neutral-600 uppercase tracking-wider font-semibold mb-3">
+              {stat.label}
+            </p>
+            <p className="text-3xl font-black dark:text-white text-neutral-900 mb-2">{stat.value}</p>
+            <p className="text-xs dark:text-neutral-600 text-neutral-500">{stat.description}</p>
+          </motion.div>
+        ))}
       </motion.div>
 
       {/* Charts Section */}
@@ -214,21 +173,21 @@ export default function FuelTankOverview({ orders }: FuelTankOverviewProps) {
       >
         {/* Main Revenue Chart - 2 cols */}
         <motion.div
-          className="lg:col-span-2 bg-neutral-900/50 border border-neutral-800 rounded-xl p-6 space-y-4"
+          className="lg:col-span-2 dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-xl p-6 space-y-4 border"
           variants={itemVariants}
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-white">Revenue Trend</p>
-              <p className="text-xs text-neutral-500">Last 6 months</p>
+              <p className="text-sm font-semibold dark:text-white text-neutral-900">Revenue Trend</p>
+              <p className="text-xs dark:text-neutral-500 text-neutral-600">Last 6 months</p>
             </div>
             <div className="flex gap-2">
               <button
                 onClick={() => setChartType('line')}
                 className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
                   chartType === 'line'
-                    ? 'bg-sky-600 text-white'
-                    : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700'
+                    ? 'dark:bg-sky-600 dark:text-white bg-sky-600 text-white'
+                    : 'dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700 bg-neutral-200 text-neutral-700 hover:bg-neutral-300'
                 }`}
               >
                 Line
@@ -236,7 +195,9 @@ export default function FuelTankOverview({ orders }: FuelTankOverviewProps) {
               <button
                 onClick={() => setChartType('bar')}
                 className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
-                  chartType === 'bar' ? 'bg-sky-600 text-white' : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700'
+                  chartType === 'bar'
+                    ? 'dark:bg-sky-600 dark:text-white bg-sky-600 text-white'
+                    : 'dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700 bg-neutral-200 text-neutral-700 hover:bg-neutral-300'
                 }`}
               >
                 Bar
@@ -247,17 +208,26 @@ export default function FuelTankOverview({ orders }: FuelTankOverviewProps) {
           <ResponsiveContainer width="100%" height={320}>
             {chartType === 'line' ? (
               <LineChart data={trendData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgb(38, 38, 38)" vertical={false} />
-                <XAxis dataKey="name" stroke="rgb(115, 115, 115)" style={{ fontSize: '12px' }} />
-                <YAxis stroke="rgb(115, 115, 115)" style={{ fontSize: '12px' }} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={isDark ? 'rgb(38, 38, 38)' : 'rgb(229, 231, 235)'}
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="name"
+                  stroke={isDark ? 'rgb(115, 115, 115)' : 'rgb(107, 114, 128)'}
+                  style={{ fontSize: '12px' }}
+                />
+                <YAxis stroke={isDark ? 'rgb(115, 115, 115)' : 'rgb(107, 114, 128)'} style={{ fontSize: '12px' }} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: 'rgb(23, 23, 23)',
-                    border: '1px solid rgb(38, 38, 38)',
-                    borderRadius: '8px'
+                    backgroundColor: isDark ? 'rgb(23, 23, 23)' : 'rgb(255, 255, 255)',
+                    border: isDark ? '1px solid rgb(38, 38, 38)' : '1px solid rgb(229, 231, 235)',
+                    borderRadius: '8px',
+                    color: isDark ? 'rgb(255, 255, 255)' : 'rgb(17, 24, 39)'
                   }}
                   formatter={(value) => `$${value}`}
-                  labelStyle={{ color: 'rgb(255, 255, 255)' }}
+                  labelStyle={{ color: isDark ? 'rgb(255, 255, 255)' : 'rgb(17, 24, 39)' }}
                 />
                 <Legend />
                 <Line
@@ -281,17 +251,26 @@ export default function FuelTankOverview({ orders }: FuelTankOverviewProps) {
               </LineChart>
             ) : (
               <BarChart data={trendData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgb(38, 38, 38)" vertical={false} />
-                <XAxis dataKey="name" stroke="rgb(115, 115, 115)" style={{ fontSize: '12px' }} />
-                <YAxis stroke="rgb(115, 115, 115)" style={{ fontSize: '12px' }} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={isDark ? 'rgb(38, 38, 38)' : 'rgb(229, 231, 235)'}
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="name"
+                  stroke={isDark ? 'rgb(115, 115, 115)' : 'rgb(107, 114, 128)'}
+                  style={{ fontSize: '12px' }}
+                />
+                <YAxis stroke={isDark ? 'rgb(115, 115, 115)' : 'rgb(107, 114, 128)'} style={{ fontSize: '12px' }} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: 'rgb(23, 23, 23)',
-                    border: '1px solid rgb(38, 38, 38)',
-                    borderRadius: '8px'
+                    backgroundColor: isDark ? 'rgb(23, 23, 23)' : 'rgb(255, 255, 255)',
+                    border: isDark ? '1px solid rgb(38, 38, 38)' : '1px solid rgb(229, 231, 235)',
+                    borderRadius: '8px',
+                    color: isDark ? 'rgb(255, 255, 255)' : 'rgb(17, 24, 39)'
                   }}
                   formatter={(value) => `$${value}`}
-                  labelStyle={{ color: 'rgb(255, 255, 255)' }}
+                  labelStyle={{ color: isDark ? 'rgb(255, 255, 255)' : 'rgb(17, 24, 39)' }}
                 />
                 <Legend />
                 <Bar dataKey="donations" fill="rgb(56, 189, 248)" name="Revenue" />
@@ -303,27 +282,40 @@ export default function FuelTankOverview({ orders }: FuelTankOverviewProps) {
 
         {/* Retention Chart */}
         <motion.div
-          className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6 space-y-4"
+          className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-xl p-6 space-y-4 border"
           variants={itemVariants}
         >
           <div>
-            <p className="text-sm font-semibold text-white">Retention Rate</p>
-            <p className="text-xs text-neutral-500">Last 6 months</p>
+            <p className="text-sm font-semibold dark:text-white text-neutral-900">Retention Rate</p>
+            <p className="text-xs dark:text-neutral-500 text-neutral-600">Last 6 months</p>
           </div>
 
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={retentionData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgb(38, 38, 38)" vertical={false} />
-              <XAxis dataKey="month" stroke="rgb(115, 115, 115)" style={{ fontSize: '12px' }} />
-              <YAxis stroke="rgb(115, 115, 115)" style={{ fontSize: '12px' }} domain={[0, 100]} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={isDark ? 'rgb(38, 38, 38)' : 'rgb(229, 231, 235)'}
+                vertical={false}
+              />
+              <XAxis
+                dataKey="month"
+                stroke={isDark ? 'rgb(115, 115, 115)' : 'rgb(107, 114, 128)'}
+                style={{ fontSize: '12px' }}
+              />
+              <YAxis
+                stroke={isDark ? 'rgb(115, 115, 115)' : 'rgb(107, 114, 128)'}
+                style={{ fontSize: '12px' }}
+                domain={[0, 100]}
+              />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'rgb(23, 23, 23)',
-                  border: '1px solid rgb(38, 38, 38)',
-                  borderRadius: '8px'
+                  backgroundColor: isDark ? 'rgb(23, 23, 23)' : 'rgb(255, 255, 255)',
+                  border: isDark ? '1px solid rgb(38, 38, 38)' : '1px solid rgb(229, 231, 235)',
+                  borderRadius: '8px',
+                  color: isDark ? 'rgb(255, 255, 255)' : 'rgb(17, 24, 39)'
                 }}
                 formatter={(value) => `${value}%`}
-                labelStyle={{ color: 'rgb(255, 255, 255)' }}
+                labelStyle={{ color: isDark ? 'rgb(255, 255, 255)' : 'rgb(17, 24, 39)' }}
               />
               <Line
                 type="monotone"
@@ -347,24 +339,24 @@ export default function FuelTankOverview({ orders }: FuelTankOverviewProps) {
       >
         {/* Recurring Revenue Details */}
         <motion.div
-          className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6 space-y-6"
+          className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-xl p-6 space-y-6 border"
           variants={itemVariants}
         >
           <div>
-            <p className="text-sm font-semibold text-white mb-1">Recurring Revenue Breakdown</p>
-            <p className="text-xs text-neutral-500">Monthly vs Yearly</p>
+            <p className="text-sm font-semibold dark:text-white text-neutral-900 mb-1">Recurring Revenue Breakdown</p>
+            <p className="text-xs dark:text-neutral-500 text-neutral-600">Monthly vs Yearly</p>
           </div>
 
           <div className="space-y-4">
             {/* Monthly */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-neutral-300">Monthly Recurring</span>
-                <span className="text-lg font-black text-sky-400">
+                <span className="text-sm dark:text-neutral-300 text-neutral-700">Monthly Recurring</span>
+                <span className="text-lg font-black dark:text-sky-400 text-sky-600">
                   ${(stats.monthlyRecurring / 100).toLocaleString('en-US', { maximumFractionDigits: 0 })}/mo
                 </span>
               </div>
-              <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
+              <div className={`h-2 dark:bg-neutral-800 bg-neutral-200 rounded-full overflow-hidden`}>
                 <motion.div
                   className="h-full bg-linear-to-r from-sky-500 to-sky-600"
                   initial={{ width: 0 }}
@@ -374,7 +366,7 @@ export default function FuelTankOverview({ orders }: FuelTankOverviewProps) {
                   transition={{ duration: 1, delay: 0.5 }}
                 />
               </div>
-              <div className="flex gap-4 text-xs text-neutral-500">
+              <div className="flex gap-4 text-xs dark:text-neutral-500 text-neutral-600">
                 <span>{stats.monthly} active</span>
                 <span>
                   Avg: ${stats.monthly > 0 ? (stats.monthlyRecurring / stats.monthly / 100).toFixed(0) : 0}/mo
@@ -385,12 +377,12 @@ export default function FuelTankOverview({ orders }: FuelTankOverviewProps) {
             {/* Yearly */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-neutral-300">Yearly Recurring</span>
-                <span className="text-lg font-black text-purple-400">
+                <span className="text-sm dark:text-neutral-300 text-neutral-700">Yearly Recurring</span>
+                <span className="text-lg font-black dark:text-purple-400 text-purple-600">
                   ${(stats.yearlyRecurring / 100).toLocaleString('en-US', { maximumFractionDigits: 0 })}/yr
                 </span>
               </div>
-              <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
+              <div className={`h-2 dark:bg-neutral-800 bg-neutral-200 rounded-full overflow-hidden`}>
                 <motion.div
                   className="h-full bg-linear-to-r from-purple-500 to-purple-600"
                   initial={{ width: 0 }}
@@ -400,19 +392,19 @@ export default function FuelTankOverview({ orders }: FuelTankOverviewProps) {
                   transition={{ duration: 1, delay: 0.5 }}
                 />
               </div>
-              <div className="flex gap-4 text-xs text-neutral-500">
+              <div className="flex gap-4 text-xs dark:text-neutral-500 text-neutral-600">
                 <span>{stats.yearly} active</span>
                 <span>Avg: ${stats.yearly > 0 ? (stats.yearlyRecurring / stats.yearly / 100).toFixed(0) : 0}/yr</span>
               </div>
             </div>
 
             {/* One-Time */}
-            <div className="space-y-2 pt-2 border-t border-neutral-800">
+            <div className="space-y-2 pt-2 dark:border-neutral-800 border-neutral-200 border-t">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-neutral-300">One-Time</span>
-                <span className="text-lg font-black text-amber-400">{stats.oneTime}</span>
+                <span className="text-sm dark:text-neutral-300 text-neutral-700">One-Time</span>
+                <span className="text-lg font-black dark:text-amber-400 text-amber-600">{stats.oneTime}</span>
               </div>
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs dark:text-neutral-500 text-neutral-600">
                 Total: $
                 {(orders?.filter((o) => o.type === 'one_time').reduce((sum, o) => sum + o.amount, 0) ?? 0) / 100}
               </p>
@@ -422,18 +414,18 @@ export default function FuelTankOverview({ orders }: FuelTankOverviewProps) {
 
         {/* Key Metrics */}
         <motion.div
-          className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6 space-y-6"
+          className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-xl p-6 space-y-6 border"
           variants={itemVariants}
         >
           <div>
-            <p className="text-sm font-semibold text-white mb-1">Key Performance Indicators</p>
-            <p className="text-xs text-neutral-500">Current metrics</p>
+            <p className="text-sm font-semibold dark:text-white text-neutral-900 mb-1">Key Performance Indicators</p>
+            <p className="text-xs dark:text-neutral-500 text-neutral-600">Current metrics</p>
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-neutral-800/30 rounded-lg">
-              <span className="text-sm text-neutral-400">Projected Annual Revenue</span>
-              <span className="text-xl font-black text-green-400">
+            <div className="flex items-center justify-between p-3 dark:bg-neutral-800/30 bg-neutral-100 rounded-lg">
+              <span className="text-sm dark:text-neutral-400 text-neutral-700">Projected Annual Revenue</span>
+              <span className="text-xl font-black dark:text-green-400 text-green-600">
                 $
                 {((stats.monthlyRecurring * 12 + stats.yearlyRecurring) / 100).toLocaleString('en-US', {
                   maximumFractionDigits: 0
@@ -441,27 +433,29 @@ export default function FuelTankOverview({ orders }: FuelTankOverviewProps) {
               </span>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-neutral-800/30 rounded-lg">
-              <span className="text-sm text-neutral-400">Recurring Revenue %</span>
-              <span className="text-xl font-black text-sky-400">
+            <div className="flex items-center justify-between p-3 dark:bg-neutral-800/30 bg-neutral-100 rounded-lg">
+              <span className="text-sm dark:text-neutral-400 text-neutral-700">Recurring Revenue %</span>
+              <span className="text-xl font-black dark:text-sky-400 text-sky-600">
                 {stats.total > 0 ? Math.round(((stats.monthly + stats.yearly) / stats.total) * 100) : 0}%
               </span>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-neutral-800/30 rounded-lg">
-              <span className="text-sm text-neutral-400">Churn Rate</span>
-              <span className="text-xl font-black text-red-400">{stats.churnRate}%</span>
+            <div className="flex items-center justify-between p-3 dark:bg-neutral-800/30 bg-neutral-100 rounded-lg">
+              <span className="text-sm dark:text-neutral-400 text-neutral-700">Churn Rate</span>
+              <span className="text-xl font-black dark:text-red-400 text-red-600">{stats.churnRate}%</span>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-neutral-800/30 rounded-lg">
-              <span className="text-sm text-neutral-400">Active Subscriptions</span>
-              <span className="text-xl font-black text-cyan-400">{stats.monthly + stats.yearly}</span>
+            <div className="flex items-center justify-between p-3 dark:bg-neutral-800/30 bg-neutral-100 rounded-lg">
+              <span className="text-sm dark:text-neutral-400 text-neutral-700">Active Subscriptions</span>
+              <span className="text-xl font-black dark:text-cyan-400 text-cyan-600">
+                {stats.monthly + stats.yearly}
+              </span>
             </div>
           </div>
 
           {/* Export Button */}
           <motion.button
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-all"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-all"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >

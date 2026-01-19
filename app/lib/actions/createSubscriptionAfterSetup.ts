@@ -6,9 +6,17 @@ interface CreateSubscriptionParams {
   setupIntentId: string
   frequency: 'monthly' | 'yearly'
   amount: number // in cents
+  coverFees?: boolean
+  feesCovered?: number
 }
 
-export async function createSubscriptionAfterSetup({ setupIntentId, frequency, amount }: CreateSubscriptionParams) {
+export async function createSubscriptionAfterSetup({
+  setupIntentId,
+  frequency,
+  amount,
+  coverFees,
+  feesCovered
+}: CreateSubscriptionParams) {
   try {
     // Get the confirmed setup intent
     const setupIntent = await stripe.setupIntents.retrieve(setupIntentId)
@@ -56,7 +64,9 @@ export async function createSubscriptionAfterSetup({ setupIntentId, frequency, a
         userId: setupIntent.metadata?.userId || 'guest',
         email: setupIntent.metadata?.email || '',
         name: setupIntent.metadata?.name || '',
-        frequency
+        frequency,
+        coverFees: coverFees ? 'true' : 'false',
+        feesCovered: feesCovered.toString()
       }
     })
 

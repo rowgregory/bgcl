@@ -23,7 +23,16 @@ export default function FloatingDonateButton() {
       >
         {/* Pulse Ring Background */}
         <motion.div
-          className="absolute inset-0 rounded-full dark:bg-sky-600 bg-sky-600"
+          className="absolute inset-0 rounded-full"
+          style={{
+            background: `conic-gradient(
+          from 0deg,
+          #0284c7 0deg 90deg,
+          #a855f7 90deg 180deg,
+          #22c55e 180deg 270deg,
+          #f97316 270deg 360deg
+        )`
+          }}
           animate={{
             boxShadow: isHovered
               ? [
@@ -41,7 +50,10 @@ export default function FloatingDonateButton() {
           href="/donate"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="relative w-16 h-16 rounded-full dark:bg-linear-to-br dark:from-sky-500 dark:to-sky-700 bg-linear-to-br from-sky-500 to-sky-600 shadow-2xl flex items-center justify-center group cursor-pointer"
+          className="relative w-16 h-16 rounded-full shadow-2xl flex items-center justify-center group cursor-pointer overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, #0284c7 0%, #7c3aed 50%, #22c55e 100%)'
+          }}
           whileHover={{
             scale: 1.15,
             rotate: 360
@@ -51,13 +63,14 @@ export default function FloatingDonateButton() {
         >
           {/* Rotating Border */}
           <motion.div
-            className="absolute inset-0 rounded-full border-2 border-transparent dark:border-t-white dark:border-r-white border-t-white border-r-white"
+            className="absolute inset-0 rounded-full border-2 border-transparent border-t-white border-r-white"
             animate={{ rotate: 360 }}
             transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
           />
 
           {/* Heart Icon */}
           <motion.div
+            className="relative z-10"
             animate={{
               scale: 1,
               opacity: 1

@@ -16,3 +16,14 @@ export interface AdminStats {
     activeHeroId?: string
   }
 }
+
+export interface AdminListGroup<T> {
+  id: string
+  label: string
+}
+
+export interface AdminListItem {
+  id: string
+  order?: number
+  [key: string]: any
+}

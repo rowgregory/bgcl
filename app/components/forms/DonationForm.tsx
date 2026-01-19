@@ -80,13 +80,19 @@ function DonationForm() {
   const [notes, setNotes] = useState('')
 
   const getAmount = () => {
-    if (donationType === 'once') return amount
-    if (donationType === 'monthly') {
-      const plan = MONTHLY_PLANS.find((p) => p.id === selectedPlan)
-      return plan?.amount || amount
+    if (donationType === 'once') {
+      return parseFloat(amount.toString()) || 0
+    } else if (donationType === 'monthly') {
+      return MONTHLY_PLANS.find((p) => p.id === selectedPlan)?.amount || parseFloat(amount.toString()) || 0
+    } else {
+      return YEARLY_PLANS.find((p) => p.id === selectedPlan)?.amount || parseFloat(amount.toString()) || 0
     }
-    const plan = YEARLY_PLANS.find((p) => p.id === selectedPlan)
-    return plan?.amount || amount
+  }
+
+  // Get total amount including fees if opted in
+  const getTotalAmount = () => {
+    const baseAmount = getAmount()
+    return coverFees ? baseAmount + calculateFees(baseAmount) : baseAmount
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,7 +105,9 @@ function DonationForm() {
     setProcessingStatus('processing')
 
     try {
-      const finalAmount = Math.round(getAmount() * 100)
+      const baseAmount = getAmount()
+      const finalAmount = Math.round((coverFees ? getTotalAmount() : baseAmount) * 100)
+      const feesCovered = coverFees ? Math.round(calculateFees(baseAmount) * 100) : 0
 
       if (donationType === 'once') {
         // One-time donation flow
@@ -109,7 +117,9 @@ function DonationForm() {
           amount: finalAmount,
           orderType: 'ONE_TIME_DONATION',
           description: `One-time donation from ${name}`,
-          saveCard
+          saveCard,
+          coverFees,
+          feesCovered
         })
 
         if (!intentResult.success) {
@@ -178,7 +188,9 @@ function DonationForm() {
           email,
           name,
           amount: finalAmount,
-          frequency: donationType === 'monthly' ? 'monthly' : 'yearly'
+          frequency: donationType === 'monthly' ? 'monthly' : 'yearly',
+          coverFees,
+          feesCovered
         })
 
         if (!setupResult.success) {
@@ -207,7 +219,9 @@ function DonationForm() {
         const subscriptionResult = await createSubscriptionAfterSetup({
           setupIntentId,
           frequency: donationType === 'monthly' ? 'monthly' : 'yearly',
-          amount: finalAmount
+          amount: finalAmount,
+          coverFees,
+          feesCovered
         })
 
         if (!subscriptionResult.success) {
@@ -256,6 +270,17 @@ function DonationForm() {
 
   const isMonthlyValid = (donationType === 'monthly' || donationType === 'yearly') && selectedPlan
   const isValid = email && name && (donationType === 'once' || isMonthlyValid)
+
+  const [coverFees, setCoverFees] = useState(false)
+
+  // Calculate fees so you receive the exact donation amount
+  const calculateFees = (donationAmount: number) => {
+    const amount = parseFloat(donationAmount.toString()) || 0
+    // Formula: (amount + 0.30) / (1 - 0.022) - amount
+    // This ensures after Stripe takes fees, you get the original amount
+    const totalNeeded = (amount + 0.3) / (1 - 0.022)
+    return totalNeeded - amount
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -538,6 +563,14 @@ function DonationForm() {
         </div>
       </div>
 
+      {/* Cover Fees Switch */}
+      <CustomSwitch
+        checked={coverFees}
+        onChange={setCoverFees}
+        label="Cover processing fees"
+        description={`Add $${calculateFees(amount).toFixed(2)} so 100% of your donation goes to the club`}
+      />
+
       {donationType === 'once' && session.status === 'unauthenticated' && (
         <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg mb-6">
           <p className="text-xs text-amber-400">
@@ -622,13 +655,19 @@ function DonationForm() {
         <span>
           {loading
             ? 'Processing...'
-            : `Donate $${
-                donationType === 'once'
-                  ? amount
-                  : donationType === 'monthly'
-                    ? MONTHLY_PLANS.find((p) => p.id === selectedPlan)?.amount || amount
-                    : YEARLY_PLANS.find((p) => p.id === selectedPlan)?.amount || amount
-              }${donationType !== 'once' ? `/${donationType === 'monthly' ? 'mo' : 'yr'}` : ''}`}
+            : (() => {
+                const baseAmount =
+                  donationType === 'once'
+                    ? parseFloat(amount.toString()) || 0
+                    : donationType === 'monthly'
+                      ? MONTHLY_PLANS.find((p) => p.id === selectedPlan)?.amount || parseFloat(amount.toString()) || 0
+                      : YEARLY_PLANS.find((p) => p.id === selectedPlan)?.amount || parseFloat(amount.toString()) || 0
+
+                const displayAmount = coverFees ? (baseAmount + calculateFees(baseAmount)).toFixed(2) : baseAmount
+                const suffix = donationType !== 'once' ? `/${donationType === 'monthly' ? 'mo' : 'yr'}` : ''
+
+                return `Donate $${displayAmount}${suffix}`
+              })()}
         </span>
       </button>
 

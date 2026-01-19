@@ -2,9 +2,9 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import Image from 'next/image'
 import { ITeamMember } from '@/types/entities/team-member'
 import { Mail, Phone } from 'lucide-react'
+import Picture from '../common/Picture'
 
 const TabButton = ({
   active,
@@ -40,12 +40,12 @@ const TeamMemberCard = ({ member }: { member: ITeamMember }) => {
       className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 rounded-lg overflow-hidden border hover:border-sky-500/50 transition-colors group flex flex-col h-full"
     >
       {member.image && (
-        <div className="relative shrink-0 h-80 overflow-hidden dark:bg-neutral-800 bg-neutral-100">
-          <Image
+        <div className="relative shrink-0 h-92 overflow-hidden dark:bg-neutral-800 bg-neutral-100">
+          <Picture
             src={member.image}
             alt={member.name}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            priority={true}
+            className="object-cover group-hover:scale-105 transition-transform duration-300 w-full h-full"
           />
         </div>
       )}

@@ -214,6 +214,8 @@ model Order {
 
   // Billing info
   billingAddress Json? // Store as JSON
+  coverFees      Boolean @default(false)
+  feesCovered    Int     @default(0) // Amount in cents
 
   // Event info (only for ticket purchases)
   eventId String?
@@ -296,6 +298,8 @@ model Campaign {
 
   // Relations
   orders Order[]
+
+  order Int @default(0)
 
   @@index([isActive])
   @@index([createdAt])
@@ -412,7 +416,9 @@ model Program {
   description4   String?
   description5   String?
   image          String?
+  heroImage      String?
   ageGroup       String // e.g., "5-10"
+  showAgeGroup   Boolean @default(false)
   location       String // e.g., "Boys & Girls Club of Lynn"
   frequency      String // e.g., "Daily", "Weekly", "Per Session"
   dropOffStart   String // e.g., "8:00am"
@@ -421,6 +427,7 @@ model Program {
   pickUpEnd      String // e.g., "4:30pm"
   datesAvailable String? // e.g., "TBA", "June 1 - August 31"
   license        String? // e.g., "EEC Licensed Ages 5-10"
+  order          Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -468,7 +475,7 @@ model Resource {
   id    String @id @default(cuid())
   title String
   url   String
-  order Int
+  order Int    @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -481,13 +488,13 @@ model News {
   paragraph1 String?
   paragraph2 String?
   paragraph3 String?
+  order      Int      @default(0)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   @@index([title])
 }
 
-// Page Content
 model Page {
   id        String  @id @default(cuid())
   slug      String  @unique
@@ -499,13 +506,27 @@ model Page {
 }
 
 model ContactSubmission {
-  id        String @id @default(cuid())
+  id        String                @id @default(cuid())
   firstName String
   lastName  String
   email     String
   phone     String
-  subject   String
-  message   String
+  subject   String?
+  message   String?
+  type      ContactSubmissionType
+  status    ContactReadStatus     @default(NEW)
+
+  // Availability
+  availabilityDays  String? // "Monday,Wednesday,Friday" or JSON
+  availabilityHours String? // "Morning" | "Afternoon" | "Evening" | "Flexible"
+
+  // Interest & Experience
+  programInterests String? // "KidsClub,TeenCenter,Sports" (comma-separated or JSON)
+  yearsExperience  Int? // Optional
+
+  // Legal/Info
+  backgroundCheckAck Boolean? // Confirm they understand requirement
+  additionalInfo     String? // Optional text field
 
   createdAt DateTime @default(now())
 
@@ -516,12 +537,11 @@ model JobApplication {
   id String @id @default(cuid())
 
   // Personal Information
-  applicantName      String         @db.VarChar(255)
-  email              String         @unique @db.VarChar(255)
-  positionAppliedFor String         @db.VarChar(255)
-  employmentType     EmploymentType
-  hoursAvailable     String         @db.Text
-  languages          String         @db.VarChar(500)
+  applicantName  String         @db.VarChar(255)
+  email          String         @unique @db.VarChar(255)
+  employmentType EmploymentType
+  hoursAvailable String         @db.Text
+  languages      String         @db.VarChar(500)
 
   // References
   references Reference[]
@@ -554,10 +574,8 @@ model JobApplication {
   submissionStatus SubmissionStatus  @default(INCOMPLETE)
 
   // Timestamps
-  applicationDate DateTime
-  submittedAt     DateTime @default(now())
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Reference {
@@ -583,6 +601,17 @@ enum EmploymentType {
   FULL_TIME
   PART_TIME
   SEASONAL
+}
+
+enum ContactReadStatus {
+  NEW
+  READ
+  ARCHIVED
+}
+
+enum ContactSubmissionType {
+  VOLUNTEER
+  GENERAL
 }
 
 enum ApplicationStatus {

@@ -9,9 +9,19 @@ interface SetupIntentParams {
   name: string
   amount: number // in cents
   frequency: 'monthly' | 'yearly'
+  coverFees?: boolean
+  feesCovered?: number
 }
 
-export async function createSetupIntentForSubscription({ userId, email, name, amount, frequency }: SetupIntentParams) {
+export async function createSetupIntentForSubscription({
+  userId,
+  email,
+  name,
+  amount,
+  frequency,
+  coverFees,
+  feesCovered
+}: SetupIntentParams) {
   try {
     let customerId: string | undefined
 
@@ -73,7 +83,9 @@ export async function createSetupIntentForSubscription({ userId, email, name, am
         name,
         frequency,
         amount: amount.toString(),
-        type: 'recurring_donation'
+        type: 'recurring_donation',
+        coverFees: coverFees ? 'true' : 'false',
+        feesCovered: feesCovered.toString()
       }
     })
 

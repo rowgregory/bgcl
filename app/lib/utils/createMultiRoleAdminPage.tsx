@@ -14,10 +14,10 @@ export function createMultiRoleAdminPage(roles: Array<{ id: string; label: strin
       )
 
       return (
-        <div className="min-h-screen bg-neutral-950 p-6 md:p-8">
+        <div className="min-h-screen dark:bg-neutral-950 bg-white p-6 md:p-8">
           <div className="w-full space-y-12">
             <div>
-              <h1 className="text-2xl font-semibold text-neutral-100">{pageTitle}</h1>
+              <h1 className="text-2xl font-semibold dark:text-neutral-100 text-neutral-900">{pageTitle}</h1>
             </div>
             {roleData.map((group) => (
               <TeamMemberList key={group.role} data={group.data} role={group.role} roleLabel={group.label} />

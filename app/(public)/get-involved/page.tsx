@@ -4,25 +4,20 @@ import { useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronRight, ChevronLeft, ArrowRightFromLine } from 'lucide-react'
 import uploadFileToFirebase from '@/app/lib/firebase/uploadFileToFirebase'
-import { store } from '@/app/lib/store/store'
+import { store, useFormSelector } from '@/app/lib/store/store'
 import { setOpenVolunteerDrawer } from '@/app/lib/store/slices/appSlice'
+import { createJobApplication, CreateJobApplicationInput } from '@/app/lib/actions/createJobApplication'
+import { useRouter } from 'next/navigation'
+import { showToast } from '@/app/lib/store/slices/toastSlice'
+import { IJobApplication } from '@/types/entities/job-application'
+import { setIsLoading } from '@/app/lib/store/slices/formSlice'
+import { stringifyArray } from '@/app/components/forms/VolunteerForm'
 
 const FORM_STEPS = [
   {
     id: 1,
     name: 'Personal Info',
-    fields: [
-      'applicantName',
-      'email',
-      'cellNumber',
-      'address',
-      'city',
-      'state',
-      'zipCode',
-      'positionAppliedFor',
-      'employmentType',
-      'hoursAvailable'
-    ]
+    fields: ['applicantName', 'email', 'employmentType', 'hoursAvailable', 'languages']
   },
   { id: 2, name: 'References', fields: ['references'] },
   {
@@ -38,18 +33,25 @@ const FORM_STEPS = [
       'trafficViolations'
     ]
   },
-  { id: 4, name: 'Resume', fields: ['resume'] },
+  { id: 4, name: 'Resume', fields: ['resumeUrl'] },
   {
     id: 5,
     name: 'Certification',
-    fields: ['agreeToTerms', 'signature']
+    fields: ['agreeToTerms', 'certifyInformation', 'authorizeBackground', 'understandActiveStatus', 'signature']
   }
 ]
 
 export default function GetInvolvedPage() {
+  const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState({ hasValidDriverLicense: true, licenseSuspended: false })
+  const [formData, setFormData] = useState<Partial<IJobApplication>>({
+    employmentType: 'FULL_TIME',
+    hoursAvailable: 'Monday-Friday 9am-5pm',
+    hasValidDriverLicense: true,
+    licenseSuspended: false
+  })
   const [errors, setErrors] = useState({})
+  const { isLoading } = useFormSelector()
 
   const handleNext = () => {
     if (validateStep(currentStep)) {
@@ -68,13 +70,132 @@ export default function GetInvolvedPage() {
   }
 
   const validateStep = (step: number) => {
-    // Validation logic here
-    return true
+    const newErrors: Record<string, string> = {}
+
+    switch (step) {
+      case 1: // Personal Info
+        if (!formData?.applicantName?.trim()) {
+          newErrors.applicantName = 'Name is required'
+        }
+        if (!formData?.email?.trim()) {
+          newErrors.email = 'Email is required'
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+          newErrors.email = 'Invalid email format'
+        }
+        if (!formData?.employmentType) {
+          newErrors.employmentType = 'Employment type is required'
+        }
+        if (!formData?.hoursAvailable?.trim()) {
+          newErrors.hoursAvailable = 'Hours available is required'
+        }
+
+        break
+
+      case 2: // References
+        const references = formData?.references || []
+        // if (references.length < 3) {
+        //   newErrors.references = '3 references are required'
+        // }
+
+        for (let index = 0; index < 3; index++) {
+          const ref = references[index]
+
+          if (!ref?.name?.trim()) {
+            newErrors[`name_${index}`] = `Name is required`
+          }
+          if (!ref?.positionAndCompany?.trim()) {
+            newErrors[`positionAndCompany_${index}`] = `Position & company is required`
+          }
+          if (!ref?.workRelationship?.trim()) {
+            newErrors[`workRelationship_${index}`] = `Work relationship is required`
+          }
+          if (!ref?.phone?.trim()) {
+            newErrors[`phone_${index}`] = `Phone number is required`
+          } else if (!/^[\d\s\-\(\)\+]{10,}$/.test(ref.phone)) {
+            newErrors[`phone_${index}`] = `Invalid phone number`
+          }
+          if (!ref?.email?.trim()) {
+            newErrors[`email_${index}`] = `Email is required`
+          } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ref.email)) {
+            newErrors[`email_${index}`] = `Invalid email format`
+          }
+        }
+        break
+
+      case 3: // Driving Info
+        if (formData?.hasValidDriverLicense === undefined || formData?.hasValidDriverLicense === null) {
+          newErrors.hasValidDriverLicense = "Please indicate if you have a valid driver's license"
+        }
+        if (formData?.hasValidDriverLicense === true) {
+          if (!formData?.licenseNumber?.trim()) {
+            newErrors.licenseNumber = 'License number is required'
+          }
+          if (!formData?.licenseExpiration) {
+            newErrors.licenseExpiration = 'License expiration date is required'
+          } else if (new Date(formData.licenseExpiration) < new Date()) {
+            newErrors.licenseExpiration = 'License is expired'
+          }
+        }
+        if (formData?.hasValidDriverLicense === false) {
+          if (!formData?.noLicenseReason?.trim()) {
+            newErrors.noLicenseReason = "Please explain why you don't have a license"
+          }
+        }
+        if (formData?.licenseSuspended === true) {
+          if (!formData?.suspensionExplanation?.trim()) {
+            newErrors.suspensionExplanation = 'Please explain the suspension'
+          }
+        }
+        break
+
+      case 4: // Resume
+        // Uncomment to make resume required:
+        if (!formData?.resumeUrl) {
+          newErrors.resumeUrl = 'Resume is required'
+        }
+        break
+
+      case 5: // Certification
+        if (!formData?.agreeToTerms) {
+          newErrors.agreeToTerms = 'You must agree to the terms'
+        }
+        if (!formData?.certifyInformation) {
+          newErrors.certifyInformation = 'You must certify the information is accurate'
+        }
+        if (!formData?.authorizeBackground) {
+          newErrors.authorizeBackground = 'You must authorize the background check'
+        }
+        if (!formData?.understandActiveStatus) {
+          newErrors.understandActiveStatus = 'You must acknowledge the active status requirement'
+        }
+        if (!formData?.signature?.trim()) {
+          newErrors.signature = 'Signature is required'
+        }
+        break
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
   }
 
   const handleSubmit = async () => {
     // Submit logic here
-    console.log('Submitting form:', formData)
+    const dataToSend = {
+      ...formData,
+      licenseExpiration: new Date(formData.licenseExpiration),
+      languages: stringifyArray(formData.languages as string[])
+    }
+    try {
+      store.dispatch(setIsLoading(true))
+      const data = await createJobApplication(dataToSend as CreateJobApplicationInput)
+      router.refresh()
+      router.push(`/get-involved/${data.jobApplicationId}`)
+      store.dispatch(showToast({ message: 'Job application submitted successfully!' }))
+    } catch {
+      store.dispatch(showToast({ message: 'Failed to submit job application', type: 'error' }))
+    } finally {
+      store.dispatch(setIsLoading(false))
+    }
   }
 
   const progress = (currentStep / FORM_STEPS.length) * 100
@@ -149,7 +270,7 @@ export default function GetInvolvedPage() {
                   {FORM_STEPS.map((step) => (
                     <motion.button
                       key={step.id}
-                      onClick={() => setCurrentStep(step.id)}
+                      onClick={() => handleNext()}
                       className="relative flex items-center gap-4 group w-full"
                       whileHover={{ x: 4 }}
                     >
@@ -271,7 +392,15 @@ export default function GetInvolvedPage() {
                 onClick={handleNext}
                 className="flex items-center space-x-2 px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors ml-auto"
               >
-                <span>{currentStep === FORM_STEPS.length ? 'Submit' : 'Next'}</span>
+                <span>
+                  {isLoading ? (
+                    <div className="w-4 h-4 rounded-full border-2 border-white border-t-0" />
+                  ) : currentStep === FORM_STEPS.length ? (
+                    'Submit'
+                  ) : (
+                    'Next'
+                  )}
+                </span>
                 <ChevronRight className="w-4 h-4" />
               </button>
             </motion.div>
@@ -367,20 +496,6 @@ function Step1PersonalInfo({ formData, setFormData, errors }: any) {
             placeholder="john@example.com"
           />
           {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-        </div>
-
-        {/* Position Applied For */}
-        <div>
-          <label className="block text-sm font-semibold dark:text-white text-neutral-900 mb-2">
-            Position Applied For <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={formData.positionAppliedFor || ''}
-            onChange={(e) => setFormData({ ...formData, positionAppliedFor: e.target.value })}
-            className="w-full px-4 py-2.5 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
-            placeholder="Program Director"
-          />
         </div>
 
         {/* Employment Type */}
@@ -568,7 +683,7 @@ function Step2References({ formData, setFormData, errors }: any) {
                     value={formData.references?.[index]?.phone || ''}
                     onChange={(e) => updateReference(index, 'phone', e.target.value)}
                     className="w-full px-4 py-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
-                    placeholder="(781) 593-1772"
+                    placeholder="7815931772"
                   />
                   {errors[`phone_${index}`] && <p className="text-red-500 text-sm mt-1">{errors[`phone_${index}`]}</p>}
                 </div>
@@ -818,7 +933,6 @@ function Step4Resume({ formData, setFormData, errors, setErrors }: any) {
 
       setUploadProgress(100)
     } catch (error) {
-      console.error('Upload error:', error)
       setErrors({
         ...errors,
         resume: error instanceof Error ? error.message : 'Failed to upload resume'

@@ -29,7 +29,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       try {
         switch (account?.provider) {
           case 'email':
-            console.log('HANDLE EMAIL PROVIDER')
             return await handleEmailProvider(user)
 
           case 'google':
@@ -65,7 +64,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
             // Store the redirect path in the token
             if (dbUser.role === 'ADMIN' || dbUser.role === 'SUPERUSER') {
-              token.redirectPath = '/admin/mission-control'
+              token.redirectPath = '/admin/star-map/home'
             } else {
               token.redirectPath = '/supporter/overview'
             }

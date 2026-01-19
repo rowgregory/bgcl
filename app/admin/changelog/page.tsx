@@ -21,6 +21,47 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.2.0',
+    date: '2026-01-19',
+    changes: [
+      {
+        type: 'feature' as ChangeType,
+        title: 'Server Actions for CRUD Operations',
+        description:
+          'Added server actions to create, update, and delete News, Newsletters, Contact Submissions (Volunteer & Contact Form), Club Resources, and Job Applications, streamlining backend operations and improving admin workflow.',
+        impact: 'high' as ImpactLevel
+      },
+      {
+        type: 'feature' as ChangeType,
+        title: 'Expanded Donation Form',
+        description:
+          'Added new fields to the donation form including additional donor information, campaign selection, and optional notes, enabling more detailed contributions tracking.',
+        impact: 'medium' as ImpactLevel
+      },
+      {
+        type: 'improvement' as ChangeType,
+        title: 'Updated Home Programs Cards',
+        description:
+          'Refreshed the Home Programs cards to use the brand colors, improving visual consistency and brand recognition across the site.',
+        impact: 'low' as ImpactLevel
+      },
+      {
+        type: 'feature' as ChangeType,
+        title: 'Generic Drag List Component',
+        description:
+          'Created a reusable drag-and-drop list component for admin interfaces, allowing easy reordering of items across multiple lists with intuitive drag interactions.',
+        impact: 'medium' as ImpactLevel
+      },
+      {
+        type: 'feature' as ChangeType,
+        title: 'ThemeProvider for Dark/Light Mode',
+        description:
+          'Implemented a ThemeProvider that automatically detects users’ system dark or light mode preferences and applies the corresponding theme across the application.',
+        impact: 'medium' as ImpactLevel
+      }
+    ]
+  },
+  {
     version: '1.1.1',
     date: '2026-01-16',
     changes: [

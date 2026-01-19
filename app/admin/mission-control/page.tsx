@@ -29,7 +29,6 @@
 //   ResponsiveContainer,
 //   Legend,
 // } from "recharts";
-import UnderConstruction from '@/app/components/common/UnderConstruction'
 
 const MissionControl = () => {
   // const [summary] = useState({
@@ -123,8 +122,8 @@ const MissionControl = () => {
   // ];
 
   return (
-    <UnderConstruction />
-    // <div className="h-full bg-neutral-950 p-6">
+    <></>
+    // <div className="h-full dark:bg-neutral-950 bg-white p-6">
     //   <div className="mx-auto">
     //     {/* Top Metrics Grid */}
     //     <motion.div

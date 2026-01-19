@@ -12,6 +12,9 @@ const VALID_ROLES = [
   'program_staff',
   'maintenance_staff',
   'honoree',
+  'fame',
+  'helping',
+  'commitment',
   'youth'
 ]
 

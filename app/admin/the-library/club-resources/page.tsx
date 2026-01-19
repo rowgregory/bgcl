@@ -1,5 +1,9 @@
-const ClubResources = () => {
-  return <div>ClubResources</div>
-}
+import { AdminListPage } from '@/app/components/admin/AdminList'
+import { getClubResources } from '@/app/lib/actions/getClubResources'
 
-export default ClubResources
+export const metadata = { title: 'Club Resources - Admin' }
+
+export default async function ClubResourcePage() {
+  const data = await getClubResources()
+  return <AdminListPage data={data} pageTitle="Club Resources" itemType="club-resource" />
+}

@@ -1,0 +1,100 @@
+'use client'
+
+import { AnimatePresence } from 'framer-motion'
+import { createFormActions, resetForm, setIsLoading } from '@/app/lib/store/slices/formSlice'
+import { showToast } from '@/app/lib/store/slices/toastSlice'
+import { useNewsletterSelector, useFormSelector, store } from '@/app/lib/store/store'
+import Backdrop from '../common/Backdrop'
+import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
+import { useRouter } from 'next/navigation'
+import Drawer from '../common/Drawer'
+import validateNewsletterForm from '@/app/lib/validations/newsletter'
+import { setCloseNewsletterDrawer } from '@/app/lib/store/slices/newsletterSlice'
+import { NewsletterForm } from '../forms/NewsletterForm'
+import { updateNewsletter, UpdateNewsletterInput } from '@/app/lib/actions/updateNewsletter'
+import { createNewsletter, CreateNewsletterInput } from '@/app/lib/actions/createNewsletter'
+
+const NewsletterDrawer = () => {
+  const router = useRouter()
+  const { newsletterDrawer } = useNewsletterSelector()
+  const { forms, isLoading } = useFormSelector()
+  const inputs = forms.newsletterForm.inputs
+  const errors = forms.newsletterForm.errors
+  const isUpdating = !!inputs?.isUpdating
+  const { handleInput, setErrors, handleToggle, handleSelect } = createFormActions('newsletterForm', store.dispatch)
+
+  const onClose = () => {
+    store.dispatch(resetForm('newsletterForm'))
+    store.dispatch(setCloseNewsletterDrawer())
+  }
+
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault()
+
+    if (!validateNewsletterForm(inputs, setErrors)) return
+    try {
+      store.dispatch(setIsLoading(true))
+
+      if (inputs?.isUpdating) {
+        await updateNewsletter(inputs as UpdateNewsletterInput)
+      } else {
+        await createNewsletter(inputs as CreateNewsletterInput)
+      }
+
+      router.refresh()
+
+      onClose()
+
+      store.dispatch(
+        showToast({
+          type: 'success',
+          message: `${inputs?.isUpdating ? 'Newsletter Updated!' : 'Newsletter Created!'}`,
+          description: inputs?.isUpdating
+            ? 'Your newsletter has been successfully updated.'
+            : 'Your newsletter has been successfully created!'
+        })
+      )
+    } catch (error: unknown) {
+      const errorMessage = extractErrorMessage(error)
+
+      store.dispatch(
+        showToast({
+          type: 'error',
+          message: `${inputs?.isUpdating ? 'Update' : 'Create'} newsletter Failed`,
+          description: errorMessage
+        })
+      )
+    } finally {
+      store.dispatch(setIsLoading(false))
+    }
+  }
+
+  return (
+    <AnimatePresence>
+      {newsletterDrawer && (
+        <>
+          {/* Backdrop Overlay */}
+          <Backdrop onClose={onClose} />
+
+          {/* Drawer */}
+          <Drawer>
+            {/* Form */}
+            <NewsletterForm
+              errors={errors}
+              handleInput={handleInput}
+              handleSubmit={handleSubmit}
+              handleToggle={handleToggle}
+              handleSelect={handleSelect}
+              inputs={inputs}
+              isLoading={isLoading}
+              isUpdating={isUpdating}
+              onClose={onClose}
+            />
+          </Drawer>
+        </>
+      )}
+    </AnimatePresence>
+  )
+}
+
+export default NewsletterDrawer

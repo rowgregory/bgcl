@@ -1,8 +1,28 @@
-import { Rocket, Globe, Satellite, Sliders, ScanLine, Shield, Fuel, Aperture, BookOpen, GitCommit } from 'lucide-react'
+import {
+  Rocket,
+  Globe,
+  Satellite,
+  Sliders,
+  ScanLine,
+  Shield,
+  Fuel,
+  Aperture,
+  BookOpen,
+  GitCommit,
+  Radio,
+  LucideIcon,
+  MessageSquare,
+  DoorOpen
+} from 'lucide-react'
 
 const isStringInPath = (path: string, str: string) => path.includes(str)
 
-export const adminNavigationLinkData = (path: string) => {
+export const adminNavigationLinkData = (
+  path: string
+): {
+  title: string
+  items: { icon: LucideIcon; label: string; path: string; description: string; active: boolean; isDrawer?: boolean }[]
+}[] => {
   const dashboardGroup = [
     {
       icon: Rocket,
@@ -21,12 +41,12 @@ export const adminNavigationLinkData = (path: string) => {
       description: 'Public Site Content',
       active: isStringInPath(path, 'star-map')
     },
-    {
-      icon: Aperture,
-      label: 'The Orbital Deck',
-      description: 'Hero Studio & Campaign Visuals',
-      isDrawer: true
-    },
+    // {
+    //   icon: Aperture,
+    //   label: 'The Orbital Deck',
+    //   description: 'Hero Studio & Campaign Visuals',
+    //   isDrawer: true
+    // },
     {
       icon: BookOpen, // or Archive, BookOpen, Library, Download
       label: 'The Library',
@@ -37,13 +57,13 @@ export const adminNavigationLinkData = (path: string) => {
   ]
 
   const operationsGroup = [
-    {
-      icon: Satellite,
-      label: 'The Capsule',
-      path: '/admin/capsule/core',
-      description: 'Event Management',
-      active: isStringInPath(path, 'capsule')
-    },
+    // {
+    //   icon: Satellite,
+    //   label: 'The Capsule',
+    //   path: '/admin/capsule/core',
+    //   description: 'Event Management',
+    //   active: isStringInPath(path, 'capsule')
+    // },
     {
       icon: Fuel,
       label: 'The Fuel Tank',
@@ -62,12 +82,36 @@ export const adminNavigationLinkData = (path: string) => {
       active: isStringInPath(path, 'command-pod')
     },
     {
-      icon: Sliders,
-      label: 'Operation Panel',
-      path: '/admin/operations-panel',
-      description: 'System Settings',
-      active: isStringInPath(path, 'operations-panel')
+      icon: Radio,
+      label: 'Signal Relay',
+      path: '/admin/signal-relay',
+      description: 'Manage Newsletter Subscribers',
+      active: isStringInPath(path, 'signal-relay')
     },
+    {
+      icon: MessageSquare,
+      label: 'Transmissions',
+      path: '/admin/transmissions',
+      description: 'Contact Form Submissions',
+      active: isStringInPath(path, 'transmissions')
+    },
+    {
+      icon: DoorOpen,
+      label: 'Airlock',
+      path: '/admin/airlock',
+      description: 'Pending Job Applications',
+      active: isStringInPath(path, 'airlock')
+    }
+    // {
+    //   icon: Sliders,
+    //   label: 'Operation Panel',
+    //   path: '/admin/operations-panel',
+    //   description: 'System Settings',
+    //   active: isStringInPath(path, 'operations-panel')
+    // },
+  ]
+
+  const systemGroup = [
     {
       icon: GitCommit,
       label: 'Changelog',
@@ -88,10 +132,11 @@ export const adminNavigationLinkData = (path: string) => {
   ]
 
   return [
-    { title: 'Dashboard', items: dashboardGroup },
+    // { title: 'Dashboard', items: dashboardGroup },
     { title: 'Content', items: contentGroup },
     { title: 'Operations', items: operationsGroup },
     { title: 'Management', items: managementGroup },
-    { title: 'Future', items: futureGroup }
+    { title: 'System', items: systemGroup }
+    // { title: 'Future', items: futureGroup }
   ]
 }

@@ -6,7 +6,7 @@ export const getPrograms = unstable_cache(
   async (): Promise<IProgram[]> => {
     try {
       const programs = await prisma.program.findMany({
-        orderBy: { createdAt: 'desc' }
+        orderBy: { order: 'asc' }
       })
 
       return programs
