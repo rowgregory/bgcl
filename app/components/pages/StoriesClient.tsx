@@ -85,7 +85,7 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
                   {/* Date */}
                   <div className="flex items-center gap-2 dark:text-neutral-400 text-neutral-600 text-sm mb-3">
                     <Calendar className="w-4 h-4" />
-                    <time dateTime={newsItem.createdAt.toISOString()}>{formatDate(newsItem.createdAt)}</time>
+                    <time dateTime={newsItem?.createdAt?.toISOString()}>{formatDate(newsItem.createdAt)}</time>
                   </div>
 
                   {/* Title */}

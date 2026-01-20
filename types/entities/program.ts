@@ -8,6 +8,7 @@ export interface IProgram {
   description5?: string
   image?: string
   heroImage?: string
+  showAgeGroup?: boolean
   ageGroup: string
   location: string
   frequency: string

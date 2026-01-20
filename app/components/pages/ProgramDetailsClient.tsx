@@ -1,11 +1,12 @@
 'use client'
 
+import { IProgram } from '@/types/entities/program'
 import { motion } from 'framer-motion'
 import { ChevronLeft, Clock, Users, Calendar, MapPin, FileText } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-const ProgramDetailsClient = ({ program }) => {
+const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
   if (!program) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">

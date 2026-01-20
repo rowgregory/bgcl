@@ -4,6 +4,8 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, Heart } from 'lucide-react'
 import Link from 'next/link'
 import Picture from '../common/Picture'
+import { store } from '@/app/lib/store/store'
+import { setOpenVolunteerDrawer } from '@/app/lib/store/slices/appSlice'
 
 export default function YouthOfTheYearSection({ youth }) {
   return (
@@ -119,12 +121,12 @@ export default function YouthOfTheYearSection({ youth }) {
                 >
                   Donate
                 </Link>
-                <Link
-                  href="/volunteer"
+                <button
+                  onClick={() => store.dispatch(setOpenVolunteerDrawer())}
                   className="flex-1 px-6 py-3 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold rounded-lg transition-colors text-center"
                 >
                   Volunteer
-                </Link>
+                </button>
               </div>
             </motion.div>
           </motion.div>
