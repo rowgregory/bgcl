@@ -130,7 +130,7 @@ const StoryClient = ({ story }) => {
               <h3 className="text-xl font-black dark:text-white text-neutral-900 mb-6">Related Articles</h3>
               <div className="space-y-4">
                 {relatedNews.map((article) => (
-                  <Link key={article?.id} href={`/news/${article?.id}`}>
+                  <Link key={article?.id} href={`/stories/${article?.id}`}>
                     <div className="group cursor-pointer">
                       <h4 className="text-sm font-bold dark:text-white text-neutral-900 mb-2 line-clamp-2 group-hover:dark:text-sky-400 group-hover:text-sky-600 transition-colors">
                         {article?.title}
@@ -184,7 +184,7 @@ const StoryClient = ({ story }) => {
             <p className="text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl mx-auto">
               Explore all the latest news, announcements, and stories from the Boys & Girls Club of Lynn.
             </p>
-            <Link href="/news">
+            <Link href="/stories">
               <button className="px-8 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors">
                 View All News
               </button>

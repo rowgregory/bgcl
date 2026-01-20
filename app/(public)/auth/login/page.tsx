@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Mail, Rocket, Star } from 'lucide-react'
+import { Mail, Rocket, ShieldX, Star } from 'lucide-react'
 import { FloatingStars } from '@/app/components/common/FloatingStars'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
@@ -11,6 +11,8 @@ import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { useSearchParams } from 'next/navigation'
 import { MotionLink } from '@/app/components/common/MotionLink'
 import Picture from '@/app/components/common/Picture'
+import getAuthErrorMessage from '@/app/lib/auth/getAuthErrorMessage'
+import { logAuthError } from '@/app/lib/actions/logAuthError'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -18,7 +20,8 @@ const Login = () => {
   const [emailSent, setEmailSent] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const searchParams = useSearchParams()
-  const error = searchParams.get('error')
+  const urlError = searchParams.get('error')
+  const errorInfo = urlError ? getAuthErrorMessage(urlError) : null
 
   const handleGoogleSignIn = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -43,6 +46,7 @@ const Login = () => {
 
     try {
       setIsSubmitting(true)
+      localStorage.setItem('lastMagicLinkEmail', email)
 
       const result = await signIn('email', {
         email,
@@ -61,6 +65,22 @@ const Login = () => {
       setIsSubmitting(false)
     }
   }
+
+  useEffect(() => {
+    if (urlError && errorInfo) {
+      const savedEmail = localStorage.getItem('lastMagicLinkEmail')
+
+      logAuthError({
+        error: urlError,
+        title: errorInfo.title,
+        message: errorInfo.message,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href,
+        email: savedEmail || undefined
+      })
+    }
+  }, [urlError, errorInfo])
 
   return (
     <div className="min-h-screen flex">
@@ -156,30 +176,26 @@ const Login = () => {
             <p className="dark:text-neutral-400 text-neutral-600 mb-8">Sign in to access your mission control</p>
 
             {/* Error Message */}
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-4 dark:bg-red-500/10 dark:border-red-500/30 bg-red-50 border-red-200 rounded-lg dark:text-red-400 text-red-600 text-sm mb-6 border"
-              >
-                {error === 'EmailSignInError' && 'Failed to send sign in email. Please try again.'}
-                {error === 'Callback' && 'An error occurred during sign in. Please try again.'}
-                {error === 'OAuthSignin' && 'Error signing in with Google. Please try again.'}
-                {error === 'OAuthCallback' && 'Error connecting to Google. Please try again.'}
-                {error === 'OAuthAccountNotLinked' && 'Email already linked to another account.'}
-                {error === 'EmailCreateAccount' && 'Could not create account. Please try again.'}
-                {error === 'CredentialsSignin' && 'Invalid email or credentials.'}
-                {![
-                  'EmailSignInError',
-                  'Callback',
-                  'OAuthSignin',
-                  'OAuthCallback',
-                  'OAuthAccountNotLinked',
-                  'EmailCreateAccount',
-                  'CredentialsSignin'
-                ].includes(error) && 'An error occurred. Please try again.'}
-              </motion.div>
-            )}
+            <AnimatePresence>
+              {urlError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="mb-6 p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl backdrop-blur-sm"
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className="shrink-0">
+                      <ShieldX className="w-5 h-5 text-red-500 dark:text-red-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-red-600 dark:text-red-400 font-semibold text-sm mb-1">{errorInfo?.title}</h3>
+                      <p className="text-red-600/80 dark:text-red-300 text-sm leading-relaxed">{errorInfo?.message}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {!emailSent ? (
               <>
