@@ -92,7 +92,9 @@ const StoryClient = ({ story }) => {
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div className="flex items-center gap-2 dark:text-neutral-400 text-neutral-600">
                 <Calendar className="w-4 h-4" />
-                <time dateTime={story?.createdAt?.toISOString()}>{formatDate(story?.createdAt)}</time>
+                <time dateTime={story?.createdAt ? new Date(story?.createdAt).toISOString() : undefined}>
+                  {formatDate(story.createdAt)}
+                </time>
               </div>
               <button
                 onClick={handleShare}
