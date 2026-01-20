@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { ChevronLeft, Clock, Users, Calendar, MapPin, FileText } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 
 const ProgramDetailsClient = ({ program }) => {
@@ -23,14 +24,14 @@ const ProgramDetailsClient = ({ program }) => {
   return (
     <div className="dark:bg-neutral-950 bg-white min-h-screen">
       {/* Hero Section */}
-      <div
-        className="relative overflow-hidden py-40 bg-cover bg-top"
-        style={{
-          backgroundImage: `url(${program.heroImage})`
-        }}
-      >
+      <div className="relative overflow-hidden py-40">
+        {/* Background Image */}
+        {program.heroImage && (
+          <Image src={program.heroImage} alt={program.name} fill priority className="object-cover object-top" />
+        )}
+
         {/* Dark overlay */}
-        <div className="absolute inset-0 dark:bg-black/60 bg-black/40"></div>
+        <div className="absolute inset-0 dark:bg-black/60 bg-black/40" />
 
         <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
