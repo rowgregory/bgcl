@@ -174,9 +174,9 @@ export const CommandPodClient = ({ users }) => {
                       </p>
                     </div>
 
-                    {(session.data.user.email === process.env.NEXT_PUBLIC_SUPER_USER_EMAIL ||
-                      (session.data.user.role === 'ADMIN' &&
-                        user.email !== process.env.NEXT_PUBLIC_SUPER_USER_EMAIL)) && (
+                    {(session?.data?.user?.email === process.env.NEXT_PUBLIC_SUPER_USER_EMAIL ||
+                      (session?.data?.user?.role === 'ADMIN' &&
+                        user?.email !== process.env.NEXT_PUBLIC_SUPER_USER_EMAIL)) && (
                       <>
                         <motion.button
                           whileHover={{ scale: 1.1 }}
