@@ -2,26 +2,29 @@ import { auth } from '@/app/lib/auth'
 import { NextResponse } from 'next/server'
 
 export async function proxy(request) {
+  const { pathname } = request.nextUrl
   const session = await auth()
 
-  // Redirect to login if not authenticated
-  if (!session?.user) {
-    return NextResponse.redirect(new URL('/auth/login', request.url))
+  // If authenticated and on login page, redirect away
+  if (pathname === '/auth/login' && session?.user) {
+    const { role } = session.user
+    const redirectUrl = role === 'ADMIN' || role === 'SUPERUSER' ? '/admin/star-map/home' : '/supporter/overview'
+    return NextResponse.redirect(new URL(redirectUrl, request.url))
   }
 
-  const { role } = session.user
-  const { pathname } = request.nextUrl
+  // Redirect to login if not authenticated (for protected routes)
+  if (pathname.startsWith('/supporter') || pathname.startsWith('/admin')) {
+    if (!session?.user) {
+      return NextResponse.redirect(new URL('/auth/login', request.url))
+    }
 
-  // Admin routes - only ADMIN and SUPERUSER can access
-  if (pathname.startsWith('/admin')) {
-    if (role !== 'ADMIN' && role !== 'SUPERUSER') {
+    const { role } = session.user
+
+    if (pathname.startsWith('/admin') && role !== 'ADMIN' && role !== 'SUPERUSER') {
       return NextResponse.redirect(new URL('/supporter/overview', request.url))
     }
-  }
 
-  // Supporter routes - only SUPPORTER can access
-  if (pathname.startsWith('/supporter')) {
-    if (role === 'ADMIN' || role === 'SUPERUSER') {
+    if (pathname.startsWith('/supporter') && (role === 'ADMIN' || role === 'SUPERUSER')) {
       return NextResponse.redirect(new URL('/admin/star-map/home', request.url))
     }
   }
@@ -30,5 +33,5 @@ export async function proxy(request) {
 }
 
 export const config = {
-  matcher: ['/supporter/:path*', '/admin/:path*']
+  matcher: ['/supporter/:path*', '/admin/:path*', '/auth/login']
 }

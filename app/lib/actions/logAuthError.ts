@@ -10,6 +10,7 @@ export async function logAuthError(data: {
   userAgent: string
   url: string
   email?: string
+  isKnownError?: boolean
 }) {
   try {
     await prisma.log.create({
@@ -22,7 +23,8 @@ export async function logAuthError(data: {
           timestamp: data.timestamp,
           userAgent: data.userAgent,
           url: data.url,
-          email: data.email
+          email: data.email,
+          isKnownError: data.isKnownError
         }
       }
     })

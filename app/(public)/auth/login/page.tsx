@@ -67,7 +67,23 @@ const Login = () => {
   }
 
   useEffect(() => {
-    if (urlError && errorInfo) {
+    // Skip false positives
+    if (!urlError || urlError === 'undefined' || urlError === 'null') {
+      return
+    }
+
+    // Only log if we have valid error info AND it's a real error code
+    const knownErrors = [
+      'AccessDenied',
+      'Verification',
+      'EmailSignin',
+      'OAuthSignin',
+      'OAuthCallback',
+      'SessionRequired',
+      'Configuration'
+    ]
+
+    if (errorInfo) {
       const savedEmail = localStorage.getItem('lastMagicLinkEmail')
 
       logAuthError({
@@ -77,7 +93,8 @@ const Login = () => {
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent,
         url: window.location.href,
-        email: savedEmail || undefined
+        email: savedEmail || undefined,
+        isKnownError: knownErrors.includes(urlError) // Helps you filter in DB
       })
     }
   }, [urlError, errorInfo])
