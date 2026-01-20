@@ -8,19 +8,9 @@ import { store } from '@/app/lib/store/store'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { useRouter } from 'next/navigation'
 import { deleteContactSubmission } from '@/app/lib/actions/deleteContactSubmission'
+import { formatDate } from '@/app/lib/utils/date-utils'
 
 const TABS = ['All', 'New', 'Read', 'Archived']
-
-const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  }).format(date)
-}
 
 export default function TransmissionsClient({ transmissions }: { transmissions: IContactSubmission[] }) {
   const [activeTab, setActiveTab] = useState('All')
@@ -192,7 +182,7 @@ export default function TransmissionsClient({ transmissions }: { transmissions: 
                                   Subject: {transmission.subject}
                                 </span>
                                 <p className="text-xs text-sky-600/70 dark:text-sky-400/70">
-                                  {formatDate(transmission.createdAt)}
+                                  {formatDate(transmission?.createdAt)}
                                 </p>
                               </div>
                             </>
