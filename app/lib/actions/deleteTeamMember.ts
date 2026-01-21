@@ -1,9 +1,9 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag, unstable_cache } from 'next/cache'
+import { revalidateTag } from 'next/cache'
 
-async function deleteTeamMemberFn(id: string) {
+export async function deleteTeamMember(id: string) {
   try {
     if (!id) {
       throw new Error('Team member ID is required')
@@ -35,14 +35,3 @@ async function deleteTeamMemberFn(id: string) {
     }
   }
 }
-
-export const deleteTeamMember = unstable_cache(
-  async (id: string) => {
-    return deleteTeamMemberFn(id)
-  },
-  ['deleteTeamMember'],
-  {
-    tags: ['Team-Member'],
-    revalidate: 60
-  }
-)
