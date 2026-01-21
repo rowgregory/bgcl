@@ -14,6 +14,7 @@ import DonationNotification from './components/DonationNotification'
 import CapitalCampaignDrawer from './components/drawers/CapitalCampaignDrawer'
 import VolunteerDrawer from './components/drawers/VolunteerDrawer'
 import FloatingDonateButton from './components/FloatingButton'
+import CapitalCampaignTab from './components/CapitalCampaignTab'
 
 export default function RootLayoutWrapper({ children, programs }) {
   const pathname = usePathname()
@@ -30,6 +31,7 @@ export default function RootLayoutWrapper({ children, programs }) {
         <CapitalCampaignDrawer />
         <VolunteerDrawer programs={programs} />
         <FloatingDonateButton />
+        <CapitalCampaignTab />
         {show && <Header />}
         {children}
         {show && <Footer />}

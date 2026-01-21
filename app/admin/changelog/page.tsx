@@ -21,6 +21,54 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.2.1',
+    date: '2026-01-21',
+    changes: [
+      {
+        type: 'fix' as ChangeType,
+        title: 'Magic Link Email Client Prefetch Issue',
+        description:
+          'Identified that .org email platforms (Outlook, corporate email security scanners) pre-fetch links for security scanning, consuming magic link tokens before users can click them. Documented for future auth flow improvements.',
+        impact: 'medium' as ImpactLevel
+      },
+      {
+        type: 'feature' as ChangeType,
+        title: 'Dedicated Auth Error Page',
+        description:
+          'Created a separate authentication error page with space-themed messaging to handle auth errors cleanly, preventing false positive error logging on the login page.',
+        impact: 'medium' as ImpactLevel
+      },
+      {
+        type: 'feature' as ChangeType,
+        title: 'Capital Campaign Page',
+        description:
+          'Built modern Capital Campaign page featuring hero section, video modal with play button overlay, renderings gallery with lightbox, animated progress bar, and full dark/light mode support.',
+        impact: 'high' as ImpactLevel
+      },
+      {
+        type: 'feature' as ChangeType,
+        title: 'Capital Campaign Floating Tab',
+        description:
+          'Added a floating side tab component for homepage visibility, featuring vertical text, hover preview with campaign progress, and dismiss functionality.',
+        impact: 'medium' as ImpactLevel
+      },
+      {
+        type: 'improvement' as ChangeType,
+        title: 'Middleware Auth Redirect',
+        description:
+          'Updated middleware to include /auth/login in matcher, redirecting authenticated users away from the login page to prevent token verification race conditions.',
+        impact: 'medium' as ImpactLevel
+      },
+      {
+        type: 'fix' as ChangeType,
+        title: 'Server Action Caching Fix',
+        description:
+          'Removed unstable_cache wrappers from create, update, and delete server actions (team members, admin users) that were incorrectly caching mutation operations and preventing real-time updates.',
+        impact: 'high' as ImpactLevel
+      }
+    ]
+  },
+  {
     version: '1.2.0',
     date: '2026-01-19',
     changes: [
@@ -254,6 +302,7 @@ const getImpactColor = (impact: ImpactLevel) => {
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
   return date.toLocaleDateString('en-US', {
+    timeZone: 'America/New_York',
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -295,7 +344,7 @@ export default function ChangelogPage() {
               <div className="flex items-baseline gap-4 border-b dark:border-neutral-800 border-neutral-200 pb-4">
                 <h2 className="text-3xl font-black dark:text-white text-neutral-900">v{entry.version}</h2>
                 <time className="text-sm dark:text-neutral-400 text-neutral-600 font-medium">
-                  {formatDate(entry.date)}
+                  {new Date(entry.date + 'T00:00:00')?.toLocaleDateString()}
                 </time>
               </div>
 
@@ -313,7 +362,7 @@ export default function ChangelogPage() {
                     <div className="flex items-start gap-4">
                       {/* Type Icon */}
                       <div
-                        className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center border ${getChangeColor(
+                        className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center border ${getChangeColor(
                           change.type
                         )}`}
                       >
