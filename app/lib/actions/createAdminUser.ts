@@ -1,9 +1,9 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { unstable_cache } from 'next/cache'
+import { revalidateTag } from 'next/cache'
 
-async function createAdminUserFn(data: {
+export async function createAdminUser(data: {
   email: string
   firstName: string
   lastName: string
@@ -13,7 +13,6 @@ async function createAdminUserFn(data: {
   department?: string
 }) {
   try {
-    // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email: data.email }
     })
@@ -22,7 +21,6 @@ async function createAdminUserFn(data: {
       throw new Error('User with this email already exists')
     }
 
-    // Create the new user
     const newUser = await prisma.user.create({
       data: {
         email: data.email,
@@ -34,6 +32,8 @@ async function createAdminUserFn(data: {
         department: data.department
       }
     })
+
+    revalidateTag('User', 'default')
 
     return {
       success: true,
@@ -48,23 +48,3 @@ async function createAdminUserFn(data: {
     }
   }
 }
-
-// Cached version - invalidate with revalidateTag('User')
-export const createAdminUser = unstable_cache(
-  async (data: {
-    email: string
-    firstName: string
-    lastName: string
-    role: 'VOLUNTEER' | 'ADMIN' | 'STAFF' | 'SUPPORTER' | 'SUPERUSER'
-    phone?: string
-    position?: string
-    department?: string
-  }) => {
-    return createAdminUserFn(data)
-  },
-  ['createAdminUser'],
-  {
-    tags: ['User'],
-    revalidate: 60 // Cache for 60 seconds
-  }
-)
