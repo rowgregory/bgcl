@@ -21,10 +21,7 @@ const ProgramDrawer = () => {
   const { forms, isLoading } = useFormSelector()
   const inputs = forms.programForm.inputs
   const errors = forms.programForm.errors
-  const { handleInput, setErrors, handleToggle, handleSelect, handleSelectAgeGroup } = createFormActions(
-    'programForm',
-    dispatch
-  )
+  const { handleInput, setErrors, handleToggle, handleSelectAgeGroup } = createFormActions('programForm', dispatch)
   const router = useRouter()
 
   const onClose = () => {
@@ -88,7 +85,6 @@ const ProgramDrawer = () => {
               handleInput={handleInput}
               handleSubmit={handleSubmit}
               handleToggle={handleToggle}
-              handleSelect={handleSelect}
               inputs={inputs}
               isLoading={isLoading}
               isUpdating={Boolean(inputs?.isUpdating)}

@@ -1,38 +1,36 @@
 'use client'
 
-import { setOpenCapitalCampaignDrawer } from '@/app/lib/store/slices/appSlice'
-import { store } from '@/app/lib/store/store'
 import { motion } from 'framer-motion'
 
 export const HistorySection = ({ pageContent }) => {
   const historyImages = [
     {
-      src: 'https://cdn.prod.website-files.com/67ca71addbada9cbbd57ace7/67ca72481e4ae8c5331ef3a0_club.jpg',
+      src: '/images/history-2.jpg',
       alt: 'Club Building',
       gridSpan: 'lg:col-span-2'
     },
     {
-      src: 'https://cdn.prod.website-files.com/67ca71addbada9cbbd57ace7/67ca723fe76f5441716e1e97_boxing.jpg',
+      src: '/images/history-3.jpg',
       alt: 'Boxing Program',
       gridSpan: 'lg:col-span-1'
     },
     {
-      src: 'https://cdn.prod.website-files.com/67ca71addbada9cbbd57ace7/67ca71ef75314df465ef53b9_bowling.jpg',
+      src: '/images/history-4.jpg',
       alt: 'Bowling Activity',
       gridSpan: 'lg:col-span-1'
     },
     {
-      src: 'https://cdn.prod.website-files.com/67ca71addbada9cbbd57ace7/67ca71e2c493e82886f0cb7e_basketball.jpg',
+      src: '/images/history-5.jpg',
       alt: 'Basketball',
       gridSpan: 'lg:col-span-1'
     },
     {
-      src: 'https://cdn.prod.website-files.com/67ca71addbada9cbbd57ace7/67ca71d653102c830fda2567_billiards.jpg',
+      src: '/images/history-6.jpg',
       alt: 'Billiards Room',
       gridSpan: 'lg:col-span-1'
     },
     {
-      src: 'https://cdn.prod.website-files.com/67ca71addbada9cbbd57ace7/67ca71cb8702b909d763e30f_hockey.jpg',
+      src: '/images/history-7.jpg',
       alt: 'Hockey Program',
       gridSpan: 'lg:col-span-2'
     }
@@ -79,13 +77,6 @@ export const HistorySection = ({ pageContent }) => {
 
             <p className="text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
               {pageContent?.history?.paragraph1}
-            </p>
-
-            <p
-              onClick={() => store.dispatch(setOpenCapitalCampaignDrawer())}
-              className="text-lg dark:text-sky-400 text-sky-600 font-semibold leading-relaxed cursor-pointer"
-            >
-              {pageContent?.history?.ctaText}
             </p>
           </div>
         </motion.div>

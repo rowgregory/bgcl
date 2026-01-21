@@ -14,18 +14,6 @@ const validateProgramForm = (
     newErrors.description1 = 'Please enter a valid description'
   }
 
-  if (!inputs?.ageGroup || typeof inputs.ageGroup !== 'string' || !inputs.ageGroup.trim()) {
-    newErrors.ageGroup = 'Please enter a valid age group'
-  }
-
-  if (!inputs?.location || typeof inputs.location !== 'string' || !inputs.location.trim()) {
-    newErrors.location = 'Please enter a valid location'
-  }
-
-  if (!inputs?.frequency || typeof inputs.frequency !== 'string' || !inputs.frequency.trim()) {
-    newErrors.frequency = 'Please select a valid frequency'
-  }
-
   setErrors(newErrors)
   return Object.keys(newErrors).length === 0
 }

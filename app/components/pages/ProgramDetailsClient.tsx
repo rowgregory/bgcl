@@ -22,13 +22,15 @@ const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
     )
   }
 
+  console.log(program)
+
   return (
     <div className="dark:bg-neutral-950 bg-white min-h-screen">
       {/* Hero Section */}
       <div className="relative overflow-hidden py-40">
         {/* Background Image */}
-        {program.heroImage && (
-          <Image src={program.heroImage} alt={program.name} fill priority className="object-cover object-top" />
+        {program?.heroImage && (
+          <Image src={program?.heroImage} alt={program?.name} fill priority className="object-cover object-top" />
         )}
 
         {/* Dark overlay */}
@@ -43,7 +45,7 @@ const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
               <ChevronLeft className="w-5 h-5" />
               Back to Programs
             </Link>
-            <h1 className="text-5xl md:text-6xl font-black text-white drop-shadow-2xl">{program.name}</h1>
+            <h1 className="text-5xl md:text-6xl font-black text-white drop-shadow-2xl">{program?.name}</h1>
           </motion.div>
         </div>
       </div>
@@ -60,63 +62,57 @@ const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
             <div className="space-y-4">
               <h2 className="text-3xl font-black dark:text-white text-neutral-900">About This Program</h2>
               <div className="space-y-4 text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-                <p>{program.description1}</p>
-                {program.description2 && <p>{program.description2}</p>}
-                {program.description3 && <p>{program.description3}</p>}
-                {program.description4 && <p>{program.description4}</p>}
-                {program.description5 && <p>{program.description5}</p>}
+                <p>{program?.description1}</p>
+                {program?.description2 && <p>{program?.description2}</p>}
+                {program?.description3 && <p>{program?.description3}</p>}
+                {program?.description4 && <p>{program?.description4}</p>}
+                {program?.description5 && <p>{program?.description5}</p>}
               </div>
             </div>
 
             {/* Program Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {program.showAgeGroup && (
+              {program?.showAgeGroup && (
                 <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <Users className="w-6 h-6 text-sky-500" />
                     <h3 className="text-lg font-bold dark:text-white text-neutral-900">Age Group</h3>
                   </div>
                   <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">
-                    {program.ageGroup} years
+                    {program?.ageGroup} years
                   </p>
                 </div>
               )}
 
-              <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Calendar className="w-6 h-6 text-sky-500" />
-                  <h3 className="text-lg font-bold dark:text-white text-neutral-900">Frequency</h3>
+              {program?.location && (
+                <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <MapPin className="w-6 h-6 text-sky-500" />
+                    <h3 className="text-lg font-bold dark:text-white text-neutral-900">Location</h3>
+                  </div>
+                  <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">{program?.location}</p>
                 </div>
-                <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">{program.frequency}</p>
-              </div>
+              )}
 
-              <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <MapPin className="w-6 h-6 text-sky-500" />
-                  <h3 className="text-lg font-bold dark:text-white text-neutral-900">Location</h3>
-                </div>
-                <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">{program.location}</p>
-              </div>
-
-              {program.datesAvailable && (
+              {program?.datesAvailable && (
                 <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <Calendar className="w-6 h-6 text-sky-500" />
                     <h3 className="text-lg font-bold dark:text-white text-neutral-900">Available Dates</h3>
                   </div>
                   <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">
-                    {program.datesAvailable}
+                    {program?.datesAvailable}
                   </p>
                 </div>
               )}
 
-              {program.license && (
+              {program?.license && (
                 <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6 md:col-span-2">
                   <div className="flex items-center gap-3 mb-4">
                     <FileText className="w-6 h-6 text-sky-500" />
                     <h3 className="text-lg font-bold dark:text-white text-neutral-900">Licensing</h3>
                   </div>
-                  <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">{program.license}</p>
+                  <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">{program?.license}</p>
                 </div>
               )}
             </div>
@@ -125,33 +121,35 @@ const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
           {/* Right Column - Schedule & CTA */}
           <div className="space-y-6">
             {/* Drop-Off Times */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6 space-y-4 lg:sticky lg:top-8"
-            >
-              <h3 className="text-xl font-black dark:text-white text-neutral-900 flex items-center gap-2">
-                <Clock className="w-5 h-5 text-sky-500" />
-                Schedule
-              </h3>
+            {program?.dropOffStart && program?.dropOffEnd && program?.pickUpStart && program?.pickUpEnd && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6 space-y-4 lg:sticky lg:top-8"
+              >
+                <h3 className="text-xl font-black dark:text-white text-neutral-900 flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-sky-500" />
+                  Schedule
+                </h3>
 
-              <div className="space-y-4">
-                <div>
-                  <p className="dark:text-sky-400 text-sky-600 text-sm font-semibold mb-1">Drop-Off</p>
-                  <p className="dark:text-white text-neutral-900 font-semibold">
-                    {program.dropOffStart} - {program.dropOffEnd}
-                  </p>
-                </div>
+                <div className="space-y-4">
+                  <div>
+                    <p className="dark:text-sky-400 text-sky-600 text-sm font-semibold mb-1">Drop-Off</p>
+                    <p className="dark:text-white text-neutral-900 font-semibold">
+                      {program?.dropOffStart} - {program?.dropOffEnd}
+                    </p>
+                  </div>
 
-                <div className="dark:border-neutral-700 border-neutral-300 border-t pt-4">
-                  <p className="dark:text-sky-400 text-sky-600 text-sm font-semibold mb-1">Pick-Up</p>
-                  <p className="dark:text-white text-neutral-900 font-semibold">
-                    {program.pickUpStart} - {program.pickUpEnd}
-                  </p>
+                  <div className="dark:border-neutral-700 border-neutral-300 border-t pt-4">
+                    <p className="dark:text-sky-400 text-sky-600 text-sm font-semibold mb-1">Pick-Up</p>
+                    <p className="dark:text-white text-neutral-900 font-semibold">
+                      {program?.pickUpStart} - {program?.pickUpEnd}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
 
             {/* CTA Button */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>

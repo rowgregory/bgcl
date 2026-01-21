@@ -10,18 +10,18 @@ export async function createProgram(data: ICreateProgram) {
     const createData: any = {
       name: data.name,
       description1: data.description1,
-      ageGroup: data.ageGroup,
-      location: data.location,
-      frequency: 'Daily',
-      dropOffStart: data.dropOffStart,
-      dropOffEnd: data.dropOffEnd,
-      pickUpStart: data.pickUpStart,
-      pickUpEnd: data.pickUpEnd,
-      datesAvailable: data.datesAvailable,
-      license: data.license
+      frequency: 'Daily'
     }
 
     // Add optional descriptions if they exist
+    if (data.ageGroup) createData.ageGroup = data.ageGroup
+    if (data.location) createData.location = data.location
+    if (data.dropOffEnd) createData.dropOffEnd = data.dropOffEnd
+    if (data.pickUpStart) createData.pickUpStart = data.pickUpStart
+    if (data.pickUpEnd) createData.pickUpEnd = data.pickUpEnd
+    if (data.datesAvailable) createData.datesAvailable = data.datesAvailable
+    if (data.license) createData.license = data.license
+    if (data.dropOffStart) createData.dropOffStart = data.dropOffStart
     if (data.description2) createData.description2 = data.description2
     if (data.description3) createData.description3 = data.description3
     if (data.description4) createData.description4 = data.description4

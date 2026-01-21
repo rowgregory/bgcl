@@ -417,14 +417,14 @@ model Program {
   description5   String?
   image          String?
   heroImage      String?
-  ageGroup       String // e.g., "5-10"
+  ageGroup       String? // e.g., "5-10"
   showAgeGroup   Boolean @default(false)
-  location       String // e.g., "Boys & Girls Club of Lynn"
-  frequency      String // e.g., "Daily", "Weekly", "Per Session"
-  dropOffStart   String // e.g., "8:00am"
-  dropOffEnd     String // e.g., "9:00am"
-  pickUpStart    String // e.g., "4:00pm"
-  pickUpEnd      String // e.g., "4:30pm"
+  location       String? // e.g., "Boys & Girls Club of Lynn"
+  frequency      String? // e.g., "Daily", "Weekly", "Per Session"
+  dropOffStart   String? // e.g., "8:00am"
+  dropOffEnd     String? // e.g., "9:00am"
+  pickUpStart    String? // e.g., "4:00pm"
+  pickUpEnd      String? // e.g., "4:30pm"
   datesAvailable String? // e.g., "TBA", "June 1 - August 31"
   license        String? // e.g., "EEC Licensed Ages 5-10"
   order          Int     @default(0)

@@ -2,7 +2,7 @@ import { FC, useState } from 'react'
 import { setInputs } from '@/app/lib/store/slices/formSlice'
 import { store } from '@/app/lib/store/store'
 import { IForm } from '@/types/common'
-import { Trash2, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import ImageUpload from '../common/ImageUpload'
 import CustomSwitch from '../common/CustomSwitch'
 
@@ -10,7 +10,6 @@ export const ProgramForm: FC<IForm> = ({
   errors,
   handleInput,
   handleSubmit,
-  handleSelect,
   inputs,
   isLoading,
   isUpdating,
@@ -20,6 +19,18 @@ export const ProgramForm: FC<IForm> = ({
 }) => {
   const [selectedThemeIds, setSelectedThemeIds] = useState<string[]>([])
   const [newThemes, setNewThemes] = useState<{ id: string; title: string; dates: string; order: number }[]>([])
+
+  const handleSelect = ({ name, value }: { name: string; value: string }) => {
+    const currentValue = inputs?.[name]
+    store.dispatch(
+      setInputs({
+        formName: 'programForm',
+        data: {
+          [name]: currentValue === value ? '' : value
+        }
+      })
+    )
+  }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col h-full bg-neutral-100 dark:bg-neutral-900">
@@ -57,7 +68,7 @@ export const ProgramForm: FC<IForm> = ({
                   value={(inputs?.name as string) || ''}
                   onChange={handleInput}
                   placeholder="Enter program name"
-                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                 />
                 {errors?.name && <p className="mt-2 text-sm text-red-500 dark:text-red-400">{errors.name}</p>}
               </div>
@@ -72,7 +83,7 @@ export const ProgramForm: FC<IForm> = ({
                   onChange={handleInput}
                   placeholder="Describe what activities kids will do, the program's focus, and what they'll learn. Example: Our summer program offers age-appropriate activities like arts & crafts, outdoor games, STEAM projects, and team-building exercises designed to inspire creativity and growth."
                   rows={4}
-                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
+                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all resize-none"
                 />
                 {errors?.description1 && (
                   <p className="mt-2 text-sm text-red-500 dark:text-red-400">{errors.description1}</p>
@@ -108,7 +119,7 @@ export const ProgramForm: FC<IForm> = ({
                       onChange={handleInput}
                       placeholder={`Description ${num} (optional)`}
                       rows={3}
-                      className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
+                      className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all resize-none"
                     />
                   </div>
                 )
@@ -161,7 +172,7 @@ export const ProgramForm: FC<IForm> = ({
                 {inputs?.showAgeGroup && (
                   <div className="p-4 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg">
                     <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
-                      Age Range *
+                      Age Range
                     </label>
                     <div className="flex items-center gap-4">
                       <div className="flex-1">
@@ -179,7 +190,7 @@ export const ProgramForm: FC<IForm> = ({
                               handleSelectAgeGroup(`${minAge}-${maxAge}`)
                             }
                           }}
-                          className="w-full h-2 bg-neutral-300 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                          className="w-full h-2 bg-neutral-300 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-sky-600"
                         />
                       </div>
                       <span className="text-neutral-900 dark:text-white text-sm font-semibold min-w-16 text-center px-3 py-1.5 bg-neutral-100 dark:bg-neutral-700 rounded-lg">
@@ -200,20 +211,17 @@ export const ProgramForm: FC<IForm> = ({
                               handleSelectAgeGroup(`${minAge}-${maxAge}`)
                             }
                           }}
-                          className="w-full h-2 bg-neutral-300 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                          className="w-full h-2 bg-neutral-300 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-sky-600"
                         />
                       </div>
                     </div>
-                    {errors?.ageGroup && (
-                      <p className="mt-2 text-sm text-red-500 dark:text-red-400">{errors.ageGroup}</p>
-                    )}
                   </div>
                 )}
               </div>
 
               <div className="col-start-1 mb-8">
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Location *
+                  Location
                 </label>
                 <input
                   type="text"
@@ -221,9 +229,8 @@ export const ProgramForm: FC<IForm> = ({
                   value={(inputs?.location as string) || ''}
                   onChange={handleInput}
                   placeholder="e.g., Boys & Girls Club of Lynn"
-                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                 />
-                {errors?.location && <p className="mt-2 text-sm text-red-500 dark:text-red-400">{errors.location}</p>}
               </div>
             </div>
           </div>
@@ -271,8 +278,8 @@ export const ProgramForm: FC<IForm> = ({
                           onClick={() => handleSelect({ name: 'dropOffStart', value: time })}
                           className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-all ${
                             inputs?.dropOffStart === time
-                              ? 'bg-indigo-600 text-white'
-                              : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400'
+                              ? 'bg-sky-600 text-white'
+                              : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 hover:border-sky-500 hover:text-sky-600 dark:hover:text-sky-400'
                           }`}
                         >
                           {time}
@@ -291,8 +298,8 @@ export const ProgramForm: FC<IForm> = ({
                             onClick={() => handleSelect({ name: 'dropOffEnd', value: time })}
                             className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-all ${
                               inputs?.dropOffEnd === time
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400'
+                                ? 'bg-sky-600 text-white'
+                                : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 hover:border-sky-500 hover:text-sky-600 dark:hover:text-sky-400'
                             }`}
                           >
                             {time}
@@ -319,8 +326,8 @@ export const ProgramForm: FC<IForm> = ({
                           onClick={() => handleSelect({ name: 'pickUpStart', value: time })}
                           className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-all ${
                             inputs?.pickUpStart === time
-                              ? 'bg-indigo-600 text-white'
-                              : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400'
+                              ? 'bg-sky-600 text-white'
+                              : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 hover:border-sky-500 hover:text-sky-600 dark:hover:text-sky-400'
                           }`}
                         >
                           {time}
@@ -338,8 +345,8 @@ export const ProgramForm: FC<IForm> = ({
                           onClick={() => handleSelect({ name: 'pickUpEnd', value: time })}
                           className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-all ${
                             inputs?.pickUpEnd === time
-                              ? 'bg-indigo-600 text-white'
-                              : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400'
+                              ? 'bg-sky-600 text-white'
+                              : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 hover:border-sky-500 hover:text-sky-600 dark:hover:text-sky-400'
                           }`}
                         >
                           {time}
@@ -367,7 +374,7 @@ export const ProgramForm: FC<IForm> = ({
                   value={(inputs?.datesAvailable as string) || ''}
                   onChange={handleInput}
                   placeholder="e.g., TBA or June 1 - August 31"
-                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                 />
               </div>
 
@@ -381,7 +388,7 @@ export const ProgramForm: FC<IForm> = ({
                   value={(inputs?.license as string) || ''}
                   onChange={handleInput}
                   placeholder="e.g., EEC Licensed Ages 5-10"
-                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                 />
               </div>
             </div>
@@ -542,7 +549,7 @@ export const ProgramForm: FC<IForm> = ({
           <button
             type="submit"
             disabled={isLoading}
-            className="px-4 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-600/50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium bg-sky-600 hover:bg-sky-700 disabled:bg-sky-600/50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
           >
             {isLoading ? 'Saving...' : isUpdating ? 'Update Program' : 'Create Program'}
           </button>
