@@ -5,6 +5,11 @@ const getTheFuelTankNavLinks = (path: string) => [
     isActive: path === '/admin/fuel-tank/overview'
   },
   {
+    textKey: 'Campaigns',
+    linkKey: '/admin/fuel-tank/campaigns',
+    isActive: path === '/admin/fuel-tank/campaigns'
+  },
+  {
     textKey: '1x',
     linkKey: '/admin/fuel-tank/one-time',
     isActive: path === '/admin/fuel-tank/one-time'

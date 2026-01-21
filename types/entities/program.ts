@@ -1,3 +1,5 @@
+import { JsonValue } from '@prisma/client/runtime/library'
+
 export interface IProgram {
   id: string
   name: string
@@ -8,17 +10,18 @@ export interface IProgram {
   description5?: string
   image?: string
   heroImage?: string
+  ageGroup?: string
   showAgeGroup?: boolean
-  ageGroup: string
-  location: string
-  frequency: string
+  location?: string
+  frequency?: string
   dropOffStart?: string | null
   dropOffEnd?: string | null
   pickUpStart?: string | null
   pickUpEnd?: string | null
   datesAvailable?: string | null
   license?: string | null
-  createdBy?: string | null
+  order: number
+  additionalDetails?: JsonValue
   createdAt: Date
   updatedAt: Date
 }

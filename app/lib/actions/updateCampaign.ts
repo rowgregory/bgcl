@@ -3,9 +3,22 @@
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
 
-export async function updateCampaign(id: string, data: any) {
+export interface UpdateCampaignInput {
+  id: string
+  name: string
+  description: string
+  image?: string
+  goalAmount: number
+  organizerName: string
+  startDate: Date
+  endDate?: Date
+  isActive?: boolean
+  externalLink?: string
+}
+
+export async function updateCampaign(data: UpdateCampaignInput) {
   try {
-    if (!id) {
+    if (!data.id) {
       throw new Error('Campaign ID is required')
     }
 
@@ -22,7 +35,7 @@ export async function updateCampaign(id: string, data: any) {
     }
 
     const campaign = await prisma.campaign.update({
-      where: { id },
+      where: { id: data.id },
       data: cleanData
     })
 

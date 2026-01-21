@@ -1,9 +1,10 @@
 import { IActionItems } from '@/types/navigation'
 import { BookOpen, Crown, Radio, Rocket, Satellite, Shield, Star, Trophy } from 'lucide-react'
 import { setOpenProgramDrawer } from '@/app/lib/store/slices/programSlice'
-import { setOpenEventDrawer } from '@/app/lib/store/slices/eventSlice'
+// import { setOpenEventDrawer } from '@/app/lib/store/slices/eventSlice'
 import { setOpenTeamMemberDrawer } from '../store/slices/teamMemberSlice'
 import { setOpenUserDrawer } from '../store/slices/userSlice'
+import { setOpenCampaignDrawer } from '../store/slices/campaignSlice'
 
 const dropDownActionItems: IActionItems[] = [
   {
@@ -15,13 +16,21 @@ const dropDownActionItems: IActionItems[] = [
     linkKey: ''
   },
   {
-    action: 'manage-events',
-    label: 'Create Event',
+    action: 'create-campaign',
+    label: 'Initiate Campaign',
     icon: Satellite,
-    open: setOpenEventDrawer,
+    open: setOpenCampaignDrawer,
     isUnlocked: true,
-    linkKey: '/admin/capsule/core'
+    linkKey: '/admin/fuel-tank/overview'
   },
+  // {
+  //   action: 'manage-events',
+  //   label: 'Create Event',
+  //   icon: Satellite,
+  //   open: setOpenEventDrawer,
+  //   isUnlocked: true,
+  //   linkKey: '/admin/capsule/core'
+  // },
   {
     action: 'the-library',
     label: 'The Library',

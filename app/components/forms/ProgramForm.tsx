@@ -1,8 +1,8 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { setInputs } from '@/app/lib/store/slices/formSlice'
 import { store } from '@/app/lib/store/store'
 import { IForm } from '@/types/common'
-import { X } from 'lucide-react'
+import { Plus, Trash2, X } from 'lucide-react'
 import ImageUpload from '../common/ImageUpload'
 import CustomSwitch from '../common/CustomSwitch'
 
@@ -30,6 +30,37 @@ export const ProgramForm: FC<IForm> = ({
         }
       })
     )
+  }
+
+  useEffect(() => {
+    if (inputs.additionalDetails) {
+      setDetails(inputs.additionalDetails)
+    }
+  }, [inputs.additionalDetails])
+
+  const [details, setDetails] = useState([])
+
+  const addDetail = () => {
+    const newDetails = [...details, { title: '', input1: '', input2: '' }]
+    setDetails(newDetails)
+    store.dispatch(setInputs({ formName: 'programForm', data: { additionalDetails: newDetails } }))
+  }
+
+  const removeDetail = (index) => {
+    const newDetails = details.filter((_, i) => i !== index)
+    setDetails(newDetails)
+    store.dispatch(setInputs({ formName: 'programForm', data: { additionalDetails: newDetails } }))
+  }
+
+  const updateDetail = (index, field, value) => {
+    const newDetails = details.map((detail, i) => {
+      if (i === index) {
+        return { ...detail, [field]: value }
+      }
+      return detail
+    })
+    setDetails(newDetails)
+    store.dispatch(setInputs({ formName: 'programForm', data: { additionalDetails: newDetails } }))
   }
 
   return (
@@ -392,6 +423,94 @@ export const ProgramForm: FC<IForm> = ({
                 />
               </div>
             </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                Additional Details
+              </label>
+              <button
+                type="button"
+                onClick={addDetail}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg text-sky-600 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Add Detail
+              </button>
+            </div>
+
+            {details.length === 0 ? (
+              <div className="text-center py-8 border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                  No additional details yet. Click "Add Detail" to create one.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {details.map((detail, index) => (
+                  <div
+                    key={index}
+                    className="p-4 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 space-y-3"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                        Detail #{index + 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removeDetail(index)}
+                        className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
+                        aria-label="Remove detail"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                        Title
+                      </label>
+                      <input
+                        type="text"
+                        value={detail.title}
+                        onChange={(e) => updateDetail(index, 'title', e.target.value)}
+                        placeholder="e.g., Requirements, Schedule, Notes"
+                        className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-600 focus:border-transparent transition-all"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                          Field 1
+                        </label>
+                        <input
+                          type="text"
+                          value={detail.input1}
+                          onChange={(e) => updateDetail(index, 'input1', e.target.value)}
+                          placeholder="Enter first detail"
+                          className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-600 focus:border-transparent transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                          Field 2
+                        </label>
+                        <input
+                          type="text"
+                          value={detail.input2}
+                          onChange={(e) => updateDetail(index, 'input2', e.target.value)}
+                          placeholder="Enter second detail"
+                          className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-600 focus:border-transparent transition-all"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Weekly Themes */}

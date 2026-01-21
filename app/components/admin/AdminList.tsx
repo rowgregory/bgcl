@@ -2,6 +2,7 @@
 
 import { deleteNewsletter } from '@/app/lib/actions/deleteNewsletter'
 import useGenericListReorder from '@/app/lib/hooks/useGenericListReorder'
+import { setOpenCampaignDrawer } from '@/app/lib/store/slices/campaignSlice'
 import { setOpenClubResourceDrawer } from '@/app/lib/store/slices/clubResourceSlice'
 import { setInputs } from '@/app/lib/store/slices/formSlice'
 import { setOpenNewsletterDrawer } from '@/app/lib/store/slices/newsletterSlice'
@@ -20,7 +21,7 @@ interface AdminListItem {
 interface AdminListPageProps<T extends AdminListItem> {
   data: T[]
   pageTitle: string
-  itemType: 'program' | 'news' | 'newsletter' | 'club-resource'
+  itemType: 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign'
   emptyMessage?: string
 }
 
@@ -74,6 +75,8 @@ export function AdminListPage<T extends AdminListItem>({
       store.dispatch(setOpenNewsletterDrawer())
     } else if (itemType === 'club-resource') {
       store.dispatch(setOpenClubResourceDrawer())
+    } else if (itemType === 'campaign') {
+      store.dispatch(setOpenCampaignDrawer())
     }
   }
 

@@ -20,62 +20,63 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import Picture from '@/app/components/common/Picture'
+import BrochureDisplayer from '@/app/components/BrochureDisplayer'
 
 const renderings = [
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/68839924db1dd4af7e35eb2c_exterior_1.jpg',
+    src: '/images/render_1.jpg',
     alt: 'Exterior View 1'
   },
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/68839923c99e8aa5fd13caee_exterior_2.jpg',
+    src: '/images/render_2.jpg',
     alt: 'Exterior View 2'
   },
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/6883992425f46b11ff9884a6_pool_2.jpg',
+    src: '/images/render_3.jpg',
     alt: 'Pool Area'
   },
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/688399249516e858bba40e57_Pool_1.jpg',
+    src: '/images/render_4.jpg',
     alt: 'Swimming Pool'
   },
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/6883992328b63625ff181a97_dance-room.jpg',
+    src: '/images/render_5.jpg',
     alt: 'Dance Room'
   },
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/68839923376d40350c2bfe07_classroom.jpg',
+    src: '/images/render_6.jpg',
     alt: 'Classroom'
   },
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/68839923eb3b26850fc085b8_social_rec_gaming.jpg',
+    src: '/images/render_7.jpg',
     alt: 'Gaming Area'
   },
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/688399232d98c7cf2a5e3434_cooking_club.jpg',
+    src: '/images/render_8.jpg',
     alt: 'Cooking Club'
   },
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/688399237d8baae653099a8c_teen-center.jpg',
+    src: '/images/render_9.jpg',
     alt: 'Teen Center'
   },
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/688399232605c4d1fd981e9e_caffeteria.jpg',
+    src: '/images/render_10.jpg',
     alt: 'Cafeteria'
   },
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/688399232a5de48ad62bbc1e_classrooms.jpg',
+    src: '/images/render_11.jpg',
     alt: 'Classrooms'
   },
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/68839923d2c20df0f495efef_entry_check-in.jpg',
+    src: '/images/render_12.jpg',
     alt: 'Entry Check-in'
   },
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/68839924c00c56c9b2f1e622_gym.jpg',
+    src: '/images/render_13.jpg',
     alt: 'Gymnasium'
   },
   {
-    src: 'https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/6883992493face23e3925d3b_Interior%20Hallway.jpg',
+    src: '/images/render_14.jpg',
     alt: 'Interior Hallway'
   }
 ]
@@ -542,6 +543,14 @@ export default function CapitalCampaign() {
           </div>
         </div>
       </section>
+
+      <BrochureDisplayer
+        images={[
+          '/images/capital_campaign_brochure-1.jpg',
+          'images/capital_campaign_brochure-2.jpg',
+          '/images/capital_campaign_brochure-3.jpg'
+        ]}
+      />
 
       {/* Contact Section */}
       <section className="py-24 px-6 dark:bg-neutral-900 bg-neutral-50">

@@ -1,29 +1,29 @@
-'use server'
-
 import prisma from '@/prisma/client'
+import { ICampaign } from '@/types/entities/campaign'
+import { unstable_cache } from 'next/cache'
 
-export async function getCampaigns() {
-  try {
-    const campaigns = await prisma.campaign.findMany({
-      include: {
-        _count: {
-          select: { orders: true }
+export const getCampaigns = unstable_cache(
+  async (): Promise<ICampaign[]> => {
+    try {
+      const campaigns = await prisma.campaign.findMany({
+        orderBy: { order: 'asc' }
+      })
+
+      return campaigns
+    } catch (error) {
+      prisma.log.create({
+        data: {
+          level: 'error',
+          message: 'Failed to fetch campaigns',
+          metadata: JSON.stringify({
+            error: error instanceof Error ? error.message : 'Unknown error'
+          })
         }
-      },
-      orderBy: { createdAt: 'desc' }
-    })
+      })
 
-    return {
-      success: true,
-      campaigns,
-      message: 'Campaigns retrieved successfully'
+      return []
     }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to retrieve campaigns'
-    return {
-      success: false,
-      error: errorMessage,
-      campaigns: []
-    }
-  }
-}
+  },
+  ['getCampaigns'],
+  { tags: ['Campaign'] }
+)

@@ -23,6 +23,7 @@ import { teamMemberReducer } from './slices/teamMemberSlice'
 import { newsReducer } from './slices/newsSlice'
 import { newsletterReducer } from './slices/newsletterSlice'
 import { clubResourceReducer } from './slices/clubResourceSlice'
+import { campaignReducer } from './slices/campaignSlice'
 
 // Create a noop storage for SSR
 const createNoopStorage = () => {
@@ -86,6 +87,7 @@ const rootReducer = combineReducers({
   news: newsReducer,
   newsletter: newsletterReducer,
   clubResource: clubResourceReducer,
+  campaign: campaignReducer,
   [api.reducerPath]: api.reducer
 })
 
@@ -130,3 +132,4 @@ export const useTeamMemberSelector = () => useAppSelector((state) => state.teamM
 export const useNewsSelector = () => useAppSelector((state) => state.news)
 export const useNewsletterSelector = () => useAppSelector((state) => state.newsletter)
 export const useClubResourceSelector = () => useAppSelector((state) => state.clubResource)
+export const useCampaignSelector = () => useAppSelector((state) => state.campaign)

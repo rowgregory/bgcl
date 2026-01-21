@@ -3,7 +3,7 @@
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
 
-export async function createCampaign(data: {
+export interface CreateCampaignInput {
   name: string
   description: string
   image?: string
@@ -13,7 +13,9 @@ export async function createCampaign(data: {
   endDate?: Date
   isActive?: boolean
   externalLink?: string
-}) {
+}
+
+export async function createCampaign(data: CreateCampaignInput) {
   try {
     await prisma.campaign.create({
       data: {

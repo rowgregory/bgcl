@@ -6,19 +6,21 @@ import { showToast } from '../store/slices/toastSlice'
 import { updateNewsOrder } from '../actions/updateNewsOrder'
 import { updateNewslettersOrder } from '../actions/updateNewslettersOrder'
 import { updateClubResourcesOrder } from '../actions/updateClubResourcesOrder'
+import { updateCampaignsOrder } from '../actions/updateCampaignsOrder'
 
 interface ReorderItem {
   id: string
   [key: string]: any
 }
 
-type ItemType = 'program' | 'news' | 'newsletter' | 'club-resource'
+type ItemType = 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign'
 
 const actionMap: Record<ItemType, (items: any[]) => Promise<any>> = {
   program: async (items) => await updateProgramsOrder(items),
   news: async (items) => await updateNewsOrder(items),
   newsletter: async (items) => await updateNewslettersOrder(items),
-  'club-resource': async (items) => await updateClubResourcesOrder(items)
+  'club-resource': async (items) => await updateClubResourcesOrder(items),
+  campaign: async (items) => await updateCampaignsOrder(items)
 }
 
 export default function useGenericListReorder<T extends ReorderItem>(data: T[], itemType: ItemType) {

@@ -115,6 +115,34 @@ const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
                   <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">{program?.license}</p>
                 </div>
               )}
+
+              {program?.additionalDetails &&
+                Array.isArray(program.additionalDetails) &&
+                program.additionalDetails.length > 0 && (
+                  <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6 md:col-span-2">
+                    <div className="flex items-center gap-3 mb-4">
+                      <FileText className="w-6 h-6 text-sky-500" />
+                      <h3 className="text-lg font-bold dark:text-white text-neutral-900">Additional Details</h3>
+                    </div>
+                    <div className="space-y-6">
+                      {program.additionalDetails.map(
+                        (detail: { title: string; input1: string; input2: string }, index) => (
+                          <div key={index} className="border-l-4 border-sky-500 pl-4">
+                            <h4 className="text-md font-bold dark:text-white text-neutral-900 mb-3">{detail.title}</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {detail.input1 && (
+                                <p className="dark:text-neutral-300 text-neutral-700">{detail.input1}</p>
+                              )}
+                              {detail.input2 && (
+                                <p className="dark:text-neutral-300 text-neutral-700">{detail.input2}</p>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
             </div>
           </div>
 

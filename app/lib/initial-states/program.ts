@@ -8,14 +8,15 @@ export const initialProgramFormState = {
   description5: undefined,
   image: '',
   heroImage: '',
-  showAgeGroup: true,
+  showAgeGroup: false,
   dropOffStart: '',
   dropOffEnd: '',
   pickUpStart: '',
   pickUpEnd: '',
   datesAvailable: '',
-  license: 'Department of Early Education and Care',
-  location: 'Boys & Girls Club of Lynn',
+  license: '',
+  location: '',
   frequency: 'Weekly',
-  ageGroup: '5-10'
+  ageGroup: '5-10',
+  additionalDetails: []
 }
