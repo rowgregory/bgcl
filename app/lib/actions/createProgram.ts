@@ -12,7 +12,7 @@ export async function createProgram(data: ICreateProgram) {
       description1: data.description1,
       ageGroup: data.ageGroup,
       location: data.location,
-      frequency: data.frequency,
+      frequency: 'Daily',
       dropOffStart: data.dropOffStart,
       dropOffEnd: data.dropOffEnd,
       pickUpStart: data.pickUpStart,

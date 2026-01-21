@@ -62,12 +62,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             if (dbUser.firstName && dbUser.lastName) {
               token.name = `${dbUser.firstName} ${dbUser.lastName}`.trim()
             }
-            // Store the redirect path in the token
-            if (dbUser.role === 'ADMIN' || dbUser.role === 'SUPERUSER') {
-              token.redirectPath = '/admin/star-map/home'
-            } else {
-              token.redirectPath = '/supporter/overview'
-            }
           }
         } catch (error) {
           await createLog('error', 'JWT callback error', {

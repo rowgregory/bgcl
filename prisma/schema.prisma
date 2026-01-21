@@ -429,6 +429,8 @@ model Program {
   license        String? // e.g., "EEC Licensed Ages 5-10"
   order          Int     @default(0)
 
+  themes Theme[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -595,6 +597,21 @@ model Reference {
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Theme {
+  id        String  @id @default(cuid())
+  title     String
+  dates     String // "6/22-6/26"
+  programId String
+  program   Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  order     Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([programId, order]) // prevent duplicate weeks per program
+  @@index([programId])
 }
 
 enum EmploymentType {

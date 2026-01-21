@@ -2,18 +2,16 @@
 
 import prisma from '@/prisma/client'
 import { ITeamMember } from '@/types/entities/team-member'
-import { revalidateTag, unstable_cache } from 'next/cache'
+import { revalidateTag } from 'next/cache'
 
 type TeamMemberInput = Omit<ITeamMember, 'id' | 'createdAt' | 'updatedAt'>
 
-async function createTeamMemberFn(data: TeamMemberInput) {
+export async function createTeamMember(data: TeamMemberInput) {
   try {
-    // Validate required fields
     if (!data.name) {
       throw new Error('Missing required fields: name')
     }
 
-    // Get the next displayOrder for this role
     const lastMember = await prisma.teamMember.findFirst({
       where: { role: data.role },
       orderBy: { order: 'desc' }
@@ -23,7 +21,6 @@ async function createTeamMemberFn(data: TeamMemberInput) {
 
     const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
       if (value !== null && value !== undefined && key !== 'name') {
-        // Convert year to number if it exists
         if (key === 'year' && value) {
           acc[key] = Number(value)
         } else {
@@ -57,14 +54,3 @@ async function createTeamMemberFn(data: TeamMemberInput) {
     }
   }
 }
-
-export const createTeamMember = unstable_cache(
-  async (data: TeamMemberInput) => {
-    return createTeamMemberFn(data)
-  },
-  ['createTeamMember'],
-  {
-    tags: ['Team-Member'],
-    revalidate: 60
-  }
-)

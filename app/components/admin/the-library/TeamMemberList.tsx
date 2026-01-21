@@ -110,12 +110,12 @@ export const TeamMemberList: FC<TeamMemberListProps> = ({ data, role, roleLabel 
 
         {/* List Container */}
         <div className="space-y-2">
-          {data.length === 0 ? (
+          {data?.length === 0 ? (
             <div className="rounded-lg dark:bg-neutral-900 dark:text-neutral-400 bg-neutral-100 text-neutral-600 px-6 py-12 text-center">
               <p className="text-sm">No {roleLabel.toLowerCase()} added yet</p>
             </div>
           ) : (
-            data.map((member, index: number) => (
+            data?.map((member, index: number) => (
               <div
                 key={member.id}
                 draggable
@@ -184,7 +184,7 @@ export const TeamMemberList: FC<TeamMemberListProps> = ({ data, role, roleLabel 
         </div>
 
         {/* Footer Info */}
-        {data.length > 0 && (
+        {data?.length > 0 && (
           <div className="mt-8 text-xs dark:text-neutral-500 text-neutral-600">
             <p>
               Total: {data.length} {roleLabel}

@@ -52,7 +52,7 @@ const JobApplicationPage = ({ application }) => {
       </div>
     )
   }
-  console.log(application)
+
   const statusInfo = statusConfig[application.status]
   const StatusIcon = statusInfo.icon
 

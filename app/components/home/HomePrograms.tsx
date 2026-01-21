@@ -107,18 +107,6 @@ export const HomePrograms: React.FC<CarouselProps> = ({ subheading, heading1, he
                       {/* Gradient Overlay */}
                       <div className="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
 
-                      {/* Top Tag */}
-                      <div className="absolute top-4 left-4 z-20">
-                        <motion.div
-                          className={`px-3 py-1 rounded-full bg-linear-to-r ${gradient} text-white text-xs font-semibold tracking-wide uppercase`}
-                          initial={{ opacity: 0, x: -20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 + 0.3 }}
-                        >
-                          {program.frequency}
-                        </motion.div>
-                      </div>
-
                       {/* Hover Overlay - animated with color */}
                       <div
                         className={`absolute inset-0 bg-linear-to-t ${color.overlay} to-transparent z-15 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}

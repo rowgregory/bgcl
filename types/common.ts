@@ -1,6 +1,7 @@
 import { ChangeEvent, ReactNode } from 'react'
 import { IHero } from './entities/hero'
 import { Errors, Inputs } from '@/app/lib/store/slices/formSlice'
+import { ITheme } from './entities/theme'
 
 export interface IHeroStudioEditor {
   activeHero: IHero
@@ -22,4 +23,5 @@ export interface IForm {
   isUpdating: boolean
   onClose: () => void
   handleSelectAgeGroup?: (value: string) => void
+  themes?: ITheme[]
 }
