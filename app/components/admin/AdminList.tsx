@@ -1,12 +1,15 @@
 'use client'
 
 import { deleteCampaign } from '@/app/lib/actions/deleteCampaign'
+import { deleteClosing } from '@/app/lib/actions/deleteClosing'
 import { deleteNewsletter } from '@/app/lib/actions/deleteNewsletter'
 import { deleteProgram } from '@/app/lib/actions/deleteProgram'
 import useGenericListReorder from '@/app/lib/hooks/useGenericListReorder'
 import { initialCampaignFormState } from '@/app/lib/initial-states/campaign'
+import { initialClosingFormState } from '@/app/lib/initial-states/closing'
 import { initialProgramFormState } from '@/app/lib/initial-states/program'
 import { setOpenCampaignDrawer } from '@/app/lib/store/slices/campaignSlice'
+import { setOpenClosingDrawer } from '@/app/lib/store/slices/closingSlice'
 import { setOpenClubResourceDrawer } from '@/app/lib/store/slices/clubResourceSlice'
 import { setInputs } from '@/app/lib/store/slices/formSlice'
 import { setOpenNewsletterDrawer } from '@/app/lib/store/slices/newsletterSlice'
@@ -25,7 +28,7 @@ interface AdminListItem {
 interface AdminListPageProps<T extends AdminListItem> {
   data: T[]
   pageTitle: string
-  itemType: 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign'
+  itemType: 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign' | 'closing'
   emptyMessage?: string
 }
 
@@ -48,7 +51,13 @@ export function AdminListPage<T extends AdminListItem>({
           {item.name || item.title || item.month || 'Unnamed'}
         </h3>
         <p className="text-xs dark:text-neutral-500 text-neutral-600 truncate">
-          {item.description1 || item.paragraph1 || item.year || item.url || item.description || 'No description'}
+          {item.description1 ||
+            item.paragraph1 ||
+            item.year ||
+            item.url ||
+            item.description ||
+            item.date ||
+            'No description'}
         </p>
       </div>
     )
@@ -81,6 +90,8 @@ export function AdminListPage<T extends AdminListItem>({
       store.dispatch(setOpenClubResourceDrawer())
     } else if (itemType === 'campaign') {
       store.dispatch(setOpenCampaignDrawer())
+    } else if (itemType === 'closing') {
+      store.dispatch(setOpenClosingDrawer())
     }
   }
 
@@ -116,6 +127,10 @@ export function AdminListPage<T extends AdminListItem>({
                       case 'campaign':
                         store.dispatch(setOpenCampaignDrawer())
                         store.dispatch(setInputs({ formName: 'campaignForm', data: initialCampaignFormState }))
+                        break
+                      case 'closing':
+                        store.dispatch(setOpenClosingDrawer())
+                        store.dispatch(setInputs({ formName: 'closingForm', data: initialClosingFormState }))
                         break
                     }
                   }}
@@ -194,6 +209,8 @@ export function AdminListPage<T extends AdminListItem>({
                             await deleteCampaign(item.id)
                           } else if (itemType === 'program') {
                             await deleteProgram(item.id)
+                          } else if (itemType === 'closing') {
+                            await deleteClosing(item.id)
                           }
                         }}
                         className="p-2 dark:text-neutral-600 dark:hover:text-red-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-red-600 hover:bg-neutral-200 rounded-lg transition-colors"

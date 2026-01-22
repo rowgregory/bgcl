@@ -619,6 +619,15 @@ model ModalContent {
   updatedAt DateTime @updatedAt
 }
 
+model Closing {
+  id        String   @id @default(cuid())
+  title     String   @unique
+  date      String
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 enum EmploymentType {
   FULL_TIME
   PART_TIME

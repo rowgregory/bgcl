@@ -21,6 +21,19 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.3.1',
+    date: '2026-01-22',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Closing Dates Management',
+        description:
+          'Added new Closing model and admin interface for managing facility closure dates. Supports flexible date formats including single dates (January 1, 2025) and date ranges (December 23 - 26, 2025) stored as formatted strings.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.3.0',
     date: '2026-01-22',
     changes: [

@@ -6,8 +6,9 @@ import { ChevronLeft, Clock, Users, Calendar, MapPin, FileText, Stamp } from 'lu
 import Image from 'next/image'
 import Link from 'next/link'
 import FacilityClosings from '../FacilityClosings'
+import { IClosing } from '@/types/entities/closing'
 
-const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
+const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closings: IClosing[] }) => {
   if (!program) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -264,7 +265,7 @@ const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
         </motion.div>
       </div>
       {/* Closings Section */}
-      <FacilityClosings />
+      <FacilityClosings closings={closings} />
     </div>
   )
 }

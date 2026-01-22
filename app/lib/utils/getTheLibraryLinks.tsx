@@ -34,5 +34,10 @@ export const getTheLibraryLinks = (path: string) => [
     textKey: 'Club Resources',
     linkKey: '/admin/the-library/club-resources',
     isActive: path === '/admin/the-library/club-resources'
+  },
+  {
+    textKey: 'Closings',
+    linkKey: '/admin/the-library/closings',
+    isActive: path === '/admin/the-library/closings'
   }
 ]

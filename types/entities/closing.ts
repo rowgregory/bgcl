@@ -1,7 +1,7 @@
 export interface IClosing {
   id: string
   title: string
-  date: Date
+  date: string
 
   createdAt: Date
   updatedAt: Date

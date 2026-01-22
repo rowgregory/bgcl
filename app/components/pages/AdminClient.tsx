@@ -25,6 +25,7 @@ import NewsDrawer from '../drawers/NewsDrawer'
 import NewsletterDrawer from '../drawers/NewsletterDrawer'
 import ClubResourceDrawer from '../drawers/ClubResourceDrawer'
 import CampaignDrawer from '../drawers/CampaignDrawer'
+import ClosingDrawer from '../drawers/ClosingDrawer'
 
 const AdminLayout: FC<ILayout> = ({ children, themes }) => {
   const pathname = usePathname()
@@ -45,6 +46,7 @@ const AdminLayout: FC<ILayout> = ({ children, themes }) => {
       <NewsletterDrawer />
       <ClubResourceDrawer />
       <CampaignDrawer />
+      <ClosingDrawer />
       <ActionMenuDropdown actionItems={dropdownActionItems} />
 
       {/* Desktop Fixed Header */}
