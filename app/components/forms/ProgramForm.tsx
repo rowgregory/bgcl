@@ -144,76 +144,61 @@ export const ProgramForm: FC<IForm> = ({
                 {errors?.name && <p className="mt-2 text-sm text-red-500 dark:text-red-400">{errors.name}</p>}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Description *
-                </label>
-                <textarea
-                  name="description1"
-                  value={(inputs?.description1 as string) || ''}
-                  onChange={handleInput}
-                  placeholder="Describe what activities kids will do, the program's focus, and what they'll learn. Example: Our summer program offers age-appropriate activities like arts & crafts, outdoor games, STEAM projects, and team-building exercises designed to inspire creativity and growth."
-                  rows={4}
-                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all resize-none"
-                />
-                {errors?.description1 && (
-                  <p className="mt-2 text-sm text-red-500 dark:text-red-400">{errors.description1}</p>
-                )}
-              </div>
-
-              {/* Additional Descriptions - Only show if they exist */}
-              {[2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => {
-                const key = `description${num}` as keyof typeof inputs
-                if (inputs?.[key] === undefined || inputs?.[key] === null) return null
-
-                return (
-                  <div key={num} className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                        Description {num}
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newInputs = { ...inputs }
-                          newInputs[key] = undefined
-                          store.dispatch(setInputs({ formName: 'programForm', data: newInputs }))
-                        }}
-                        className="text-xs text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <textarea
-                      name={key as string}
-                      value={(inputs?.[key] as string) || ''}
-                      onChange={handleInput}
-                      placeholder={`Description ${num} (optional)`}
-                      rows={3}
-                      className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all resize-none"
-                    />
+              {/* Additional Descriptions */}
+              {inputs?.descriptions && Array.isArray(inputs.descriptions) && inputs.descriptions.length > 0 && (
+                <div className="space-y-4">
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    Additional Descriptions
+                  </label>
+                  <div className="space-y-3">
+                    {inputs.descriptions.map((description: string, index: number) => (
+                      <div key={index} className="relative">
+                        <textarea
+                          value={description}
+                          onChange={(e) => {
+                            const newDescriptions = [...inputs.descriptions]
+                            newDescriptions[index] = e.target.value
+                            store.dispatch(
+                              setInputs({ formName: 'programForm', data: { descriptions: newDescriptions } })
+                            )
+                          }}
+                          placeholder={`Description ${index + 1}`}
+                          rows={4}
+                          className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newDescriptions = inputs.descriptions.filter((_: any, i: number) => i !== index)
+                            store.dispatch(
+                              setInputs({ formName: 'programForm', data: { descriptions: newDescriptions } })
+                            )
+                          }}
+                          className="absolute top-3 right-3 text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors"
+                          title="Remove description"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                )
-              })}
+                </div>
+              )}
 
               {/* Add Description Button */}
-              {!inputs?.description5 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    for (let i = 2; i <= 5; i++) {
-                      const key = `description${i}` as keyof typeof inputs
-                      if (inputs?.[key] === undefined) {
-                        store.dispatch(setInputs({ formName: 'programForm', data: { [key]: '' } }))
-                        break
-                      }
-                    }
-                  }}
-                  className="text-sm text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-medium"
-                >
-                  + Add Description
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => {
+                  const currentDescriptions = inputs?.descriptions || []
+                  store.dispatch(
+                    setInputs({ formName: 'programForm', data: { descriptions: [...currentDescriptions, ''] } })
+                  )
+                }}
+                className="text-sm text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-medium flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Add Description
+              </button>
             </div>
           </div>
 

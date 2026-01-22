@@ -5,6 +5,7 @@ import { deleteNewsletter } from '@/app/lib/actions/deleteNewsletter'
 import { deleteProgram } from '@/app/lib/actions/deleteProgram'
 import useGenericListReorder from '@/app/lib/hooks/useGenericListReorder'
 import { initialCampaignFormState } from '@/app/lib/initial-states/campaign'
+import { initialProgramFormState } from '@/app/lib/initial-states/program'
 import { setOpenCampaignDrawer } from '@/app/lib/store/slices/campaignSlice'
 import { setOpenClubResourceDrawer } from '@/app/lib/store/slices/clubResourceSlice'
 import { setInputs } from '@/app/lib/store/slices/formSlice'
@@ -101,6 +102,7 @@ export function AdminListPage<T extends AdminListItem>({
                     switch (itemType) {
                       case 'program':
                         store.dispatch(setOpenProgramDrawer())
+                        store.dispatch(setInputs({ formName: 'programForm', data: initialProgramFormState }))
                         break
                       case 'news':
                         store.dispatch(setOpenNewsDrawer())

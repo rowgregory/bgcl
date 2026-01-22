@@ -2,7 +2,7 @@
 
 import { IProgram } from '@/types/entities/program'
 import { motion } from 'framer-motion'
-import { ChevronLeft, Clock, Users, Calendar, MapPin, FileText } from 'lucide-react'
+import { ChevronLeft, Clock, Users, Calendar, MapPin, FileText, Stamp } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import FacilityClosings from '../FacilityClosings'
@@ -61,60 +61,18 @@ const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
             <div className="space-y-4">
               <h2 className="text-3xl font-black dark:text-white text-neutral-900">About This Program</h2>
               <div className="space-y-4 text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-                <p>{program?.description1}</p>
-                {program?.description2 && <p>{program?.description2}</p>}
-                {program?.description3 && <p>{program?.description3}</p>}
-                {program?.description4 && <p>{program?.description4}</p>}
-                {program?.description5 && <p>{program?.description5}</p>}
+                {program?.descriptions && Array.isArray(program.descriptions) && program.descriptions.length > 0 && (
+                  <>
+                    {program.descriptions.map(
+                      (description: string, index: number) => description && <p key={index}>{description}</p>
+                    )}
+                  </>
+                )}
               </div>
             </div>
 
             {/* Program Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {program?.showAgeGroup && (
-                <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Users className="w-6 h-6 text-sky-500" />
-                    <h3 className="text-lg font-bold dark:text-white text-neutral-900">Age Group</h3>
-                  </div>
-                  <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">
-                    {program?.ageGroup} years
-                  </p>
-                </div>
-              )}
-
-              {program?.location && (
-                <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <MapPin className="w-6 h-6 text-sky-500" />
-                    <h3 className="text-lg font-bold dark:text-white text-neutral-900">Location</h3>
-                  </div>
-                  <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">{program?.location}</p>
-                </div>
-              )}
-
-              {program?.datesAvailable && (
-                <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Calendar className="w-6 h-6 text-sky-500" />
-                    <h3 className="text-lg font-bold dark:text-white text-neutral-900">Available Dates</h3>
-                  </div>
-                  <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">
-                    {program?.datesAvailable}
-                  </p>
-                </div>
-              )}
-
-              {program?.license && (
-                <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6 md:col-span-2">
-                  <div className="flex items-center gap-3 mb-4">
-                    <FileText className="w-6 h-6 text-sky-500" />
-                    <h3 className="text-lg font-bold dark:text-white text-neutral-900">Licensing</h3>
-                  </div>
-                  <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">{program?.license}</p>
-                </div>
-              )}
-
               {program?.themes && Array.isArray(program.themes) && program.themes.length > 0 && program.showThemes && (
                 <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6 md:col-span-2">
                   <div className="flex items-center gap-3 mb-6">
@@ -234,6 +192,50 @@ const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
                 <p className="text-xs dark:text-neutral-500 text-neutral-500 mt-2">Opens in new window</p>
               </a>
             </motion.div>
+
+            {program?.showAgeGroup && (
+              <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Users className="w-6 h-6 text-sky-500" />
+                  <h3 className="text-lg font-bold dark:text-white text-neutral-900">Age Group</h3>
+                </div>
+                <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">
+                  {program?.ageGroup} years
+                </p>
+              </div>
+            )}
+
+            {program?.location && (
+              <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <MapPin className="w-6 h-6 text-sky-500" />
+                  <h3 className="text-lg font-bold dark:text-white text-neutral-900">Location</h3>
+                </div>
+                <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">{program?.location}</p>
+              </div>
+            )}
+
+            {program?.datesAvailable && (
+              <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Calendar className="w-6 h-6 text-sky-500" />
+                  <h3 className="text-lg font-bold dark:text-white text-neutral-900">Available Dates</h3>
+                </div>
+                <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">
+                  {program?.datesAvailable}
+                </p>
+              </div>
+            )}
+
+            {program?.license && (
+              <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6 md:col-span-2">
+                <div className="flex items-center gap-3 mb-4">
+                  <Stamp className="w-6 h-6 text-sky-500" />
+                  <h3 className="text-lg font-bold dark:text-white text-neutral-900">Licensing</h3>
+                </div>
+                <p className="dark:text-neutral-300 text-neutral-700 text-lg font-semibold">{program?.license}</p>
+              </div>
+            )}
 
             {/* Contact Card */}
             <motion.div

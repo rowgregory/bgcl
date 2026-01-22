@@ -6,6 +6,7 @@ export const initialProgramFormState = {
   description3: undefined,
   description4: undefined,
   description5: undefined,
+  descriptions: [''],
   image: '',
   heroImage: '',
   showAgeGroup: false,

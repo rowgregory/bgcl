@@ -8,6 +8,7 @@ export interface IProgram {
   description3?: string
   description4?: string
   description5?: string
+  descriptions: JsonValue
   image?: string
   heroImage?: string
   ageGroup?: string

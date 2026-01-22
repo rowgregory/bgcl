@@ -415,6 +415,7 @@ model Program {
   description3      String?
   description4      String?
   description5      String?
+  descriptions      Json    @default("[]")
   image             String?
   heroImage         String?
   ageGroup          String? // e.g., "5-10"

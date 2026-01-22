@@ -64,7 +64,7 @@ const ProgramsClient = ({ programs }: { programs: IProgram[] }) => {
                             <h3 className="text-xl font-bold dark:text-white text-neutral-900 mb-2">{program.name}</h3>
 
                             <p className="dark:text-neutral-400 text-neutral-600 text-sm mb-4 flex-1 line-clamp-3">
-                              {program.description1}
+                              {program.descriptions[0]}
                             </p>
 
                             {/* CTA */}
