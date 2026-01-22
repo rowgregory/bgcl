@@ -5,6 +5,7 @@ import { X, ArrowRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import Picture from '../common/Picture'
 
 export default function RegistrationModal() {
   const pathname = usePathname()
@@ -83,21 +84,17 @@ export default function RegistrationModal() {
                     className="mb-8 flex justify-center"
                   >
                     <div className="w-48 h-auto">
-                      <Image
+                      <Picture
                         src="/images/horizontal-logo-light.png"
                         alt="Boys & Girls Club of Lynn"
-                        width={192}
-                        height={60}
-                        className="dark:hidden w-full h-auto object-contain"
-                        priority
+                        className="dark:hidden w-full h-auto object-contain w-full h-full"
+                        priority={true}
                       />
-                      <Image
+                      <Picture
                         src="/images/horizontal-logo-dark.png"
                         alt="Boys & Girls Club of Lynn"
-                        width={192}
-                        height={60}
-                        className="hidden dark:block w-full h-auto object-contain"
-                        priority
+                        className="hidden dark:block w-full h-auto object-contain w-full h-full"
+                        priority={true}
                       />
                     </div>
                   </motion.div>
@@ -113,8 +110,8 @@ export default function RegistrationModal() {
                       Registration is Now Open
                     </h2>
                     <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                      Enroll your child now in our in our quality summer programs designed to inspire growth, learning,
-                      and community.
+                      Enroll your child now in our quality summer programs designed to inspire growth, learning, and
+                      community.
                     </p>
                   </motion.div>
 

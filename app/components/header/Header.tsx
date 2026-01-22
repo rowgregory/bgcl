@@ -92,13 +92,13 @@ export default function Header() {
                   src="/images/vertical-logo-light.png"
                   alt="Boys & Girls Club"
                   className="dark:hidden block w-auto h-full cursor-pointer hover:opacity-80 transition-opacity"
-                  priority
+                  priority={true}
                 />
                 <Picture
                   src="/images/vertical-logo-dark.png"
                   alt="Boys & Girls Club"
                   className="dark:block hidden w-auto h-full cursor-pointer hover:opacity-80 transition-opacity"
-                  priority
+                  priority={true}
                 />
               </motion.div>
             </motion.div>
