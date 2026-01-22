@@ -117,7 +117,7 @@ export default function UserForm({
             </label>
             <button
               type="button"
-              onClick={() => handleRoleSelect(inputs?.role === 'ADMIN' ? 'STAFF' : 'ADMIN')}
+              onClick={() => handleRoleSelect(inputs?.role === 'ADMIN' ? 'SUPPORTER' : 'ADMIN')}
               disabled={isLoading}
               className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${
                 inputs?.role === 'ADMIN' ? 'dark:bg-cyan-600 bg-sky-600' : 'dark:bg-neutral-700 bg-neutral-300'

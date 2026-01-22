@@ -3,11 +3,10 @@
 import { useState, useEffect } from 'react'
 import { X, ArrowRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import Picture from '../common/Picture'
 
-export default function RegistrationModal() {
+export default function RegistrationModal({ pageContent }) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(pathname === '/')
 
@@ -83,17 +82,17 @@ export default function RegistrationModal() {
                     transition={{ delay: 0.2, duration: 0.5 }}
                     className="mb-8 flex justify-center"
                   >
-                    <div className="w-48 h-auto">
+                    <div className="w-52 h-auto">
                       <Picture
                         src="/images/horizontal-logo-light.png"
                         alt="Boys & Girls Club of Lynn"
-                        className="dark:hidden w-full h-auto object-contain w-full h-full"
+                        className="dark:hidden w-full h-full object-contain"
                         priority={true}
                       />
                       <Picture
                         src="/images/horizontal-logo-dark.png"
                         alt="Boys & Girls Club of Lynn"
-                        className="hidden dark:block w-full h-auto object-contain w-full h-full"
+                        className="hidden dark:block w-full h-full object-contain"
                         priority={true}
                       />
                     </div>
@@ -107,11 +106,10 @@ export default function RegistrationModal() {
                     className="text-center mb-6"
                   >
                     <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-3">
-                      Registration is Now Open
+                      {pageContent?.modal?.heading}
                     </h2>
                     <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                      Enroll your child now in our quality summer programs designed to inspire growth, learning, and
-                      community.
+                      {pageContent?.modal?.subheading}
                     </p>
                   </motion.div>
 
@@ -123,13 +121,13 @@ export default function RegistrationModal() {
                     className="space-y-3"
                   >
                     <motion.a
-                      href="https://parentportal.bgcl.org/"
+                      href={pageContent?.modal?.button1Link}
                       target="_blank"
                       whileHover={{ scale: 1.02, y: -2 }}
                       whileTap={{ scale: 0.98 }}
                       className="flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl"
                     >
-                      Register Your Child
+                      {pageContent?.modal?.button1Text}
                       <motion.div
                         animate={{ x: [0, 3, 0] }}
                         transition={{
@@ -147,7 +145,7 @@ export default function RegistrationModal() {
                       whileTap={{ scale: 0.98 }}
                       className="w-full px-6 py-3 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-xl font-medium transition-colors"
                     >
-                      Maybe Later
+                      {pageContent?.modal?.button2Text}
                     </motion.button>
                   </motion.div>
 
