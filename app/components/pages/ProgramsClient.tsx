@@ -73,18 +73,6 @@ const ProgramsClient = ({ programs }: { programs: IProgram[] }) => {
                                 <span className="dark:text-sky-400 text-sky-600 font-semibold">Age:</span>
                                 <span className="dark:text-neutral-300 text-neutral-700">{program.ageGroup}</span>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <span className="dark:text-sky-400 text-sky-600 font-semibold">Frequency:</span>
-                                <span className="dark:text-neutral-300 text-neutral-700">{program.frequency}</span>
-                              </div>
-                              {program.datesAvailable && (
-                                <div className="flex items-center gap-2">
-                                  <span className="dark:text-sky-400 text-sky-600 font-semibold">Dates:</span>
-                                  <span className="dark:text-neutral-300 text-neutral-700">
-                                    {program.datesAvailable}
-                                  </span>
-                                </div>
-                              )}
                             </div>
 
                             {/* CTA */}
@@ -112,9 +100,7 @@ const ProgramsClient = ({ programs }: { programs: IProgram[] }) => {
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8 flex items-center justify-center flex-col">
             <div className="space-y-4">
-              <h2 className="text-4xl font-bold dark:text-white text-neutral-900">
-                Register for our 2025-2026 Afterschool Programs
-              </h2>
+              <h2 className="text-4xl font-bold dark:text-white text-neutral-900">Register for our Summer Programs</h2>
             </div>
             <a
               href="https://parentportal.bgcl.org/"

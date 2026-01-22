@@ -428,7 +428,7 @@ model Program {
   datesAvailable    String? // e.g., "TBA", "June 1 - August 31"
   license           String? // e.g., "EEC Licensed Ages 5-10"
   order             Int     @default(0)
-  additionalDetails Json?
+  additionalDetails Json
 
   themes Theme[]
 

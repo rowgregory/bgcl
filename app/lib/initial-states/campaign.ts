@@ -9,6 +9,5 @@ export const initialCampaignFormState = {
   startDate: '',
   isActive: false,
   externalLink: '',
-  order: 0,
-  additionalDetails: []
+  order: 0
 }

@@ -44,7 +44,7 @@ export function AdminListPage<T extends AdminListItem>({
           {item.name || item.title || item.month || 'Unnamed'}
         </h3>
         <p className="text-xs dark:text-neutral-500 text-neutral-600 truncate">
-          {item.description1 || item.paragraph1 || item.year || item.url || 'No description'}
+          {item.description1 || item.paragraph1 || item.year || item.url || item.description || 'No description'}
         </p>
       </div>
     )
@@ -107,6 +107,9 @@ export function AdminListPage<T extends AdminListItem>({
                         break
                       case 'club-resource':
                         store.dispatch(setOpenClubResourceDrawer())
+                        break
+                      case 'campaign':
+                        store.dispatch(setOpenCampaignDrawer())
                         break
                     }
                   }}

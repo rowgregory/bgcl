@@ -11,6 +11,7 @@ import Pusher from 'pusher-js'
 import { useRouter } from 'next/navigation'
 import { createSetupIntentForSubscription } from '@/app/lib/actions/createSetupIntentForSubscription'
 import { createSubscriptionAfterSetup } from '@/app/lib/actions/createSubscriptionAfterSetup'
+import { ICampaign } from '@/types/entities/campaign'
 
 const MONTHLY_PLANS = [
   {
@@ -57,7 +58,7 @@ const YEARLY_PLANS = [
   { id: 'yearly-12000', name: 'Hero', description: 'Major annual investment', amount: 12000 }
 ]
 
-function DonationForm() {
+function DonationForm({ campaignName, campaigns }) {
   const stripe = useStripe()
   const elements = useElements()
   const [email, setEmail] = useState('')
@@ -76,7 +77,7 @@ function DonationForm() {
   const [state, setState] = useState('')
   const [zipCode, setZipCode] = useState('')
   const [country, setCountry] = useState('')
-  const [campaign, setCampaign] = useState('')
+  const [campaign, setCampaign] = useState(campaignName ?? '')
   const [notes, setNotes] = useState('')
 
   const getAmount = () => {
@@ -469,8 +470,10 @@ function DonationForm() {
             required
           />
         </div>
+      </div>
 
-        {/* Address Information */}
+      {/* Address Information */}
+      <div className="pt-4 dark:border-zinc-700 border-t border-neutral-200">
         <div>
           <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">Street Address</label>
           <input
@@ -481,87 +484,83 @@ function DonationForm() {
             placeholder="123 Main Street"
           />
         </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">City</label>
-            <input
-              type="text"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
-              placeholder="Lynn"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">State</label>
-            <input
-              type="text"
-              value={state}
-              onChange={(e) => setState(e.target.value)}
-              className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
-              placeholder="MA"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">ZIP Code</label>
-            <input
-              type="text"
-              value={zipCode}
-              onChange={(e) => setZipCode(e.target.value)}
-              className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
-              placeholder="01902"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">Country</label>
-            <input
-              type="text"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
-              placeholder="United States"
-            />
-          </div>
-        </div>
-
-        {/* Campaign Selection */}
+      </div>
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">
-            Donation Campaign
-          </label>
-          <select
-            value={campaign}
-            onChange={(e) => setCampaign(e.target.value)}
-            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-          >
-            <option value="">Select a campaign (optional)</option>
-            <option value="general">General Fund</option>
-            <option value="capital">Capital Campaign</option>
-            <option value="programs">Youth Programs</option>
-            <option value="scholarships">Scholarships & Financial Aid</option>
-            <option value="facility">Facility Expansion</option>
-            <option value="technology">Technology & Innovation</option>
-          </select>
+          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">City</label>
+          <input
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
+            placeholder="Lynn"
+          />
         </div>
-
-        {/* Donor Notes */}
         <div>
-          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">
-            Message (Optional)
-          </label>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500 resize-none"
-            placeholder="Share your reason for giving or leave a special message..."
-            rows={3}
+          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">State</label>
+          <input
+            type="text"
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
+            placeholder="MA"
           />
         </div>
       </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">ZIP Code</label>
+          <input
+            type="text"
+            value={zipCode}
+            onChange={(e) => setZipCode(e.target.value)}
+            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
+            placeholder="01902"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">Country</label>
+          <input
+            type="text"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
+            placeholder="United States"
+          />
+        </div>
+      </div>
+
+      {/* Campaign Selection */}
+      <div className="pt-4 dark:border-zinc-700 border-t border-neutral-200">
+        <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">Donation Campaign</label>
+        <select
+          value={campaign ?? ''}
+          onChange={(e) => setCampaign(e.target.value)}
+          className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+        >
+          <option value="">Select a campaign (optional)</option>
+          {campaigns?.map((campaign: ICampaign, c: number) => (
+            <option key={c} value={campaign.name}>
+              {campaign?.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Donor Notes */}
+      <div className="pt-4 dark:border-zinc-700 border-t border-neutral-200">
+        <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">Message (Optional)</label>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500 resize-none"
+          placeholder="Share your reason for giving or leave a special message..."
+          rows={3}
+        />
+      </div>
+
+      <div className="dark:border-zinc-700 border-t border-neutral-200" />
 
       {/* Cover Fees Switch */}
       <CustomSwitch

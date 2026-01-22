@@ -9,6 +9,7 @@ export interface UpdateCampaignInput {
   description: string
   image?: string
   goalAmount: number
+  currentAmount: number
   organizerName: string
   startDate: Date
   endDate?: Date
@@ -24,7 +25,12 @@ export async function updateCampaign(data: UpdateCampaignInput) {
 
     // Filter out system fields that shouldn't be updated
     const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
-      if (value !== null && value !== undefined && value !== '' && !['id', 'createdAt', 'updatedAt'].includes(key)) {
+      if (
+        value !== null &&
+        value !== undefined &&
+        value !== '' &&
+        !['id', 'createdAt', 'updatedAt', 'isUpdating'].includes(key)
+      ) {
         acc[key] = value
       }
       return acc
@@ -36,7 +42,13 @@ export async function updateCampaign(data: UpdateCampaignInput) {
 
     const campaign = await prisma.campaign.update({
       where: { id: data.id },
-      data: cleanData
+      data: {
+        ...cleanData,
+        goalAmount: Number(data.goalAmount),
+        currentAmount: Number(data.currentAmount),
+        startDate: new Date(data.startDate),
+        endDate: new Date(data.endDate)
+      }
     })
 
     revalidateTag('Campaign', 'default')

@@ -1,7 +1,7 @@
 'use client'
 
+import Picture from '@/app/components/common/Picture'
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 
 export default function AboutPage() {
   const outcomes = [
@@ -89,12 +89,7 @@ export default function AboutPage() {
             transition={{ duration: 0.6 }}
             className="relative w-full aspect-square rounded-xl overflow-hidden dark:border dark:border-neutral-800 border border-neutral-200"
           >
-            <Image
-              src="https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/68ad623aead0f5ba73d87630_Our%20Mission%20img1.jpg"
-              alt="Our Mission"
-              fill
-              className="object-cover"
-            />
+            <Picture src="/images/img-1.jpg" alt="Our Mission" priority={true} className="object-cover w-full h-full" />
           </motion.div>
         </div>
 
@@ -123,11 +118,11 @@ export default function AboutPage() {
               transition={{ duration: 0.6 }}
               className="relative w-full aspect-square rounded-xl overflow-hidden dark:border dark:border-neutral-800 border border-neutral-200"
             >
-              <Image
-                src="https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/68ad623ab80b12583f90356c_Our%20Mission%20img2.jpg"
+              <Picture
+                src="/images/img-3.jpg"
                 alt="Why Choose BGCL"
-                fill
-                className="object-cover"
+                priority={false}
+                className="object-cover w-full h-full"
               />
             </motion.div>
             <motion.div
@@ -173,19 +168,19 @@ export default function AboutPage() {
             </p>
             <div className="flex flex-wrap gap-8 items-center">
               <div className="relative w-32 h-16">
-                <Image
+                <Picture
                   src="https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/65f7b5d4bb93f0112db17054_candid-platinum-transparency.png"
                   alt="Candid Platinum Seal"
-                  fill
-                  className="object-contain"
+                  priority={false}
+                  className="object-contain w-full h-full"
                 />
               </div>
               <div className="relative w-32 h-16">
-                <Image
+                <Picture
                   src="https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/65f7b5d402aea38a08323c87_charity-navigator.png"
                   alt="Charity Navigator"
-                  fill
-                  className="object-contain"
+                  priority={false}
+                  className="object-contain w-full h-full"
                 />
               </div>
             </div>
@@ -256,11 +251,11 @@ export default function AboutPage() {
               transition={{ duration: 0.6 }}
               className="relative w-full aspect-square rounded-xl overflow-hidden dark:border dark:border-neutral-800 border border-neutral-200"
             >
-              <Image
-                src="https://cdn.prod.website-files.com/65e0d291ed80aa415dbb7adf/65f7b7100e60ce666acfccaf_covid%20blgc%20image-min.jpg"
+              <Picture
+                src="/images/img-4.jpg"
                 alt="COVID Response"
-                fill
-                className="object-cover"
+                priority={false}
+                className="object-cover w-full h-full"
               />
             </motion.div>
           </div>

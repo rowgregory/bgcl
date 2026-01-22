@@ -7,6 +7,7 @@ import ImageUpload from '../common/ImageUpload'
 import CustomSwitch from '../common/CustomSwitch'
 import { store } from '@/app/lib/store/store'
 import { setInputs } from '@/app/lib/store/slices/formSlice'
+import { formatDateForInput } from '@/app/lib/utils/date-utils'
 
 export const CampaignForm: FC<IForm> = ({
   errors,
@@ -126,7 +127,7 @@ export const CampaignForm: FC<IForm> = ({
             <input
               type="date"
               name="startDate"
-              value={inputs.startDate ?? ''}
+              value={formatDateForInput(inputs.startDate) ?? ''}
               onChange={handleInput}
               className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
               placeholder=""
@@ -138,7 +139,7 @@ export const CampaignForm: FC<IForm> = ({
             <input
               type="date"
               name="endDate"
-              value={inputs.endDate ?? ''}
+              value={formatDateForInput(inputs.endDate) ?? ''}
               onChange={handleInput}
               className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
               placeholder=""

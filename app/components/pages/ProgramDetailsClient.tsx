@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { ChevronLeft, Clock, Users, Calendar, MapPin, FileText } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import FacilityClosings from '../FacilityClosings'
 
 const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
   if (!program) {
@@ -21,8 +22,6 @@ const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
       </div>
     )
   }
-
-  console.log(program)
 
   return (
     <div className="dark:bg-neutral-950 bg-white min-h-screen">
@@ -215,6 +214,8 @@ const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
           </div>
         </motion.div>
       </div>
+      {/* Closings Section */}
+      <FacilityClosings />
     </div>
   )
 }

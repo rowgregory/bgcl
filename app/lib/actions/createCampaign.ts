@@ -8,6 +8,7 @@ export interface CreateCampaignInput {
   description: string
   image?: string
   goalAmount: number
+  currentAmount: number
   organizerName: string
   startDate: Date
   endDate?: Date
@@ -22,10 +23,11 @@ export async function createCampaign(data: CreateCampaignInput) {
         name: data.name,
         description: data.description,
         image: data.image || null,
-        goalAmount: data.goalAmount,
+        goalAmount: Number(data.goalAmount),
+        currentAmount: Number(data.currentAmount),
         organizerName: data.organizerName,
-        startDate: data.startDate,
-        endDate: data.endDate || null,
+        startDate: new Date(data.startDate),
+        endDate: new Date(data.endDate) || null,
         isActive: data.isActive ?? true,
         externalLink: data.externalLink || null
       }
