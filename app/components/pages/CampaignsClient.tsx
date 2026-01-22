@@ -3,7 +3,7 @@
 import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
 import { ICampaign } from '@/types/entities/campaign'
 import { motion } from 'framer-motion'
-import { Heart, Users, Target, ArrowRight } from 'lucide-react'
+import { Heart, Users, Target, ArrowRight, Calendar } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -42,10 +42,9 @@ export default function CampaignsClient({ campaigns }: { campaigns: ICampaign[] 
           </div>
         </motion.div>
 
-        {/* Campaigns Grid */}
         {campaigns && campaigns?.length > 0 ? (
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -59,84 +58,132 @@ export default function CampaignsClient({ campaigns }: { campaigns: ICampaign[] 
                 <Link
                   key={campaign.id}
                   href={campaign?.name === 'Capital Campaign' ? `/capital-campaign` : `/campaigns/${campaign.id}`}
+                  className="lg:col-span-2"
                 >
                   <motion.div
-                    className="group dark:bg-neutral-900 dark:border-neutral-800 dark:hover:border-sky-500/50 bg-white border-neutral-200 border hover:border-sky-500/50 rounded-xl overflow-hidden transition-all duration-300"
+                    className="group dark:bg-neutral-900 dark:border-neutral-800 dark:hover:border-sky-500/50 bg-white border-neutral-200 border hover:border-sky-500/50 rounded-xl overflow-hidden transition-all duration-300 h-full flex flex-col"
                     variants={itemVariants}
                     whileHover={{ y: -4 }}
                   >
                     {/* Image */}
                     {campaign.image && (
-                      <div className="relative h-48 overflow-hidden dark:bg-neutral-800 bg-neutral-100">
+                      <div className="relative h-125 overflow-hidden dark:bg-neutral-800 bg-neutral-100">
                         <img
                           src={campaign.image}
                           alt={campaign.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
+                        {/* Status Badge */}
+                        <div className="absolute top-4 right-4 px-3 py-1 rounded-full backdrop-blur-sm bg-black/50 border border-white/20">
+                          <span className="text-xs font-semibold text-white flex items-center gap-1">
+                            <span
+                              className={`w-2 h-2 rounded-full ${campaign.isActive ? 'bg-green-400' : 'bg-neutral-400'}`}
+                            ></span>
+                            {campaign.isActive ? 'Active' : 'Ended'}
+                          </span>
+                        </div>
                       </div>
                     )}
 
                     {/* Content */}
-                    <div className="p-6 space-y-4">
-                      {/* Title */}
+                    <div className="p-6 space-y-5 flex flex-col grow">
+                      {/* Title & Organizer */}
                       <div className="space-y-2">
-                        <h3 className="text-xl font-black dark:text-white text-neutral-900">{campaign.name}</h3>
-                        <p className="text-sm dark:text-neutral-500 text-neutral-600">{campaign.organizerName}</p>
+                        <h3 className="text-2xl font-black dark:text-white text-neutral-900 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                          {campaign.name}
+                        </h3>
+                        <p className="text-sm dark:text-neutral-500 text-neutral-600 flex items-center gap-2">
+                          <span className="w-1 h-1 rounded-full dark:bg-neutral-600 bg-neutral-400"></span>
+                          {campaign.organizerName}
+                        </p>
                       </div>
 
                       {/* Description */}
-                      <p className="text-sm dark:text-neutral-400 text-neutral-600 line-clamp-2">
+                      <p className="text-sm dark:text-neutral-400 text-neutral-600 line-clamp-2 leading-relaxed">
                         {campaign.description}
                       </p>
 
-                      {/* Progress Bar */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="dark:text-neutral-400 text-neutral-600">Progress</span>
-                          <span className="dark:text-sky-400 text-sky-600 font-semibold">{Math.round(progress)}%</span>
-                        </div>
-                        <div className="w-full h-2 dark:bg-neutral-800 bg-neutral-200 rounded-full overflow-hidden">
-                          <motion.div
-                            className="h-full bg-linear-to-r from-sky-500 to-sky-600"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${progress}%` }}
-                            transition={{ duration: 1, ease: 'easeOut' }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Stats */}
-                      <div className="grid grid-cols-2 gap-4 py-4 dark:border-neutral-800 border-neutral-200 border-y">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Target className="w-4 h-4 dark:text-sky-400 text-sky-600" />
-                            <span className="text-xs dark:text-neutral-500 text-neutral-600">Raised</span>
+                      {/* Progress Section */}
+                      <div className="space-y-4 grow">
+                        {/* Amount Display */}
+                        <div className="flex items-end justify-between">
+                          <div>
+                            <p className="text-xs dark:text-neutral-500 text-neutral-600 uppercase tracking-wider mb-1">
+                              Raised
+                            </p>
+                            <p className="text-3xl font-black dark:text-white text-neutral-900">
+                              ${campaign.currentAmount?.toLocaleString()}
+                            </p>
                           </div>
-                          <p className="text-lg font-black dark:text-white text-neutral-900">
-                            ${campaign.currentAmount.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                          </p>
+                          <div className="text-right">
+                            <p className="text-xs dark:text-neutral-500 text-neutral-600 uppercase tracking-wider mb-1">
+                              Goal
+                            </p>
+                            <p className="text-xl font-bold dark:text-neutral-400 text-neutral-600">
+                              ${campaign.goalAmount?.toLocaleString()}
+                            </p>
+                          </div>
                         </div>
-                        {supporters > 0 && (
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <Users className="w-4 h-4 dark:text-sky-400 text-sky-600" />
-                              <span className="text-xs dark:text-neutral-500 text-neutral-600">Supporters</span>
+
+                        {/* Progress Bar with Percentage */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs dark:text-neutral-500 text-neutral-600">Progress</span>
+                            <span className="text-sm font-black dark:text-sky-400 text-sky-600">
+                              {Math.round(progress)}%
+                            </span>
+                          </div>
+                          <div className="w-full h-3 dark:bg-neutral-800 bg-neutral-200 rounded-full overflow-hidden">
+                            <motion.div
+                              className="h-full bg-linear-to-r from-sky-500 via-sky-400 to-sky-600 shadow-lg shadow-sky-500/30"
+                              initial={{ width: 0 }}
+                              animate={{ width: `${progress}%` }}
+                              transition={{ duration: 1, ease: 'easeOut' }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Stats Row */}
+                        <div className="grid grid-cols-3 gap-3 pt-3 border-t dark:border-neutral-800 border-neutral-200">
+                          <div className="text-center">
+                            <div className="flex items-center justify-center gap-1 mb-1">
+                              <Target className="w-3 h-3 dark:text-sky-400 text-sky-600" />
+                              <span className="text-xs dark:text-neutral-500 text-neutral-600">To Go</span>
                             </div>
-                            <p className="text-lg font-black dark:text-white text-neutral-900">{supporters}</p>
+                            {remaining > 0 ? (
+                              <p className="text-sm font-black dark:text-white text-neutral-900">
+                                ${remaining?.toLocaleString()}
+                              </p>
+                            ) : (
+                              <p className="text-xs font-black dark:text-green-400 text-green-600">Complete!</p>
+                            )}
                           </div>
-                        )}
-                      </div>
 
-                      {/* Goal Info */}
-                      <div className="text-sm dark:text-neutral-400 text-neutral-600 space-y-1">
-                        <p>Goal: ${campaign.goalAmount.toLocaleString('en-US', { maximumFractionDigits: 0 })}</p>
-                        {remaining > 0 ? (
-                          <p className="dark:text-sky-400 text-sky-600 font-semibold">
-                            ${remaining.toLocaleString('en-US', { maximumFractionDigits: 0 })} to go
-                          </p>
-                        ) : (
-                          <p className="dark:text-green-400 text-green-600 font-semibold">Goal reached</p>
-                        )}
+                          {supporters > 0 && (
+                            <div className="text-center">
+                              <div className="flex items-center justify-center gap-1 mb-1">
+                                <Users className="w-3 h-3 dark:text-sky-400 text-sky-600" />
+                                <span className="text-xs dark:text-neutral-500 text-neutral-600">Donors</span>
+                              </div>
+                              <p className="text-sm font-black dark:text-white text-neutral-900">{supporters}</p>
+                            </div>
+                          )}
+
+                          {campaign.endDate && (
+                            <div className="text-center">
+                              <div className="flex items-center justify-center gap-1 mb-1">
+                                <Calendar className="w-3 h-3 dark:text-sky-400 text-sky-600" />
+                                <span className="text-xs dark:text-neutral-500 text-neutral-600">Ends</span>
+                              </div>
+                              <p className="text-xs font-black dark:text-white text-neutral-900">
+                                {new Date(campaign.endDate).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric'
+                                })}
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       {/* CTA */}
@@ -149,12 +196,12 @@ export default function CampaignsClient({ campaigns }: { campaigns: ICampaign[] 
                             router.push(`/donate?campaignName=${campaign.name}`)
                           }
                         }}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors shadow-lg dark:shadow-sky-600/20 shadow-sky-600/20"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
                         <Heart className="w-4 h-4" />
-                        Donate
+                        Donate Now
                         <ArrowRight className="w-4 h-4" />
                       </motion.button>
                     </div>

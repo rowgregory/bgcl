@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { trimAndTransformData } from '../utils/trimAndTransformData'
 
 export interface CreateCampaignInput {
   name: string
@@ -12,25 +13,21 @@ export interface CreateCampaignInput {
   organizerName: string
   startDate: Date
   endDate?: Date
-  isActive?: boolean
+  isActive: boolean
   externalLink?: string
 }
 
 export async function createCampaign(data: CreateCampaignInput) {
   try {
+    const processedData = trimAndTransformData(data, {
+      dateFields: ['startDate', 'endDate'],
+      numberFields: ['goalAmount', 'currentAmount'],
+      nullableFields: ['image', 'externalLink', 'endDate'],
+      ignoreFields: ['id', 'createdAt', 'updatedAt']
+    })
+
     await prisma.campaign.create({
-      data: {
-        name: data.name,
-        description: data.description,
-        image: data.image || null,
-        goalAmount: Number(data.goalAmount),
-        currentAmount: Number(data.currentAmount),
-        organizerName: data.organizerName,
-        startDate: new Date(data.startDate),
-        endDate: new Date(data.endDate) || null,
-        isActive: data.isActive ?? true,
-        externalLink: data.externalLink || null
-      }
+      data: processedData
     })
 
     revalidateTag('Campaign', 'default')

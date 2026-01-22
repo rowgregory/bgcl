@@ -26,7 +26,7 @@ const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
   return (
     <div className="dark:bg-neutral-950 bg-white min-h-screen">
       {/* Hero Section */}
-      <div className="relative overflow-hidden py-40">
+      <div className="relative overflow-hidden py-40 bg-linear-to-r from-sky-600 to-sky-600">
         {/* Background Image */}
         {program?.heroImage && (
           <Image src={program?.heroImage} alt={program?.name} fill priority className="object-cover object-top" />
@@ -115,7 +115,7 @@ const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
                 </div>
               )}
 
-              {program?.themes && Array.isArray(program.themes) && program.themes.length > 0 && (
+              {program?.themes && Array.isArray(program.themes) && program.themes.length > 0 && program.showThemes && (
                 <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6 md:col-span-2">
                   <div className="flex items-center gap-3 mb-6">
                     <Calendar className="w-6 h-6 text-sky-500" />

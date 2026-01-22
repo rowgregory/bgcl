@@ -50,9 +50,9 @@ const ProgramsClient = ({ programs }: { programs: IProgram[] }) => {
                         {/* Card Container */}
                         <div className="relative dark:bg-neutral-900 dark:border-neutral-800 dark:hover:border-sky-500/50 bg-white border-neutral-200 border hover:border-sky-500/50 rounded-lg overflow-hidden transition-all h-full flex flex-col">
                           {/* Image/Icon Area */}
-                          <div className="relative h-48 overflow-hidden bg-cover bg-center">
+                          <div className="relative h-60 overflow-hidden bg-cover bg-center">
                             <img
-                              src={program.image}
+                              src={program.image ?? '/images/vertical-logo-light.png'}
                               alt={program.name}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />
@@ -66,14 +66,6 @@ const ProgramsClient = ({ programs }: { programs: IProgram[] }) => {
                             <p className="dark:text-neutral-400 text-neutral-600 text-sm mb-4 flex-1 line-clamp-3">
                               {program.description1}
                             </p>
-
-                            {/* Quick Info */}
-                            <div className="space-y-2 mb-6 text-xs">
-                              <div className="flex items-center gap-2">
-                                <span className="dark:text-sky-400 text-sky-600 font-semibold">Age:</span>
-                                <span className="dark:text-neutral-300 text-neutral-700">{program.ageGroup}</span>
-                              </div>
-                            </div>
 
                             {/* CTA */}
                             <div className="flex items-center gap-2 dark:text-sky-400 text-sky-600 font-semibold group-hover:gap-3 transition-all text-sm">

@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { trimAndTransformData } from '../utils/trimAndTransformData'
 
 export interface UpdateCampaignInput {
   id: string
@@ -23,14 +24,19 @@ export async function updateCampaign(data: UpdateCampaignInput) {
       throw new Error('Campaign ID is required')
     }
 
-    // Filter out system fields that shouldn't be updated
-    const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
-      if (
-        value !== null &&
-        value !== undefined &&
-        value !== '' &&
-        !['id', 'createdAt', 'updatedAt', 'isUpdating'].includes(key)
-      ) {
+    const campaignId = data.id
+
+    // Process and trim data
+    const processedData = trimAndTransformData(data, {
+      dateFields: ['startDate', 'endDate'],
+      numberFields: ['goalAmount', 'currentAmount'],
+      nullableFields: ['image', 'externalLink', 'endDate'],
+      ignoreFields: ['id', 'createdAt', 'updatedAt', 'isUpdating']
+    })
+
+    // Filter out empty values
+    const cleanData = Object.entries(processedData).reduce((acc, [key, value]) => {
+      if (value !== null && value !== undefined && value !== '') {
         acc[key] = value
       }
       return acc
@@ -41,14 +47,8 @@ export async function updateCampaign(data: UpdateCampaignInput) {
     }
 
     const campaign = await prisma.campaign.update({
-      where: { id: data.id },
-      data: {
-        ...cleanData,
-        goalAmount: Number(data.goalAmount),
-        currentAmount: Number(data.currentAmount),
-        startDate: new Date(data.startDate),
-        endDate: new Date(data.endDate)
-      }
+      where: { id: campaignId },
+      data: cleanData
     })
 
     revalidateTag('Campaign', 'default')

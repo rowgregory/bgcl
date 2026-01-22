@@ -162,7 +162,7 @@ export const ProgramForm: FC<IForm> = ({
               </div>
 
               {/* Additional Descriptions - Only show if they exist */}
-              {[2, 3, 4, 5].map((num) => {
+              {[2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => {
                 const key = `description${num}` as keyof typeof inputs
                 if (inputs?.[key] === undefined || inputs?.[key] === null) return null
 

@@ -1,7 +1,10 @@
 'use client'
 
+import { deleteCampaign } from '@/app/lib/actions/deleteCampaign'
 import { deleteNewsletter } from '@/app/lib/actions/deleteNewsletter'
+import { deleteProgram } from '@/app/lib/actions/deleteProgram'
 import useGenericListReorder from '@/app/lib/hooks/useGenericListReorder'
+import { initialCampaignFormState } from '@/app/lib/initial-states/campaign'
 import { setOpenCampaignDrawer } from '@/app/lib/store/slices/campaignSlice'
 import { setOpenClubResourceDrawer } from '@/app/lib/store/slices/clubResourceSlice'
 import { setInputs } from '@/app/lib/store/slices/formSlice'
@@ -110,6 +113,7 @@ export function AdminListPage<T extends AdminListItem>({
                         break
                       case 'campaign':
                         store.dispatch(setOpenCampaignDrawer())
+                        store.dispatch(setInputs({ formName: 'campaignForm', data: initialCampaignFormState }))
                         break
                     }
                   }}
@@ -184,6 +188,10 @@ export function AdminListPage<T extends AdminListItem>({
                         onClick={async () => {
                           if (itemType === 'newsletter') {
                             await deleteNewsletter(item.id)
+                          } else if (itemType === 'campaign') {
+                            await deleteCampaign(item.id)
+                          } else if (itemType === 'program') {
+                            await deleteProgram(item.id)
                           }
                         }}
                         className="p-2 dark:text-neutral-600 dark:hover:text-red-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-red-600 hover:bg-neutral-200 rounded-lg transition-colors"

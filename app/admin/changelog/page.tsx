@@ -37,6 +37,34 @@ const changelogData: ChangelogEntry[] = [
         description:
           'Created a new frontend display area for themes on program pages. Themes are shown in a colorful card grid with rotating color schemes (purple, orange, green) and display week numbers, titles, and dates.',
         impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Campaign Cards Redesign',
+        description:
+          'Redesigned campaign cards with a wider 2-column layout on desktop. Updated visual hierarchy with improved progress display and better use of horizontal space with centered stats.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Campaign Detail Page Layout',
+        description:
+          'Reorganized campaign detail page layout to balance content distribution. Moved progress information and stats to the left column alongside description and details, while keeping image and CTA buttons in a sticky right sidebar for better visual balance.',
+        impact: 'low'
+      },
+      {
+        type: 'bug',
+        title: 'Campaign Data Cleanup',
+        description:
+          'Fixed campaign pre-selection issue by cleaning up trailing whitespace in campaign names directly in the database.',
+        impact: 'low'
+      },
+      {
+        type: 'improvement',
+        title: 'Data Sanitization Utility',
+        description:
+          'Created trimAndTransformData utility function to automatically trim whitespace from all string fields and handle type conversions (dates, numbers) before saving to database. Implemented across all campaign creation/update functions to ensure data consistency, particularly for campaign names that need to match query parameters in the donation form.',
+        impact: 'high'
       }
     ]
   },

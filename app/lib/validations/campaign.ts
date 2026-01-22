@@ -14,11 +14,11 @@ const validateCampaignForm = (
     newErrors.description = 'Please enter a valid description'
   }
 
-  if (!inputs?.goalAmount || inputs.goalAmount === 0) {
+  if (!inputs?.goalAmount || Number(inputs.goalAmount) === 0) {
     newErrors.goalAmount = 'Please enter an amount greater than 0'
   }
-  if (!inputs?.currentAmount || inputs.currentAmount === 0) {
-    newErrors.currentAmount = 'Please enter an amount greater than 0'
+  if (inputs?.currentAmount == null || Number(inputs.currentAmount) < 0) {
+    newErrors.currentAmount = 'Please enter an amount 0 or greater'
   }
 
   if (!inputs?.organizerName || typeof inputs.organizerName !== 'string' || !inputs.organizerName.trim()) {
@@ -26,7 +26,7 @@ const validateCampaignForm = (
   }
 
   if (!inputs?.startDate) {
-    newErrors.startTime = 'Please enter a valid start time'
+    newErrors.startDate = 'Please enter a valid start date'
   }
 
   setErrors(newErrors)
