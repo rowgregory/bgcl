@@ -15,8 +15,9 @@ import CapitalCampaignDrawer from './components/drawers/CapitalCampaignDrawer'
 import VolunteerDrawer from './components/drawers/VolunteerDrawer'
 import FloatingDonateButton from './components/FloatingButton'
 import CapitalCampaignTab from './components/CapitalCampaignTab'
+import RegistrationModal from './components/modals/RegistrationModal'
 
-export default function RootLayoutWrapper({ children, programs }) {
+export default function RootLayoutWrapper({ children, programs, pageContent }) {
   const pathname = usePathname()
 
   const show = !HIDDEN_PATHS.some((path) => pathname.startsWith(path))
@@ -32,7 +33,7 @@ export default function RootLayoutWrapper({ children, programs }) {
         <VolunteerDrawer programs={programs} />
         <FloatingDonateButton />
         <CapitalCampaignTab />
-
+        <RegistrationModal pageContent={pageContent?.content} />
         {show && <Header />}
         {children}
         {show && <Footer />}

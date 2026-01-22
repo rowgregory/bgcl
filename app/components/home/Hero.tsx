@@ -8,7 +8,14 @@ export const Hero = ({ initialPageData }) => {
     <div className="w-full h-225 overflow-hidden -mt-37.5 relative">
       {/* YouTube Video Background */}
 
-      <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover scale-130">
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover scale-130"
+      >
         <source src="/videos/landing.mov" type="video/mp4" className="w-full h-full object-cover" />
       </video>
 

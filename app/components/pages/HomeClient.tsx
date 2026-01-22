@@ -7,7 +7,6 @@ import { HistorySection } from '../home/HistorySection'
 import MissionSection from '../home/MissionSection'
 import YouthOfTheYearSection from '../home/YouthOfTheYearSection'
 import { ITeamMember } from '@/types/entities/team-member'
-import RegistrationModal from '../modals/RegistrationModal'
 
 interface HomeClientProps {
   initialPageData?: any
@@ -24,8 +23,6 @@ const HomeClient = ({ initialPageData, programs, youth }: HomeClientProps) => {
 
   return (
     <>
-      <RegistrationModal pageContent={pageContent} />
-
       <Hero initialPageData={pageContent} />
 
       {/* Content that scrolls over */}

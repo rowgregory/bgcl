@@ -1,13 +1,8 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Maps Next.js variables to Tailwind utility classes: font-nunito & font-quicksand */
-  --font-nunito: var(--font-nunito);
-  --font-quicksand: var(--font-quicksand);
+  /* Maps Next.js variables to Tailwind utility classes: font-lexend*/
   --font-lexend: var(--font-lexend);
-
-  /* Optional: Overrides the default 'font-sans' utility to use Nunito automatically */
-  --font-sans: var(--font-nunito);
 }
 
 @theme {

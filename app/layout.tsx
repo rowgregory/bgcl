@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Lexend, Nunito_Sans, Quicksand } from 'next/font/google'
+import { Lexend } from 'next/font/google'
 import './globals.css'
 import { SessionProvider } from 'next-auth/react'
 import { auth } from '@/app/lib/auth'
@@ -7,20 +7,7 @@ import { ReactNode } from 'react'
 import RootLayoutWrapper from './root-layout'
 import { ThemeProvider } from './lib/providers/theme'
 import { getPrograms } from './lib/actions/getPrograms'
-
-const nunito = Nunito_Sans({
-  subsets: ['latin'],
-  weight: ['700', '800', '900', '1000'],
-  display: 'swap',
-  variable: '--font-nunito' // Define CSS variable
-})
-
-const quicksand = Quicksand({
-  subsets: ['latin'],
-  weight: ['700'],
-  display: 'swap',
-  variable: '--font-quicksand' // Define CSS variable
-})
+import { getPageBySlug } from './lib/actions/getPageBySlug'
 
 const lexend = Lexend({
   subsets: ['latin'],
@@ -42,12 +29,19 @@ export default async function RootLayout({
 }>) {
   const session = await auth()
   const programs = await getPrograms()
+  const pageContent = await getPageBySlug('home')
+
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${nunito.variable} ${quicksand.variable} ${lexend.variable} antialiased`}>
+      <head>
+        <link rel="prefetch" href="/videos/landing.mov" />
+      </head>
+      <body className={`${lexend.variable} antialiased`}>
         <SessionProvider session={session}>
           <ThemeProvider>
-            <RootLayoutWrapper programs={programs}>{children}</RootLayoutWrapper>
+            <RootLayoutWrapper programs={programs} pageContent={pageContent}>
+              {children}
+            </RootLayoutWrapper>
           </ThemeProvider>
         </SessionProvider>
       </body>
