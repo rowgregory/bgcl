@@ -60,7 +60,7 @@ export const HistorySection = ({ pageContent }) => {
           </div>
           <h2 className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900 mb-6">
             {pageContent?.history?.heading1}{' '}
-            <span className="font-light dark:text-neutral-400 text-neutral-600">{pageContent?.history?.heading1}</span>
+            <span className="font-light dark:text-neutral-400 text-neutral-600">{pageContent?.history?.heading2}</span>
           </h2>
           <div className="space-y-4 max-w-4xl">
             <p className="text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">

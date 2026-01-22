@@ -1,11 +1,16 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Share2 } from 'lucide-react'
+import { ArrowLeft, Calendar, Mail, Share2 } from 'lucide-react'
 import { useState } from 'react'
 import Picture from '@/app/components/common/Picture'
 import { formatDate } from '@/app/lib/utils/date-utils'
+import { store, useFormSelector } from '@/app/lib/store/store'
+import { useRouter } from 'next/navigation'
+import { setIsLoading } from '@/app/lib/store/slices/formSlice'
+import { createSubscriber } from '@/app/lib/actions/createSubscriber'
+import { showToast } from '@/app/lib/store/slices/toastSlice'
 
 const relatedNews = [
   {
@@ -32,7 +37,48 @@ const relatedNews = [
 ]
 
 const StoryClient = ({ story }) => {
+  const router = useRouter()
+  const [email, setEmail] = useState('')
   const [copied, setCopied] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(false)
+  const { isLoading } = useFormSelector()
+  const [memberType, setMemberType] = useState<'member' | 'donor' | 'non-member'>('member')
+
+  const handleSubscribe = async (e: { preventDefault: () => void }) => {
+    e.preventDefault()
+
+    if (!email) {
+      setError(true)
+      setTimeout(() => setError(false), 5000)
+      return
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError(true)
+      setTimeout(() => setError(false), 5000)
+      return
+    }
+
+    try {
+      store.dispatch(setIsLoading(true))
+      const res = await createSubscriber({ email, type: memberType })
+      if (!res.success) {
+        store.dispatch(showToast({ message: 'Failed to create subscriber', type: 'error' }))
+        return
+      }
+
+      setSuccess(true)
+      setTimeout(() => setSuccess(false), 5000)
+
+      router.refresh()
+      setEmail('')
+      setMemberType('member')
+    } catch (err) {
+      setError(true)
+      setTimeout(() => setError(false), 5000)
+    } finally {
+      store.dispatch(setIsLoading(false))
+    }
+  }
 
   const handleShare = async () => {
     const url = typeof window !== 'undefined' ? window.location.href : ''
@@ -55,9 +101,6 @@ const StoryClient = ({ story }) => {
     }
   }
 
-  const handleSubmitNewsletter = (e: { preventDefault: () => void }) => {
-    e.preventDefault()
-  }
   return (
     <div className="min-h-screen py-20 px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
@@ -144,24 +187,158 @@ const StoryClient = ({ story }) => {
             </div>
 
             {/* Newsletter Signup */}
-            <div className="dark:bg-linear-to-br dark:from-sky-500/10 dark:to-sky-600/10 bg-linear-to-br from-sky-100 to-sky-50 dark:border-sky-500/20 border-sky-300/30 rounded-xl p-6 border">
-              <h3 className="text-lg font-bold dark:text-white text-neutral-900 mb-3">Stay Updated</h3>
-              <p className="text-sm dark:text-neutral-300 text-neutral-700 mb-4">
-                Subscribe to get the latest news and stories.
-              </p>
-              <form onSubmit={handleSubmitNewsletter} className="space-y-3">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="w-full px-4 py-2 text-sm dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
-                />
-                <button
-                  type="submit"
-                  className="w-full px-4 py-2 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold text-sm rounded-lg transition-colors"
-                >
-                  Subscribe
-                </button>
-              </form>
+            <div className="relative overflow-hidden dark:bg-linear-to-br dark:from-neutral-900 dark:to-neutral-800 bg-linear-to-br from-white to-neutral-50 rounded-2xl p-6 border dark:border-neutral-800 border-transparent">
+              {/* Decorative linear blur */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/20 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl" />
+
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-lg bg-linear-to-br from-sky-500 to-sky-600 flex items-center justify-center">
+                    <Mail className="w-4 h-4 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold dark:text-white text-neutral-900">Stay Updated</h3>
+                </div>
+                <p className="text-sm dark:text-neutral-400 text-neutral-600 mb-4">
+                  Get the latest news and stories delivered to your inbox.
+                </p>
+
+                {/* Error Banner */}
+                <AnimatePresence>
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                      className="mb-8 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3"
+                    >
+                      <div className="shrink-0">
+                        <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-red-800 dark:text-red-200">Error!</p>
+                        <p className="text-xs text-red-700 dark:text-red-300">
+                          Please enter a{!email ? 'n' : ' valid'} email
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                {/* Success Banner */}
+                <AnimatePresence>
+                  {success && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                      className="mb-8 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-center gap-3"
+                    >
+                      <div className="shrink-0">
+                        <svg
+                          className="w-5 h-5 text-green-600 dark:text-green-400"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-green-800 dark:text-green-200">
+                          Thanks for subscribing!
+                        </p>
+                        <p className="text-xs text-green-700 dark:text-green-300">Check your email for updates</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <form onSubmit={handleSubscribe} className="space-y-4">
+                  {/* Email Input */}
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 dark:text-neutral-500 text-neutral-400 pointer-events-none" />
+                    <input
+                      type="text"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full pl-10 pr-3 py-2.5 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:placeholder-neutral-600 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:ring-sky-600 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
+                    />
+                  </div>
+
+                  {/* Membership Type */}
+                  <div className="space-y-3">
+                    <p className="text-xs font-medium dark:text-neutral-400 text-neutral-600 uppercase tracking-wide">
+                      I am a:
+                    </p>
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2.5 cursor-pointer group">
+                        <input
+                          type="radio"
+                          name="memberType"
+                          value="member"
+                          defaultChecked
+                          className="sr-only peer"
+                          onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
+                        />
+                        <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-sky-600 dark:peer-checked:bg-sky-500 peer-checked:border-sky-600 dark:peer-checked:border-sky-500 transition-all" />
+                        <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
+                          Member/Parent
+                        </span>
+                      </label>
+
+                      <label className="flex items-center gap-2.5 cursor-pointer group">
+                        <input
+                          type="radio"
+                          name="memberType"
+                          value="non-member"
+                          className="sr-only peer"
+                          onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
+                        />
+                        <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-sky-600 dark:peer-checked:bg-sky-500 peer-checked:border-sky-600 dark:peer-checked:border-sky-500 transition-all" />
+                        <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
+                          Non-Member
+                        </span>
+                      </label>
+
+                      <label className="flex items-center gap-2.5 cursor-pointer group">
+                        <input
+                          type="radio"
+                          name="memberType"
+                          value="donor"
+                          className="sr-only peer"
+                          onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
+                        />
+                        <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-sky-600 dark:peer-checked:bg-sky-500 peer-checked:border-sky-600 dark:peer-checked:border-sky-500 transition-all" />
+                        <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
+                          Donor
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Subscribe Button */}
+                  <button
+                    type="submit"
+                    className="gap-x-2 flex items-center px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors whitespace-nowrap cursor-pointer"
+                  >
+                    {isLoading && (
+                      <div className="w-4 h-4 rounded-full border-2 border-white border-t-0 animate-spin" />
+                    )}{' '}
+                    Subscribe
+                  </button>
+                </form>
+              </div>
             </div>
           </motion.div>
         </div>

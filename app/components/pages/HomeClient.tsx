@@ -38,7 +38,7 @@ const HomeClient = ({ initialPageData, programs, youth }: HomeClientProps) => {
 
         <HistorySection pageContent={pageContent} />
 
-        <YouthOfTheYearSection youth={youth} />
+        <YouthOfTheYearSection pageContent={pageContent} youth={youth} />
       </div>
     </div>
   )

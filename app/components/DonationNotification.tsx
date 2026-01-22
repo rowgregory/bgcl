@@ -1,7 +1,8 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { Heart } from 'lucide-react'
+import { DollarSign } from 'lucide-react'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
@@ -65,6 +66,16 @@ export default function DonationNotification() {
 
   if (pathname.includes('/admin')) return
 
+  // Add this helper function at the top of your component file
+  function getTimeAgo(timestamp: Date): string {
+    const seconds = Math.floor((Date.now() - timestamp.getTime()) / 1000)
+
+    if (seconds < 60) return 'Just now'
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`
+    return `${Math.floor(seconds / 86400)}d ago`
+  }
+
   return (
     <AnimatePresence mode="wait">
       {currentDonation && isVisible && (
@@ -74,48 +85,61 @@ export default function DonationNotification() {
           animate={{ opacity: 1, x: 0, y: 0 }}
           exit={{ opacity: 0, x: -400, y: 0 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="fixed bottom-6 left-6 z-50"
+          className="fixed bottom-6 left-6 z-50 w-80"
         >
-          <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 rounded-xl shadow-2xl border overflow-hidden backdrop-blur-sm dark:backdrop-blur-md">
-            {/* Gradient accent bar */}
-            <div className="h-1 bg-linear-to-r from-sky-500 to-sky-600" />
-
-            {/* Content */}
-            <div className="p-4">
-              <div className="flex items-start gap-3">
-                {/* Heart Icon */}
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 0.6, repeat: Infinity }}
-                  className="shrink-0"
-                >
-                  <div className="w-10 h-10 dark:bg-red-500/20 bg-red-100 rounded-full flex items-center justify-center">
-                    <Heart className="w-5 h-5 text-red-500 fill-red-500" />
+          <div className="dark:bg-neutral-900/95 dark:border-neutral-800 bg-white/95 border-neutral-200 rounded-2xl shadow-2xl border overflow-hidden backdrop-blur-xl">
+            {/* Header with gradient */}
+            <div className="bg-linear-to-r from-sky-500 to-sky-600 px-4 py-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                    <DollarSign className="w-5 h-5 text-white" />
                   </div>
-                </motion.div>
-
-                {/* Text Content */}
-                <div className="flex-1 min-w-0">
-                  <p className="dark:text-neutral-300 text-neutral-700 text-sm">
-                    <span className="font-semibold dark:text-white text-neutral-900">{currentDonation.donorName}</span>{' '}
-                    donated
-                  </p>
-                  <p className="text-lg font-bold dark:text-sky-400 text-sky-600">
-                    ${currentDonation.amount.toFixed(2)}
-                  </p>
-                  <p className="text-xs dark:text-neutral-500 text-neutral-500 mt-1">
-                    Thank you for supporting our mission!
-                  </p>
+                  <span className="text-white font-semibold text-sm">New Donation</span>
                 </div>
+                <span className="text-white/80 text-xs">{getTimeAgo(currentDonation.timestamp)}</span>
               </div>
             </div>
 
-            {/* Progress bar - 5 seconds visible */}
+            {/* Content */}
+            <div className="p-4">
+              <div className="mb-3">
+                <p className="dark:text-white text-neutral-900 font-bold text-xl mb-1">
+                  ${currentDonation.amount.toFixed(2)}
+                </p>
+                <p className="dark:text-neutral-400 text-neutral-600 text-sm">
+                  from{' '}
+                  <span className="font-semibold dark:text-neutral-300 text-neutral-700">
+                    {currentDonation.donorName}
+                  </span>
+                </p>
+              </div>
+
+              {/* Footer with links */}
+              <div className="flex items-center justify-between pt-3 border-t dark:border-neutral-800 border-neutral-200">
+                <Link
+                  href="/donate"
+                  className="text-sm font-semibold dark:text-orange-400 text-orange-600 hover:underline"
+                >
+                  Donate Now →
+                </Link>
+                <a
+                  href="https://sqysh.io?lead_source=bgcl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs dark:text-neutral-500 text-neutral-500 hover:dark:text-neutral-400 hover:text-neutral-600 transition-colors"
+                >
+                  Powered by Sqysh
+                </a>
+              </div>
+            </div>
+
+            {/* Progress bar */}
             <motion.div
               initial={{ scaleX: 1 }}
               animate={{ scaleX: 0 }}
-              transition={{ duration: 4.5, ease: 'linear' }}
-              className="h-1 dark:bg-neutral-800 bg-neutral-200 origin-left"
+              transition={{ duration: 5, ease: 'linear' }}
+              className="h-1 bg-linear-to-r from-sky-500 to-sky-600 origin-left"
             />
           </div>
         </motion.div>

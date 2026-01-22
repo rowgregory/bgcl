@@ -8,7 +8,7 @@ import Link from 'next/link'
 
 const EventsClient = ({ events }) => {
   return (
-    <div className="h-[calc(100vh-681px)] dark:bg-neutral-950 bg-white py-20 px-6 md:px-12">
+    <div className="h-full min-h-[calc(100vh-681px)] dark:bg-neutral-950 bg-white py-20 px-6 md:px-12">
       <div className="max-w-7xl mx-auto space-y-16">
         {/* Header */}
         <motion.div

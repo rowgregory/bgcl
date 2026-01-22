@@ -7,11 +7,27 @@ import Picture from '../common/Picture'
 import { store } from '@/app/lib/store/store'
 import { setOpenVolunteerDrawer } from '@/app/lib/store/slices/appSlice'
 
-export default function YouthOfTheYearSection({ youth }) {
+export default function YouthOfTheYearSection({ pageContent, youth }) {
   return (
     <div className="dark:bg-neutral-950 bg-white">
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-12 md:py-16">
+        <div className="flex items-center gap-3 mb-4">
+          <motion.div
+            className="h-px w-8 dark:bg-sky-500 bg-sky-600"
+            animate={{ scaleX: [0, 1, 1] }}
+            transition={{ duration: 0.8 }}
+            style={{ originX: 0 }}
+          />
+          <p className="text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-wider">
+            {pageContent?.youth?.subheading}
+          </p>
+        </div>
+        <h2 className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900 mb-6">
+          {pageContent?.youth?.heading1}{' '}
+          <span className="font-light dark:text-neutral-400 text-neutral-600">{pageContent?.youth?.heading2}</span>
+        </h2>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -26,13 +42,6 @@ export default function YouthOfTheYearSection({ youth }) {
             className="relative"
           >
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              {/* Decorative Badge */}
-              <div className="absolute top-6 left-6 z-10 dark:bg-white/10 bg-white/20 backdrop-blur-md rounded-full px-4 py-2 border dark:border-white/20 border-white/30">
-                <p className="text-xs font-semibold dark:text-white text-neutral-900 uppercase tracking-widest">
-                  {youth?.year} Youth of the Year
-                </p>
-              </div>
-
               {/* Image */}
               <Picture src={youth?.image} alt={youth?.name} priority={false} className="object-cover w-full h-full" />
 
@@ -60,13 +69,9 @@ export default function YouthOfTheYearSection({ youth }) {
           >
             {/* Title */}
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Heart className="w-5 h-5 dark:text-sky-400 text-sky-600" />
-                <p className="text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-widest">
-                  Award Winner
-                </p>
-              </div>
-              <h2 className="text-3xl md:text-4xl font-black dark:text-white text-neutral-900">Meet {youth?.name}</h2>
+              <h2 className="text-3xl md:text-4xl font-black dark:text-white text-neutral-900">
+                {new Date().getFullYear() - 1} Youth of the Year
+              </h2>
             </div>
 
             {/* Content */}
@@ -147,7 +152,7 @@ export default function YouthOfTheYearSection({ youth }) {
               </p>
             </div>
             <Link
-              href="/stories?section=youth"
+              href="/stories"
               className="inline-flex items-center gap-2 px-6 py-3 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold rounded-lg transition-colors"
             >
               View All Stories

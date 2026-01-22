@@ -89,7 +89,7 @@ const AdminSidebar = () => {
                       }}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all text-left cursor-pointer ${
                         item.active
-                          ? 'dark:bg-linear-to-r dark:from-purple-600 dark:to-indigo-600 bg-linear-to-r from-sky-500 to-sky-600 text-white'
+                          ? 'dark:bg-linear-to-r dark:from-cyan-600 dark:to-sky-600 bg-linear-to-r from-sky-500 to-sky-600 text-white'
                           : 'dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
                       }`}
                     >
@@ -105,7 +105,7 @@ const AdminSidebar = () => {
                     href={item.path || ''}
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
                       item.active
-                        ? 'dark:bg-linear-to-r dark:from-purple-600 dark:to-indigo-600 bg-linear-to-r from-sky-500 to-sky-600 text-white'
+                        ? 'dark:bg-linear-to-r dark:from-cyan-600 dark:to-sky-600 bg-linear-to-r from-sky-500 to-sky-600 text-white'
                         : 'dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
                     }`}
                   >
@@ -122,7 +122,7 @@ const AdminSidebar = () => {
       {/* User Section - Sticky Bottom */}
       <div className="shrink-0 border-t dark:border-neutral-800 border-neutral-200 p-4 dark:bg-neutral-950 bg-white">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-full bg-linear-to-br from-sky-400 to-indigo-500 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-linear-to-br from-sky-400 to-sky-500 flex items-center justify-center">
             <span className="text-sm font-semibold text-white">
               {session.data?.user?.name
                 ?.split(' ')

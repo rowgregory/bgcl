@@ -216,7 +216,7 @@ export function Footer() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-3 py-2.5 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:placeholder-neutral-600 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:ring-sky-600 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-3 py-2.5 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:placeholder-neutral-600 dark:focus:ring-orange-500 bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:ring-orange-600 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
                 />
               </div>
 
@@ -232,33 +232,38 @@ export function Footer() {
                       name="memberType"
                       value="member"
                       defaultChecked
-                      className="w-4 h-4 text-sky-600 focus:ring-sky-500 dark:focus:ring-sky-600"
+                      className="sr-only peer"
                       onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
                     />
+                    <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-orange-600 dark:peer-checked:bg-orange-500 peer-checked:border-orange-600 dark:peer-checked:border-orange-500 transition-all" />
                     <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
                       Member/Parent
                     </span>
                   </label>
+
                   <label className="flex items-center gap-2.5 cursor-pointer group">
                     <input
                       type="radio"
                       name="memberType"
                       value="non-member"
-                      className="w-4 h-4 text-sky-600 focus:ring-sky-500 dark:focus:ring-sky-600"
+                      className="sr-only peer"
                       onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
                     />
+                    <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-orange-600 dark:peer-checked:bg-orange-500 peer-checked:border-orange-600 dark:peer-checked:border-orange-500 transition-all" />
                     <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
                       Non-Member
                     </span>
                   </label>
+
                   <label className="flex items-center gap-2.5 cursor-pointer group">
                     <input
                       type="radio"
                       name="memberType"
                       value="donor"
-                      className="w-4 h-4 text-sky-600 focus:ring-sky-500 dark:focus:ring-sky-600"
+                      className="sr-only peer"
                       onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
                     />
+                    <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-orange-600 dark:peer-checked:bg-orange-500 peer-checked:border-orange-600 dark:peer-checked:border-orange-500 transition-all" />
                     <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
                       Donor
                     </span>
@@ -269,7 +274,7 @@ export function Footer() {
               {/* Subscribe Button */}
               <button
                 type="submit"
-                className="gap-x-2 flex items-center px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors whitespace-nowrap cursor-pointer"
+                className="gap-x-2 flex items-center px-6 py-3 dark:bg-orange-600 dark:hover:bg-orange-700 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors whitespace-nowrap cursor-pointer"
               >
                 {isLoading && <div className="w-4 h-4 rounded-full border-2 border-white border-t-0 animate-spin" />}{' '}
                 Subscribe

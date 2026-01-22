@@ -670,7 +670,14 @@ function DonationForm({ campaignName, campaigns }) {
         </span>
       </button>
 
-      <p className="text-xs dark:text-zinc-500 text-neutral-600 text-center">Your payment is secure and encrypted</p>
+      <p className="text-xs dark:text-zinc-500 text-neutral-600 text-center">
+        Powered by{' '}
+        <span>
+          <a className="dark:text-indigo-500 text-sky-600 hover:underline" href="https://sqysh.io?lead_source=bgcl">
+            Sqysh
+          </a>
+        </span>
+      </p>
     </form>
   )
 }

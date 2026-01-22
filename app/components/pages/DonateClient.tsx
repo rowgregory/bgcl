@@ -14,8 +14,6 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 export default function DonateClient({ campaigns }: { campaigns: ICampaign[] }) {
   const searchParams = useSearchParams()
   const campaignName = searchParams.get('campaignName')
-  console.log('campaignName: ', campaignName)
-  console.log('campaigns: ', campaigns)
 
   return (
     <div className="">
@@ -107,7 +105,6 @@ export default function DonateClient({ campaigns }: { campaigns: ICampaign[] }) 
               transition={{ delay: 0.3 }}
               className="mt-6 text-center text-sm dark:text-zinc-500 text-neutral-600"
             >
-              <p>🔒 Secure payments powered by Stripe</p>
               <p>501(c)(3) Nonprofit Organization</p>
             </motion.div>
           </motion.div>

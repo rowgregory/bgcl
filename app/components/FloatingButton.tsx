@@ -21,6 +21,25 @@ export default function FloatingDonateButton() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
       >
+        {/* Floating Text Label - Now Above and Centered */}
+        <motion.div
+          animate={{
+            y: isHovered ? -10 : 0,
+            opacity: isHovered ? 1 : 0
+          }}
+          transition={{ duration: 0.3 }}
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 pointer-events-none"
+        >
+          <div className="dark:bg-neutral-900 bg-white dark:border-neutral-800 border-neutral-200 rounded-lg px-4 py-2 border shadow-xl">
+            <p className="dark:text-white text-neutral-900 font-bold text-sm text-center whitespace-nowrap">
+              Make a <br /> Difference
+            </p>
+            <p className="dark:text-neutral-400 text-neutral-600 text-xs text-center">Every gift helps</p>
+          </div>
+          {/* Arrow pointer */}
+          <div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent dark:border-t-neutral-900 border-t-white" />
+        </motion.div>
+
         {/* Pulse Ring Background */}
         <motion.div
           className="absolute inset-0 rounded-full"
@@ -80,21 +99,6 @@ export default function FloatingDonateButton() {
             <Heart className="w-7 h-7 text-white fill-white" />
           </motion.div>
         </MotionLink>
-
-        {/* Floating Text Label */}
-        <motion.div
-          animate={{
-            x: isHovered ? -30 : 0,
-            opacity: isHovered ? 1 : 0
-          }}
-          transition={{ duration: 0.3 }}
-          className="absolute right-20 top-1/2 -translate-y-1/2 whitespace-nowrap"
-        >
-          <div className="dark:bg-neutral-900 bg-white dark:border-neutral-800 border-neutral-200 rounded-lg px-4 py-2 border shadow-xl">
-            <p className="dark:text-white text-neutral-900 font-bold text-sm">Make a Difference</p>
-            <p className="dark:text-neutral-400 text-neutral-600 text-xs">Every gift helps</p>
-          </div>
-        </motion.div>
       </motion.div>
     </>
   )
