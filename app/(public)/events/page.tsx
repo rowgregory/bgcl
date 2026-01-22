@@ -1,3 +1,5 @@
+export const revalidate = 0
+
 import EventsClient from '@/app/components/pages/EventsClient'
 import { getEvents } from '@/app/lib/actions/getEvents'
 
