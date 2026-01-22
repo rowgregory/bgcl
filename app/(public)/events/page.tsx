@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 import EventsClient from '@/app/components/pages/EventsClient'
