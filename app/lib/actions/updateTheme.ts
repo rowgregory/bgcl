@@ -16,10 +16,10 @@ export async function updateTheme(data: IUpdateTheme) {
 
     await createLog('info', 'Theme updated successfully', {
       themeId: theme.id,
-      programId: theme.programId,
       title: theme.title
     })
 
+    revalidateTag('Program', 'default')
     revalidateTag('Theme', 'default')
 
     return { success: true }

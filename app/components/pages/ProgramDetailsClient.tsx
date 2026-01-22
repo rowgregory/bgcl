@@ -115,6 +115,53 @@ const ProgramDetailsClient = ({ program }: { program: IProgram }) => {
                 </div>
               )}
 
+              {program?.themes && Array.isArray(program.themes) && program.themes.length > 0 && (
+                <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-6 md:col-span-2">
+                  <div className="flex items-center gap-3 mb-6">
+                    <Calendar className="w-6 h-6 text-sky-500" />
+                    <h3 className="text-lg font-bold dark:text-white text-neutral-900">Weekly Themes</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {program.themes
+                      .sort((a: { order: number }, b: { order: number }) => a.order - b.order)
+                      .map((theme: { id: string; title: string; dates: string; order: number }, index) => {
+                        const colors = [
+                          {
+                            badge: 'bg-purple-500'
+                          },
+                          {
+                            badge: 'bg-orange-500'
+                          },
+                          {
+                            badge: 'bg-green-500'
+                          }
+                        ]
+                        const colorScheme = colors[index % 3]
+
+                        return (
+                          <div
+                            key={theme.id}
+                            className={`relative bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg p-4 transition-colors`}
+                          >
+                            <div
+                              className={`absolute -top-3 left-4 ${colorScheme.badge} text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg`}
+                            >
+                              Week {theme.order}
+                            </div>
+                            <h4 className="text-base font-bold dark:text-white text-neutral-900 mt-2 mb-2">
+                              {theme.title}
+                            </h4>
+                            <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+                              <Calendar className="w-4 h-4" />
+                              <span>{theme.dates}</span>
+                            </div>
+                          </div>
+                        )
+                      })}
+                  </div>
+                </div>
+              )}
+
               {program?.additionalDetails &&
                 Array.isArray(program.additionalDetails) &&
                 program.additionalDetails.length > 0 && (

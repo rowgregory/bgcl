@@ -30,6 +30,7 @@ export async function createProgram(data: ICreateProgram) {
     if (data.heroImage) createData.heroImage = data.heroImage
     if (data.showAgeGroup) createData.showAgeGroup = data.showAgeGroup
     if (data.additionalDetails) createData.additionalDetails = data.additionalDetails
+    if (data.showThemes) createData.showThemes = data.showThemes
 
     const program = await prisma.program.create({
       data: createData

@@ -7,22 +7,30 @@ import { ICreateTheme } from '@/types/entities/theme'
 
 export async function createTheme(data: ICreateTheme) {
   try {
+    // Get the highest order number
+    const highestTheme = await prisma.theme.findFirst({
+      orderBy: { order: 'desc' },
+      select: { order: true }
+    })
+
+    const nextOrder = (highestTheme?.order ?? 0) + 1
+
     const theme = await prisma.theme.create({
       data: {
         title: data.title,
         dates: data.dates,
-        order: data.order,
-        programId: data.programId
+        order: nextOrder
       }
     })
 
     await createLog('info', 'Theme created successfully', {
       themeId: theme.id,
-      programId: data.programId,
-      title: theme.title
+      title: theme.title,
+      order: theme.order
     })
 
     revalidateTag('Theme', 'default')
+    revalidateTag('Program', 'default')
 
     return { success: true }
   } catch (error) {
@@ -31,8 +39,7 @@ export async function createTheme(data: ICreateTheme) {
     await createLog('error', 'Failed to create theme', {
       error: errorMessage,
       inputData: {
-        title: data.title,
-        programId: data.programId
+        title: data.title
       }
     })
 

@@ -21,6 +21,26 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.3.0',
+    date: '2026-01-22',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Theme Management System',
+        description:
+          'Added server actions to create themes and attach them to programs. Themes can now be associated with multiple programs and include weekly scheduling information.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Theme Display Component',
+        description:
+          'Created a new frontend display area for themes on program pages. Themes are shown in a colorful card grid with rotating color schemes (purple, orange, green) and display week numbers, titles, and dates.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.2.1',
     date: '2026-01-21',
     changes: [

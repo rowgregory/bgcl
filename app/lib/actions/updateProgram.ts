@@ -40,6 +40,7 @@ export async function updateProgram(programId: string, body: IUpdateProgram) {
     })
 
     revalidateTag('Program', 'default')
+    revalidateTag('Theme', 'default')
 
     return { success: true, program }
   } catch (error) {

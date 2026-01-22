@@ -18,5 +18,7 @@ export const initialProgramFormState = {
   location: '',
   frequency: 'Weekly',
   ageGroup: '5-10',
-  additionalDetails: []
+  additionalDetails: [],
+  themes: [],
+  showThemes: false
 }

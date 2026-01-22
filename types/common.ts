@@ -10,6 +10,7 @@ export interface IHeroStudioEditor {
 
 export interface ILayout {
   children: ReactNode
+  themes?: ITheme[]
 }
 
 export interface IForm {
@@ -23,5 +24,5 @@ export interface IForm {
   isUpdating: boolean
   onClose: () => void
   handleSelectAgeGroup?: (value: string) => void
-  themes?: ITheme[]
+  themes?: { id?: string; title: string; dates: string; order: number; createdAt: Date; updatedAt: Date }[]
 }

@@ -4,7 +4,7 @@ import { AnimatePresence } from 'framer-motion'
 import { setCloseProgramDrawer } from '@/app/lib/store/slices/programSlice'
 import { createFormActions, resetForm, setIsLoading } from '@/app/lib/store/slices/formSlice'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
-import { useAppDispatch, useFormSelector, useProgramSelector } from '@/app/lib/store/store'
+import { store, useFormSelector, useProgramSelector } from '@/app/lib/store/store'
 import Backdrop from '../common/Backdrop'
 import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
 import validateProgramForm from '@/app/lib/validations/program'
@@ -15,18 +15,20 @@ import { ICreateProgram, IUpdateProgram } from '@/types/entities/program'
 import Drawer from '../common/Drawer'
 import { useRouter } from 'next/navigation'
 
-const ProgramDrawer = () => {
-  const dispatch = useAppDispatch()
+const ProgramDrawer = ({ themes }) => {
   const { programDrawer } = useProgramSelector()
   const { forms, isLoading } = useFormSelector()
   const inputs = forms.programForm.inputs
   const errors = forms.programForm.errors
-  const { handleInput, setErrors, handleToggle, handleSelectAgeGroup } = createFormActions('programForm', dispatch)
+  const { handleInput, setErrors, handleToggle, handleSelectAgeGroup } = createFormActions(
+    'programForm',
+    store.dispatch
+  )
   const router = useRouter()
 
   const onClose = () => {
-    dispatch(resetForm('programForm'))
-    dispatch(setCloseProgramDrawer())
+    store.dispatch(resetForm('programForm'))
+    store.dispatch(setCloseProgramDrawer())
   }
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
@@ -35,7 +37,7 @@ const ProgramDrawer = () => {
     if (!validateProgramForm(inputs, setErrors)) return
 
     try {
-      dispatch(setIsLoading(true))
+      store.dispatch(setIsLoading(true))
       if (inputs?.isUpdating) {
         await updateProgram(inputs?.id as string, inputs as IUpdateProgram)
       } else {
@@ -46,7 +48,7 @@ const ProgramDrawer = () => {
 
       onClose()
 
-      dispatch(
+      store.dispatch(
         showToast({
           type: 'success',
           message: `${inputs?.isUpdating ? 'Program Updated!' : 'Program Created!'}`,
@@ -58,7 +60,7 @@ const ProgramDrawer = () => {
     } catch (error) {
       const errorMessage = extractErrorMessage(error)
 
-      dispatch(
+      store.dispatch(
         showToast({
           type: 'error',
           message: `${inputs?.isUpdating ? 'Update' : 'Create'} Program Failed`,
@@ -66,7 +68,7 @@ const ProgramDrawer = () => {
         })
       )
     } finally {
-      dispatch(setIsLoading(false))
+      store.dispatch(setIsLoading(false))
     }
   }
 
@@ -90,6 +92,7 @@ const ProgramDrawer = () => {
               isUpdating={Boolean(inputs?.isUpdating)}
               onClose={onClose}
               handleSelectAgeGroup={handleSelectAgeGroup}
+              themes={themes}
             />
           </Drawer>
         </>

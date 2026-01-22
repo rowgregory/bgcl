@@ -6,7 +6,7 @@ export const getThemes = unstable_cache(
   async () => {
     try {
       const themes = await prisma.theme.findMany({
-        orderBy: { order: 'asc' }
+        orderBy: { order: 'desc' }
       })
 
       return themes
@@ -19,5 +19,5 @@ export const getThemes = unstable_cache(
     }
   },
   ['getThemes'],
-  { tags: ['Thene'] }
+  { tags: ['Theme'] }
 )

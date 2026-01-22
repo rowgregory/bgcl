@@ -22,6 +22,8 @@ export interface IProgram {
   license?: string | null
   order: number
   additionalDetails?: JsonValue
+  themes: JsonValue
+  showThemes: boolean
   createdAt: Date
   updatedAt: Date
 }

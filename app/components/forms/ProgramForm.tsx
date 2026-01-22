@@ -1,10 +1,15 @@
 import { FC, useEffect, useState } from 'react'
-import { setInputs } from '@/app/lib/store/slices/formSlice'
+import { setInputs, setIsLoading } from '@/app/lib/store/slices/formSlice'
 import { store } from '@/app/lib/store/store'
 import { IForm } from '@/types/common'
-import { Plus, Trash2, X } from 'lucide-react'
+import { Plus, Save, Trash2, X } from 'lucide-react'
 import ImageUpload from '../common/ImageUpload'
 import CustomSwitch from '../common/CustomSwitch'
+import { createTheme } from '@/app/lib/actions/createTheme'
+import { ICreateTheme } from '@/types/entities/theme'
+import { showToast } from '@/app/lib/store/slices/toastSlice'
+import { useRouter } from 'next/navigation'
+import { deleteTheme } from '@/app/lib/actions/deleteTheme'
 
 export const ProgramForm: FC<IForm> = ({
   errors,
@@ -17,7 +22,10 @@ export const ProgramForm: FC<IForm> = ({
   handleSelectAgeGroup,
   themes
 }) => {
-  const [selectedThemeIds, setSelectedThemeIds] = useState<string[]>([])
+  const router = useRouter()
+  const [selectedThemeIds, setSelectedThemeIds] = useState<string[]>(
+    inputs?.themes?.map((theme: any) => theme.id) || []
+  )
   const [newThemes, setNewThemes] = useState<{ id: string; title: string; dates: string; order: number }[]>([])
 
   const handleSelect = ({ name, value }: { name: string; value: string }) => {
@@ -36,7 +44,10 @@ export const ProgramForm: FC<IForm> = ({
     if (inputs.additionalDetails) {
       setDetails(inputs.additionalDetails)
     }
-  }, [inputs.additionalDetails])
+    if (inputs?.themes) {
+      setSelectedThemeIds(inputs.themes.map((theme: any) => theme.id))
+    }
+  }, [inputs.additionalDetails, inputs.themes])
 
   const [details, setDetails] = useState([])
 
@@ -46,7 +57,7 @@ export const ProgramForm: FC<IForm> = ({
     store.dispatch(setInputs({ formName: 'programForm', data: { additionalDetails: newDetails } }))
   }
 
-  const removeDetail = (index) => {
+  const removeDetail = (index: number) => {
     const newDetails = details.filter((_, i) => i !== index)
     setDetails(newDetails)
     store.dispatch(setInputs({ formName: 'programForm', data: { additionalDetails: newDetails } }))
@@ -61,6 +72,35 @@ export const ProgramForm: FC<IForm> = ({
     })
     setDetails(newDetails)
     store.dispatch(setInputs({ formName: 'programForm', data: { additionalDetails: newDetails } }))
+  }
+
+  const handleCreateTheme = async (e: { preventDefault: () => void }) => {
+    e.preventDefault()
+
+    try {
+      store.dispatch(setIsLoading(true))
+      await createTheme({ ...newThemes[0], programId: inputs.id } as ICreateTheme)
+      router.refresh()
+      setNewThemes([])
+      store.dispatch(showToast({ message: 'Successfully created theme!' }))
+    } catch (error) {
+      store.dispatch(showToast({ message: 'Failed to create theme', type: 'error' }))
+    } finally {
+      store.dispatch(setIsLoading(false))
+    }
+  }
+
+  const handleDeleteTheme = async (id: string) => {
+    try {
+      store.dispatch(setIsLoading(true))
+      await deleteTheme(id)
+      router.refresh()
+      store.dispatch(showToast({ message: 'Successfully deleted theme!' }))
+    } catch (error) {
+      store.dispatch(showToast({ message: 'Failed to delete theme', type: 'error' }))
+    } finally {
+      store.dispatch(setIsLoading(false))
+    }
   }
 
   return (
@@ -290,7 +330,7 @@ export const ProgramForm: FC<IForm> = ({
           </div>
 
           {/* Schedule */}
-          <div className="gap-4 mb-8">
+          <div className="mb-8 gap-4">
             <div className="mb-8 space-y-4">
               <h3 className="text-base font-semibold text-neutral-900 dark:text-white">Schedule</h3>
 
@@ -425,7 +465,7 @@ export const ProgramForm: FC<IForm> = ({
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="mb-8 space-y-4">
             <div className="flex items-center justify-between">
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                 Additional Details
@@ -514,7 +554,7 @@ export const ProgramForm: FC<IForm> = ({
           </div>
 
           {/* Weekly Themes */}
-          {/* <div className="mb-8">
+          <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-base font-semibold text-neutral-900 dark:text-white">Weekly Themes</h3>
@@ -533,7 +573,6 @@ export const ProgramForm: FC<IForm> = ({
 
             {inputs?.showThemes && (
               <div className="p-4 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg">
-    
                 {themes && themes.length > 0 && (
                   <div className="mb-6">
                     <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
@@ -543,31 +582,45 @@ export const ProgramForm: FC<IForm> = ({
                       {themes.map((theme) => (
                         <label
                           key={theme.id}
-                          className="flex items-center gap-3 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 cursor-pointer transition-colors"
+                          className="flex items-center justify-between gap-3 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 cursor-pointer transition-colors"
                         >
-                          <input
-                            type="checkbox"
-                            checked={selectedThemeIds.includes(theme.id)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedThemeIds([...selectedThemeIds, theme.id])
-                              } else {
-                                setSelectedThemeIds(selectedThemeIds.filter((id) => id !== theme.id))
-                              }
-                            }}
-                            className="w-4 h-4 text-sky-600 rounded border-neutral-300 dark:border-neutral-600 focus:ring-sky-500"
-                          />
-                          <div className="flex-1">
-                            <span className="text-sm font-medium text-neutral-900 dark:text-white">{theme.title}</span>
-                            <span className="text-xs text-neutral-500 dark:text-neutral-400 ml-2">{theme.dates}</span>
+                          <div className="flex items-center gap-x-4">
+                            <input
+                              type="checkbox"
+                              checked={selectedThemeIds.includes(theme.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedThemeIds([...selectedThemeIds, theme.id])
+                                  store.dispatch(
+                                    setInputs({ formName: 'programForm', data: { themes: [...inputs.themes, theme] } })
+                                  )
+                                } else {
+                                  setSelectedThemeIds(selectedThemeIds.filter((id) => id !== theme.id))
+                                }
+                              }}
+                              className="w-4 h-4 text-sky-600 rounded border-neutral-300 dark:border-neutral-600 focus:ring-sky-500"
+                            />
+                            <div className="flex-1">
+                              <span className="text-sm font-medium text-neutral-900 dark:text-white">
+                                {theme.title}
+                              </span>
+                              <span className="text-xs text-neutral-500 dark:text-neutral-400 ml-2">{theme.dates}</span>
+                            </div>
                           </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteTheme(theme.id)}
+                            className="p-1 bg-red-500/80 hover:bg-red-500 rounded text-white"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
                         </label>
                       ))}
                     </div>
                   </div>
                 )}
 
-   
                 {themes && themes.length > 0 && (
                   <div className="relative mb-6">
                     <div className="absolute inset-0 flex items-center">
@@ -579,7 +632,6 @@ export const ProgramForm: FC<IForm> = ({
                   </div>
                 )}
 
-            
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
@@ -599,40 +651,47 @@ export const ProgramForm: FC<IForm> = ({
                     </button>
                   </div>
 
-                  {newThemes.length > 0 ? (
-                    <div className="space-y-3">
-                      {newThemes.map((theme, index) => (
-                        <div
-                          key={theme.id}
-                          className="flex items-start gap-3 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900"
-                        >
-                          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 text-sm font-bold shrink-0">
-                            {index + 1}
-                          </div>
-                          <div className="flex-1 grid grid-cols-2 gap-3">
-                            <input
-                              type="text"
-                              placeholder="Theme title"
-                              value={theme.title}
-                              onChange={(e) => {
-                                const updated = [...newThemes]
-                                updated[index].title = e.target.value
-                                setNewThemes(updated)
-                              }}
-                              className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder-neutral-400 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                            />
-                            <input
-                              type="text"
-                              placeholder="Dates (e.g. 6/22-6/26)"
-                              value={theme.dates}
-                              onChange={(e) => {
-                                const updated = [...newThemes]
-                                updated[index].dates = e.target.value
-                                setNewThemes(updated)
-                              }}
-                              className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder-neutral-400 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                            />
-                          </div>
+                  <div className="space-y-3">
+                    {newThemes.map((theme, index) => (
+                      <div
+                        key={theme.id}
+                        className="flex items-start gap-3 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900"
+                      >
+                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 text-sm font-bold shrink-0">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1 grid grid-cols-2 gap-3">
+                          <input
+                            type="text"
+                            placeholder="Theme title"
+                            value={theme.title}
+                            onChange={(e) => {
+                              const updated = [...newThemes]
+                              updated[index].title = e.target.value
+                              setNewThemes(updated)
+                            }}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder-neutral-400 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Dates (e.g. 6/22-6/26)"
+                            value={theme.dates}
+                            onChange={(e) => {
+                              const updated = [...newThemes]
+                              updated[index].dates = e.target.value
+                              setNewThemes(updated)
+                            }}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder-neutral-400 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                          />
+                        </div>
+                        <div className="flex items-center">
+                          <button
+                            type="button"
+                            onClick={handleCreateTheme}
+                            className="p-2 text-neutral-400 hover:text-lime-500 transition-colors"
+                          >
+                            <Save className="w-4 h-4" />
+                          </button>
                           <button
                             type="button"
                             onClick={() => setNewThemes(newThemes.filter((t) => t.id !== theme.id))}
@@ -641,17 +700,13 @@ export const ProgramForm: FC<IForm> = ({
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-neutral-500 dark:text-neutral-400 text-sm">
-                      No themes added yet. Click "Add Theme" to create one.
-                    </div>
-                  )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
-          </div> */}
+          </div>
         </div>
       </div>
 
