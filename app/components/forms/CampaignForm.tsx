@@ -104,6 +104,7 @@ export const CampaignForm: FC<IForm> = ({
               className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
               placeholder=""
             />
+            {errors?.currentAmount && <p className="mt-2 text-sm text-red-400">{errors.currentAmount}</p>}
           </div>
 
           <div>
@@ -118,6 +119,7 @@ export const CampaignForm: FC<IForm> = ({
               className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
               placeholder=""
             />
+            {errors?.organizerName && <p className="mt-2 text-sm text-red-400">{errors.organizerName}</p>}
           </div>
 
           <div>
