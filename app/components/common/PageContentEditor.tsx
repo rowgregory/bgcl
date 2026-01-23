@@ -13,7 +13,7 @@ interface PageContentEditorProps {
 
 export const PageContentEditor: FC<PageContentEditorProps> = ({ initialContent, onSave }) => {
   const [content, setContent] = useState<PageContent>(initialContent ?? {}) as any
-  const [expandedSections, setExpandedSections] = useState<string[] | null>(Object.keys(initialContent ?? {}) || null)
+  const [expandedSections, setExpandedSections] = useState<string[] | null>([])
   const [editingField, setEditingField] = useState<string | null>(null)
   const [isPreviewVisible, setIsPreviewVisible] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -22,7 +22,7 @@ export const PageContentEditor: FC<PageContentEditorProps> = ({ initialContent, 
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections((prev) =>
-      prev.includes(sectionId) ? prev.filter((s) => s !== sectionId) : [...prev, sectionId]
+      prev?.includes(sectionId) ? prev.filter((s) => s !== sectionId) : [...prev, sectionId]
     )
   }
 
@@ -108,7 +108,7 @@ export const PageContentEditor: FC<PageContentEditorProps> = ({ initialContent, 
   }
 
   const renderSection = (sectionId: string, sectionData: Record<string, any>): JSX.Element => {
-    const isExpanded = expandedSections.includes(sectionId)
+    const isExpanded = expandedSections?.includes(sectionId)
 
     return (
       <div

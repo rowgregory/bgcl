@@ -258,6 +258,31 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
               </div>
             )}
 
+            {program?.externalLink && (
+              <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6">
+                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" />
+                  <h3 className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">Program Details</h3>
+                </div>
+                <a
+                  href={program?.externalLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 dark:text-sky-400 text-sky-600 hover:text-sky-700 dark:hover:text-sky-300 text-base sm:text-lg font-semibold transition-colors duration-200 underline underline-offset-4"
+                >
+                  View PDF Document
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </a>
+              </div>
+            )}
+
             {/* Contact Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

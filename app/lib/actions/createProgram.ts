@@ -33,6 +33,7 @@ export async function createProgram(data: ICreateProgram) {
     if (data.showThemes) createData.showThemes = data.showThemes
     if (data.themes) createData.themes = data.themes
     if (data.descriptions) createData.descriptions = data.descriptions
+    if (data.externalLink) createData.externalLink = data.externalLink
 
     const program = await prisma.program.create({
       data: createData

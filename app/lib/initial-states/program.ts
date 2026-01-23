@@ -21,5 +21,6 @@ export const initialProgramFormState = {
   ageGroup: '5-10',
   additionalDetails: [],
   themes: [],
-  showThemes: false
+  showThemes: false,
+  externalLink: ''
 }

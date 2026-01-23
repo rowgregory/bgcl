@@ -25,6 +25,7 @@ export interface IProgram {
   additionalDetails?: JsonValue
   themes: JsonValue
   showThemes: boolean
+  externalLink?: string
   createdAt: Date
   updatedAt: Date
 }

@@ -41,7 +41,7 @@ const HomeClient = ({ initialPageData, programs, youth }: HomeClientProps) => {
 
         <YouthOfTheYearSection pageContent={pageContent} youth={youth} />
 
-        <FacilitySection />
+        <FacilitySection pageContent={pageContent} />
       </div>
     </>
   )

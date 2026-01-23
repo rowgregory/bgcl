@@ -17,7 +17,7 @@ const HomePage = ({ data }) => {
     }
   }
 
-  return <PageContentEditor initialContent={data.content} onSave={handleSave} />
+  return <PageContentEditor initialContent={data?.content} onSave={handleSave} />
 }
 
 export default HomePage

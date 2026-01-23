@@ -26,7 +26,7 @@ const images = [
   }
 ]
 
-export default function FacilityShowcase() {
+export default function FacilitySection({ pageContent }) {
   const [currentImage, setCurrentImage] = useState(0)
 
   const nextImage = () => {
@@ -49,12 +49,12 @@ export default function FacilityShowcase() {
             style={{ originX: 0 }}
           />
           <p className="text-xs sm:text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-wider">
-            Our Transformation
+            {pageContent?.facility?.subheading}
           </p>
         </div>
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 mb-4 sm:mb-6">
-          Building
-          <span className="font-light dark:text-neutral-400 text-neutral-600"> the Future</span>
+          {pageContent?.facility?.heading1}
+          <span className="font-light dark:text-neutral-400 text-neutral-600">{pageContent?.facility?.heading2}</span>
         </h2>
         <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 items-start">
           {/* Text Content */}
@@ -63,30 +63,17 @@ export default function FacilityShowcase() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none">
-              <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
-                The Boys & Girls Club of Lynn recently underwent a{' '}
-                <span className="font-semibold text-sky-600 dark:text-sky-400">
-                  $6.4 million dollar renovation in 2020
-                </span>
-                . With the support of our many donors, we were able to complete a big portion of our building
-                renovation. We are proud to offer the following new additions to our facility: Dance Studio, STEAM Lab,
-                Planet Fitness Gym, Teen Center, Gaming Room, as well as a Technology Center.
+            <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none space-y-4 sm:space-y-6">
+              <p className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
+                {pageContent?.facility?.paragraph1}
               </p>
 
-              <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
-                The club also has a new and improved lobby area, Board Room, multiple office space for our staff,
-                bathrooms, registration areas and more! Our Kids Club and Afterschool program spaces have been fully
-                renovated as well! At our Kids Club, we offer 3 dedicated classrooms, a huge open play and activity area
-                along with a tower garden for our little members to explore and delve into the art of gardening.
+              <p className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
+                {pageContent?.facility?.paragraph2}
               </p>
 
-              <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6 sm:mb-8 text-sm sm:text-base">
-                Our newly enhanced After School Drop In Center is equipped with a dedicated Teen area as well as the
-                aforementioned STEAM Lab, Gym, Dance Studio, Gaming area and also a Tower Garden for our older members
-                to test out their gardening skills! Over the next 3-4 years, we will be heading into Phase 2 of our
-                renovations. We are looking forward to offering a Culinary program and a Rooftop garden to name a few of
-                our proposed upgrades.
+              <p className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
+                {pageContent?.facility?.paragraph3}
               </p>
               <MotionLink
                 href="/contact?subject=tour"

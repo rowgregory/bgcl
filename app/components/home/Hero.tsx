@@ -34,23 +34,23 @@ export const Hero = ({ initialPageData }) => {
               {initialPageData?.hero?.heading}
             </h1>
 
-            <p className="text-lg text-centertext-white leading-relaxed">{initialPageData?.hero.bodyText}</p>
+            <p className="text-lg text-centertext-white leading-relaxed">{initialPageData?.hero?.bodyText}</p>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-y-3 sm:gap-x-3">
               <a
-                href="https://parentportal.bgcl.org/"
+                href={initialPageData?.hero?.button1Link}
                 target="_blank"
                 className="inline-flex items-center rounded-lg bg-sky-600 dark:border-sky-600 dark:hover:bg-sky-700 dark:text-white border-sky-600 hover:border-sky-600 hover:bg-sky-700 text-white border-2 px-8 py-3 font-bold transition-all duration-300 dark:hover:shadow-lg dark:hover:shadow-sky-500/50 hover:shadow-lg hover:shadow-sky-600/50 group"
               >
-                Parent Portal
+                {initialPageData?.hero?.button1Text}
               </a>
               {initialPageData?.hero && (
                 <Link
-                  href={initialPageData?.hero.buttonLink}
+                  href={initialPageData?.hero?.button2Link}
                   className="inline-flex items-center gap-2 rounded-lg dark:border-sky-600 dark:hover:bg-sky-700 dark:text-white border-white hover:border-sky-600 hover:bg-sky-700 text-white border-2 px-8 py-3 font-bold transition-all duration-300 dark:hover:shadow-lg dark:hover:shadow-sky-500/50 hover:shadow-lg hover:shadow-sky-600/50 group"
                 >
                   <Heart className="text-white w-4 h-4" />
-                  {initialPageData?.hero.buttonText}
+                  {initialPageData?.hero?.button2Text}
                 </Link>
               )}
             </div>
