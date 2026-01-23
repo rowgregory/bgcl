@@ -7,8 +7,20 @@ import Image from 'next/image'
 import Link from 'next/link'
 import FacilityClosings from '../FacilityClosings'
 import { IClosing } from '@/types/entities/closing'
+import { useMemo } from 'react'
 
 const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closings: IClosing[] }) => {
+  // Randomly select a gradient on component mount (stays consistent during the session)
+  const gradient = useMemo(() => {
+    const gradients = [
+      'from-sky-500 to-cyan-600',
+      'from-purple-500 to-indigo-600',
+      'from-green-500 to-emerald-600',
+      'from-orange-500 to-orange-600'
+    ]
+    return gradients[Math.floor(Math.random() * gradients.length)]
+  }, [])
+
   if (!program) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -26,30 +38,41 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
 
   return (
     <div className="dark:bg-neutral-950 bg-white min-h-screen pb-28 md:pb-0">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden py-24 sm:py-32 md:py-40 bg-linear-to-r from-sky-600 to-sky-600">
-        {/* Background Image */}
-        {program?.heroImage && (
-          <Image src={program?.heroImage} alt={program?.name} fill priority className="object-cover object-top" />
-        )}
+      <div className="bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 py-3 sm:py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
+          <Link
+            href="/programs"
+            className="inline-flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-sky-600 dark:hover:text-sky-400 transition-colors text-sm sm:text-base font-medium"
+          >
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            Back to Programs
+          </Link>
+        </div>
+      </div>
 
-        {/* Dark overlay */}
-        <div className="absolute inset-0 dark:bg-black/60 bg-black/40" />
+      {/* Compact Hero Section with Gradient */}
+      <div className="relative overflow-hidden py-12 sm:py-16 md:py-20">
+        {/* Gradient Background */}
+        <div className={`absolute inset-0 bg-linear-to-r ${gradient}`} />
+
+        {/* Optional Pattern Overlay */}
+        <div className="absolute inset-0 opacity-10">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+            }}
+          />
+        </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-4 sm:space-y-6"
+            transition={{ duration: 0.6 }}
+            className="space-y-3 sm:space-y-4"
           >
-            <Link
-              href="/programs"
-              className="inline-flex items-center gap-2 text-white hover:opacity-80 transition-opacity text-sm sm:text-base"
-            >
-              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-              Back to Programs
-            </Link>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-2xl">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-lg">
               {program?.name}
             </h1>
           </motion.div>
@@ -195,6 +218,18 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
                     </p>
                   </div>
                 </div>
+              </motion.div>
+            )}
+
+            {/* Image Two */}
+            {program?.imageTwo && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="relative w-full aspect-square rounded-lg overflow-hidden shadow-lg"
+              >
+                <Image src={program?.imageTwo} alt={program?.name || 'Program image'} fill className="object-cover" />
               </motion.div>
             )}
 

@@ -9,7 +9,6 @@ export async function createProgram(data: ICreateProgram) {
   try {
     const createData: any = {
       name: data.name,
-      description1: data.description1,
       frequency: 'Daily'
     }
 
@@ -22,12 +21,8 @@ export async function createProgram(data: ICreateProgram) {
     if (data.datesAvailable) createData.datesAvailable = data.datesAvailable
     if (data.license) createData.license = data.license
     if (data.dropOffStart) createData.dropOffStart = data.dropOffStart
-    if (data.description2) createData.description2 = data.description2
-    if (data.description3) createData.description3 = data.description3
-    if (data.description4) createData.description4 = data.description4
-    if (data.description5) createData.description5 = data.description5
     if (data.image) createData.image = data.image
-    if (data.heroImage) createData.heroImage = data.heroImage
+    if (data.imageTwo) createData.imageTwo = data.imageTwo
     if (data.showAgeGroup) createData.showAgeGroup = data.showAgeGroup
     if (data.additionalDetails) createData.additionalDetails = data.additionalDetails
     if (data.showThemes) createData.showThemes = data.showThemes

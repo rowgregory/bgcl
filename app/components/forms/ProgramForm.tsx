@@ -275,6 +275,7 @@ export const ProgramForm: FC<IForm> = ({
                 )}
               </div>
 
+              {/* Location */}
               <div className="col-start-1 mb-8">
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                   Location
@@ -288,6 +289,8 @@ export const ProgramForm: FC<IForm> = ({
                   className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                 />
               </div>
+
+              {/* External Link */}
               <div className="mb-8">
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                   External Link
@@ -322,7 +325,7 @@ export const ProgramForm: FC<IForm> = ({
                 formName="programForm"
                 inputs={inputs}
                 isLoading={isLoading}
-                fieldName="heroImage"
+                fieldName="imageTwo"
               />
             </div>
           </div>

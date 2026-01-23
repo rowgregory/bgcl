@@ -3,14 +3,9 @@ import { JsonValue } from '@prisma/client/runtime/library'
 export interface IProgram {
   id: string
   name: string
-  description1: string
-  description2?: string
-  description3?: string
-  description4?: string
-  description5?: string
   descriptions: JsonValue
   image?: string
-  heroImage?: string
+  imageTwo?: string
   ageGroup?: string
   showAgeGroup?: boolean
   location?: string
@@ -28,6 +23,14 @@ export interface IProgram {
   externalLink?: string
   createdAt: Date
   updatedAt: Date
+
+  // Deprecated
+  description1: string
+  description2?: string
+  description3?: string
+  description4?: string
+  description5?: string
+  heroImage?: string
 }
 
 export interface ICreateProgram {
