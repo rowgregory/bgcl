@@ -7,20 +7,20 @@ import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { store, useFormSelector, useUserSelector } from '@/app/lib/store/store'
 import Backdrop from '../common/Backdrop'
 import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
-import { createAdminUser } from '@/app/lib/actions/createAdminUser'
-import { User } from '@prisma/client'
 import UserForm from '../forms/UserForm'
 import validateUserForm from '@/app/lib/validations/user'
-import { updateAdminUser } from '@/app/lib/actions/updateAdminUser'
+import { updateUser } from '@/app/lib/actions/updateUser'
 import Drawer from '../common/Drawer'
 import { useRouter } from 'next/navigation'
+import { IUser } from '@/types/entities/user'
+import { createUser } from '@/app/lib/actions/createUser'
 
 const UserDrawer = () => {
   const { userDrawer } = useUserSelector()
   const { forms, isLoading } = useFormSelector()
   const inputs = forms.userForm.inputs
   const errors = forms.userForm.errors
-  const { handleInput, setErrors, handleToggle, handleSelect } = createFormActions('userForm', store.dispatch)
+  const { handleInput, setErrors, handleToggle } = createFormActions('userForm', store.dispatch)
   const router = useRouter()
 
   const onClose = () => {
@@ -36,9 +36,9 @@ const UserDrawer = () => {
     try {
       store.dispatch(setIsLoading(true))
       if (inputs?.isUpdating) {
-        await updateAdminUser(inputs?.id, inputs)
+        await updateUser(inputs?.id, inputs)
       } else {
-        await createAdminUser(inputs as User)
+        await createUser(inputs as IUser)
       }
 
       router.refresh()
@@ -84,7 +84,6 @@ const UserDrawer = () => {
               handleInput={handleInput}
               handleSubmit={handleSubmit}
               handleToggle={handleToggle}
-              handleSelect={handleSelect}
               inputs={inputs}
               isLoading={isLoading}
               isUpdating={inputs?.isUpdating}

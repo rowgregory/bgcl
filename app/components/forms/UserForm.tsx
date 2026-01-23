@@ -2,26 +2,12 @@
 
 import { IForm } from '@/types/common'
 import { motion } from 'framer-motion'
+import { UserCog } from 'lucide-react'
 
 const inputStyles =
   'w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors'
 
-export default function UserForm({
-  errors,
-  handleInput,
-  handleSubmit,
-  handleSelect,
-  inputs,
-  isLoading,
-  isUpdating,
-  onClose
-}: IForm) {
-  const handleRoleSelect = (value: string) => {
-    if (handleSelect) {
-      handleSelect({ name: 'role', value })
-    }
-  }
-
+export default function UserForm({ errors, handleInput, handleSubmit, inputs, isLoading, isUpdating, onClose }: IForm) {
   return (
     <div className="w-full mx-auto pb-40">
       {/* Header */}
@@ -112,25 +98,27 @@ export default function UserForm({
 
           {/* Role */}
           <div>
-            <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-4">
-              Admin Access
+            <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+              <UserCog className="w-4 h-4 inline mr-2" />
+              User Role
             </label>
-            <button
-              type="button"
-              onClick={() => handleRoleSelect(inputs?.role === 'ADMIN' ? 'SUPPORTER' : 'ADMIN')}
+            <select
+              name="role"
+              value={inputs?.role || 'SUPPORTER'}
+              onChange={handleInput}
               disabled={isLoading}
-              className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${
-                inputs?.role === 'ADMIN' ? 'dark:bg-cyan-600 bg-sky-600' : 'dark:bg-neutral-700 bg-neutral-300'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+              className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 rounded-lg text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span
-                className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
-                  inputs?.role === 'ADMIN' ? 'translate-x-7' : 'translate-x-1'
-                }`}
-              />
-            </button>
+              <option value="SUPPORTER">Supporter (No Access)</option>
+              <option value="PROGRAM">Program Staff (Partial Access)</option>
+              <option value="ADMIN">Admin (Full Access)</option>
+            </select>
             <p className="text-xs dark:text-neutral-500 text-neutral-600 mt-2">
-              {inputs?.role === 'ADMIN' ? 'Full access to backend' : 'No admin access'}
+              {inputs?.role === 'ADMIN' || inputs?.role === 'SUPERUSER'
+                ? 'Full access to backend'
+                : inputs?.role === 'PROGRAM'
+                  ? 'Access to program management'
+                  : 'No admin access'}
             </p>
           </div>
         </div>

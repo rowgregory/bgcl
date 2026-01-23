@@ -126,6 +126,15 @@ const dropDownActionItems: IActionItems[] = [
         formName: 'userForm',
         initial: { role: 'ADMIN' },
         isUnlocked: true
+      },
+      {
+        action: 'activate-program',
+        label: 'Create Program Staff',
+        icon: Crown,
+        open: setOpenUserDrawer,
+        formName: 'userForm',
+        initial: { role: 'PROGRAM' },
+        isUnlocked: true
       }
     ],
     isUnlocked: true

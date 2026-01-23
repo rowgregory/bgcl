@@ -41,7 +41,7 @@ export default function CapitalCampaignTab() {
     }
   }, [isDismissed])
 
-  if (isDismissed || pathname.includes('/admin')) return null
+  if (isDismissed || ['/admin/', '/program/'].some((link) => pathname.includes(link))) return null
 
   return (
     <>

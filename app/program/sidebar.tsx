@@ -2,20 +2,20 @@ import { motion } from 'framer-motion'
 import { LogOut, X } from 'lucide-react'
 import Link from 'next/link'
 import { store } from '@/app/lib/store/store'
-import { adminNavigationLinkData } from '../lib/constants/adminNavLinks'
 import { usePathname, useRouter } from 'next/navigation'
-import { setCloseAdminSidebar } from '../lib/store/slices/dashboardSlice'
+import { setCloseProgramSidebar } from '../lib/store/slices/dashboardSlice'
 import { setOpenHeroStudio } from '../lib/store/slices/appSlice'
 import { useSession } from 'next-auth/react'
 import { signOut } from 'next-auth/react'
 import { setIsLoading } from '../lib/store/slices/formSlice'
 import { showToast } from '../lib/store/slices/toastSlice'
+import { programNavigationLinkData } from '../lib/constants/programNavLinks'
 
-const AdminSidebar = () => {
+const ProgramSidebar = () => {
   const pathname = usePathname()
   const session = useSession()
   const router = useRouter()
-  const onClose = () => store.dispatch(setCloseAdminSidebar())
+  const onClose = () => store.dispatch(setCloseProgramSidebar())
 
   const handleLogout = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -65,7 +65,7 @@ const AdminSidebar = () => {
 
       {/* Navigation - Scrollable */}
       <nav className="space-y-6 px-6 py-6 flex-1 overflow-y-auto">
-        {adminNavigationLinkData(pathname).map((group) => (
+        {programNavigationLinkData(pathname).map((group) => (
           <div key={group.title}>
             <h3 className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase mb-3 px-3">
               {group.title}
@@ -151,4 +151,4 @@ const AdminSidebar = () => {
   )
 }
 
-export default AdminSidebar
+export default ProgramSidebar

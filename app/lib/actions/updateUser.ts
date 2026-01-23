@@ -1,16 +1,15 @@
-// app/actions/updateAdminUser.ts
 'use server'
 
 import prisma from '@/prisma/client'
-import { unstable_cache } from 'next/cache'
+import { revalidateTag } from 'next/cache'
 
-async function updateAdminUserFn(
+export async function updateUser(
   userId: string,
   data: {
     email?: string
     firstName?: string
     lastName?: string
-    role?: 'ADMIN' | 'STAFF' | 'SUPPORTER' | 'SUPERUSER' | 'VOLUNTEER'
+    role?: 'ADMIN' | 'STAFF' | 'SUPPORTER' | 'SUPERUSER' | 'VOLUNTEER' | 'PROGRAM'
     phone?: string
     position?: string
     department?: string
@@ -51,6 +50,8 @@ async function updateAdminUserFn(
       }
     })
 
+    revalidateTag('User', 'default')
+
     return {
       success: true,
       user: updatedUser,
@@ -64,26 +65,3 @@ async function updateAdminUserFn(
     }
   }
 }
-
-// Cached version - invalidate with revalidateTag('admin-users')
-export const updateAdminUser = unstable_cache(
-  async (
-    userId: string,
-    data: {
-      email?: string
-      firstName?: string
-      lastName?: string
-      role?: 'ADMIN' | 'STAFF' | 'SUPPORTER' | 'SUPERUSER' | 'VOLUNTEER'
-      phone?: string
-      position?: string
-      department?: string
-    }
-  ) => {
-    return updateAdminUserFn(userId, data)
-  },
-  ['updateAdminUser'],
-  {
-    tags: ['User'],
-    revalidate: 60 // Cache for 60 seconds
-  }
-)

@@ -12,15 +12,15 @@ import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { deleteUser } from '@/app/lib/actions/deleteUser'
 import { useSession } from 'next-auth/react'
 
-const TABS = ['All', 'Super User', 'Admin', 'Staff', 'Supporters'] as const
+const TABS = ['All', 'Super User', 'Admin', 'Program', 'Supporters'] as const
 type TabType = (typeof TABS)[number]
 
 const TAB_TO_TYPE = {
   All: 'All' as const,
   'Super User': 'SUPERUSER' as const,
   Admin: 'ADMIN' as const,
-  Supporters: 'SUPPORTER' as const,
-  Parents: 'PARENT' as const
+  Program: 'PROGRAM' as const,
+  Supporters: 'SUPPORTER' as const
 }
 
 export const CommandPodClient = ({ users }) => {
@@ -60,10 +60,10 @@ export const CommandPodClient = ({ users }) => {
   })
 
   const typeColors = {
-    SUPERUSER: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300',
-    ADMIN: 'bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-700 dark:text-fuchsia-300',
-    SUPPORTER: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300',
-    PARENT: ''
+    SUPERUSER: 'bg-lime-100 dark:bg-lime-900/30 text-lime-700 dark:text-lime-300',
+    ADMIN: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300',
+    SUPPORTER: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300',
+    PROGRAM: 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300'
   }
 
   const handleEditUser = async (user: IUser) => {
@@ -128,6 +128,12 @@ export const CommandPodClient = ({ users }) => {
               </span>
             </div>
             <div className="flex items-center gap-2">
+              <span className="text-sm text-neutral-500 dark:text-neutral-400">Program:</span>
+              <span className="text-sm font-semibold text-neutral-900 dark:text-white">
+                {users?.filter((user: IUser) => user.role === 'PROGRAM').length || 0}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
               <span className="text-sm text-neutral-500 dark:text-neutral-400">Supporters:</span>
               <span className="text-sm font-semibold text-neutral-900 dark:text-white">
                 {users?.filter((user: IUser) => user.role === 'SUPPORTER').length || 0}
@@ -164,9 +170,11 @@ export const CommandPodClient = ({ users }) => {
                             ? 'Super User'
                             : user?.role === 'ADMIN'
                               ? 'Admin'
-                              : user?.role === 'SUPPORTER'
-                                ? 'Supporter'
-                                : 'Parent'}
+                              : user?.role === 'PROGRAM'
+                                ? 'Program'
+                                : user?.role === 'SUPPORTER'
+                                  ? 'Supporter'
+                                  : 'Parent'}
                         </span>
                       </div>
                       <p className="text-xs text-neutral-500 dark:text-neutral-500">

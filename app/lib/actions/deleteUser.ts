@@ -1,9 +1,9 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag, unstable_cache } from 'next/cache'
+import { revalidateTag } from 'next/cache'
 
-async function deleteUserFn(id: string) {
+export async function deleteUser(id: string) {
   try {
     if (!id) {
       throw new Error('User ID is required')
@@ -35,14 +35,3 @@ async function deleteUserFn(id: string) {
     }
   }
 }
-
-export const deleteUser = unstable_cache(
-  async (id: string) => {
-    return deleteUserFn(id)
-  },
-  ['deleteUser'],
-  {
-    tags: ['User'],
-    revalidate: 60
-  }
-)

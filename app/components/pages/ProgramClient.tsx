@@ -3,58 +3,30 @@
 import { FC } from 'react'
 import getCurrentPageId from '../../lib/utils/getCurrentPageId'
 import { motion } from 'framer-motion'
-import HeroStudio from '../hero-studio/HeroStudio'
-import EventDrawer from '../drawers/EventDrawer'
-import TicketDrawer from '../drawers/TicketDrawer'
 import { store, useDashboardSelector } from '../../lib/store/store'
-import ProgramDrawer from '../drawers/ProgramDrawer'
 import { ILayout } from '@/types/common'
-import UserDrawer from '../drawers/UserDrawer'
-import { setCloseAdminSidebar, setToggleAdminSidebar } from '../../lib/store/slices/dashboardSlice'
+import { setCloseProgramSidebar, setToggleProgramSidebar } from '../../lib/store/slices/dashboardSlice'
 import { adminNavigationLinkData } from '../../lib/constants/adminNavLinks'
 import { usePathname } from 'next/navigation'
-import AdminSidebar from '../../admin/sidebar'
+import ProgramSidebar from '../../program/sidebar'
 import { Menu } from 'lucide-react'
-import ActionMenuButton from '../buttons/ActionMenuButton'
 import MobileMenuButton from '../buttons/MobileMenuButton'
 import LogoutButton from '../buttons/LogoutButton'
-import ActionMenuDropdown from '../navigation/ActionMenuDropdown'
-import dropdownActionItems from '../../lib/constants/dropdownActionItems'
-import TeamMemberDrawer from '../drawers/TeamMemberDrawer'
-import NewsDrawer from '../drawers/NewsDrawer'
-import NewsletterDrawer from '../drawers/NewsletterDrawer'
-import ClubResourceDrawer from '../drawers/ClubResourceDrawer'
-import CampaignDrawer from '../drawers/CampaignDrawer'
-import ClosingDrawer from '../drawers/ClosingDrawer'
 
-const AdminLayout: FC<ILayout> = ({ children, themes }) => {
+const ProgramClient: FC<ILayout> = ({ children }) => {
   const pathname = usePathname()
   const navigationGroups = adminNavigationLinkData(pathname)
   const selectedPage = getCurrentPageId(pathname, navigationGroups)
-  const { adminSidebar } = useDashboardSelector()
-  const onClose = () => store.dispatch(setCloseAdminSidebar())
+  const { programSidebar } = useDashboardSelector()
+  const onClose = () => store.dispatch(setCloseProgramSidebar())
 
   return (
     <>
-      <HeroStudio />
-      <EventDrawer />
-      <TicketDrawer />
-      <ProgramDrawer themes={themes} />
-      <UserDrawer />
-      <TeamMemberDrawer />
-      <NewsDrawer />
-      <NewsletterDrawer />
-      <ClubResourceDrawer />
-      <CampaignDrawer />
-      <ClosingDrawer />
-      <ActionMenuDropdown actionItems={dropdownActionItems} />
-
       {/* Desktop Fixed Header */}
       <header className="hidden lg:block fixed top-0 left-64 right-0 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-b py-2.5 px-6 z-30 h-15.25">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-bold dark:text-neutral-100 text-neutral-900 capitalize">{selectedPage}</h1>
           <div className="flex items-center space-x-2 md:space-x-4 h-full">
-            <ActionMenuButton />
             <MobileMenuButton />
             <LogoutButton />
           </div>
@@ -63,7 +35,7 @@ const AdminLayout: FC<ILayout> = ({ children, themes }) => {
 
       <div className="min-h-screen dark:bg-neutral-950 bg-white flex">
         {/* Mobile Sidebar Overlay */}
-        {adminSidebar && (
+        {programSidebar && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -74,17 +46,17 @@ const AdminLayout: FC<ILayout> = ({ children, themes }) => {
         )}
         {/* Sidebar - Hidden on mobile, visible on desktop */}
         <div className="hidden lg:block fixed left-0 top-0 h-screen w-64 z-20">
-          <AdminSidebar />
+          <ProgramSidebar />
         </div>
 
         {/* Mobile Sidebar */}
         <motion.div
           initial={false}
-          animate={{ x: adminSidebar ? 0 : '-100%' }}
+          animate={{ x: programSidebar ? 0 : '-100%' }}
           transition={{ duration: 0.3 }}
           className="fixed lg:hidden inset-y-0 left-0 z-50 w-64"
         >
-          <AdminSidebar />
+          <ProgramSidebar />
         </motion.div>
 
         {/* Main Content */}
@@ -94,7 +66,7 @@ const AdminLayout: FC<ILayout> = ({ children, themes }) => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => store.dispatch(setToggleAdminSidebar(adminSidebar))}
+              onClick={() => store.dispatch(setToggleProgramSidebar(programSidebar))}
               className="p-2 dark:hover:bg-neutral-950 hover:bg-neutral-100 rounded-lg transition-colors"
             >
               <Menu className="w-6 h-6 dark:text-white text-neutral-900" />
@@ -111,4 +83,4 @@ const AdminLayout: FC<ILayout> = ({ children, themes }) => {
   )
 }
 
-export default AdminLayout
+export default ProgramClient

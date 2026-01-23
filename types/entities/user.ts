@@ -6,7 +6,8 @@ export enum Role {
   VOLUNTEER = 'VOLUNTEER',
   ADMIN = 'ADMIN',
   SUPERUSER = 'SUPERUSER',
-  SUPPORTER = 'SUPPORTER'
+  SUPPORTER = 'SUPPORTER',
+  PROGRAM = 'PROGRAM'
 }
 
 export enum StaffStatus {

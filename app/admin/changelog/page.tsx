@@ -21,6 +21,68 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.4.0',
+    date: '2026-01-23',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Program Staff Role & Access Control',
+        description:
+          'Introduced new PROGRAM role for program staff with dedicated access control. Program staff have their own isolated dashboard at /program/airlock and cannot access admin or supporter areas. Implemented complete middleware protection to enforce role-based routing.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Program Staff User Management',
+        description:
+          'Added "Position Staff" command to admin interface for creating program staff users. Program staff can be assigned through the Command Pod with proper role selection dropdown that includes SUPPORTER, PROGRAM, and ADMIN options.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Role-Based Authentication Routing',
+        description:
+          'Enhanced authentication middleware to redirect users to appropriate dashboards based on role: ADMIN/SUPERUSER to /admin/star-map/home, PROGRAM to /program/airlock, and SUPPORTER to /supporter/overview. Prevents cross-role navigation with automatic redirects.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'User Role Selection Interface',
+        description:
+          'Replaced toggle switch with comprehensive dropdown select for user role assignment. Admins can now choose from all role types with clear descriptions and visual permission indicators showing access levels for each role.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Comprehensive Job Application Display',
+        description:
+          "Expanded job application confirmation page to display all submitted data including driver's license information, professional references, resume details, and certifications. Added sections for license verification, traffic violations, reference contacts, and agreement confirmations.",
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Enhanced SEO Metadata',
+        description:
+          'Implemented comprehensive SEO optimization including JSON-LD structured data, Open Graph tags, geo-targeting for Lynn, MA, and 20+ local keywords. Added Google Analytics integration and site verification for improved search visibility.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Dynamic Sitemap Generation',
+        description:
+          'Created automated sitemap generation that pulls dynamic content from database including programs, events, and campaigns. Sitemap automatically updates with proper change frequencies and priorities for optimal search engine crawling.',
+        impact: 'low'
+      },
+      {
+        type: 'improvement',
+        title: 'Progressive Web App Support',
+        description:
+          'Added site.webmanifest file for PWA functionality including app icons, theme colors, and display modes. Enables installation on mobile devices and provides native app-like experience for users.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.3.2',
     date: '2026-01-23',
     changes: [

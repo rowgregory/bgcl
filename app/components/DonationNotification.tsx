@@ -65,7 +65,7 @@ export default function DonationNotification() {
     }
   }, [])
 
-  if (pathname.includes('/admin')) return null
+  if (['/admin/', '/program/'].some((link) => pathname.includes(link))) return null
 
   function getTimeAgo(timestamp: Date): string {
     const seconds = Math.floor((Date.now() - timestamp.getTime()) / 1000)

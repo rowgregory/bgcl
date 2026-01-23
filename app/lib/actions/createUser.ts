@@ -3,11 +3,11 @@
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
 
-export async function createAdminUser(data: {
+export async function createUser(data: {
   email: string
   firstName: string
   lastName: string
-  role: 'VOLUNTEER' | 'ADMIN' | 'STAFF' | 'SUPPORTER' | 'SUPERUSER'
+  role: 'VOLUNTEER' | 'ADMIN' | 'STAFF' | 'SUPPORTER' | 'SUPERUSER' | 'PROGRAM'
   phone?: string
   position?: string
   department?: string

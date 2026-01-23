@@ -91,13 +91,6 @@ export async function getAllUsers(params?: {
       prisma.user.count({ where })
     ])
 
-    await createLog('info', 'Users fetched by admin', {
-      // adminId: userId,
-      count: users.length,
-      totalCount,
-      filters: params
-    })
-
     return {
       success: true,
       data: {

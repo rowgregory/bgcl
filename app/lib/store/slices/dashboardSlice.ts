@@ -4,7 +4,8 @@ interface DashboardState {
   loading: boolean
   error: string | null
   actionMenu: boolean
-  sidebar: boolean
+  adminSidebar: boolean
+  programSidebar: boolean
   itemAction: string | null
 }
 
@@ -12,7 +13,8 @@ const initialState: DashboardState = {
   loading: true,
   error: null,
   actionMenu: false,
-  sidebar: false,
+  adminSidebar: false,
+  programSidebar: false,
   itemAction: null
 }
 export const dashboardSlice = createSlice({
@@ -25,14 +27,23 @@ export const dashboardSlice = createSlice({
     setCloseActionMenu: (state) => {
       state.actionMenu = false
     },
-    setOpenSidebar: (state) => {
-      state.sidebar = true
+    setOpenAdminSidebar: (state) => {
+      state.adminSidebar = true
     },
-    setCloseSidebar: (state) => {
-      state.sidebar = false
+    setCloseAdminSidebar: (state) => {
+      state.adminSidebar = false
     },
     setToggleAdminSidebar: (state, { payload }) => {
-      state.sidebar = !payload
+      state.adminSidebar = !payload
+    },
+    setOpenProgramSidebar: (state) => {
+      state.programSidebar = true
+    },
+    setCloseProgramSidebar: (state) => {
+      state.programSidebar = false
+    },
+    setToggleProgramSidebar: (state, { payload }) => {
+      state.programSidebar = !payload
     },
     setOpenActionDropdownSubmenu: (state, { payload }) => {
       state.itemAction = payload
@@ -46,10 +57,13 @@ export const dashboardSlice = createSlice({
 export const {
   setOpenActionMenu,
   setCloseActionMenu,
-  setCloseSidebar,
-  setOpenSidebar,
+  setCloseAdminSidebar,
+  setOpenAdminSidebar,
   setToggleAdminSidebar,
   setCloseActionDropdownSubmenu,
-  setOpenActionDropdownSubmenu
+  setOpenActionDropdownSubmenu,
+  setOpenProgramSidebar,
+  setCloseProgramSidebar,
+  setToggleProgramSidebar
 } = dashboardSlice.actions
 export const dashboardReducer = dashboardSlice.reducer
