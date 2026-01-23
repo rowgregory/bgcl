@@ -128,7 +128,7 @@ export default function FacilitySection({ pageContent }) {
                 </button>
 
                 {/* Caption */}
-                <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 bg-black/70 dark:bg-black/80 backdrop-blur-sm text-white px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full max-w-[90%]">
+                {/* <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 bg-black/70 dark:bg-black/80 backdrop-blur-sm text-white px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full max-w-[90%]">
                   <motion.p
                     key={currentImage}
                     initial={{ opacity: 0, y: 10 }}
@@ -137,7 +137,7 @@ export default function FacilitySection({ pageContent }) {
                   >
                     {images[currentImage].caption}
                   </motion.p>
-                </div>
+                </div> */}
               </div>
 
               {/* Dots Indicator */}
