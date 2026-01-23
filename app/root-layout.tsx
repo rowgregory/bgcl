@@ -16,6 +16,7 @@ import VolunteerDrawer from './components/drawers/VolunteerDrawer'
 import FloatingDonateButton from './components/FloatingButton'
 import CapitalCampaignTab from './components/CapitalCampaignTab'
 import RegistrationModal from './components/modals/RegistrationModal'
+import MobileNavigationDrawer from './components/MobileNavigationDrawer'
 
 export default function RootLayoutWrapper({ children, programs, pageContent }) {
   const pathname = usePathname()
@@ -34,6 +35,7 @@ export default function RootLayoutWrapper({ children, programs, pageContent }) {
         <FloatingDonateButton />
         <CapitalCampaignTab />
         <RegistrationModal pageContent={pageContent?.content} />
+        <MobileNavigationDrawer />
         {show && <Header />}
         {children}
         {show && <Footer />}

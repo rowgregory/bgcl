@@ -82,12 +82,9 @@ function DonationForm({ campaignName, campaigns }) {
 
   useEffect(() => {
     if (campaignName) {
-      console.log('CAMPAIGN NAME: ', campaignName)
       setCampaign(campaignName)
     }
   }, [campaignName])
-
-  console.log('CAMPAIGN: ', campaign)
 
   const getAmount = () => {
     if (donationType === 'once') {

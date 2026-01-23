@@ -1,10 +1,10 @@
 import Link from 'next/link'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Menu, X } from 'lucide-react'
 import Picture from '../common/Picture'
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { store, useApplicationSelector } from '@/app/lib/store/store'
-import { setOpenLanguageDropdown } from '@/app/lib/store/slices/appSlice'
+import { setOpenLanguageDropdown, setOpenMobileNavigation } from '@/app/lib/store/slices/appSlice'
 import { motion } from 'framer-motion'
 import { useIsAtTop } from '@/app/lib/hooks/useIsAtTop'
 
@@ -14,6 +14,7 @@ export default function Header() {
   const router = useRouter()
   const { languageDropdown, selectedLanguage } = useApplicationSelector()
   const isAtTop = useIsAtTop()
+  const { mobileNavigation } = useApplicationSelector()
 
   const handleLaunchApp = () => {
     if (status === 'authenticated') {
@@ -45,7 +46,10 @@ export default function Header() {
               </motion.div>
             </button>
             <div className="dark:text-neutral-400 text-neutral-600 text-sm">
-              Phone: <span className="dark:text-white text-neutral-900">781 593 1772</span>{' '}
+              Phone:{' '}
+              <a href="tel:+17815931772" className="dark:text-white text-neutral-900 hover:underline">
+                781 593 1772
+              </a>
             </div>
           </div>
 
@@ -61,17 +65,25 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Main Header */}
       <motion.div
         className={`${pathname === '/' ? 'max-w-334' : ''} w-full mx-auto sticky top-0 dark:border-neutral-700 dark:bg-neutral-950 border-neutral-200 bg-white z-50 px-4 sm:px-6 lg:px-8`}
         animate={{
           paddingTop: isAtTop ? '18px' : '10px',
-          paddingBottom: isAtTop ? '18px' : '10px'
+          paddingBottom: isAtTop ? '10px' : '10px'
         }}
         transition={{ duration: 0.3 }}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/">
+          {/* Burger Menu Button */}
+          <button
+            onClick={() => store.dispatch(setOpenMobileNavigation())}
+            className="block xl:hidden dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900 transition-colors"
+            aria-label="Toggle menu"
+          >
+            {mobileNavigation ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+
+          <Link href="/" className="">
             <motion.div
               className="flex items-center space-x-3"
               initial={{ scale: 1 }}
@@ -145,7 +157,7 @@ export default function Header() {
             <a
               href="https://parentportal.bgcl.org/"
               target="_blank"
-              className="dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 dark:text-black text-white font-bold px-8 py-3 rounded-sm transition-colors shadow-lg"
+              className="dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 dark:text-black text-white font-bold px-4 sm:px-8 py-2 sm:py-3 rounded-sm transition-colors shadow-lg text-sm sm:text-base"
             >
               Parent Portal
             </a>

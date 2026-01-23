@@ -7,7 +7,7 @@ export const viewport: Viewport = {
   ],
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1, // Changed from 5 to 1
-  userScalable: false, // Changed from true to false
+  // Remove maximumScale entirely
+  // Remove userScalable entirely
   viewportFit: 'cover'
 }
