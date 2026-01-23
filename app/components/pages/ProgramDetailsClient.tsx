@@ -236,7 +236,9 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
             {/* CTA Button */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
               <a href="https://parentportal.bgcl.org/" target="_blank" rel="noopener noreferrer" className="block">
-                <button className="w-full px-6 py-3 sm:py-4 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg transition-colors text-sm sm:text-base">
+                <button
+                  className={`w-full px-6 py-3 sm:py-4 bg-linear-to-r ${gradient} text-white font-bold rounded-lg transition-colors text-sm sm:text-base`}
+                >
                   Enroll Now
                 </button>
                 <p className="text-[10px] sm:text-xs dark:text-neutral-500 text-neutral-500 mt-2">

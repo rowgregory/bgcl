@@ -547,8 +547,20 @@ export default function CapitalCampaign() {
       <BrochureDisplayer
         images={[
           '/images/capital_campaign_brochure-1.jpg',
-          'images/capital_campaign_brochure-2.jpg',
-          '/images/capital_campaign_brochure-3.jpg'
+          '/images/capital_campaign_brochure-2.jpg',
+          '/images/capital_campaign_brochure-3.jpg',
+          '/images/capital_campaign_brochure-4.jpg',
+          '/images/capital_campaign_brochure-5.jpg',
+          '/images/capital_campaign_brochure-6.jpg',
+          '/images/capital_campaign_brochure-7.jpg',
+          '/images/capital_campaign_brochure-8.jpg',
+          '/images/capital_campaign_brochure-9.jpg',
+          '/images/capital_campaign_brochure-10.jpg',
+          '/images/capital_campaign_brochure-11.jpg',
+          '/images/capital_campaign_brochure-12.jpg',
+          '/images/capital_campaign_brochure-13.jpg',
+          '/images/capital_campaign_brochure-14.jpg',
+          '/images/capital_campaign_brochure-15.jpg'
         ]}
       />
 

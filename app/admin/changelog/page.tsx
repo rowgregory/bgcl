@@ -21,6 +21,54 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.3.2',
+    date: '2026-01-23',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Dynamic Program Hero Gradients',
+        description:
+          'Implemented randomly selected gradient backgrounds for program pages. Each page load selects from 4 vibrant color combinations (sky, purple, green, orange) providing visual variety while maintaining brand consistency.',
+        impact: 'low'
+      },
+      {
+        type: 'improvement',
+        title: 'Compact Hero Section Redesign',
+        description:
+          'Redesigned program hero sections with reduced height, added thin navigation header, and removed hero images in favor of colorful gradients with subtle pattern overlays for improved performance and modern aesthetic.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Program Image Gallery Enhancement',
+        description:
+          'Added imageTwo field support in program detail pages, displayed in right column sidebar between schedule information and enrollment CTA for enhanced visual content.',
+        impact: 'low'
+      },
+      {
+        type: 'feature',
+        title: 'External Program Documents',
+        description:
+          'Added external link support for program pages, allowing links to Google Drive PDFs and other external resources with dedicated UI section including FileText icon and external link indicator.',
+        impact: 'low'
+      },
+      {
+        type: 'improvement',
+        title: 'Contact Form Subject Pre-population',
+        description:
+          'Enhanced contact form to pre-populate subject field from URL parameters (e.g., ?subject=tour) while maintaining user ability to change selection after initial load.',
+        impact: 'low'
+      },
+      {
+        type: 'feature',
+        title: 'New Facility Showcase Component',
+        description:
+          'Created modern, responsive facility showcase component with dark/light mode support, interactive image carousel, feature cards, and stats section. Optimized for screens down to 320px width using neutral and sky color palettes.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.3.1',
     date: '2026-01-22',
     changes: [
