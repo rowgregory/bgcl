@@ -46,7 +46,7 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
               <Picture src={youth?.image} alt={youth?.name} priority={false} className="object-cover w-full h-full" />
 
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
             </div>
 
             {/* Name Overlay */}
@@ -54,7 +54,7 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 bg-gradient-to-t from-black/80 to-transparent"
+              className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 bg-linear-to-t from-black/80 to-transparent"
             >
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">{youth?.name}</h1>
             </motion.div>
@@ -142,7 +142,7 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.7 }}
-          className="mt-12 sm:mt-16 md:mt-20 pt-12 sm:pt-16 border-t dark:border-neutral-800 border-neutral-200"
+          className="mt-12 sm:mt-16 md:mt-20 py-12 sm:py-16 border-t border-b dark:border-neutral-800 border-neutral-200"
         >
           <div className="space-y-6 sm:space-y-8">
             <div>

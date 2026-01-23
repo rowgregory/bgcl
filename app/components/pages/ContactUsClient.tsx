@@ -3,10 +3,13 @@
 import FacilityClosings from '@/app/components/FacilityClosings'
 import ContactForm from '@/app/components/forms/ContactForm'
 import { setOpenVolunteerDrawer } from '@/app/lib/store/slices/appSlice'
+import { setInputs } from '@/app/lib/store/slices/formSlice'
 import { store } from '@/app/lib/store/store'
 import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, Clock, Heart, ArrowRight, Briefcase } from 'lucide-react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
 
 const contactInfo = [
   {
@@ -36,6 +39,15 @@ const hours = [
 ]
 
 export default function ContactUsClient({ closings }) {
+  const searchParams = useSearchParams()
+  const subjectParam = searchParams.get('subject')
+
+  useEffect(() => {
+    if (subjectParam) {
+      store.dispatch(setInputs({ formName: 'contactForm', data: { subject: subjectParam } }))
+    }
+  }, [subjectParam])
+
   return (
     <div className="dark:bg-neutral-950 bg-white">
       {/* Hero Section */}

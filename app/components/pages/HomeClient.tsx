@@ -7,6 +7,7 @@ import { HistorySection } from '../home/HistorySection'
 import MissionSection from '../home/MissionSection'
 import YouthOfTheYearSection from '../home/YouthOfTheYearSection'
 import { ITeamMember } from '@/types/entities/team-member'
+import FacilitySection from '../home/FacilitySection'
 
 interface HomeClientProps {
   initialPageData?: any
@@ -39,6 +40,8 @@ const HomeClient = ({ initialPageData, programs, youth }: HomeClientProps) => {
         <HistorySection pageContent={pageContent} />
 
         <YouthOfTheYearSection pageContent={pageContent} youth={youth} />
+
+        <FacilitySection />
       </div>
     </>
   )

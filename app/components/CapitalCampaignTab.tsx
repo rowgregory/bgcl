@@ -46,7 +46,7 @@ export default function CapitalCampaignTab() {
   return (
     <>
       {/* Desktop Version - Side Tab */}
-      <div className="fixed right-0 top-1/2 -translate-y-1/2 z-40 hidden">
+      <div className="fixed right-0 top-1/2 -translate-y-1/2 z-40 hidden md:block">
         <AnimatePresence>
           <motion.div
             initial={{ x: 100 }}
@@ -190,7 +190,7 @@ export default function CapitalCampaignTab() {
                   </div>
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wide opacity-90">Capital Campaign</p>
-                    <p className="text-sm font-bold">$17.1M / $20M Goal</p>
+                    <p className="text-sm font-bold">$17.1M / $24.5M Goal</p>
                   </div>
                 </div>
 
