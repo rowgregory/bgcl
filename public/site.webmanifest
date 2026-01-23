@@ -1,0 +1,22 @@
+{
+  "name": "Boys & Girls Club of Lynn",
+  "short_name": "BGCL",
+  "description": "The Boys & Girls Club of Lynn provides safe, enriching programs for youth in Lynn, Massachusetts.",
+  "icons": [
+    {
+      "src": "/images/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#0ea5e9",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}
