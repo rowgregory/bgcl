@@ -4,6 +4,7 @@ import { IProgram } from '@/types/entities/program'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import Picture from '../common/Picture'
 
 const ProgramsClient = ({ programs }: { programs: IProgram[] }) => {
   return (
@@ -52,8 +53,9 @@ const ProgramsClient = ({ programs }: { programs: IProgram[] }) => {
                         {/* Card Container */}
                         <div className="relative dark:bg-neutral-900 dark:border-neutral-800 dark:hover:border-sky-500/50 bg-white border-neutral-200 border hover:border-sky-500/50 rounded-lg overflow-hidden transition-all h-full flex flex-col">
                           {/* Image/Icon Area */}
-                          <div className="relative h-48 sm:h-56 md:h-60 overflow-hidden bg-cover bg-center">
-                            <img
+                          <div className="relative h-96 overflow-hidden bg-cover bg-center">
+                            <Picture
+                              priority={true}
                               src={program.image ?? '/images/vertical-logo-light.png'}
                               alt={program.name}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
