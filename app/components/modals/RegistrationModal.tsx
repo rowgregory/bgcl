@@ -136,7 +136,7 @@ export default function RegistrationModal({ pageContent }) {
                           ease: 'easeInOut'
                         }}
                       >
-                        <ArrowRight className="w-5 h-5" />
+                        <ArrowRight className="hidden sm:block w-5 h-5" />
                       </motion.div>
                     </motion.a>
                     <motion.button

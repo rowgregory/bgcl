@@ -99,7 +99,7 @@ export const HistorySection = ({ pageContent }) => {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               whileHover={{ scale: 1.02 }}
             >
-              <div className="relative h-48 sm:h-56 md:h-64 lg:h-80 overflow-hidden">
+              <div className="relative h-80 overflow-hidden">
                 <img
                   src={image.src}
                   alt={image.alt}
@@ -133,7 +133,7 @@ export const HistorySection = ({ pageContent }) => {
 
                 {/* Label on image */}
                 <motion.div
-                  className="absolute bottom-0 left-0 right-0 dark:bg-gradient-to-t dark:from-black/90 bg-gradient-to-t from-neutral-900/90 p-3 sm:p-4"
+                  className="absolute bottom-0 left-0 right-0 dark:bg-linear-to-t dark:from-black/90 bg-linear-to-t from-neutral-900/90 p-3 sm:p-4"
                   initial={{ y: 20, opacity: 0 }}
                   whileHover={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.3 }}

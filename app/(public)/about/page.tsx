@@ -87,7 +87,7 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="relative w-full aspect-square rounded-lg sm:rounded-xl overflow-hidden dark:border dark:border-neutral-800 border border-neutral-200"
+            className="relative w-full aspect-3/4 rounded-lg sm:rounded-xl overflow-hidden dark:border dark:border-neutral-800 border border-neutral-200"
           >
             <Picture src="/images/img-1.jpg" alt="Our Mission" priority={true} className="object-cover w-full h-full" />
           </motion.div>

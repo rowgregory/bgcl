@@ -66,7 +66,7 @@ export default function CampaignsClient({ campaigns }: { campaigns: ICampaign[] 
                   >
                     {/* Image */}
                     {campaign.image && (
-                      <div className="relative h-48 sm:h-60 md:h-125 overflow-hidden dark:bg-neutral-800 bg-neutral-100">
+                      <div className="relative h-96 md:h-125 overflow-hidden dark:bg-neutral-800 bg-neutral-100">
                         <img
                           src={campaign.image}
                           alt={campaign.name}
