@@ -27,7 +27,7 @@ export const Hero = ({ initialPageData }) => {
         <div className="max-w-6xl w-full gap-12 items-center">
           {/* Right Column - Text */}
           <div
-            className="flex flex-col justify-center items-center space-y-6 animate-fade-in"
+            className="flex flex-col justify-start items-start sm:justify-center sm:items-center space-y-6 animate-fade-in"
             style={{ animationDelay: '0.2s' }}
           >
             <h1 className="text-5xl md:text-6xl lg:text-7xl leading-tight uppercase tracking-tighttext-white font-bold">
@@ -36,7 +36,7 @@ export const Hero = ({ initialPageData }) => {
 
             <p className="text-lg text-centertext-white leading-relaxed">{initialPageData?.hero.bodyText}</p>
 
-            <div className="flex items-center gap-x-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-y-3 sm:gap-x-3">
               <a
                 href="https://parentportal.bgcl.org/"
                 target="_blank"

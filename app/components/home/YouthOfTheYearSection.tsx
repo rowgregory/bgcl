@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowLeft, Heart } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import Picture from '../common/Picture'
 import { store } from '@/app/lib/store/store'
@@ -11,19 +11,19 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
   return (
     <div className="dark:bg-neutral-950 bg-white">
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-12 md:py-16">
-        <div className="flex items-center gap-3 mb-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
+        <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
           <motion.div
-            className="h-px w-8 dark:bg-sky-500 bg-sky-600"
+            className="h-px w-6 sm:w-8 dark:bg-sky-500 bg-sky-600"
             animate={{ scaleX: [0, 1, 1] }}
             transition={{ duration: 0.8 }}
             style={{ originX: 0 }}
           />
-          <p className="text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-wider">
+          <p className="text-xs sm:text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-wider">
             {pageContent?.youth?.subheading}
           </p>
         </div>
-        <h2 className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900 mb-6">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 mb-4 sm:mb-6">
           {pageContent?.youth?.heading1}{' '}
           <span className="font-light dark:text-neutral-400 text-neutral-600">{pageContent?.youth?.heading2}</span>
         </h2>
@@ -32,7 +32,7 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-start"
         >
           {/* Image Section */}
           <motion.div
@@ -41,12 +41,12 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="relative"
           >
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+            <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl">
               {/* Image */}
               <Picture src={youth?.image} alt={youth?.name} priority={false} className="object-cover w-full h-full" />
 
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             </div>
 
             {/* Name Overlay */}
@@ -54,9 +54,9 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="absolute bottom-0 left-0 right-0 p-6 bg-linear-to-t from-black/80 to-transparent"
+              className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 bg-gradient-to-t from-black/80 to-transparent"
             >
-              <h1 className="text-3xl md:text-4xl font-black text-white">{youth?.name}</h1>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">{youth?.name}</h1>
             </motion.div>
           </motion.div>
 
@@ -65,23 +65,23 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-8"
+            className="space-y-6 sm:space-y-8"
           >
             {/* Title */}
             <div className="space-y-2">
-              <h2 className="text-3xl md:text-4xl font-black dark:text-white text-neutral-900">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900">
                 {new Date().getFullYear() - 1} Youth of the Year
               </h2>
             </div>
 
             {/* Content */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Paragraph 1 */}
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed"
+                className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed"
               >
                 {youth?.paragraph1}
               </motion.p>
@@ -91,7 +91,7 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed"
+                className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed"
               >
                 {youth?.paragraph2}
               </motion.p>
@@ -102,7 +102,7 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.6, delay: 0.5 }}
-                  className="text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed"
+                  className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed"
                 >
                   {youth?.paragraph3}
                 </motion.p>
@@ -114,21 +114,21 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="pt-6 border-t dark:border-neutral-800 border-neutral-200"
+              className="pt-4 sm:pt-6 border-t dark:border-neutral-800 border-neutral-200"
             >
-              <p className="dark:text-neutral-400 text-neutral-600 text-sm mb-4">
+              <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm mb-3 sm:mb-4">
                 Want to support youth like {youth?.name?.split(' ')[0]}?
               </p>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Link
                   href="/donate"
-                  className="flex-1 px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors text-center"
+                  className="flex-1 px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors text-center text-sm sm:text-base"
                 >
                   Donate
                 </Link>
                 <button
                   onClick={() => store.dispatch(setOpenVolunteerDrawer())}
-                  className="flex-1 px-6 py-3 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold rounded-lg transition-colors text-center"
+                  className="flex-1 px-6 py-3 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold rounded-lg transition-colors text-center text-sm sm:text-base"
                 >
                   Volunteer
                 </button>
@@ -142,18 +142,20 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.7 }}
-          className="mt-20 pt-16 border-t dark:border-neutral-800 border-neutral-200"
+          className="mt-12 sm:mt-16 md:mt-20 pt-12 sm:pt-16 border-t dark:border-neutral-800 border-neutral-200"
         >
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             <div>
-              <h3 className="text-2xl font-black dark:text-white text-neutral-900 mb-2">More Youth Stories</h3>
-              <p className="dark:text-neutral-400 text-neutral-600">
+              <h3 className="text-xl sm:text-2xl font-black dark:text-white text-neutral-900 mb-2">
+                More Youth Stories
+              </h3>
+              <p className="dark:text-neutral-400 text-neutral-600 text-sm sm:text-base">
                 Discover other incredible young people in our community
               </p>
             </div>
             <Link
               href="/stories"
-              className="inline-flex items-center gap-2 px-6 py-3 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold rounded-lg transition-colors text-sm sm:text-base"
             >
               View All Stories
               <ArrowLeft className="w-4 h-4 rotate-180" />

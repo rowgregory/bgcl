@@ -16,19 +16,19 @@ export default function FloatingDonateButton() {
     <>
       {/* Floating Button */}
       <motion.div
-        className="fixed bottom-8 right-8 z-50"
+        className="hidden md:fixed bottom-24 right-4 md:right-8 z-50"
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
       >
-        {/* Floating Text Label - Now Above and Centered */}
+        {/* Floating Text Label - Hidden on Mobile */}
         <motion.div
           animate={{
             y: isHovered ? -10 : 0,
             opacity: isHovered ? 1 : 0
           }}
           transition={{ duration: 0.3 }}
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 pointer-events-none"
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 pointer-events-none hidden md:block"
         >
           <div className="dark:bg-neutral-900 bg-white dark:border-neutral-800 border-neutral-200 rounded-lg px-4 py-2 border shadow-xl">
             <p className="dark:text-white text-neutral-900 font-bold text-sm text-center whitespace-nowrap">
@@ -56,8 +56,8 @@ export default function FloatingDonateButton() {
             boxShadow: isHovered
               ? [
                   '0 0 0 0px rgba(2, 132, 199, 0.7)',
-                  '0 0 0 20px rgba(2, 132, 199, 0.3)',
-                  '0 0 0 40px rgba(2, 132, 199, 0)'
+                  '0 0 0 15px rgba(2, 132, 199, 0.3)',
+                  '0 0 0 30px rgba(2, 132, 199, 0)'
                 ]
               : '0 0 0 0px rgba(2, 132, 199, 0)'
           }}
@@ -69,12 +69,12 @@ export default function FloatingDonateButton() {
           href="/donate"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="relative w-16 h-16 rounded-full shadow-2xl flex items-center justify-center group cursor-pointer overflow-hidden"
+          className="relative w-12 h-12 md:w-14 md:h-14 rounded-full shadow-xl flex items-center justify-center group cursor-pointer overflow-hidden"
           style={{
             background: 'linear-gradient(135deg, #0284c7 0%, #7c3aed 50%, #22c55e 100%)'
           }}
           whileHover={{
-            scale: 1.15,
+            scale: 1.1,
             rotate: 360
           }}
           whileTap={{ scale: 0.95 }}
@@ -96,7 +96,7 @@ export default function FloatingDonateButton() {
             }}
             transition={{ duration: 0.2 }}
           >
-            <Heart className="w-7 h-7 text-white fill-white" />
+            <Heart className="w-5 h-5 md:w-6 md:h-6 text-white fill-white" />
           </motion.div>
         </MotionLink>
       </motion.div>

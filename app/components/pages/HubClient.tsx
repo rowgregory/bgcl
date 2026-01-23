@@ -65,22 +65,22 @@ export default function HubClient({
   return (
     <div className="dark:bg-neutral-950 bg-white">
       {/* Hero Section */}
-      <section className="py-20 px-6 md:px-12">
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           <motion.div
-            className="space-y-6 mb-16"
+            className="space-y-4 sm:space-y-6 mb-12 sm:mb-16"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="space-y-4">
-              <p className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
+            <div className="space-y-3 sm:space-y-4">
+              <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
                 Resources & Updates
               </p>
-              <h1 className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
                 The Hub
               </h1>
-              <p className="text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
                 Your one-stop destination for club resources, newsletters, and important information.
               </p>
             </div>
@@ -93,13 +93,13 @@ export default function HubClient({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="dark:bg-neutral-900/50 bg-white dark:border-neutral-800 border-neutral-200 rounded-2xl p-8 border mb-16"
+            className="dark:bg-neutral-900/50 bg-white dark:border-neutral-800 border-neutral-200 rounded-xl sm:rounded-2xl p-6 sm:p-8 border mb-12 sm:mb-16"
           >
-            <div className="flex items-center gap-4 mb-6">
-              <Mail className="w-8 h-8 dark:text-sky-400 text-sky-600 shrink-0" />
-              <h3 className="text-2xl font-bold dark:text-white text-neutral-900">Stay Updated</h3>
+            <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <Mail className="w-6 h-6 sm:w-8 sm:h-8 dark:text-sky-400 text-sky-600 shrink-0" />
+              <h3 className="text-xl sm:text-2xl font-bold dark:text-white text-neutral-900">Stay Updated</h3>
             </div>
-            <p className="dark:text-neutral-300 text-neutral-700 mb-8 max-w-2xl">
+            <p className="dark:text-neutral-300 text-neutral-700 mb-6 sm:mb-8 max-w-2xl text-sm sm:text-base">
               Subscribe to our newsletter and never miss important updates, program announcements, and community news.
             </p>
 
@@ -111,10 +111,14 @@ export default function HubClient({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.5, ease: 'easeOut' }}
-                  className="mb-8 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3"
+                  className="mb-6 sm:mb-8 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-3 sm:p-4 flex items-center gap-2 sm:gap-3"
                 >
                   <div className="shrink-0">
-                    <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <svg
+                      className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
                       <path
                         fillRule="evenodd"
                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -123,8 +127,8 @@ export default function HubClient({
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-red-800 dark:text-red-200">Error!</p>
-                    <p className="text-xs text-red-700 dark:text-red-300">
+                    <p className="text-xs sm:text-sm font-semibold text-red-800 dark:text-red-200">Error!</p>
+                    <p className="text-[10px] sm:text-xs text-red-700 dark:text-red-300">
                       Please enter a{!email ? 'n' : ' valid'} email
                     </p>
                   </div>
@@ -139,10 +143,14 @@ export default function HubClient({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.5, ease: 'easeOut' }}
-                  className="mb-8 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-center gap-3"
+                  className="mb-6 sm:mb-8 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3 sm:p-4 flex items-center gap-2 sm:gap-3"
                 >
                   <div className="shrink-0">
-                    <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <svg
+                      className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
                       <path
                         fillRule="evenodd"
                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -151,19 +159,23 @@ export default function HubClient({
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-green-800 dark:text-green-200">Thanks for subscribing!</p>
-                    <p className="text-xs text-green-700 dark:text-green-300">Check your email for updates</p>
+                    <p className="text-xs sm:text-sm font-semibold text-green-800 dark:text-green-200">
+                      Thanks for subscribing!
+                    </p>
+                    <p className="text-[10px] sm:text-xs text-green-700 dark:text-green-300">
+                      Check your email for updates
+                    </p>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
             {/* Membership Type */}
-            <div className="space-y-4 mb-8">
-              <p className="text-sm font-medium dark:text-neutral-300 text-neutral-700">
+            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+              <p className="text-xs sm:text-sm font-medium dark:text-neutral-300 text-neutral-700">
                 Please specify if you are the following:
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
@@ -173,7 +185,7 @@ export default function HubClient({
                     className="w-4 h-4 accent-sky-600"
                     onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
                   />
-                  <span className="text-sm dark:text-neutral-300 text-neutral-700">Member/Parent</span>
+                  <span className="text-xs sm:text-sm dark:text-neutral-300 text-neutral-700">Member/Parent</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -184,7 +196,7 @@ export default function HubClient({
                     className="w-4 h-4 accent-sky-600"
                     onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
                   />
-                  <span className="text-sm dark:text-neutral-300 text-neutral-700">Non-Member</span>
+                  <span className="text-xs sm:text-sm dark:text-neutral-300 text-neutral-700">Non-Member</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -195,25 +207,27 @@ export default function HubClient({
                     className="w-4 h-4 accent-sky-600"
                     onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
                   />
-                  <span className="text-sm dark:text-neutral-300 text-neutral-700">Donor</span>
+                  <span className="text-xs sm:text-sm dark:text-neutral-300 text-neutral-700">Donor</span>
                 </label>
               </div>
             </div>
 
             {/* Email Input and Subscribe */}
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 max-w-md">
               <input
                 onChange={(e) => setEmail(e.target.value)}
                 type="text"
                 value={email}
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-50 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
+                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-50 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
               />
               <button
                 type="submit"
-                className="gap-x-2 flex items-center px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors whitespace-nowrap cursor-pointer"
+                className="gap-x-2 flex items-center justify-center px-6 py-2.5 sm:py-3 text-sm sm:text-base dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors whitespace-nowrap cursor-pointer"
               >
-                {isLoading && <div className="w-4 h-4 rounded-full border-2 border-white border-t-0 animate-spin" />}{' '}
+                {isLoading && (
+                  <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border-2 border-white border-t-0 animate-spin" />
+                )}{' '}
                 Subscribe
               </button>
             </div>

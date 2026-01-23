@@ -13,22 +13,22 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
   return (
     <div className="dark:bg-neutral-950 bg-white">
       {/* Hero Section */}
-      <section className="py-20 px-6 md:px-12 dark:bg-linear-to-br dark:from-neutral-900 dark:to-neutral-950 bg-linear-to-br from-neutral-50 to-white">
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           <motion.div
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="space-y-4">
-              <p className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
+            <div className="space-y-3 sm:space-y-4">
+              <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
                 News, Updates & Recognition
               </p>
-              <h1 className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
                 Stories
               </h1>
-              <p className="text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
                 Stay informed about what's happening at the Boys & Girls Club of Lynn. Read our latest news, celebrate
                 our honorees, and discover the impact we're making in our community.
               </p>
@@ -38,7 +38,7 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
       </section>
 
       {/* News Section */}
-      <section className="py-20 px-6 md:px-12">
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -47,8 +47,10 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
             transition={{ duration: 0.6 }}
             className="mb-16"
           >
-            <h2 className="text-4xl font-black dark:text-white text-neutral-900 mb-4">Latest News & Updates</h2>
-            <p className="text-lg dark:text-neutral-400 text-neutral-600">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4">
+              Latest News & Updates
+            </h2>
+            <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">
               Stay connected with the latest news, events, and announcements from our community.
             </p>
           </motion.div>
@@ -116,23 +118,25 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
       </section>
 
       {/* 2025 Honorees Section */}
-      <section className="py-20 px-6 md:px-12 dark:bg-neutral-900/50 bg-neutral-50">
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 dark:bg-neutral-900/50 bg-neutral-50">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="mb-16"
+            className="mb-12 sm:mb-16"
           >
-            <h2 className="text-4xl font-black dark:text-white text-neutral-900 mb-4">2025 Award Winners</h2>
-            <p className="text-lg dark:text-neutral-400 text-neutral-600">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4">
+              2025 Award Winners
+            </h2>
+            <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">
               Celebrating this year's award-winning honorees and their outstanding contributions.
             </p>
           </motion.div>
 
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8"
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -143,10 +147,10 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
                 <motion.div
                   key={index}
                   variants={itemVariants}
-                  className="group dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 border rounded-2xl overflow-hidden hover:border-sky-500/50 transition-colors"
+                  className="group dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 border rounded-xl sm:rounded-2xl overflow-hidden hover:border-sky-500/50 transition-colors"
                 >
                   {/* Image */}
-                  <div className="relative h-96 overflow-hidden dark:bg-neutral-800 bg-neutral-100">
+                  <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden dark:bg-neutral-800 bg-neutral-100">
                     <Picture
                       src={item.image}
                       alt={item.name}
@@ -156,16 +160,18 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
                   </div>
 
                   {/* Content */}
-                  <div className="p-6 space-y-4">
-                    <div className="flex items-start gap-3">
-                      <div className="dark:bg-sky-600/20 bg-sky-600/10 p-2 rounded-lg">
-                        <Trophy className="w-5 h-5 dark:text-sky-400 text-sky-600" />
+                  <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                    <div className="flex items-start gap-2.5 sm:gap-3">
+                      <div className="dark:bg-sky-600/20 bg-sky-600/10 p-1.5 sm:p-2 rounded-lg">
+                        <Trophy className="w-4 h-4 sm:w-5 sm:h-5 dark:text-sky-400 text-sky-600" />
                       </div>
-                      <div className="flex-1">
-                        <p className="text-xs font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-widest mb-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] sm:text-xs font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-widest mb-1.5 sm:mb-2">
                           {item.title}
                         </p>
-                        <h3 className="text-2xl font-bold dark:text-white text-neutral-900">{item.name}</h3>
+                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold dark:text-white text-neutral-900 break-words">
+                          {item.name}
+                        </h3>
                       </div>
                     </div>
                   </div>
@@ -186,8 +192,10 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
             transition={{ duration: 0.6 }}
             className="mb-12"
           >
-            <h2 className="text-4xl font-black dark:text-white text-neutral-900 mb-4">Hall of Fame Inductees</h2>
-            <p className="text-lg dark:text-neutral-400 text-neutral-600">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4">
+              Hall of Fame Inductees
+            </h2>
+            <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">
               Honoring the distinguished individuals who have shaped our organization's legacy.
             </p>
           </motion.div>
@@ -224,10 +232,10 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
             transition={{ duration: 0.6 }}
             className="mb-12"
           >
-            <h2 className="text-4xl font-black dark:text-white text-neutral-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4">
               Helping Hands Business of the Year
             </h2>
-            <p className="text-lg dark:text-neutral-400 text-neutral-600">
+            <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">
               Celebrating local businesses that have generously supported our mission and community.
             </p>
           </motion.div>
@@ -263,10 +271,10 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
             transition={{ duration: 0.6 }}
             className="mb-12"
           >
-            <h2 className="text-4xl font-black dark:text-white text-neutral-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4">
               Commitment to Youth Recipients
             </h2>
-            <p className="text-lg dark:text-neutral-400 text-neutral-600">
+            <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">
               Recognizing individuals who have demonstrated exceptional commitment to youth development.
             </p>
           </motion.div>

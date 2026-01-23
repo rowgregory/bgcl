@@ -55,7 +55,7 @@ export function Footer() {
   }
 
   return (
-    <footer className="dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-t">
+    <footer className="dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-t pb-40 md:pb-0">
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-12 md:py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
@@ -303,11 +303,12 @@ export function Footer() {
               href="https://sqysh.io?lead_source=bgcl"
               target="_blank"
               rel="noopener noreferrer"
-              className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-700 transition-colors font-semibold inline-flex items-center gap-1 group"
+              className="sqysh-gradient font-semibold inline-flex items-center gap-1 group relative"
             >
-              Sqysh
+              <span className="">Sqysh</span>
+
               <svg
-                className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-purple-500"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

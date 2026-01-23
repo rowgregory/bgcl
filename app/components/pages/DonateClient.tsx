@@ -16,7 +16,7 @@ export default function DonateClient({ campaigns }: { campaigns: ICampaign[] }) 
   const campaignName = searchParams.get('campaignName')
 
   return (
-    <div className="">
+    <div className="pb-20 sm:pb-0">
       {/* Header */}
       <div className="px-4 sm:px-6 md:px-12 py-8 sm:py-10 dark:border-neutral-800 border-b border-neutral-200">
         <div className="max-w-4xl mx-auto">
@@ -91,8 +91,10 @@ export default function DonateClient({ campaigns }: { campaigns: ICampaign[] }) 
 
           {/* Right Column - Donation Form */}
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="lg:col-span-2">
-            <div className="dark:bg-zinc-900 dark:border-zinc-800 bg-neutral-100 border-neutral-200 rounded-lg border p-8 shadow-sm">
-              <h2 className="text-2xl font-bold dark:text-white text-neutral-900 mb-6">Make Your Donation</h2>
+            <div className="dark:bg-zinc-900 dark:border-zinc-800 bg-neutral-100 border-neutral-200 rounded-lg border p-4 sm:p-6 md:p-8 shadow-sm">
+              <h2 className="text-xl sm:text-2xl font-bold dark:text-white text-neutral-900 mb-4 sm:mb-6">
+                Make Your Donation
+              </h2>
               <Elements stripe={stripePromise}>
                 <DonationForm campaignName={campaignName} campaigns={campaigns} />
               </Elements>

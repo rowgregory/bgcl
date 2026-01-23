@@ -90,22 +90,22 @@ export const TeamClient = ({ team }) => {
 
   return (
     <div className="dark:bg-neutral-950 bg-white">
-      <section className="py-20 px-6 md:px-12">
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           <motion.div
-            className="space-y-6 mb-16"
+            className="space-y-4 sm:space-y-6 mb-12 sm:mb-16"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="space-y-4">
-              <p className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
+            <div className="space-y-3 sm:space-y-4">
+              <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
                 MEET OUR TEAM
               </p>
-              <h1 className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
                 {activeTab === 'board' ? 'Board of Directors' : 'Our Team'}
               </h1>
-              <p className="text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
                 {activeTab === 'board'
                   ? 'Our Board of Directors provides strategic guidance and governance to ensure we continue our mission of transforming youth lives'
                   : 'Dedicated professionals committed to transforming lives and building brighter futures for our youth.'}
@@ -114,7 +114,7 @@ export const TeamClient = ({ team }) => {
           </motion.div>
 
           {/* Main Tabs - Left Aligned with Border Bottom */}
-          <div className="flex mb-12 dark:border-neutral-800 border-neutral-200 border-b">
+          <div className="flex mb-8 sm:mb-12 dark:border-neutral-800 border-neutral-200 border-b overflow-x-auto">
             <TabButton active={activeTab === 'board'} onClick={() => setActiveTab('board')}>
               BOARD OF DIRECTORS
             </TabButton>
@@ -128,10 +128,10 @@ export const TeamClient = ({ team }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-12"
+              className="space-y-8 sm:space-y-12"
             >
               {/* Board Sub Tabs */}
-              <div className="flex dark:border-neutral-800 border-neutral-200 border-b">
+              <div className="flex dark:border-neutral-800 border-neutral-200 border-b overflow-x-auto">
                 <TabButton active={boardSubTab === 'officers'} onClick={() => setBoardSubTab('officers')}>
                   OFFICERS
                 </TabButton>
@@ -151,8 +151,10 @@ export const TeamClient = ({ team }) => {
               >
                 {boardSubTab === 'officers' && (
                   <div>
-                    <h2 className="text-3xl font-black dark:text-white text-neutral-900 mb-12 uppercase">Officers</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <h2 className="text-2xl sm:text-3xl font-black dark:text-white text-neutral-900 mb-8 sm:mb-12 uppercase">
+                      Officers
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                       {team?.boardMembers.officers.map((member) => (
                         <TeamMemberCard key={member.id} member={member} />
                       ))}
@@ -162,8 +164,10 @@ export const TeamClient = ({ team }) => {
 
                 {boardSubTab === 'directors' && (
                   <div>
-                    <h2 className="text-3xl font-black dark:text-white text-neutral-900 mb-12 uppercase">Directors</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <h2 className="text-2xl sm:text-3xl font-black dark:text-white text-neutral-900 mb-8 sm:mb-12 uppercase">
+                      Directors
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                       {team?.boardMembers.directors.map((member) => (
                         <TeamMemberCard key={member.id} member={member} />
                       ))}
@@ -173,10 +177,10 @@ export const TeamClient = ({ team }) => {
 
                 {boardSubTab === 'corporators' && (
                   <div>
-                    <h2 className="text-3xl font-black dark:text-white text-neutral-900 mb-12 uppercase">
+                    <h2 className="text-2xl sm:text-3xl font-black dark:text-white text-neutral-900 mb-8 sm:mb-12 uppercase">
                       Corporators
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                       {team?.boardMembers.corporators.map((member) => (
                         <TeamMemberCard key={member.id} member={member} />
                       ))}
@@ -192,10 +196,10 @@ export const TeamClient = ({ team }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-12"
+              className="space-y-8 sm:space-y-12"
             >
               {/* Staff Sub Tabs */}
-              <div className="flex dark:border-neutral-800 border-neutral-200 border-b">
+              <div className="flex dark:border-neutral-800 border-neutral-200 border-b overflow-x-auto">
                 <TabButton active={staffSubTab === 'admin'} onClick={() => setStaffSubTab('admin')}>
                   ADMINISTRATION
                 </TabButton>
@@ -215,10 +219,10 @@ export const TeamClient = ({ team }) => {
               >
                 {staffSubTab === 'admin' && (
                   <div>
-                    <h2 className="text-3xl font-black dark:text-white text-neutral-900 mb-12 uppercase">
+                    <h2 className="text-2xl sm:text-3xl font-black dark:text-white text-neutral-900 mb-8 sm:mb-12 uppercase">
                       Administration
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                       {team?.staffMembers.admin.map((member) => (
                         <TeamMemberCard key={member.id} member={member} />
                       ))}
@@ -228,10 +232,10 @@ export const TeamClient = ({ team }) => {
 
                 {staffSubTab === 'program' && (
                   <div>
-                    <h2 className="text-3xl font-black dark:text-white text-neutral-900 mb-12 uppercase">
+                    <h2 className="text-2xl sm:text-3xl font-black dark:text-white text-neutral-900 mb-8 sm:mb-12 uppercase">
                       Program Staff
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                       {team?.staffMembers.program.map((member) => (
                         <TeamMemberCard key={member.id} member={member} />
                       ))}
@@ -241,10 +245,10 @@ export const TeamClient = ({ team }) => {
 
                 {staffSubTab === 'maintenance' && (
                   <div>
-                    <h2 className="text-3xl font-black dark:text-white text-neutral-900 mb-12 uppercase">
+                    <h2 className="text-2xl sm:text-3xl font-black dark:text-white text-neutral-900 mb-8 sm:mb-12 uppercase">
                       Maintenance
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                       {team?.staffMembers.maintenance.map((member) => (
                         <TeamMemberCard key={member.id} member={member} />
                       ))}

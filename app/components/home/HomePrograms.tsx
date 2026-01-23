@@ -14,30 +14,30 @@ interface CarouselProps {
 
 export const HomePrograms: React.FC<CarouselProps> = ({ subheading, heading1, heading2, items }) => {
   return (
-    <section className="py-20 md:py-32 px-6 md:px-12">
+    <section className="py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
-          className="mb-16"
+          className="mb-12 sm:mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-px w-8 dark:bg-sky-500 bg-sky-600" />
-            <p className="text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-wider">
+          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+            <div className="h-px w-6 sm:w-8 dark:bg-sky-500 bg-sky-600" />
+            <p className="text-xs sm:text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-wider">
               {subheading}
             </p>
           </div>
-          <h2 className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900">
             {heading1} <span className="font-light dark:text-neutral-400 text-neutral-600">{heading2}</span>
           </h2>
         </motion.div>
 
         {/* Programs Grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -90,12 +90,12 @@ export const HomePrograms: React.FC<CarouselProps> = ({ subheading, heading1, he
               >
                 <Link href={`/programs/${program.id}`}>
                   <motion.div
-                    className="group relative rounded-2xl overflow-hidden cursor-pointer"
+                    className="group relative rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer"
                     whileHover={{ y: -8 }}
                     transition={{ duration: 0.4, ease: 'easeOut' }}
                   >
                     {/* Card Content */}
-                    <div className="relative aspect-4/5 rounded-2xl overflow-hidden bg-neutral-900 group">
+                    <div className="relative aspect-4/5 rounded-xl sm:rounded-2xl overflow-hidden bg-neutral-900 group">
                       {/* Image */}
                       <Picture
                         src={program.image}
@@ -113,13 +113,13 @@ export const HomePrograms: React.FC<CarouselProps> = ({ subheading, heading1, he
                       />
 
                       {/* Content */}
-                      <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
+                      <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-20">
                         {/* Glass Card */}
-                        <motion.div className="backdrop-blur-md bg-white/10 dark:bg-black/20 border border-white/20 rounded-xl p-4 transform transition-transform duration-500 group-hover:translate-y-0 translate-y-2">
-                          <h3 className="text-xl font-bold text-white mb-2">{program.name}</h3>
+                        <motion.div className="backdrop-blur-md bg-white/10 dark:bg-black/20 border border-white/20 rounded-lg sm:rounded-xl p-3 sm:p-4 transform transition-transform duration-500 group-hover:translate-y-0 translate-y-2">
+                          <h3 className="text-lg sm:text-xl font-bold text-white mb-2">{program.name}</h3>
 
                           {/* Animated Line */}
-                          <div className="relative h-0.5 w-12 bg-white/30 rounded-full overflow-hidden mb-3">
+                          <div className="relative h-0.5 w-10 sm:w-12 bg-white/30 rounded-full overflow-hidden mb-2 sm:mb-3">
                             <motion.div
                               className={`absolute inset-y-0 left-0 bg-linear-to-r ${gradient} rounded-full`}
                               initial={{ width: '0%' }}
@@ -130,9 +130,9 @@ export const HomePrograms: React.FC<CarouselProps> = ({ subheading, heading1, he
 
                           {/* CTA */}
                           <div className="flex items-center gap-2 text-white/70 group-hover:text-white transition-colors duration-300">
-                            <span className="text-sm font-medium">Explore</span>
+                            <span className="text-xs sm:text-sm font-medium">Explore</span>
                             <motion.svg
-                              className="w-4 h-4"
+                              className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"

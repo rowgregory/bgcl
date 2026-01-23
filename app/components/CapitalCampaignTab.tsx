@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Building2, X, ArrowRight, ChevronUp } from 'lucide-react'
+import { Building2, ArrowRight, ChevronUp } from 'lucide-react'
 
 export default function CapitalCampaignTab() {
   const pathname = usePathname()
@@ -46,7 +46,7 @@ export default function CapitalCampaignTab() {
   return (
     <>
       {/* Desktop Version - Side Tab */}
-      <div className="fixed right-0 top-1/2 -translate-y-1/2 z-40 hidden md:block">
+      <div className="fixed right-0 top-1/2 -translate-y-1/2 z-40 hidden">
         <AnimatePresence>
           <motion.div
             initial={{ x: 100 }}
@@ -54,15 +54,6 @@ export default function CapitalCampaignTab() {
             exit={{ x: 100 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           >
-            {/* Dismiss button */}
-            <button
-              onClick={() => setIsDismissed(true)}
-              className="absolute -left-3 -top-3 w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-white flex items-center justify-center transition-colors z-10"
-              aria-label="Dismiss"
-            >
-              <X className="w-3 h-3" />
-            </button>
-
             <Link
               href="/capital-campaign"
               className="group flex flex-col items-center"
@@ -145,15 +136,6 @@ export default function CapitalCampaignTab() {
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="relative"
           >
-            {/* Dismiss button */}
-            <button
-              onClick={() => setIsDismissed(true)}
-              className="absolute right-2 -top-2 w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 flex items-center justify-center shadow-md z-10"
-              aria-label="Dismiss"
-            >
-              <X className="w-3 h-3" />
-            </button>
-
             {/* Expandable content */}
             <AnimatePresence>
               {isMobileExpanded && (
@@ -196,6 +178,8 @@ export default function CapitalCampaignTab() {
                 if (!isMobileExpanded) {
                   e.preventDefault()
                   setIsMobileExpanded(true)
+                } else {
+                  setIsMobileExpanded(false)
                 }
               }}
             >

@@ -152,6 +152,12 @@ export const theme = {
     },
     fontSize: {
       '2xs': '0.625rem'
+    },
+    keyframes: {
+      gradient: {
+        '0%': { 'background-position': '0% 50%' },
+        '100%': { 'background-position': '200% 50%' }
+      }
     }
   }
 }

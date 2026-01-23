@@ -49,3 +49,33 @@ html {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 300% 50%;
+  }
+}
+
+.sqysh-gradient {
+  background: linear-gradient(
+    90deg,
+    #ef4444,
+    /* red */ #f97316,
+    /* orange */ #eab308,
+    /* yellow */ #22c55e,
+    /* green */ #38bdf8,
+    /* sky */ #a855f7 /* purple */
+  );
+  background-size: 300% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: gradient 4s linear infinite;
+}
+
+.group:hover .sqysh-gradient {
+  animation-duration: 1.5s;
+}

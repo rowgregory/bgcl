@@ -1,37 +1,40 @@
 'use client'
 
 import { EventCard } from '@/app/components/events/EventCard'
-import { Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { Calendar } from 'lucide-react'
 import Link from 'next/link'
 
 const EventsClient = ({ events }) => {
   return (
-    <div className="h-full min-h-[calc(100vh-681px)] dark:bg-neutral-950 bg-white py-20 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto space-y-16">
-        {/* Header */}
-        <motion.div
-          className="space-y-6"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="space-y-4">
-            <p className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-              Join Us
-            </p>
-            <h1 className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-              Upcoming Events
-            </h1>
-            <p className="text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
-              Discover community events, programs, and activities happening at Boys & Girls Club of Lynn.
-            </p>
-          </div>
-        </motion.div>
+    <div className="dark:bg-neutral-950 bg-white">
+      {/* Hero Section */}
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            className="space-y-4 sm:space-y-6"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="space-y-3 sm:space-y-4">
+              <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
+                Join Us
+              </p>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
+                Upcoming Events
+              </h1>
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
+                Discover community events, programs, and activities happening at Boys & Girls Club of Lynn.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
         {/* Events Grid */}
-        <section>
+        <div className="max-w-7xl mx-auto">
           {events?.length === 0 ? (
             <div className="text-center py-20">
               <div className="max-w-md mx-auto">
@@ -68,24 +71,12 @@ const EventsClient = ({ events }) => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {events?.map((event) => (
-                <Suspense key={event.id} fallback={<EventCardSkeleton />}>
-                  <EventCard event={event} />
-                </Suspense>
+                <EventCard key={event.id} event={event} />
               ))}
             </div>
           )}
-        </section>
-      </div>
-    </div>
-  )
-}
-
-function EventCardSkeleton() {
-  return (
-    <div className="dark:bg-neutral-800 bg-neutral-100 rounded-lg p-6 animate-pulse space-y-4">
-      <div className="h-6 dark:bg-neutral-700 bg-neutral-200 rounded w-3/4" />
-      <div className="h-4 dark:bg-neutral-700 bg-neutral-200 rounded w-full" />
-      <div className="h-4 dark:bg-neutral-700 bg-neutral-200 rounded w-2/3" />
+        </div>
+      </section>
     </div>
   )
 }

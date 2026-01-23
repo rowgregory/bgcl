@@ -201,48 +201,48 @@ export default function GetInvolvedPage() {
   const progress = (currentStep / FORM_STEPS.length) * 100
 
   return (
-    <div className="py-20 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto space-y-16">
+    <div className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
+      <div className="max-w-7xl mx-auto space-y-12 sm:space-y-16">
         <motion.div
-          className="space-y-6 mb-16"
+          className="space-y-4 sm:space-y-6 mb-12 sm:mb-16"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="space-y-4">
-            <p className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
+          <div className="space-y-3 sm:space-y-4">
+            <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
               Opportunities
             </p>
-            <h1 className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
               Join Our Team
             </h1>
-            <div className="max-w-4xl space-y-3">
-              <p className="text-lg dark:text-neutral-400 text-neutral-600">
+            <div className="max-w-4xl space-y-2 sm:space-y-3">
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">
                 Do you have a passion for working with children or teenagers? Do you want to make a positive impact in
                 your community? If so, join our team at Boys & Girls Clubs of Lynn and make a difference! At the Boys &
                 Girls Club of Lynn, we believe that hiring, developing and retaining skilled, passionate staff members
-                is where it all begins. That’s because our work is anchored in our staff’s ability to bring our mission
+                is where it all begins. That's because our work is anchored in our staff's ability to bring our mission
                 to life by enabling young people to realize their full potential. Our Club continuously looks for
                 talented individuals interested in working with youth to join our team.
               </p>
-              <p className="text-lg dark:text-neutral-400 text-neutral-600">
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">
                 The Boys & Girls Clubs of Lynn is committed to a policy of equal employment opportunity and does not
                 discriminate against employees or applicants for employment on the basis of any characteristic that is
                 protected by law.
               </p>
               <button
                 onClick={() => store.dispatch(setOpenVolunteerDrawer())}
-                className="cursor-pointer text-lg dark:text-neutral-400 text-neutral-600 hover:dark:text-sky-400 hover:text-sky-600 transition-colors underline-offset-4 hover:underline flex items-center gap-2"
+                className="cursor-pointer text-sm sm:text-base md:text-lg dark:text-neutral-400 text-neutral-600 hover:dark:text-sky-400 hover:text-sky-600 transition-colors underline-offset-4 hover:underline flex items-center gap-2"
               >
                 Interested in becoming a volunteer?
-                <ArrowRightFromLine className="w-4 h-4" />
+                <ArrowRightFromLine className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
               </button>
             </div>
           </div>
         </motion.div>
 
         {/* Form Container */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 sm:gap-12 items-start">
           {/* Sidebar Progress - Visible on Desktop Only */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -298,22 +298,22 @@ export default function GetInvolvedPage() {
           </motion.div>
 
           {/* Main Form Content */}
-          <div className="lg:col-span-4 space-y-6">
+          <div className="lg:col-span-4 space-y-4 sm:space-y-6">
             {/* Mobile Progress Bar - Visible only on Mobile */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="lg:hidden">
-              <div className="mb-6 flex justify-between items-center">
+              <div className="mb-4 sm:mb-6 flex justify-between items-center">
                 <div>
-                  <h2 className="text-2xl font-bold dark:text-white text-neutral-900">
+                  <h2 className="text-xl sm:text-2xl font-bold dark:text-white text-neutral-900">
                     {FORM_STEPS[currentStep - 1].name}
                   </h2>
-                  <p className="dark:text-neutral-400 text-neutral-600 text-sm mt-1">
+                  <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm mt-1">
                     Step {currentStep} of {FORM_STEPS.length}
                   </p>
                 </div>
               </div>
 
               {/* Progress Bar */}
-              <div className="h-2 dark:bg-neutral-800 bg-neutral-200 rounded-full overflow-hidden mb-6">
+              <div className="h-1.5 sm:h-2 dark:bg-neutral-800 bg-neutral-200 rounded-full overflow-hidden mb-4 sm:mb-6">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
@@ -323,12 +323,12 @@ export default function GetInvolvedPage() {
               </div>
 
               {/* Step Indicators Mobile */}
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
                 {FORM_STEPS.map((step) => (
                   <button
                     key={step.id}
-                    onClick={() => setCurrentStep(step.id)}
-                    className={`h-10 rounded-lg font-semibold text-sm transition-all ${
+                    onClick={() => handleNext()}
+                    className={`h-8 sm:h-10 rounded-lg font-semibold text-xs sm:text-sm transition-all ${
                       step.id === currentStep
                         ? 'dark:bg-sky-600 dark:text-white bg-sky-600 text-white'
                         : step.id < currentStep
@@ -350,7 +350,7 @@ export default function GetInvolvedPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 rounded-xl p-8 md:p-12 space-y-6 border"
+                className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 rounded-xl p-6 sm:p-8 md:p-12 space-y-4 sm:space-y-6 border"
               >
                 {/* Step 1: Personal Info */}
                 {currentStep === 1 && (
@@ -378,30 +378,34 @@ export default function GetInvolvedPage() {
             </AnimatePresence>
 
             {/* Navigation Buttons */}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-between gap-4 mt-8">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex justify-between gap-3 sm:gap-4 mt-6 sm:mt-8"
+            >
               <button
                 onClick={handleBack}
                 disabled={currentStep === 1}
-                className="flex items-center space-x-2 px-6 py-3 dark:border-neutral-700 dark:hover:bg-neutral-800 dark:text-white border-neutral-300 hover:bg-neutral-100 text-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed font-semibold rounded-lg transition-colors border"
+                className="flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base dark:border-neutral-700 dark:hover:bg-neutral-800 dark:text-white border-neutral-300 hover:bg-neutral-100 text-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed font-semibold rounded-lg transition-colors border"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>Back</span>
               </button>
 
               <button
                 onClick={handleNext}
-                className="flex items-center space-x-2 px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors ml-auto"
+                className="flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors ml-auto"
               >
                 <span>
                   {isLoading ? (
-                    <div className="w-4 h-4 rounded-full border-2 border-white border-t-0" />
+                    <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border-2 border-white border-t-0" />
                   ) : currentStep === FORM_STEPS.length ? (
                     'Submit'
                   ) : (
                     'Next'
                   )}
                 </span>
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </motion.div>
           </div>
@@ -459,54 +463,56 @@ function Step1PersonalInfo({ formData, setFormData, errors }: any) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h3 className="text-lg font-semibold dark:text-white text-neutral-900 mb-2">Personal Info</h3>
-        <p className="dark:text-neutral-400 text-neutral-600 text-sm">
+        <h3 className="text-base sm:text-lg font-semibold dark:text-white text-neutral-900 mb-1.5 sm:mb-2">
+          Personal Info
+        </h3>
+        <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm">
           Your resume will provide your work history, education, and skills. We just need a few additional details.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* Full Name */}
         <div>
-          <label className="block text-sm font-semibold dark:text-white text-neutral-900 mb-2">
+          <label className="block text-xs sm:text-sm font-semibold dark:text-white text-neutral-900 mb-1.5 sm:mb-2">
             Full Name <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             value={formData.applicantName || ''}
             onChange={(e) => setFormData({ ...formData, applicantName: e.target.value })}
-            className="w-full px-4 py-2.5 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
+            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
             placeholder="John Doe"
           />
-          {errors.applicantName && <p className="text-red-500 text-sm mt-1">{errors.applicantName}</p>}
+          {errors.applicantName && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.applicantName}</p>}
         </div>
 
         {/* Email */}
         <div>
-          <label className="block text-sm font-semibold dark:text-white text-neutral-900 mb-2">
+          <label className="block text-xs sm:text-sm font-semibold dark:text-white text-neutral-900 mb-1.5 sm:mb-2">
             Email <span className="text-red-500">*</span>
           </label>
           <input
             type="email"
             value={formData.email || ''}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="w-full px-4 py-2.5 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
+            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
             placeholder="john@example.com"
           />
-          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+          {errors.email && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.email}</p>}
         </div>
 
         {/* Employment Type */}
         <div>
-          <label className="block text-sm font-semibold dark:text-white text-neutral-900 mb-2">
+          <label className="block text-xs sm:text-sm font-semibold dark:text-white text-neutral-900 mb-1.5 sm:mb-2">
             Employment Type <span className="text-red-500">*</span>
           </label>
           <select
             value={formData.employmentType || ''}
             onChange={(e) => setFormData({ ...formData, employmentType: e.target.value })}
-            className="w-full px-4 py-2.5 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
+            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
           >
             <option value="">Select Type</option>
             <option value="FULL_TIME">Full Time</option>
@@ -517,13 +523,13 @@ function Step1PersonalInfo({ formData, setFormData, errors }: any) {
 
         {/* Hours Available */}
         <div>
-          <label className="block text-sm font-semibold dark:text-white text-neutral-900 mb-2">
+          <label className="block text-xs sm:text-sm font-semibold dark:text-white text-neutral-900 mb-1.5 sm:mb-2">
             Hours Available <span className="text-red-500">*</span>
           </label>
           <select
             value={formData.hoursAvailable || ''}
             onChange={(e) => setFormData({ ...formData, hoursAvailable: e.target.value })}
-            className="w-full px-4 py-2.5 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
+            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
           >
             <option value="">Select your availability</option>
             {hourOptions.map((option) => (
@@ -533,16 +539,18 @@ function Step1PersonalInfo({ formData, setFormData, errors }: any) {
             ))}
             <option value="custom">Custom schedule</option>
           </select>
-          {errors.hoursAvailable && <p className="text-red-500 text-sm mt-1">{errors.hoursAvailable}</p>}
+          {errors.hoursAvailable && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.hoursAvailable}</p>}
         </div>
       </div>
 
       {/* Languages Spoken */}
       <div>
-        <label className="block text-sm font-semibold dark:text-white text-neutral-900 mb-3">Languages Spoken</label>
+        <label className="block text-xs sm:text-sm font-semibold dark:text-white text-neutral-900 mb-2 sm:mb-3">
+          Languages Spoken
+        </label>
 
         {/* Language Buttons Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2">
           {commonLanguages.map((lang) => (
             <motion.button
               key={lang}
@@ -550,7 +558,7 @@ function Step1PersonalInfo({ formData, setFormData, errors }: any) {
               onClick={() => toggleLanguage(lang, formData)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className={`px-4 py-2.5 rounded-lg font-medium text-sm transition-all border-2 ${
+              className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm transition-all border-2 ${
                 formData.languages?.includes(lang)
                   ? 'dark:bg-sky-600 dark:border-sky-700 bg-sky-600 border-sky-700 text-white'
                   : 'dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-600 bg-neutral-200 border-neutral-300 text-neutral-700 hover:border-neutral-400'
@@ -566,14 +574,16 @@ function Step1PersonalInfo({ formData, setFormData, errors }: any) {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-4 p-4 dark:bg-sky-500/10 dark:border-sky-500/30 bg-sky-100 border-sky-300 rounded-lg border"
+            className="mt-3 sm:mt-4 p-3 sm:p-4 dark:bg-sky-500/10 dark:border-sky-500/30 bg-sky-100 border-sky-300 rounded-lg border"
           >
-            <p className="dark:text-neutral-300 text-neutral-700 text-sm mb-2">Selected languages:</p>
-            <div className="flex flex-wrap gap-2">
+            <p className="dark:text-neutral-300 text-neutral-700 text-xs sm:text-sm mb-1.5 sm:mb-2">
+              Selected languages:
+            </p>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {formData.languages.map((lang: string) => (
                 <span
                   key={lang}
-                  className="px-3 py-1 dark:bg-sky-500/20 dark:border-sky-500/50 dark:text-sky-300 bg-sky-200 border-sky-400 text-sky-700 rounded-full text-sm font-medium border"
+                  className="px-2.5 sm:px-3 py-1 dark:bg-sky-500/20 dark:border-sky-500/50 dark:text-sky-300 bg-sky-200 border-sky-400 text-sky-700 rounded-full text-xs sm:text-sm font-medium border"
                 >
                   ✓ {lang}
                 </span>
@@ -584,8 +594,8 @@ function Step1PersonalInfo({ formData, setFormData, errors }: any) {
       </div>
 
       {/* Suggestions */}
-      <div className="dark:bg-sky-500/10 dark:border-sky-500/30 bg-sky-100 border-sky-300 rounded-lg p-4 border">
-        <p className="dark:text-sky-300 text-sky-700 text-sm">
+      <div className="dark:bg-sky-500/10 dark:border-sky-500/30 bg-sky-100 border-sky-300 rounded-lg p-3 sm:p-4 border">
+        <p className="dark:text-sky-300 text-sky-700 text-xs sm:text-sm">
           💡 Common languages: English, Spanish, Mandarin, French, Vietnamese, Portuguese, ASL
         </p>
       </div>
@@ -604,102 +614,110 @@ function Step2References({ formData, setFormData, errors }: any) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h3 className="text-lg font-semibold dark:text-white text-neutral-900 mb-2">References</h3>
-        <p className="dark:text-neutral-400 text-neutral-600 text-sm">
+        <h3 className="text-base sm:text-lg font-semibold dark:text-white text-neutral-900 mb-1.5 sm:mb-2">
+          References
+        </h3>
+        <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm">
           Please list the names of 3 work related references we may contact. Individuals with no prior work experience
           may list volunteer-related or school references such as teachers, coaches, counselors.
         </p>
       </div>
 
       {/* References */}
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {[0, 1, 2].map((index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className={`dark:border-neutral-700 dark:bg-neutral-900/30 border-neutral-300 bg-neutral-100/30 border rounded-lg p-6 transition-all border-dashed`}
+            className={`dark:border-neutral-700 dark:bg-neutral-900/30 border-neutral-300 bg-neutral-100/30 border rounded-lg p-4 sm:p-6 transition-all border-dashed`}
           >
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Reference Name */}
               <div>
-                <label className="block text-sm font-semibold dark:text-white text-neutral-900 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold dark:text-white text-neutral-900 mb-1.5 sm:mb-2">
                   Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.references?.[index]?.name || ''}
                   onChange={(e) => updateReference(index, 'name', e.target.value)}
-                  className="w-full px-4 py-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
                   placeholder="John Smith"
                 />
-                {errors[`name_${index}`] && <p className="text-red-500 text-sm mt-1">{errors[`name_${index}`]}</p>}
+                {errors[`name_${index}`] && (
+                  <p className="text-red-500 text-xs sm:text-sm mt-1">{errors[`name_${index}`]}</p>
+                )}
               </div>
 
               {/* Position & Company */}
               <div>
-                <label className="block text-sm font-semibold dark:text-white text-neutral-900 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold dark:text-white text-neutral-900 mb-1.5 sm:mb-2">
                   Position & Company <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.references?.[index]?.positionAndCompany || ''}
                   onChange={(e) => updateReference(index, 'positionAndCompany', e.target.value)}
-                  className="w-full px-4 py-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
                   placeholder="Manager at Tech Company Inc."
                 />
                 {errors[`positionAndCompany_${index}`] && (
-                  <p className="text-red-500 text-sm mt-1">{errors[`positionAndCompany_${index}`]}</p>
+                  <p className="text-red-500 text-xs sm:text-sm mt-1">{errors[`positionAndCompany_${index}`]}</p>
                 )}
               </div>
 
               {/* Work Relationship */}
               <div>
-                <label className="block text-sm font-semibold dark:text-white text-neutral-900 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold dark:text-white text-neutral-900 mb-1.5 sm:mb-2">
                   Work Relationship <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   value={formData.references?.[index]?.workRelationship || ''}
                   onChange={(e) => updateReference(index, 'workRelationship', e.target.value)}
-                  className="w-full px-4 py-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent min-h-24 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent min-h-24 transition-colors resize-none"
                   placeholder="Senior Software Engineer - Led team of 5, managed product roadmap, improved performance by 40%"
                 />
                 {errors[`workRelationship_${index}`] && (
-                  <p className="text-red-500 text-sm mt-1">{errors[`workRelationship_${index}`]}</p>
+                  <p className="text-red-500 text-xs sm:text-sm mt-1">{errors[`workRelationship_${index}`]}</p>
                 )}
               </div>
 
               {/* Phone & Email */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                  <label className="block text-sm font-semibold dark:text-white text-neutral-900 mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold dark:text-white text-neutral-900 mb-1.5 sm:mb-2">
                     Phone Number <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
                     value={formData.references?.[index]?.phone || ''}
                     onChange={(e) => updateReference(index, 'phone', e.target.value)}
-                    className="w-full px-4 py-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
                     placeholder="7815931772"
                   />
-                  {errors[`phone_${index}`] && <p className="text-red-500 text-sm mt-1">{errors[`phone_${index}`]}</p>}
+                  {errors[`phone_${index}`] && (
+                    <p className="text-red-500 text-xs sm:text-sm mt-1">{errors[`phone_${index}`]}</p>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold dark:text-white text-neutral-900 mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold dark:text-white text-neutral-900 mb-1.5 sm:mb-2">
                     Email <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     value={formData.references?.[index]?.email || ''}
                     onChange={(e) => updateReference(index, 'email', e.target.value)}
-                    className="w-full px-4 py-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
                     placeholder="reference@example.com"
                   />
-                  {errors[`email_${index}`] && <p className="text-red-500 text-sm mt-1">{errors[`email_${index}`]}</p>}
+                  {errors[`email_${index}`] && (
+                    <p className="text-red-500 text-xs sm:text-sm mt-1">{errors[`email_${index}`]}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -708,8 +726,8 @@ function Step2References({ formData, setFormData, errors }: any) {
       </div>
 
       {/* Info Box */}
-      <div className="dark:bg-sky-500/10 dark:border-sky-500/30 bg-sky-100 border-sky-300 rounded-lg p-4 border">
-        <p className="dark:text-sky-300 text-sky-700 text-sm">
+      <div className="dark:bg-sky-500/10 dark:border-sky-500/30 bg-sky-100 border-sky-300 rounded-lg p-3 sm:p-4 border">
+        <p className="dark:text-sky-300 text-sky-700 text-xs sm:text-sm">
           💡 If you do not have three work-related references, you may list volunteer or school references such as
           teachers, coaches, or counselors.
         </p>

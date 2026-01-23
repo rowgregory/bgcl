@@ -45,7 +45,7 @@ export default function Header() {
                 <ChevronDown className="w-4 h-4 dark:text-neutral-400 text-neutral-600" />
               </motion.div>
             </button>
-            <div className="dark:text-neutral-400 text-neutral-600 text-sm">
+            <div className="hidden sm:block dark:text-neutral-400 text-neutral-600 text-sm">
               Phone:{' '}
               <a href="tel:+17815931772" className="dark:text-white text-neutral-900 hover:underline">
                 781 593 1772
@@ -159,7 +159,8 @@ export default function Header() {
               target="_blank"
               className="dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 dark:text-black text-white font-bold px-4 sm:px-8 py-2 sm:py-3 rounded-sm transition-colors shadow-lg text-sm sm:text-base"
             >
-              Parent Portal
+              <span className="hidden md:inline">Parent Portal</span>
+              <span className="md:hidden">Portal</span>
             </a>
           </motion.div>
         </div>
