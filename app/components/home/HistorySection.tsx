@@ -83,7 +83,7 @@ export const HistorySection = ({ pageContent }) => {
 
         {/* Image Grid */}
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 auto-rows-max"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 auto-rows-max"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -99,12 +99,8 @@ export const HistorySection = ({ pageContent }) => {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               whileHover={{ scale: 1.02 }}
             >
-              <div className="relative h-80 overflow-hidden">
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
+              <div className="relative overflow-hidden">
+                <img src={image.src} alt={image.alt} className="w-full h-full object-cover aspect-3/4" />
 
                 {/* Overlay on hover */}
                 <motion.div
