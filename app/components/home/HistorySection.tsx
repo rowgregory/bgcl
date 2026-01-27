@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Picture from '../common/Picture'
 
 export const HistorySection = ({ pageContent }) => {
   const historyImages = [
@@ -83,7 +84,7 @@ export const HistorySection = ({ pageContent }) => {
 
         {/* Image Grid */}
         <motion.div
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 auto-rows-max"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 auto-rows-max"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -92,49 +93,26 @@ export const HistorySection = ({ pageContent }) => {
           {historyImages.map((image, index) => (
             <motion.div
               key={index}
-              className={`${image.gridSpan} rounded-lg sm:rounded-xl overflow-hidden dark:border-neutral-800 border-neutral-200 border group cursor-pointer`}
+              className={`${image.gridSpan} rounded-lg sm:rounded-xl overflow-hidden dark:border-neutral-800 border-neutral-200 border group bg-neutral-100 dark:bg-neutral-800`}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               whileHover={{ scale: 1.02 }}
             >
-              <div className="relative overflow-hidden">
-                <img src={image.src} alt={image.alt} className="w-full h-full object-cover aspect-3/4" />
-
-                {/* Overlay on hover */}
-                <motion.div
-                  className="absolute inset-0 dark:bg-black/50 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 1 }}
-                >
-                  <motion.div animate={{ scale: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }}>
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full dark:bg-sky-500 bg-sky-600 flex items-center justify-center">
-                      <svg
-                        className="w-5 h-5 sm:w-6 sm:h-6 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </div>
-                  </motion.div>
-                </motion.div>
+              <div className="relative overflow-hidden w-full h-full">
+                <img src={image.src} alt={image.alt} className="w-full h-full object-cover" loading="lazy" />
 
                 {/* Label on image */}
                 <motion.div
-                  className="absolute bottom-0 left-0 right-0 dark:bg-linear-to-t dark:from-black/90 bg-linear-to-t from-neutral-900/90 p-3 sm:p-4"
+                  className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-black/20 dark:from-black/90 dark:to-black/30 p-3 sm:p-4"
                   initial={{ y: 20, opacity: 0 }}
                   whileHover={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <p className="dark:text-sky-400 text-sky-300 font-bold text-xs sm:text-sm">{image.alt}</p>
+                  <p className="text-sky-300 dark:text-sky-400 font-bold text-xs sm:text-sm line-clamp-2">
+                    {image.alt}
+                  </p>
                 </motion.div>
               </div>
             </motion.div>
