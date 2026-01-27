@@ -1,18 +1,20 @@
 import {
-  Rocket,
+  // Rocket,
   Globe,
-  Satellite,
-  Sliders,
-  ScanLine,
+  // Satellite,
+  // Sliders,
+  // ScanLine,
   Shield,
   Fuel,
-  Aperture,
+  // Aperture,
   BookOpen,
   GitCommit,
   Radio,
   LucideIcon,
   MessageSquare,
-  DoorOpen
+  DoorOpen,
+  // User,
+  Orbit
 } from 'lucide-react'
 
 const isStringInPath = (path: string, str: string) => path.includes(str)
@@ -23,15 +25,25 @@ export const adminNavigationLinkData = (
   title: string
   items: { icon: LucideIcon; label: string; path: string; description: string; active: boolean; isDrawer?: boolean }[]
 }[] => {
-  const dashboardGroup = [
+  const userGroup = [
     {
-      icon: Rocket,
-      label: 'Mission Control',
-      path: '/admin/mission-control',
-      description: 'Dashboard',
-      active: isStringInPath(path, 'mission-control')
+      icon: Orbit,
+      label: 'My Space',
+      path: '/supporter/overview',
+      description: 'View your profile & donations',
+      active: isStringInPath(path, 'supporter/overview')
     }
   ]
+
+  // const dashboardGroup = [
+  //   {
+  //     icon: Rocket,
+  //     label: 'Mission Control',
+  //     path: '/admin/mission-control',
+  //     description: 'Dashboard',
+  //     active: isStringInPath(path, 'mission-control')
+  //   }
+  // ]
 
   const contentGroup = [
     {
@@ -121,18 +133,19 @@ export const adminNavigationLinkData = (
     }
   ]
 
-  const futureGroup = [
-    {
-      icon: ScanLine,
-      label: 'Cryo Chamber',
-      path: '/admin/cryo-chamber',
-      description: 'Future features in stasis',
-      active: isStringInPath(path, 'cryo-chamber')
-    }
-  ]
+  // const futureGroup = [
+  //   {
+  //     icon: ScanLine,
+  //     label: 'Cryo Chamber',
+  //     path: '/admin/cryo-chamber',
+  //     description: 'Future features in stasis',
+  //     active: isStringInPath(path, 'cryo-chamber')
+  //   }
+  // ]
 
   return [
     // { title: 'Dashboard', items: dashboardGroup },
+    { title: 'User', items: userGroup },
     { title: 'Content', items: contentGroup },
     { title: 'Operations', items: operationsGroup },
     { title: 'Management', items: managementGroup },

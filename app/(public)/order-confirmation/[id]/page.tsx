@@ -29,7 +29,7 @@ export default function OrderConfirmationPage({ order }) {
             className="inline-flex items-center space-x-1 text-sky-500 hover:text-sky-600 dark:text-sky-400 dark:hover:text-sky-300 transition-colors text-sm font-semibold"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back</span>
+            <span>Donate</span>
           </Link>
           {session.data?.user?.id ? (
             <Link

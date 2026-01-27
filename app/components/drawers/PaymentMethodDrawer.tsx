@@ -14,9 +14,6 @@ import Backdrop from '../common/Backdrop'
 import Drawer from '../common/Drawer'
 import PaymentMethodForm from '../forms/PaymentMethodForm'
 import { getSetupIntentClientSecret } from '@/app/lib/actions/getSetupIntentClientSecret'
-import { loadStripe } from '@stripe/stripe-js'
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 const PaymentMethodDrawer = () => {
   const router = useRouter()
@@ -130,17 +127,15 @@ const PaymentMethodDrawer = () => {
           {/* Drawer */}
           <Drawer>
             {/* Form */}
-            <Elements stripe={stripePromise}>
-              <PaymentMethodForm
-                inputs={inputs}
-                errors={{}}
-                handleInput={handleInput}
-                handleSubmit={handleSubmit}
-                isLoading={isLoading}
-                isUpdating={false}
-                onClose={onClose}
-              />
-            </Elements>
+            <PaymentMethodForm
+              inputs={inputs}
+              errors={{}}
+              handleInput={handleInput}
+              handleSubmit={handleSubmit}
+              isLoading={isLoading}
+              isUpdating={false}
+              onClose={onClose}
+            />
           </Drawer>
         </>
       )}
