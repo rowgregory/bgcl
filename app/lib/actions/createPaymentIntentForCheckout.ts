@@ -2,27 +2,46 @@
 
 import prisma from '@/prisma/client'
 import { stripe } from '../stripe/stripeClient'
+import Stripe from 'stripe'
 
 interface CheckoutParams {
   userId?: string
   email: string
+  name: string
   amount: number // in cents
   orderType: 'ONE_TIME_DONATION' | 'RECURRING_DONATION' | 'TICKET_PURCHASE'
   description: string
   saveCard?: boolean
   coverFees?: boolean
   feesCovered?: number
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  country?: string
+  notes?: string
+  campaignId?: string
+  savedCardId?: string
 }
 
 export async function createPaymentIntentForCheckout({
   userId,
   email,
+  name,
   amount,
   orderType,
   description,
   saveCard = false,
   coverFees = false,
-  feesCovered = 0
+  feesCovered = 0,
+  address,
+  city,
+  state,
+  zipCode,
+  country,
+  notes,
+  campaignId,
+  savedCardId
 }: CheckoutParams) {
   try {
     let customerId: string | undefined
@@ -75,7 +94,7 @@ export async function createPaymentIntentForCheckout({
     }
 
     // Create payment intent
-    const paymentIntent = await stripe.paymentIntents.create({
+    const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
       amount,
       currency: 'usd',
       customer: customerId,
@@ -85,12 +104,37 @@ export async function createPaymentIntentForCheckout({
       metadata: {
         userId: userId || 'guest',
         orderType,
+        name,
         email,
         saveCard: saveCard ? 'true' : 'false',
         coverFees: coverFees ? 'true' : 'false',
-        feesCovered: feesCovered.toString()
+        feesCovered: feesCovered.toString(),
+        address: address || '',
+        city: city || '',
+        state: state || '',
+        zipCode: zipCode || '',
+        country: country || '',
+        notes: notes || '',
+        campaignId: campaignId || ''
       }
-    })
+    }
+
+    if (savedCardId) {
+      const savedCard = await prisma.paymentMethod.findUnique({
+        where: { id: savedCardId },
+        select: { stripePaymentId: true, userId: true }
+      })
+
+      if (!savedCard || savedCard.userId !== userId) {
+        throw new Error('Saved card not found or unauthorized')
+      }
+
+      paymentIntentParams.payment_method = savedCard.stripePaymentId
+      paymentIntentParams.off_session = true
+      paymentIntentParams.confirm = true // ✅ Add this back
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams)
 
     return {
       success: true,

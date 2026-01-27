@@ -9,7 +9,11 @@ export const getPrograms = unstable_cache(
         orderBy: { order: 'asc' }
       })
 
-      return programs
+      // Cast descriptions from JsonValue to string[]
+      return programs.map((program) => ({
+        ...program,
+        descriptions: Array.isArray(program.descriptions) ? program.descriptions : []
+      })) as IProgram[]
     } catch (error) {
       prisma.log.create({
         data: {

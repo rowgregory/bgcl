@@ -72,9 +72,9 @@ export const getDonationOrders = unstable_cache(
   async () => {
     return getDonationOrdersFn()
   },
-  ['donation-orders'],
+  ['getDonationOrders'],
   {
     tags: ['Order'],
-    revalidate: 3600 // 1 hour
+    revalidate: 60
   }
 )

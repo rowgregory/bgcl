@@ -5,10 +5,11 @@ import { SessionProvider } from 'next-auth/react'
 import { auth } from '@/app/lib/auth'
 import { ReactNode } from 'react'
 import RootLayoutWrapper from './root-layout'
-import { ThemeProvider } from './lib/providers/theme'
+// import { ThemeProvider } from './lib/providers/theme'
 import { getPrograms } from './lib/actions/getPrograms'
 import { getPageBySlug } from './lib/actions/getPageBySlug'
 import Script from 'next/script'
+import { getDonationOrders } from './lib/actions/getDonationOrders'
 
 const lexend = Lexend({
   subsets: ['latin'],
@@ -177,6 +178,7 @@ export default async function RootLayout({
 }>) {
   const session = await auth()
   const programs = await getPrograms()
+  const donations = await getDonationOrders()
   const pageContent = await getPageBySlug('home')
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID
 
@@ -194,11 +196,11 @@ export default async function RootLayout({
       </head>
       <body className={`${lexend.variable} antialiased`}>
         <SessionProvider session={session}>
-          <ThemeProvider>
-            <RootLayoutWrapper programs={programs} pageContent={pageContent}>
-              {children}
-            </RootLayoutWrapper>
-          </ThemeProvider>
+          {/* <ThemeProvider> */}
+          <RootLayoutWrapper programs={programs} pageContent={pageContent} donations={donations}>
+            {children}
+          </RootLayoutWrapper>
+          {/* </ThemeProvider> */}
         </SessionProvider>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </body>

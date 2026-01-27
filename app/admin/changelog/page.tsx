@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { GitCommit, Bug, Zap, AlertCircle } from 'lucide-react'
 
-type ChangeType = 'feature' | 'improvement' | 'bug' | 'breaking'
+type ChangeType = 'feature' | 'improvement' | 'fix' | 'performance' | 'ui' | 'breaking' | 'bug'
 type ImpactLevel = 'low' | 'medium' | 'high'
 
 interface Change {
@@ -20,6 +20,138 @@ interface ChangelogEntry {
 }
 
 const changelogData: ChangelogEntry[] = [
+  {
+    version: '1.5.0',
+    date: '2026-01-27',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Stripe Payment Methods Management',
+        description:
+          'Added complete payment method management system allowing users to save, view, and manage multiple payment cards. Users can set a default card, delete saved cards, and view cardholder names and expiration dates. Includes full CRUD operations with proper security checks.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Saved Card Checkout Flow',
+        description:
+          'Implemented saved card selection during checkout for authenticated users. Donors can now choose from their saved cards or enter a new card. Server-side payment confirmation for saved cards eliminates need for frontend CardElement interaction.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Payment Methods Database Schema',
+        description:
+          'Created PaymentMethod model with Stripe integration. Stores cardholder name, card brand, last 4 digits, expiration, and default status. Includes proper user ownership validation and cascade deletion.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Donation Overview Admin Page',
+        description:
+          'Built comprehensive admin dashboard showing donations by campaign with bar chart visualization, pie/distribution charts, and detailed breakdown tables. Displays total raised, donor count, average donation, and campaign-specific metrics.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Supporter Donations History Page',
+        description:
+          'Added /supporter/donations page displaying all user donations in card grid layout. Shows donation amount, date, recipient campaign, frequency (if recurring), and status. Each card links to full order confirmation details.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Saved Payment Methods UI',
+        description:
+          'Created beautiful payment methods management page at /supporter/payment-methods. Displays saved cards with gradient backgrounds, shine effects for default card, and smooth radio button selection for setting defaults. Includes delete confirmation modal.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Server Action: getDonationStats',
+        description:
+          'Built server-side donation statistics aggregation. Calculates monthly/yearly recurring revenue, churn rate, average donation, and generates 6-month trend data and retention metrics. Includes caching with unstable_cache.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Campaign-Based Donation Tracking',
+        description:
+          'Enhanced donation system to track which campaign each donation supports. Campaign names now display on donation cards, order confirmations, and admin analytics. Includes campaign aggregation and performance metrics.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Donation Form Refactoring',
+        description:
+          'Extracted handleSubmit logic into custom hook useDonationPayment. Separated one-time and recurring donation flows. Optimized Pusher listener setup with dedicated functions to reduce code duplication.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Payment Method Validation',
+        description:
+          'Enhanced security with user ownership verification for all payment method operations. Validates payment method exists and belongs to authenticated user before allowing updates or deletions.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'CardElement Dark Mode Support',
+        description:
+          'Updated Stripe CardElement styling with proper dark mode colors. Light text on dark backgrounds, adjusted placeholder colors, and maintained contrast ratios for accessibility.',
+        impact: 'low'
+      },
+      {
+        type: 'improvement',
+        title: 'Loading State Management',
+        description:
+          'Refactored donation form loading states. Loading now clears when payment succeeds, fails, or times out via Pusher listener instead of finally block. Provides better UX feedback during payment processing.',
+        impact: 'low'
+      },
+      {
+        type: 'fix',
+        title: 'Payment Method ID Handling',
+        description:
+          'Fixed issue where database ID was being passed to Stripe instead of stripePaymentId. Now correctly retrieves Stripe payment method ID from database before confirming payment intents.',
+        impact: 'high'
+      },
+      {
+        type: 'fix',
+        title: 'Cardholder Name Input',
+        description:
+          'Fixed cardholder name field styling to match CardElement appearance. Added proper dark mode support with consistent borders, padding, and focus states.',
+        impact: 'low'
+      },
+      {
+        type: 'performance',
+        title: 'Donation Stats Caching',
+        description:
+          'Implemented unstable_cache for getDonationStats with 60-second revalidation and tagged cache invalidation. Reduces database queries for repeated stat requests.',
+        impact: 'medium'
+      },
+      {
+        type: 'performance',
+        title: 'Payment Methods Caching',
+        description:
+          'Added unstable_cache to getSavedPaymentMethods with user ID-based cache keys. Automatic revalidation on card creation, deletion, or default changes.',
+        impact: 'low'
+      },
+      {
+        type: 'ui',
+        title: 'Mobile Responsive Payment Methods',
+        description:
+          'Designed payment methods page to be fully responsive down to 330px. Grid layout adapts from 1 column on mobile to 3 columns on desktop with proper spacing.',
+        impact: 'medium'
+      },
+      {
+        type: 'ui',
+        title: 'Donation Cards Visual Design',
+        description:
+          'Created beautiful donation card designs with gradient headers, animated shine effects for defaults, and smooth hover states. Includes status badges and campaign information display.',
+        impact: 'medium'
+      }
+    ]
+  },
   {
     version: '1.4.0',
     date: '2026-01-23',

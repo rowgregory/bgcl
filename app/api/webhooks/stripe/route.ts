@@ -119,7 +119,22 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         customerEmail: (metadata?.email as string) || '',
         customerName: (metadata?.name as string) || 'Guest',
         userId,
-        paidAt: new Date()
+        paidAt: new Date(),
+        billingAddress: {
+          address: metadata.address,
+          city: metadata.city,
+          state: metadata.state,
+          zipCode: metadata.zipCode,
+          country: metadata.country
+        },
+        notes: metadata.notes || null,
+        coverFees: metadata.coverFees === 'true',
+        feesCovered: parseInt(metadata.feesCovered) || 0,
+        isRecurring: metadata.donationType === 'monthly' || metadata.donationType === 'yearly',
+        recurringFrequency:
+          metadata.donationType === 'monthly' ? 'monthly' : metadata.donationType === 'yearly' ? 'yearly' : null,
+        campaignId: metadata.campaignId || null,
+        paymentMethodId: (paymentIntent.payment_method as string) || null // Get it directly from Stripe
       }
     })
 

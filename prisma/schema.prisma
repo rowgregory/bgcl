@@ -79,10 +79,11 @@ model PaymentMethod {
   id              String @id @default(cuid())
   stripePaymentId String @unique // stripe_pm_xxxxx
 
-  cardBrand    String // visa, mastercard, etc
-  cardLast4    String // 4242
-  cardExpMonth Int
-  cardExpYear  Int
+  cardholderName String?
+  cardBrand      String // visa, mastercard, etc
+  cardLast4      String // 4242
+  cardExpMonth   Int
+  cardExpYear    Int
 
   isDefault Boolean @default(false)
 
@@ -216,6 +217,7 @@ model Order {
   billingAddress Json? // Store as JSON
   coverFees      Boolean @default(false)
   feesCovered    Int     @default(0) // Amount in cents
+  notes          String?
 
   // Event info (only for ticket purchases)
   eventId String?

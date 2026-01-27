@@ -8,6 +8,7 @@ export interface AppStatePayload {
   selectedLanguage: string
   capitalCampaignDrawer: boolean
   volunteerDrawer: boolean
+  paymentMethodDrawer: boolean
 }
 
 const initialAppState: AppStatePayload = {
@@ -17,7 +18,8 @@ const initialAppState: AppStatePayload = {
   languageDropdown: false,
   selectedLanguage: 'English',
   capitalCampaignDrawer: false,
-  volunteerDrawer: false
+  volunteerDrawer: false,
+  paymentMethodDrawer: false
 }
 
 export const appSlice = createSlice({
@@ -62,6 +64,12 @@ export const appSlice = createSlice({
     },
     setCloseVolunteerDrawer: (state) => {
       state.volunteerDrawer = false
+    },
+    setOpenPaymentMethodDrawer: (state) => {
+      state.paymentMethodDrawer = true
+    },
+    setClosePaymentMethodDrawer: (state) => {
+      state.paymentMethodDrawer = false
     }
   }
 })
@@ -81,5 +89,7 @@ export const {
   setCloseCapitalCampaignDrawer,
   setOpenCapitalCampaignDrawer,
   setCloseVolunteerDrawer,
-  setOpenVolunteerDrawer
+  setOpenVolunteerDrawer,
+  setOpenPaymentMethodDrawer,
+  setClosePaymentMethodDrawer
 } = appSlice.actions

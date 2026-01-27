@@ -10,8 +10,16 @@ const validateProgramForm = (
     newErrors.name = 'Please enter a valid program name'
   }
 
-  if (!inputs?.description1 || typeof inputs.description1 !== 'string' || !inputs.description1.trim()) {
-    newErrors.description1 = 'Please enter a valid description'
+  if (!inputs?.descriptions || inputs.descriptions?.length === 0) {
+    newErrors.descriptions = 'Please enter at least one description'
+  }
+
+  if (inputs?.descriptions && inputs.descriptions.length > 0) {
+    const hasValidDescription = inputs.descriptions.some((desc: string) => desc && desc.trim().length > 0)
+
+    if (!hasValidDescription) {
+      newErrors.descriptions = 'At least one description must be filled out'
+    }
   }
 
   setErrors(newErrors)

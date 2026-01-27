@@ -21,10 +21,27 @@ export function CheckoutForm() {
   const [name, setName] = useState('')
   const [saveCard, setSaveCard] = useState(false)
   const session = useSession()
+  const [address, setAddress] = useState('')
+  const [city, setCity] = useState('')
+  const [state, setState] = useState('')
+  const [zipCode, setZipCode] = useState('')
+  const [country, setCountry] = useState('')
+  const [notes, setNotes] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [savedCards, setSavedCards] = useState([])
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
+  const [useNewCard, setUseNewCard] = useState(false)
+  const [coverFees, setCoverFees] = useState(false)
 
   const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const processingFee = totalPrice * 0.029 + 0.3
   const finalTotal = totalPrice + processingFee
+
+  // Get total amount including fees if opted in
+  const getTotalAmount = () => {
+    const baseAmount = totalPrice
+    return coverFees ? baseAmount + calculateFees(baseAmount) : baseAmount
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,14 +55,27 @@ export function CheckoutForm() {
     setError(null)
 
     try {
+      const finalAmount = Math.round((coverFees ? getTotalAmount() : totalPrice) * 100)
+      const feesCovered = coverFees ? Math.round(calculateFees(totalPrice) * 100) : 0
+
       // Create payment intent using server action
       const intentResult = await createPaymentIntentForCheckout({
         userId: session?.data?.user?.id,
+        name,
         email,
         amount: Math.round(finalTotal * 100), // Convert to cents
-        orderType: items.some((item) => item.type === 'TICKET') ? 'TICKET_PURCHASE' : 'ONE_TIME_DONATION',
+        orderType: 'TICKET_PURCHASE',
         description: `Order for ${name}`,
-        saveCard
+        saveCard,
+        coverFees,
+        feesCovered,
+        address,
+        city,
+        state,
+        zipCode,
+        country,
+        notes,
+        savedCardId: selectedCardId
       })
 
       if (!intentResult.success) {
@@ -91,6 +121,15 @@ export function CheckoutForm() {
     } finally {
       setIsProcessing(false)
     }
+  }
+
+  // Calculate fees so you receive the exact donation amount
+  const calculateFees = (donationAmount: number) => {
+    const amount = parseFloat(donationAmount.toString()) || 0
+    // Formula: (amount + 0.30) / (1 - 0.022) - amount
+    // This ensures after Stripe takes fees, you get the original amount
+    const totalNeeded = (amount + 0.3) / (1 - 0.022)
+    return totalNeeded - amount
   }
 
   return (

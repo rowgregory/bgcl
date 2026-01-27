@@ -6,15 +6,14 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Building2, ArrowRight, ChevronUp } from 'lucide-react'
 
+const CAPITAL_CAMPAIGN_LINKS = ['/admin/', '/program/', '/supporter']
+
 export default function CapitalCampaignTab() {
   const pathname = usePathname()
-  const [isDismissed, setIsDismissed] = useState(false)
   const [isHovered, setIsHovered] = useState(true)
   const [isMobileExpanded, setIsMobileExpanded] = useState(false)
 
   useEffect(() => {
-    if (isDismissed) return
-
     let isMounted = true
 
     const sequence = () => {
@@ -39,9 +38,9 @@ export default function CapitalCampaignTab() {
     return () => {
       isMounted = false
     }
-  }, [isDismissed])
+  }, [])
 
-  if (isDismissed || ['/admin/', '/program/'].some((link) => pathname.includes(link))) return null
+  if (CAPITAL_CAMPAIGN_LINKS.some((link) => pathname.includes(link))) return null
 
   return (
     <>

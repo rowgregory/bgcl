@@ -18,7 +18,7 @@ import CapitalCampaignTab from './components/CapitalCampaignTab'
 import RegistrationModal from './components/modals/RegistrationModal'
 import MobileNavigationDrawer from './components/MobileNavigationDrawer'
 
-export default function RootLayoutWrapper({ children, programs, pageContent }) {
+export default function RootLayoutWrapper({ children, programs, pageContent, donations }) {
   const pathname = usePathname()
 
   const show = !HIDDEN_PATHS.some((path) => pathname.startsWith(path))
@@ -29,7 +29,7 @@ export default function RootLayoutWrapper({ children, programs, pageContent }) {
         <Toast />
         <TicketSelectionDrawer />
         <LanguageDropdown />
-        <DonationNotification />
+        <DonationNotification donations={donations} />
         <CapitalCampaignDrawer />
         <VolunteerDrawer programs={programs} />
         <FloatingDonateButton />

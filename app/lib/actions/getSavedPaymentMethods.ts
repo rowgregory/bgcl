@@ -1,31 +1,55 @@
 'use server'
 
 import prisma from '@/prisma/client'
+import { unstable_cache } from 'next/cache'
+import { auth } from '../auth'
 
-export async function getSavedPaymentMethods(userId: string) {
-  try {
-    const paymentMethods = await prisma.paymentMethod.findMany({
+const getCachedPaymentMethods = unstable_cache(
+  async (userId: string) => {
+    return await prisma.paymentMethod.findMany({
       where: { userId },
-      orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }]
+      orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
+      select: {
+        id: true,
+        stripePaymentId: true,
+        cardholderName: true,
+        cardBrand: true,
+        cardLast4: true,
+        cardExpMonth: true,
+        cardExpYear: true,
+        isDefault: true,
+        createdAt: true,
+        updatedAt: true,
+        userId: true
+      }
     })
+  },
+  ['getCachedPaymentMethods'], // Cache key
+  {
+    revalidate: 60, // Cache for 60 seconds
+    tags: ['Payment-Method'] // Cache tag for manual revalidation
+  }
+)
+
+export async function getSavedPaymentMethods() {
+  try {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      throw new Error('Unauthorized')
+    }
+
+    const paymentMethods = await getCachedPaymentMethods(session.user.id)
 
     return {
       success: true,
-      paymentMethods: paymentMethods.map((pm) => ({
-        id: pm.id,
-        stripePaymentId: pm.stripePaymentId,
-        brand: pm.cardBrand,
-        last4: pm.cardLast4,
-        expMonth: pm.cardExpMonth,
-        expYear: pm.cardExpYear,
-        isDefault: pm.isDefault
-      }))
+      data: paymentMethods
     }
   } catch (error) {
-    console.error('Error getting payment methods:', error)
+    console.error('Error fetching payment methods:', error)
     return {
       success: false,
-      error: 'Failed to retrieve payment methods'
+      error: 'Failed to fetch payment methods'
     }
   }
 }

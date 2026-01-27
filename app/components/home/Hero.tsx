@@ -37,24 +37,24 @@ export const Hero = ({ initialPageData }) => {
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-y-3 sm:gap-x-3">
               {/* Primary Button */}
-              <a
+              <Link
                 href={initialPageData?.hero?.button1Link}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-lg bg-sky-600 hover:bg-sky-700 dark:bg-sky-600 dark:hover:bg-sky-700 text-white border-2 border-sky-600 dark:border-sky-600 px-8 py-3 font-bold transition-all duration-300 hover:shadow-lg hover:shadow-sky-600/50 dark:hover:shadow-sky-500/50 group"
               >
                 {initialPageData?.hero?.button1Text}
-              </a>
+              </Link>
 
               {/* Secondary Button */}
               {initialPageData?.hero && (
-                <Link
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
                   href={initialPageData?.hero?.button2Link}
                   className="inline-flex items-center justify-center gap-2 rounded-lg bg-transparent hover:bg-sky-700 dark:hover:bg-sky-700 text-white border-2 border-white hover:border-sky-600 dark:border-white dark:hover:border-sky-600 px-8 py-3 font-bold transition-all duration-300 hover:shadow-lg hover:shadow-sky-600/50 dark:hover:shadow-sky-500/50 group"
                 >
                   <Heart className="text-white w-4 h-4" />
                   {initialPageData?.hero?.button2Text}
-                </Link>
+                </a>
               )}
             </div>
           </div>

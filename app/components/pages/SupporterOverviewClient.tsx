@@ -201,9 +201,10 @@ const SupporterOverviewClient = ({ data }) => {
 
                   <div className="space-y-2">
                     {data.recentDonations.map((donation) => (
-                      <motion.div
+                      <MotionLink
+                        href={`/order-confirmation/${donation.id}`}
                         key={donation.id}
-                        className="group/item dark:bg-neutral-900/30 dark:border-neutral-800 dark:hover:border-neutral-700 bg-neutral-50 border-neutral-200 hover:border-neutral-300 backdrop-blur-sm border rounded-lg p-4 transition-all duration-300"
+                        className="group/item block dark:bg-neutral-900/30 dark:border-neutral-800 dark:hover:border-neutral-700 bg-neutral-50 border-neutral-200 hover:border-neutral-300 backdrop-blur-sm border rounded-lg p-4 transition-all duration-300 w-full h-full"
                         variants={itemVariants}
                         whileHover={{ x: 4 }}
                       >
@@ -233,7 +234,7 @@ const SupporterOverviewClient = ({ data }) => {
                                 : 'Yearly'}
                           </div>
                         </div>
-                      </motion.div>
+                      </MotionLink>
                     ))}
                   </div>
                 </motion.div>
