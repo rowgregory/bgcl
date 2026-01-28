@@ -22,7 +22,24 @@ export default function DonationNotification({ donations }) {
   const timersRef = useRef<NodeJS.Timeout[]>([])
   const pathname = usePathname()
 
+  const [gradient, setGradient] = useState('from-sky-500 to-cyan-600')
+
   useEffect(() => {
+    const gradients = [
+      'from-sky-500 to-cyan-600',
+      'from-purple-500 to-indigo-600',
+      'from-green-500 to-emerald-600',
+      'from-orange-500 to-orange-600'
+    ]
+
+    const getRandomGradient = () => {
+      let next: string
+      do {
+        next = gradients[Math.floor(Math.random() * gradients.length)]
+      } while (next === gradient)
+      return next
+    }
+
     setCurrentDonation(donations[0])
     setIsVisible(true)
     indexRef.current = 0
@@ -36,6 +53,8 @@ export default function DonationNotification({ donations }) {
         const showTimer = setTimeout(() => {
           indexRef.current = (indexRef.current + 1) % donations.length
           setCurrentDonation(donations[indexRef.current])
+
+          setGradient(getRandomGradient())
           setIsVisible(true)
           runCycle()
         }, 15000)
@@ -52,7 +71,7 @@ export default function DonationNotification({ donations }) {
       timersRef.current.forEach((timer) => clearTimeout(timer))
       timersRef.current = []
     }
-  }, [donations])
+  }, [donations, gradient])
 
   if (['/admin/', '/program/', '/supporter'].some((link) => pathname.includes(link))) return null
 
@@ -88,7 +107,7 @@ export default function DonationNotification({ donations }) {
           >
             <div className="dark:bg-neutral-900/95 dark:border-neutral-800 bg-white/95 border-neutral-200 rounded-2xl shadow-2xl border overflow-hidden backdrop-blur-xl">
               {/* Header with linear */}
-              <div className="bg-linear-to-r from-sky-500 to-sky-600 px-4 py-3 rounded-t-2xl">
+              <div className={`bg-linear-to-r ${gradient} px-4 py-3 rounded-t-2xl`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <motion.div
@@ -120,7 +139,7 @@ export default function DonationNotification({ donations }) {
 
                 {/* Footer with links */}
                 <div className="flex items-center justify-between pt-3 border-t dark:border-neutral-800 border-neutral-200">
-                  <Link href="/donate" className="text-sm font-semibold dark:text-sky-400 text-sky-600 hover:underline">
+                  <Link href="/donate" className="text-sm font-semibold hover:underline">
                     Donate Now →
                   </Link>
                   <a
@@ -139,7 +158,7 @@ export default function DonationNotification({ donations }) {
                 initial={{ scaleX: 1 }}
                 animate={{ scaleX: 0 }}
                 transition={{ duration: 5, ease: 'linear' }}
-                className="h-1 bg-linear-to-r from-sky-500 to-sky-600 origin-left"
+                className={`h-1 bg-linear-to-r ${gradient} origin-left`}
               />
             </div>
           </motion.div>

@@ -275,6 +275,54 @@ export const PageContentEditor: FC<PageContentEditorProps> = ({ initialContent, 
                     <p className="dark:text-neutral-300 text-neutral-700 leading-relaxed mb-6">{data.bodyText}</p>
                   )}
 
+                  {/* Outcomes (title + description pairs) */}
+                  {Object.entries(data)
+                    .filter(([key]) => key.startsWith('outcomeTitle'))
+                    .sort(
+                      ([a], [b]) => parseInt(a.replace('outcomeTitle', '')) - parseInt(b.replace('outcomeTitle', ''))
+                    )
+                    .map(([key, title]) => {
+                      const num = key.replace('outcomeTitle', '')
+                      const description = data[`outcomeDescription${num}`]
+
+                      if (!title || !description) return null
+
+                      return (
+                        <div
+                          key={`${section}-${key}`}
+                          className="mb-6 p-6 rounded-xl bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800"
+                        >
+                          <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-3">{title}</h3>
+                          <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed">{description}</p>
+                        </div>
+                      )
+                    })}
+
+                  {/* Stats (value + label pairs) - 2 column grid */}
+                  {Object.entries(data).filter(([key]) => key.startsWith('statValue')).length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                      {Object.entries(data)
+                        .filter(([key]) => key.startsWith('statValue'))
+                        .sort(([a], [b]) => parseInt(a.replace('statValue', '')) - parseInt(b.replace('statValue', '')))
+                        .map(([key, value]) => {
+                          const num = key.replace('statValue', '')
+                          const label = data[`statLabel${num}`]
+
+                          if (!value || !label) return null
+
+                          return (
+                            <div
+                              key={`${section}-${key}`}
+                              className="p-6 rounded-xl bg-neutral-800 dark:bg-neutral-900 border border-neutral-700 dark:border-neutral-800"
+                            >
+                              <h3 className="text-3xl font-black text-white mb-3">{value}</h3>
+                              <p className="text-neutral-300 dark:text-neutral-400 leading-relaxed text-sm">{label}</p>
+                            </div>
+                          )
+                        })}
+                    </div>
+                  )}
+
                   {/* Paragraphs */}
                   {Object.entries(data)
                     .filter(([key]) => key.startsWith('paragraph'))

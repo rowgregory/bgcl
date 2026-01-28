@@ -26,6 +26,13 @@ const changelogData: ChangelogEntry[] = [
     changes: [
       {
         type: 'feature',
+        title: 'About Page Content Management',
+        description:
+          'Unlocked the About page in Star Map admin panel for content editing. Administrators can now dynamically update mission statements, outcomes, statistics, and COVID response information without code changes.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
         title: 'Unified Preset Donation System',
         description:
           'Completely redesigned donation flow with preset amounts for one-time, monthly, and yearly donations. Previously only one-time donations had custom amounts; now all donation types feature suggested preset tiers plus custom amount options for maximum flexibility.',

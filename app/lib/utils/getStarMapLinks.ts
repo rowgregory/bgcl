@@ -3,12 +3,12 @@ const getStarMapLinks = (path: string) => [
     textKey: 'Home Page',
     linkKey: '/admin/star-map/home',
     isActive: path === '/admin/star-map/home'
+  },
+  {
+    textKey: 'About',
+    linkKey: '/admin/star-map/about',
+    isActive: path === '/admin/star-map/about'
   }
-  // {
-  //   textKey: 'About Us',
-  //   linkKey: '/admin/star-map/about-us',
-  //   isActive: path === '/admin/star-map/about-us'
-  // },
   // {
   //   textKey: 'Programs',
   //   linkKey: '/admin/star-map/programs',

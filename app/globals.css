@@ -62,13 +62,13 @@ html {
 .sqysh-gradient {
   background: linear-gradient(
     90deg,
-    #ef4444,
-    /* red */ #f97316,
-    /* orange */ #eab308,
-    /* yellow */ #22c55e,
-    /* green */ #38bdf8,
-    /* sky */ #a855f7 /* purple */
+    #7c3aed,
+    /* purple */ #22c55e,
+    /* green */ #f97316,
+    /* orange */ #2563eb,
+    /* blue */ #7c3aed /* purple */
   );
+
   background-size: 300% auto;
   background-clip: text;
   -webkit-background-clip: text;
