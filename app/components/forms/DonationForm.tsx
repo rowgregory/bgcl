@@ -283,8 +283,6 @@ function DonationForm({ campaignName, campaigns }) {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
       setProcessingStatus('failed')
-    } finally {
-      setLoading(false)
     }
   }
 
