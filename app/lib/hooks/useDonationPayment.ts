@@ -43,7 +43,6 @@ export function useDonationPayment() {
         savePaymentMethod(session.data.user.id, paymentMethod as string, true).catch(console.error)
       }
 
-      setLoading(false)
       router.push(`/order-confirmation/${data.orderId}`)
       channel.unbind('order-created')
     })
@@ -92,7 +91,6 @@ export function useDonationPayment() {
         savePaymentMethod(session.data.user.id, paymentMethod as string, true).catch(console.error)
       }
 
-      setLoading(false)
       router.push(`/order-confirmation/${data.orderId}`)
       channel.unbind('order-created')
     })
