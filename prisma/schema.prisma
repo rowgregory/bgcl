@@ -434,6 +434,7 @@ model Program {
   showThemes        Boolean @default(false)
   themes            Json    @default("[]")
   externalLink      String? @default("")
+  isListed          Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

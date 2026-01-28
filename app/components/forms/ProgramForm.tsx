@@ -708,6 +708,13 @@ export const ProgramForm: FC<IForm> = ({
               </div>
             )}
           </div>
+
+          <CustomSwitch
+            checked={inputs.isListed ?? false}
+            label="Listed Program"
+            onChange={(checked) => store.dispatch(setInputs({ formName: 'programForm', data: { isListed: checked } }))}
+            description="Controls whether this program appears on the public programs page"
+          />
         </div>
       </div>
 

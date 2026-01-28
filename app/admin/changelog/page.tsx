@@ -21,6 +21,19 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.7.1',
+    date: '2026-01-28',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Program Visibility Control',
+        description:
+          'Added isListed field to Program model with toggle in admin panel. Public facing program pages now only display programs marked as listed, while admin views show all programs for management. Optimized caching to ensure immediate visibility updates.',
+        impact: 'high'
+      }
+    ]
+  },
+  {
     version: '1.7.0',
     date: '2026-01-28',
     changes: [
