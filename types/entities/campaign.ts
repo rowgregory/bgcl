@@ -9,6 +9,7 @@ export interface ICampaign {
   startDate: Date
   endDate?: Date
   isActive: boolean
+  isListed: boolean
   externalLink?: string
   createdAt: Date
   updatedAt: Date

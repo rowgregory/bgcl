@@ -8,6 +8,7 @@ export const initialCampaignFormState = {
   organizerName: 'Boys & Girls Club of Lynn',
   startDate: '',
   isActive: true,
+  isListed: false,
   externalLink: '',
   order: 0
 }

@@ -57,6 +57,8 @@ function DonationForm({ campaignName, campaigns }) {
       if (foundCampaign) {
         setCampaign(foundCampaign)
       }
+    } else if (campaigns) {
+      setCampaign(campaigns[0])
     }
   }, [campaignName, campaigns])
 

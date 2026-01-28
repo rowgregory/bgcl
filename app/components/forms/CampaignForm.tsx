@@ -155,6 +155,12 @@ export const CampaignForm: FC<IForm> = ({
             onChange={(checked) => store.dispatch(setInputs({ formName: 'campaignForm', data: { isActive: checked } }))}
             description="Is your campaign actively accepting donations?"
           />
+          <CustomSwitch
+            checked={inputs.isListed ?? false}
+            label="Listed Campaign"
+            onChange={(checked) => store.dispatch(setInputs({ formName: 'campaignForm', data: { isListed: checked } }))}
+            description="Controls whether this campaign appears on the public campaigns page"
+          />
 
           <div>
             <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">

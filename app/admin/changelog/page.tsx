@@ -21,6 +21,33 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.6.1',
+    date: '2026-01-28',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Campaign Visibility Control',
+        description:
+          'Added isListed field to Campaign model with custom toggle switch in admin panel. Administrators can now show or hide specific campaigns from the frontend page while still having them avaiable to donate towards in the donation form.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Required Campaign Selection',
+        description:
+          'Made campaign selection required in donation form with the first available campaign automatically pre-selected when the component loads, ensuring all donations are properly attributed to campaigns.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Campaign Listing Filter',
+        description:
+          'Added optional filtering to campaign queries to show only listed campaigns on public donation pages while maintaining full visibility in donation form and in admin views for management purposes.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.6.0',
     date: '2026-01-27',
     changes: [

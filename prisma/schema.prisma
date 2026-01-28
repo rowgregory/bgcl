@@ -297,6 +297,7 @@ model Campaign {
   startDate     DateTime
   endDate       DateTime?
   isActive      Boolean   @default(true)
+  isListed      Boolean   @default(false)
 
   // External Links (for Harness transition)
   externalLink String?

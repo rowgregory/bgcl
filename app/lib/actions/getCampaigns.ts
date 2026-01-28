@@ -3,9 +3,10 @@ import { ICampaign } from '@/types/entities/campaign'
 import { unstable_cache } from 'next/cache'
 
 export const getCampaigns = unstable_cache(
-  async (): Promise<ICampaign[]> => {
+  async (isListed?: boolean): Promise<ICampaign[]> => {
     try {
       const campaigns = await prisma.campaign.findMany({
+        where: isListed !== undefined ? { isListed } : undefined,
         orderBy: { order: 'asc' }
       })
 

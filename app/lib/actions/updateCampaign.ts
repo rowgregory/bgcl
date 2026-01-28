@@ -15,6 +15,7 @@ export interface UpdateCampaignInput {
   startDate: Date
   endDate?: Date
   isActive?: boolean
+  isListed?: boolean
   externalLink?: string
 }
 

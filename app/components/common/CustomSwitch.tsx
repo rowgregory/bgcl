@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { CreditCard, PersonStanding } from 'lucide-react'
+import { CreditCard, Eye, PersonStanding, Zap } from 'lucide-react'
 
 interface CustomSwitchProps {
   checked: boolean
@@ -27,13 +27,30 @@ export default function CustomSwitch({ checked, onChange, label, description }: 
       <div className="flex items-center gap-2 sm:gap-3 flex-1 text-left min-w-0">
         {label === 'Age Group' ? (
           <PersonStanding
-            className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-colors ${checked ? 'dark:text-sky-400 text-sky-600' : 'dark:text-zinc-500 text-neutral-600'}`}
+            className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-colors ${
+              checked ? 'dark:text-sky-400 text-sky-600' : 'dark:text-zinc-500 text-neutral-600'
+            }`}
+          />
+        ) : label === 'Active Campaign' ? (
+          <Zap
+            className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-colors ${
+              checked ? 'dark:text-green-400 text-green-600' : 'dark:text-zinc-500 text-neutral-600'
+            }`}
+          />
+        ) : label === 'Listed Campaign' ? (
+          <Eye
+            className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-colors ${
+              checked ? 'dark:text-purple-400 text-purple-600' : 'dark:text-zinc-500 text-neutral-600'
+            }`}
           />
         ) : (
           <CreditCard
-            className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-colors ${checked ? 'dark:text-sky-400 text-sky-600' : 'dark:text-zinc-500 text-neutral-600'}`}
+            className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-colors ${
+              checked ? 'dark:text-sky-400 text-sky-600' : 'dark:text-zinc-500 text-neutral-600'
+            }`}
           />
         )}
+
         <div className="min-w-0 flex-1">
           <p
             className={`text-xs sm:text-sm font-medium truncate ${checked ? 'dark:text-white text-neutral-900' : 'dark:text-zinc-300 text-neutral-700'}`}
