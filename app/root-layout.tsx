@@ -17,6 +17,7 @@ import FloatingDonateButton from './components/FloatingButton'
 import CapitalCampaignTab from './components/CapitalCampaignTab'
 import RegistrationModal from './components/modals/RegistrationModal'
 import MobileNavigationDrawer from './components/MobileNavigationDrawer'
+import { ThemeProvider } from './lib/providers/theme'
 
 export default function RootLayoutWrapper({ children, programs, pageContent, donations }) {
   const pathname = usePathname()
@@ -26,19 +27,21 @@ export default function RootLayoutWrapper({ children, programs, pageContent, don
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <Toast />
-        <TicketSelectionDrawer />
-        <LanguageDropdown />
-        <DonationNotification donations={donations} />
-        <CapitalCampaignDrawer />
-        <VolunteerDrawer programs={programs} />
-        <FloatingDonateButton />
-        <CapitalCampaignTab />
-        <RegistrationModal pageContent={pageContent?.content} />
-        <MobileNavigationDrawer />
-        {show && <Header />}
-        {children}
-        {show && <Footer />}
+        <ThemeProvider>
+          <Toast />
+          <TicketSelectionDrawer />
+          <LanguageDropdown />
+          <DonationNotification donations={donations} />
+          <CapitalCampaignDrawer />
+          <VolunteerDrawer programs={programs} />
+          <FloatingDonateButton />
+          <CapitalCampaignTab />
+          <RegistrationModal pageContent={pageContent?.content} />
+          <MobileNavigationDrawer />
+          {show && <Header />}
+          {children}
+          {show && <Footer />}
+        </ThemeProvider>
       </PersistGate>
     </Provider>
   )

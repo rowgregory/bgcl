@@ -84,15 +84,11 @@ const StoryClient = ({ story }) => {
     const url = typeof window !== 'undefined' ? window.location.href : ''
 
     if (navigator.share) {
-      try {
-        await navigator.share({
-          title: story?.title,
-          text: story?.paragraph1,
-          url: url
-        })
-      } catch (err) {
-        console.log('Share cancelled')
-      }
+      await navigator.share({
+        title: story?.title,
+        text: story?.paragraph1,
+        url: url
+      })
     } else {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(url)

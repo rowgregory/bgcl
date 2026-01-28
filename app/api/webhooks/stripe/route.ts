@@ -56,7 +56,6 @@ export async function POST(req: NextRequest) {
 
         // Fetch the full subscription
         const fullSub = await stripe.subscriptions.retrieve(newSub.id)
-        console.log('Full subscription:', JSON.stringify(fullSub, null, 2))
 
         if (fullSub.status === 'incomplete') {
           console.log('Subscription incomplete, waiting for payment:', fullSub.id)
@@ -96,6 +95,19 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
   const { id, amount, metadata } = paymentIntent
 
   try {
+    // Skip if this is a subscription payment
+    // Subscriptions have setup_future_usage and description 'Subscription creation'
+    if (paymentIntent.setup_future_usage === 'off_session' || paymentIntent.description === 'Subscription creation') {
+      console.log('Skipping payment intent - part of subscription creation')
+      return
+    }
+
+    // Also check if there's an invoice
+    if ((paymentIntent as any).invoice) {
+      console.log('Skipping payment intent - associated with invoice')
+      return
+    }
+
     const existingOrder = await prisma.order.findFirst({
       where: { paymentIntentId: id }
     })
@@ -157,8 +169,6 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       }
     }
 
-    console.log('Order created from webhook:', order.id)
-
     // Send confirmation email
     await sendConfirmationEmail(order, orderType, amount, metadata)
 
@@ -207,7 +217,9 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
         paymentIntentId: id,
         customerEmail: (metadata?.email as string) || '',
         customerName: (metadata?.name as string) || 'Guest',
-        userId
+        userId,
+        failureReason: last_payment_error?.message || 'Payment failed',
+        failureCode: last_payment_error?.code || null
       }
     })
 
@@ -215,6 +227,7 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
       paymentIntentId: id,
       orderId: order.id,
       error: last_payment_error?.message,
+      code: last_payment_error?.code,
       userId
     })
 
@@ -297,6 +310,8 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     const userId = subscription.metadata?.userId
     const frequency = subscription.metadata?.frequency || 'monthly'
     const amount = (subscription.items.data[0]?.price.unit_amount || 0) / 100
+    const coverFees = subscription.metadata?.coverFees === 'true'
+    const feesCovered = parseInt(subscription.metadata?.feesCovered || '0')
 
     // Get current_period_end from subscription items
     const currentPeriodEnd = subscription.items.data[0]?.current_period_end
@@ -304,6 +319,8 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     if (!currentPeriodEnd) {
       throw new Error('Subscription item missing current_period_end')
     }
+
+    const paymentMethodId = subscription.default_payment_method as string
 
     const order = await prisma.order.create({
       data: {
@@ -315,14 +332,26 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
         customerName: subscription.metadata?.name || '',
         userId: userId && userId !== 'guest' ? userId : null,
         stripeSubscriptionId: subscription.id,
+        paymentMethodId: paymentMethodId || null,
         isRecurring: true,
         recurringFrequency: frequency,
+        coverFees: coverFees,
+        feesCovered: feesCovered,
         paidAt: new Date(),
-        nextBillingDate: new Date(currentPeriodEnd * 1000)
+        nextBillingDate: new Date(currentPeriodEnd * 1000),
+        billingAddress: {
+          address: subscription.metadata.address,
+          city: subscription.metadata.city,
+          state: subscription.metadata.state,
+          zipCode: subscription.metadata.zipCode,
+          country: subscription.metadata.country
+        },
+        notes: subscription.metadata.notes || null,
+        campaignId: subscription.metadata.campaignId || null
       }
     })
 
-    console.log('Recurring donation created:', subscription.id)
+    console.log('Recurring donation created from handleSubscriptionCreated:', subscription.id)
 
     await sendConfirmationEmail(order, 'RECURRING_DONATION', amount * 100, subscription.metadata)
 
@@ -333,6 +362,8 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       status: order.status,
       type: order.type,
       frequency,
+      coverFees,
+      feesCovered,
       createdAt: order.createdAt
     })
   } catch (error) {

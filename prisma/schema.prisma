@@ -240,6 +240,9 @@ model Order {
   recurringFrequency   String? // "monthly", "yearly"
   nextBillingDate      DateTime? // Next charge date
 
+  failureReason String? // Store the failure reason
+  failureCode   String? // Store the failure code (optional)
+
   // Relations
   orderItems OrderItem[]
 

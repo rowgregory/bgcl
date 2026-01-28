@@ -14,13 +14,15 @@ import {
   MessageSquare,
   DoorOpen,
   // User,
-  Orbit
+  Orbit,
+  Logs
 } from 'lucide-react'
 
 const isStringInPath = (path: string, str: string) => path.includes(str)
 
 export const adminNavigationLinkData = (
-  path: string
+  path: string,
+  isSuperUser: boolean
 ): {
   title: string
   items: { icon: LucideIcon; label: string; path: string; description: string; active: boolean; isDrawer?: boolean }[]
@@ -130,7 +132,18 @@ export const adminNavigationLinkData = (
       path: '/admin/changelog',
       description: 'Version History & Updates',
       active: isStringInPath(path, 'changelog')
-    }
+    },
+    ...(isSuperUser
+      ? [
+          {
+            icon: Logs,
+            label: 'Logs',
+            path: '/admin/logs',
+            description: 'System details',
+            active: isStringInPath(path, 'logs')
+          }
+        ]
+      : [])
   ]
 
   // const futureGroup = [

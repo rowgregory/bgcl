@@ -1,7 +1,6 @@
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Heart } from 'lucide-react'
 import { createPaymentIntentForCheckout } from '@/app/lib/actions/createPaymentIntentForCheckout'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
@@ -11,79 +10,44 @@ import { createSubscriptionAfterSetup } from '@/app/lib/actions/createSubscripti
 import { ICampaign } from '@/types/entities/campaign'
 import { getSavedPaymentMethods } from '@/app/lib/actions/getSavedPaymentMethods'
 import { useDonationPayment } from '@/app/lib/hooks/useDonationPayment'
-import { useDarkMode } from '@/app/lib/hooks/useDarkMode'
-
-const MONTHLY_PLANS = [
-  {
-    id: 'monthly_supporter',
-    name: 'Supporter',
-    amount: 250,
-    description: 'Support our monthly programs',
-    features: ['Monthly impact report', 'Donor recognition (optional)']
-  },
-  {
-    id: 'monthly_champion',
-    name: 'Champion',
-    amount: 500,
-    description: 'Make a bigger difference',
-    features: ['Monthly impact report', 'Donor recognition', 'Exclusive updates'],
-    highlighted: true
-  },
-  {
-    id: 'monthly_leader',
-    name: 'Leader',
-    amount: 1000,
-    description: 'Lead lasting change',
-    features: ['Monthly impact report', 'Donor recognition', 'Exclusive updates', 'Annual thank you event']
-  },
-  {
-    id: 'monthly_founder',
-    name: 'Founder',
-    amount: 2500,
-    description: 'Transform the community',
-    features: [
-      'Monthly impact report',
-      'Donor recognition',
-      'Exclusive updates',
-      'Annual thank you event',
-      'Board meeting invitations',
-      'Naming opportunity'
-    ]
-  }
-]
-
-const YEARLY_PLANS = [
-  { id: 'yearly-3000', name: 'Supporter', description: 'Annual support for our mission', amount: 3000 },
-  { id: 'yearly-6000', name: 'Champion', description: 'Sustained commitment to youth', amount: 6000 },
-  { id: 'yearly-12000', name: 'Hero', description: 'Major annual investment', amount: 12000 }
-]
+import { createSubscriptionWithSavedCard } from '@/app/lib/actions/createSubscriptionWithSavedCard'
+import DonationTypeSelection from '../donate-form/DonationTypeSelection'
+import { MONTHLY_PLANS, ONE_TIME_PLANS, YEARLY_PLANS } from '@/app/lib/constants/donate-page'
+import MonthlyPlans from '../donate-form/MonthlyPlans'
+import YearlyPlans from '../donate-form/YearlyPlans'
+import OneTimeAmount from '../donate-form/OneTimeAmount'
+import AddressInformation from '../donate-form/AddressInformation'
+import CampaignSelectionAndNotes from '../donate-form/CampaignSelectionAndNotes'
+import SavedCardsSelection from '../donate-form/SavedCardsSelection'
+import ContactInformation from '../donate-form/ContactInformation'
+import SubmitButton from '../donate-form/SubmitButton'
+import { useApplicationSelector } from '@/app/lib/store/store'
 
 function DonationForm({ campaignName, campaigns }) {
   const stripe = useStripe()
   const elements = useElements()
   const session = useSession()
-  const [email, setEmail] = useState('')
-  const [name, setName] = useState('')
-  const [error, setError] = useState('')
+  const [email, setEmail] = useState<string>('sqysh@sqysh.io')
+  const [name, setName] = useState<string>('Gregory Row')
+  const [error, setError] = useState<string>('')
   const [amount, setAmount] = useState(50)
-  const [selectedPlan, setSelectedPlan] = useState('')
-  const [saveCard, setSaveCard] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState<string>('once_friend')
   const [processingStatus, setProcessingStatus] = useState<'idle' | 'processing' | 'success' | 'failed'>('idle')
   const [donationType, setDonationType] = useState<'once' | 'monthly' | 'yearly'>('once')
-  const [address, setAddress] = useState('')
-  const [city, setCity] = useState('')
-  const [state, setState] = useState('')
-  const [zipCode, setZipCode] = useState('')
-  const [country, setCountry] = useState('')
-  const [notes, setNotes] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [address, setAddress] = useState<string>('330 Paradise Rd')
+  const [city, setCity] = useState<string>('Swampscott')
+  const [state, setState] = useState<string>('MA')
+  const [zipCode, setZipCode] = useState<string>('01907')
+  const [country, setCountry] = useState<string>('United States')
+  const [notes, setNotes] = useState<string>('This is a test!')
   const [campaign, setCampaign] = useState<ICampaign | null>(null)
   const [savedCards, setSavedCards] = useState([])
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
-  const [useNewCard, setUseNewCard] = useState(false)
-  const [coverFees, setCoverFees] = useState(false)
-  const isDark = useDarkMode()
-
+  const [loading, setLoading] = useState<boolean>(false)
+  const [saveCard, setSaveCard] = useState<boolean>(false)
+  const [useNewCard, setUseNewCard] = useState<boolean>(false)
+  const [coverFees, setCoverFees] = useState<boolean>(true)
+  const { isDark } = useApplicationSelector()
   const { setupPusherListenerOneTime, getPaymentMethodId, setupPusherListenerRecurring } = useDonationPayment()
 
   useEffect(() => {
@@ -96,19 +60,45 @@ function DonationForm({ campaignName, campaigns }) {
     }
   }, [campaignName, campaigns])
 
-  const getAmount = () => {
-    if (donationType === 'once') {
-      return parseFloat(amount.toString()) || 0
-    } else if (donationType === 'monthly') {
-      return MONTHLY_PLANS.find((p) => p.id === selectedPlan)?.amount || parseFloat(amount.toString()) || 0
-    } else {
-      return YEARLY_PLANS.find((p) => p.id === selectedPlan)?.amount || parseFloat(amount.toString()) || 0
+  useEffect(() => {
+    if (session.status === 'authenticated') {
+      getSavedPaymentMethods().then((result) => {
+        if (result.success) {
+          setSavedCards(result.data)
+          // Auto-select default card
+          const defaultCard = result.data.find((c) => c.isDefault)
+          if (defaultCard) {
+            setSelectedCardId(defaultCard.stripePaymentId) // ✅ Use stripePaymentId
+          }
+        }
+      })
     }
+  }, [session.status])
+
+  // Calculate fees so you receive the exact donation amount
+  const calculateFees = (donationAmount: number) => {
+    const amount = parseFloat(donationAmount.toString()) || 0
+    // Formula: (amount + 0.30) / (1 - 0.022) - amount
+    // This ensures after Stripe takes fees, you get the original amount
+    const totalNeeded = (amount + 0.3) / (1 - 0.022)
+    return totalNeeded - amount
   }
+
+  const getAmount = () => {
+    // If a preset plan is selected, get its amount
+    if (selectedPlan && !selectedPlan.includes('custom')) {
+      const plans = donationType === 'monthly' ? MONTHLY_PLANS : donationType === 'once' ? ONE_TIME_PLANS : YEARLY_PLANS
+      return plans.find((p) => p.id === selectedPlan)?.amount || 0
+    }
+
+    // Otherwise use the amount input (for one-time or custom recurring)
+    return parseFloat(amount.toString()) || 0
+  }
+
+  const baseAmount = getAmount()
 
   // Get total amount including fees if opted in
   const getTotalAmount = () => {
-    const baseAmount = getAmount()
     return coverFees ? baseAmount + calculateFees(baseAmount) : baseAmount
   }
 
@@ -128,34 +118,33 @@ function DonationForm({ campaignName, campaigns }) {
 
       if (donationType === 'once') {
         // One-time donation flow
-        // Check if using saved card
+        const intentResult = await createPaymentIntentForCheckout({
+          userId: session?.data?.user?.id,
+          name,
+          email,
+          amount: finalAmount,
+          orderType: 'ONE_TIME_DONATION',
+          description: `One-time donation from ${name}`,
+          saveCard: selectedCardId && !useNewCard ? false : saveCard, // Don't save if already using saved card
+          coverFees,
+          feesCovered,
+          address,
+          city,
+          state,
+          zipCode,
+          country,
+          notes,
+          campaignId: campaign?.id,
+          savedCardId: selectedCardId && !useNewCard ? selectedCardId : undefined
+        })
+
+        if (!intentResult.success) {
+          throw new Error(intentResult.error || 'Failed to create payment intent')
+        }
+
+        // Handle based on whether using saved card or new card
         if (selectedCardId && !useNewCard) {
-          // Use saved card - server confirms it
-          const intentResult = await createPaymentIntentForCheckout({
-            userId: session?.data?.user?.id,
-            name,
-            email,
-            amount: finalAmount,
-            orderType: 'ONE_TIME_DONATION',
-            description: `One-time donation from ${name}`,
-            saveCard: false,
-            coverFees,
-            feesCovered,
-            address,
-            city,
-            state,
-            zipCode,
-            country,
-            notes,
-            campaignId: campaign?.id,
-            savedCardId: selectedCardId
-          })
-
-          if (!intentResult.success) {
-            throw new Error(intentResult.error || 'Failed to create payment intent')
-          }
-
-          // Server already confirmed the payment - just listen for webhook
+          // Saved card - server already confirmed, just listen for webhook
           setupPusherListenerOneTime(
             intentResult.paymentIntentId,
             false,
@@ -166,29 +155,7 @@ function DonationForm({ campaignName, campaigns }) {
             setLoading
           )
         } else {
-          const intentResult = await createPaymentIntentForCheckout({
-            userId: session?.data?.user?.id,
-            name,
-            email,
-            amount: finalAmount,
-            orderType: 'ONE_TIME_DONATION',
-            description: `One-time donation from ${name}`,
-            saveCard,
-            coverFees,
-            feesCovered,
-            address,
-            city,
-            state,
-            zipCode,
-            country,
-            notes,
-            campaignId: campaign?.id
-          })
-
-          if (!intentResult.success) {
-            throw new Error(intentResult.error || 'Failed to create payment intent')
-          }
-
+          // New card - confirm with Stripe Elements
           const { clientSecret } = intentResult
           const cardElement = elements.getElement(CardElement)
           if (!cardElement) throw new Error('Card element not found')
@@ -217,372 +184,173 @@ function DonationForm({ campaignName, campaigns }) {
           )
         }
       } else {
-        // Recurring donation flow - SetupIntent
-        const setupResult = await createSetupIntentForSubscription({
-          userId: session?.data?.user?.id,
-          email,
-          name,
-          amount: finalAmount,
-          frequency: donationType === 'monthly' ? 'monthly' : 'yearly',
-          coverFees,
-          feesCovered
-        })
+        // Recurring donation flow - SetupIntent or Saved Card
 
-        if (!setupResult.success) {
-          throw new Error(setupResult.error || 'Failed to create setup intent')
-        }
+        if (selectedCardId && !useNewCard) {
+          // Using saved card - skip setup intent, go straight to subscription
+          const subscriptionResult = await createSubscriptionWithSavedCard({
+            userId: session?.data?.user?.id,
+            email,
+            name,
+            amount: finalAmount,
+            frequency: donationType === 'monthly' ? 'monthly' : 'yearly',
+            coverFees,
+            feesCovered,
+            address,
+            city,
+            state,
+            zipCode,
+            country,
+            notes,
+            savedCardId: selectedCardId,
+            campaignId: campaign?.id
+          })
 
-        const { clientSecret, setupIntentId } = setupResult
-        const cardElement = elements.getElement(CardElement)
-        if (!cardElement) throw new Error('Card element not found')
-
-        // Confirm card setup
-        const result = await stripe.confirmCardSetup(clientSecret, {
-          payment_method: {
-            card: cardElement,
-            billing_details: { name, email }
+          if (!subscriptionResult.success) {
+            throw new Error(subscriptionResult.error || 'Failed to create subscription')
           }
-        })
 
-        if (result.error) {
-          setProcessingStatus('failed')
-          setError(result.error.message || 'Card confirmation failed')
-          return
+          // Wait for order via Pusher
+          setupPusherListenerRecurring(
+            subscriptionResult,
+            processingStatus,
+            setError,
+            setProcessingStatus,
+            setLoading,
+            saveCard,
+            selectedCardId
+          )
+        } else {
+          // New card - create setup intent
+          const setupResult = await createSetupIntentForSubscription({
+            userId: session?.data?.user?.id,
+            email,
+            name,
+            amount: finalAmount,
+            frequency: donationType === 'monthly' ? 'monthly' : 'yearly',
+            coverFees,
+            feesCovered
+          })
+
+          if (!setupResult.success) {
+            throw new Error(setupResult.error || 'Failed to create setup intent')
+          }
+
+          const { clientSecret, setupIntentId } = setupResult
+          const cardElement = elements.getElement(CardElement)
+          if (!cardElement) throw new Error('Card element not found')
+
+          // Confirm card setup
+          const result = await stripe.confirmCardSetup(clientSecret, {
+            payment_method: {
+              card: cardElement,
+              billing_details: { name, email }
+            }
+          })
+
+          if (result.error) {
+            setProcessingStatus('failed')
+            setError(result.error.message || 'Card confirmation failed')
+            return
+          }
+
+          // Create subscription with confirmed card
+          const subscriptionResult = await createSubscriptionAfterSetup({
+            setupIntentId,
+            email,
+            name,
+            frequency: donationType === 'monthly' ? 'monthly' : 'yearly',
+            amount: finalAmount,
+            coverFees,
+            feesCovered,
+            address,
+            city,
+            state,
+            zipCode,
+            country,
+            notes,
+            campaignId: campaign?.id
+          })
+
+          if (!subscriptionResult.success) {
+            throw new Error(subscriptionResult.error || 'Failed to create subscription')
+          }
+
+          // Wait for order via Pusher
+          setupPusherListenerRecurring(subscriptionResult, processingStatus, setError, setProcessingStatus, setLoading)
         }
-
-        // Create subscription with confirmed card
-        const subscriptionResult = await createSubscriptionAfterSetup({
-          setupIntentId,
-          frequency: donationType === 'monthly' ? 'monthly' : 'yearly',
-          amount: finalAmount,
-          coverFees,
-          feesCovered
-        })
-
-        if (!subscriptionResult.success) {
-          throw new Error(subscriptionResult.error || 'Failed to create subscription')
-        }
-
-        // NEW: Wait for order via Pusher
-        setupPusherListenerRecurring(subscriptionResult, processingStatus, setError, setProcessingStatus, setLoading)
       }
     } catch (err) {
-      console.error('Full error:', err)
       setError(err instanceof Error ? err.message : 'An error occurred')
       setProcessingStatus('failed')
+    } finally {
+      setLoading(false)
     }
   }
-
-  const isMonthlyValid = (donationType === 'monthly' || donationType === 'yearly') && selectedPlan
-  const isValid = email && name && (donationType === 'once' || isMonthlyValid)
-
-  // Calculate fees so you receive the exact donation amount
-  const calculateFees = (donationAmount: number) => {
-    const amount = parseFloat(donationAmount.toString()) || 0
-    // Formula: (amount + 0.30) / (1 - 0.022) - amount
-    // This ensures after Stripe takes fees, you get the original amount
-    const totalNeeded = (amount + 0.3) / (1 - 0.022)
-    return totalNeeded - amount
-  }
-
-  // Load saved cards when authenticated
-  useEffect(() => {
-    if (session.status === 'authenticated') {
-      getSavedPaymentMethods().then((result) => {
-        if (result.success) {
-          setSavedCards(result.data)
-          // Auto-select default card
-          const defaultCard = result.data.find((c) => c.isDefault)
-          if (defaultCard) {
-            setSelectedCardId(defaultCard.id)
-          }
-        }
-      })
-    }
-  }, [session.status])
-
-  console.log('selectedCardId: ', selectedCardId)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Donation Type Selection */}
-      <div className="grid sm:grid-cols-3 gap-2 mb-8">
-        <button
-          type="button"
-          onClick={() => setDonationType('once')}
-          className={`p-3 rounded-lg border-2 transition-all text-center ${
-            donationType === 'once'
-              ? 'dark:border-sky-500 dark:bg-sky-500/10 border-sky-500 bg-sky-500/10'
-              : 'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 border-neutral-200 bg-neutral-100 hover:border-neutral-300'
-          }`}
-        >
-          <p
-            className={`font-semibold text-sm ${donationType === 'once' ? 'dark:text-white text-neutral-900' : 'dark:text-zinc-300 text-neutral-700'}`}
-          >
-            One-Time
-          </p>
-          <p
-            className={`text-xs ${donationType === 'once' ? 'dark:text-zinc-400 text-neutral-600' : 'dark:text-zinc-400 text-neutral-500'}`}
-          >
-            Single donation
-          </p>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setDonationType('monthly')}
-          className={`p-3 rounded-lg border-2 transition-all text-center ${
-            donationType === 'monthly'
-              ? 'dark:border-sky-500 dark:bg-sky-500/10 border-sky-500 bg-sky-500/10'
-              : 'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 border-neutral-200 bg-neutral-100 hover:border-neutral-300'
-          }`}
-        >
-          <p
-            className={`font-semibold text-sm ${donationType === 'monthly' ? 'dark:text-white text-neutral-900' : 'dark:text-zinc-300 text-neutral-700'}`}
-          >
-            Monthly
-          </p>
-          <p
-            className={`text-xs ${donationType === 'monthly' ? 'dark:text-zinc-400 text-neutral-600' : 'dark:text-zinc-400 text-neutral-500'}`}
-          >
-            Recurring support
-          </p>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setDonationType('yearly')}
-          className={`p-3 rounded-lg border-2 transition-all text-center ${
-            donationType === 'yearly'
-              ? 'dark:border-sky-500 dark:bg-sky-500/10 border-sky-500 bg-sky-500/10'
-              : 'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 border-neutral-200 bg-neutral-100 hover:border-neutral-300'
-          }`}
-        >
-          <p
-            className={`font-semibold text-sm ${donationType === 'yearly' ? 'dark:text-white text-neutral-900' : 'dark:text-zinc-300 text-neutral-700'}`}
-          >
-            Yearly
-          </p>
-          <p
-            className={`text-xs ${donationType === 'yearly' ? 'dark:text-zinc-400 text-neutral-600' : 'dark:text-zinc-400 text-neutral-500'}`}
-          >
-            Annual subscription
-          </p>
-        </button>
-      </div>
-
-      {/* Monthly Plans */}
-      {donationType === 'monthly' && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-          <p className="text-sm font-medium dark:text-zinc-300 text-neutral-700">Select a monthly plan:</p>
-          <div className="grid grid-cols-1 gap-3">
-            {MONTHLY_PLANS.map((plan) => (
-              <button
-                key={plan.id}
-                type="button"
-                onClick={() => setSelectedPlan(plan.id)}
-                className={`p-4 rounded-lg border-2 text-left transition-all ${
-                  selectedPlan === plan.id
-                    ? 'dark:border-sky-500 dark:bg-sky-500/10 border-sky-500 bg-sky-500/10'
-                    : 'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 border-neutral-200 bg-neutral-100 hover:border-neutral-300'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold dark:text-white text-neutral-900">{plan.name}</p>
-                    <p className="text-sm dark:text-zinc-400 text-neutral-600">{plan.description}</p>
-                  </div>
-                  <p className="text-lg font-bold dark:text-sky-400 text-sky-600">${plan.amount}</p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {donationType === 'yearly' && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-          <p className="text-sm font-medium dark:text-zinc-300 text-neutral-700">Select a yearly plan:</p>
-          <div className="grid grid-cols-1 gap-3">
-            {YEARLY_PLANS.map((plan) => (
-              <button
-                key={plan.id}
-                type="button"
-                onClick={() => setSelectedPlan(plan.id)}
-                className={`p-4 rounded-lg border-2 text-left transition-all ${
-                  selectedPlan === plan.id
-                    ? 'dark:border-sky-500 dark:bg-sky-500/10 border-sky-500 bg-sky-500/10'
-                    : 'dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 border-neutral-200 bg-neutral-100 hover:border-neutral-300'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold dark:text-white text-neutral-900">{plan.name}</p>
-                    <p className="text-sm dark:text-zinc-400 text-neutral-600">{plan.description}</p>
-                  </div>
-                  <p className="text-lg font-bold dark:text-sky-400 text-sky-600">${plan.amount}/yr</p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </motion.div>
-      )}
+      <DonationTypeSelection
+        donationType={donationType}
+        setDonationType={setDonationType}
+        setSelectedPlan={setSelectedPlan}
+      />
 
       {/* One-Time Amount */}
       {donationType === 'once' && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-          <p className="text-sm font-medium dark:text-zinc-300 text-neutral-700">Donation amount:</p>
-          <div className="grid sm:grid-cols-4 gap-2">
-            {[25, 50, 100, 250].map((amt) => (
-              <button
-                key={amt}
-                type="button"
-                onClick={() => setAmount(amt)}
-                className={`p-3 rounded-lg border-2 font-semibold transition-all ${
-                  amount === amt
-                    ? 'dark:border-sky-500 dark:bg-sky-600 dark:text-white border-sky-500 bg-sky-600 text-white'
-                    : 'dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-600 border-neutral-200 bg-neutral-100 text-neutral-900 hover:border-neutral-300'
-                }`}
-              >
-                ${amt}
-              </button>
-            ))}
-          </div>
-          <div>
-            <label className="text-sm font-medium dark:text-zinc-300 text-neutral-700 block mb-2">Custom amount</label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 dark:text-zinc-500 text-neutral-600">$</span>
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                className="w-full pl-8 pr-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
-                placeholder="0.00"
-                step="0.01"
-                min="0"
-              />
-            </div>
-          </div>
-        </motion.div>
+        <OneTimeAmount
+          selectedPlan={selectedPlan}
+          setSelectedPlan={setSelectedPlan}
+          amount={amount}
+          setAmount={setAmount}
+        />
+      )}
+
+      {/* Monthly Plans */}
+      {donationType === 'monthly' && (
+        <MonthlyPlans
+          selectedPlan={selectedPlan}
+          setSelectedPlan={setSelectedPlan}
+          amount={amount}
+          setAmount={setAmount}
+        />
+      )}
+
+      {donationType === 'yearly' && (
+        <YearlyPlans
+          selectedPlan={selectedPlan}
+          setSelectedPlan={setSelectedPlan}
+          amount={amount}
+          setAmount={setAmount}
+        />
       )}
 
       {/* Contact Information */}
-      <div className="space-y-4 pt-4 dark:border-zinc-700 border-t border-neutral-200">
-        <div>
-          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">Full Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
-            placeholder="John Doe"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">Email Address</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
-            placeholder="john@example.com"
-            required
-          />
-        </div>
-      </div>
+      <ContactInformation email={email} name={name} setEmail={setEmail} setName={setName} />
 
       {/* Address Information */}
-      <div className="pt-4 dark:border-zinc-700 border-t border-neutral-200">
-        <div>
-          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">Street Address</label>
-          <input
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
-            placeholder="123 Main Street"
-          />
-        </div>
-      </div>
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">City</label>
-          <input
-            type="text"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
-            placeholder="Lynn"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">State</label>
-          <input
-            type="text"
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
-            placeholder="MA"
-          />
-        </div>
-      </div>
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">ZIP Code</label>
-          <input
-            type="number"
-            value={zipCode}
-            onChange={(e) => setZipCode(e.target.value)}
-            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
-            placeholder="01902"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">Country</label>
-          <input
-            type="text"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500"
-            placeholder="United States"
-          />
-        </div>
-      </div>
+      <AddressInformation
+        address={address}
+        city={city}
+        country={country}
+        setAddress={setAddress}
+        setCity={setCity}
+        setCountry={setCountry}
+        setState={setState}
+        setZipCode={setZipCode}
+        state={state}
+        zipCode={zipCode}
+      />
 
       {/* Campaign Selection */}
-      <div className="pt-4 dark:border-zinc-700 border-t border-neutral-200">
-        <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">
-          Donation Campaign (optional)
-        </label>
-        <select
-          value={campaign?.id ?? ''}
-          onChange={(e) => {
-            const selectedCampaign = campaigns?.find((c: ICampaign) => c.id === e.target.value)
-            setCampaign(selectedCampaign || null)
-          }}
-          className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-        >
-          <option value="">Select a campaign</option>
-          {campaigns?.map((c: ICampaign) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Donor Notes */}
-      <div className="pt-4 dark:border-zinc-700 border-t border-neutral-200">
-        <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">Message (Optional)</label>
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 dark:placeholder-zinc-600 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder-neutral-500 resize-none"
-          placeholder="Share your reason for giving or leave a special message..."
-          rows={3}
-        />
-      </div>
+      <CampaignSelectionAndNotes
+        campaign={campaign}
+        campaigns={campaigns}
+        notes={notes}
+        setCampaign={setCampaign}
+        setNotes={setNotes}
+      />
 
       <div className="dark:border-zinc-700 border-t border-neutral-200" />
 
@@ -591,7 +359,7 @@ function DonationForm({ campaignName, campaigns }) {
         checked={coverFees}
         onChange={setCoverFees}
         label="Cover processing fees"
-        description={`Add $${calculateFees(amount).toFixed(2)} so 100% of your donation goes to the club`}
+        description={`Add $${calculateFees(baseAmount).toFixed(2)} so 100% of your donation goes to the club`}
       />
 
       {donationType === 'once' && session.status === 'unauthenticated' && (
@@ -605,67 +373,14 @@ function DonationForm({ campaignName, campaigns }) {
         </div>
       )}
 
-      {donationType === 'once' && session.status === 'authenticated' && savedCards && savedCards.length > 0 ? (
-        <div className="mb-8">
-          <label className="block text-sm font-bold text-neutral-900 dark:text-white mb-3 uppercase tracking-wide">
-            Saved Cards
-          </label>
-
-          <div className="space-y-2">
-            {savedCards.map((card) => (
-              <motion.button
-                key={card.id}
-                type="button"
-                onClick={() => setSelectedCardId(card.id)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                  selectedCardId === card.id
-                    ? 'border-sky-500 bg-sky-500/10 dark:bg-sky-500/10'
-                    : 'border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-neutral-300 dark:hover:border-neutral-700'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center">
-                      {selectedCardId === card.id && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="w-2 h-2 rounded-full bg-current"
-                        />
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-neutral-900 dark:text-white capitalize">
-                        {card.cardBrand} •••• {card.cardLast4}
-                      </p>
-                      <p className="text-xs text-neutral-600 dark:text-neutral-400">
-                        {card.cardholderName} • Expires {String(card.cardExpMonth).padStart(2, '0')}/{card.cardExpYear}
-                      </p>
-                    </div>
-                  </div>
-                  {card.isDefault && (
-                    <span className="text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-500/10 px-2 py-1 rounded">
-                      Default
-                    </span>
-                  )}
-                </div>
-              </motion.button>
-            ))}
-          </div>
-
-          <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-3">
-            Or{' '}
-            <button
-              type="button"
-              onClick={() => setUseNewCard(!useNewCard)}
-              className="font-semibold text-sky-600 dark:text-sky-400 hover:underline"
-            >
-              use a new card
-            </button>
-          </p>
-        </div>
+      {session.status === 'authenticated' && savedCards && savedCards.length > 0 ? (
+        <SavedCardsSelection
+          savedCards={savedCards}
+          selectedCardId={selectedCardId}
+          setSelectedCardId={setSelectedCardId}
+          setUseNewCard={setUseNewCard}
+          useNewCard={useNewCard}
+        />
       ) : (
         donationType === 'once' &&
         session.status === 'authenticated' && (
@@ -702,7 +417,7 @@ function DonationForm({ campaignName, campaigns }) {
               options={{
                 style: {
                   base: {
-                    color: '#111827',
+                    color: isDark ? '#fff' : '#1f2937',
                     backgroundColor: 'transparent',
                     fontSize: '16px',
                     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -728,47 +443,21 @@ function DonationForm({ campaignName, campaigns }) {
       )}
 
       {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={!isValid || loading}
-        className="w-full px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 dark:active:bg-sky-800 dark:disabled:bg-zinc-700 dark:text-white bg-sky-600 hover:bg-sky-700 active:bg-sky-800 disabled:bg-neutral-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
-      >
-        {loading ? (
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{
-              duration: 1,
-              repeat: Infinity,
-              ease: 'linear'
-            }}
-            className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-          />
-        ) : (
-          <Heart className="w-4 h-4" />
-        )}
-        <span>
-          {loading
-            ? 'Processing...'
-            : (() => {
-                const baseAmount =
-                  donationType === 'once'
-                    ? parseFloat(amount.toString()) || 0
-                    : donationType === 'monthly'
-                      ? MONTHLY_PLANS.find((p) => p.id === selectedPlan)?.amount || parseFloat(amount.toString()) || 0
-                      : YEARLY_PLANS.find((p) => p.id === selectedPlan)?.amount || parseFloat(amount.toString()) || 0
-
-                const displayAmount = coverFees ? (baseAmount + calculateFees(baseAmount)).toFixed(2) : baseAmount
-                const suffix = donationType !== 'once' ? `/${donationType === 'monthly' ? 'mo' : 'yr'}` : ''
-
-                return `Donate $${displayAmount}${suffix}`
-              })()}
-        </span>
-      </button>
+      <SubmitButton
+        baseAmount={baseAmount}
+        calculateFees={calculateFees}
+        coverFees={coverFees}
+        donationType={donationType}
+        email={email}
+        loading={loading}
+        name={name}
+        selectedPlan={selectedPlan}
+      />
 
       <p className="text-xs dark:text-zinc-500 text-neutral-600 text-center">
-        Powered by{' '}
+        Secured by Stripe, Powered by{' '}
         <span>
-          <a className="dark:text-indigo-500 text-sky-600 hover:underline" href="https://sqysh.io?lead_source=bgcl">
+          <a className="sqysh-gradient hover:underline" href="https://sqysh.io?lead_source=bgcl">
             Sqysh
           </a>
         </span>

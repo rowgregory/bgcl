@@ -121,7 +121,7 @@ export async function createPaymentIntentForCheckout({
 
     if (savedCardId) {
       const savedCard = await prisma.paymentMethod.findUnique({
-        where: { id: savedCardId },
+        where: { stripePaymentId: savedCardId }, // ← Look up by Stripe ID instead
         select: { stripePaymentId: true, userId: true }
       })
 
@@ -145,7 +145,7 @@ export async function createPaymentIntentForCheckout({
     console.error('Payment intent creation error:', error)
     return {
       success: false,
-      error: 'Failed to create payment'
+      error: error instanceof Error ? error.message : 'Failed to create payment'
     }
   }
 }

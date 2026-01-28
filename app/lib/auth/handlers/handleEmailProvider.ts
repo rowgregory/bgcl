@@ -3,8 +3,6 @@ import type { User } from 'next-auth'
 import { createStripeCustomer } from '../../actions/createStripeCustomer'
 
 export async function handleEmailProvider(user: User) {
-  console.log('🔗 Processing magic link sign-in')
-
   const dbUser = await findOrCreateUser(user)
   await ensureEmailAccount(dbUser.id, user.email!)
 

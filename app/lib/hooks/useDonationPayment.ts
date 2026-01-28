@@ -1,17 +1,11 @@
-import { useElements, useStripe } from '@stripe/react-stripe-js'
 import { PaymentMethod } from '@stripe/stripe-js'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Pusher from 'pusher-js'
-import { useDispatch } from 'react-redux'
 import { savePaymentMethod } from '../actions/savePaymentMethod'
 
-// hooks/useDonationPayment.ts
 export function useDonationPayment() {
-  const stripe = useStripe()
-  const elements = useElements()
   const router = useRouter()
-  const store = useDispatch()
   const session = useSession()
 
   const getPaymentMethodId = (paymentMethod: string | PaymentMethod | undefined): string | undefined => {
@@ -44,12 +38,12 @@ export function useDonationPayment() {
     channel.bind('order-created', (data: any) => {
       clearTimeout(timeout)
       setProcessingStatus('success')
-      setLoading(false)
 
       if (saveCard && session?.data?.user?.id && paymentMethod) {
-        savePaymentMethod(session.data.user.id, paymentMethod as string, true).catch(console.error)
+        savePaymentMethod(session.data.user.id, paymentMethod as string, true)
       }
 
+      setLoading(false)
       setTimeout(() => router.push(`/order-confirmation/${data.orderId}`), 1000)
       channel.unbind('order-created')
     })
@@ -69,7 +63,9 @@ export function useDonationPayment() {
     processingStatus?: string,
     setError?: any,
     setProcessingStatus?: any,
-    setLoading?: any
+    setLoading?: any,
+    saveCard?: boolean,
+    paymentMethod?: string
   ) => {
     const channelId = session?.data?.user?.id || `guest-${subscriptionResult.subscriptionId}`
 
@@ -90,6 +86,12 @@ export function useDonationPayment() {
     channel.bind('order-created', (data: any) => {
       clearTimeout(timeout)
       setProcessingStatus('success')
+
+      // Save payment method if user wants to and is logged in
+      if (saveCard && session?.data?.user?.id && paymentMethod) {
+        savePaymentMethod(session.data.user.id, paymentMethod as string, true)
+      }
+
       setLoading(false)
       setTimeout(() => router.push(`/order-confirmation/${data.orderId}`), 1000)
       channel.unbind('order-created')

@@ -6,16 +6,16 @@ import { motion } from 'framer-motion'
 import { store, useDashboardSelector } from '../../lib/store/store'
 import { ILayout } from '@/types/common'
 import { setCloseProgramSidebar, setToggleProgramSidebar } from '../../lib/store/slices/dashboardSlice'
-import { adminNavigationLinkData } from '../../lib/constants/adminNavLinks'
 import { usePathname } from 'next/navigation'
 import ProgramSidebar from '../../program/sidebar'
 import { Menu } from 'lucide-react'
 import MobileMenuButton from '../buttons/MobileMenuButton'
 import LogoutButton from '../buttons/LogoutButton'
+import { programNavigationLinkData } from '@/app/lib/constants/programNavLinks'
 
 const ProgramClient: FC<ILayout> = ({ children }) => {
   const pathname = usePathname()
-  const navigationGroups = adminNavigationLinkData(pathname)
+  const navigationGroups = programNavigationLinkData(pathname)
   const selectedPage = getCurrentPageId(pathname, navigationGroups)
   const { programSidebar } = useDashboardSelector()
   const onClose = () => store.dispatch(setCloseProgramSidebar())

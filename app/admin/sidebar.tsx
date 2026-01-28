@@ -65,7 +65,7 @@ const AdminSidebar = () => {
 
       {/* Navigation - Scrollable */}
       <nav className="space-y-6 px-6 py-6 flex-1 overflow-y-auto">
-        {adminNavigationLinkData(pathname).map((group) => (
+        {adminNavigationLinkData(pathname, session.data.user.role === 'SUPERUSER').map((group) => (
           <div key={group.title}>
             <h3 className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase mb-3 px-3">
               {group.title}

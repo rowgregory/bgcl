@@ -10,10 +10,22 @@ const HomePage = ({ data }) => {
   const handleSave = async (content: any): Promise<void> => {
     if (data?.id) {
       await updatePageBySlug('home', content)
-      store.dispatch(showToast({ message: `Successfully updated home page`, type: 'success' }))
+      store.dispatch(
+        showToast({
+          message: 'Changes saved successfully',
+          description: 'Visitors will see the updated content immediately',
+          type: 'success'
+        })
+      )
     } else {
       await createPage('home', content)
-      store.dispatch(showToast({ message: `Successfully created home page`, type: 'success' }))
+      store.dispatch(
+        showToast({
+          message: 'Page created successfully',
+          description: 'Your home page is now accessible to all visitors',
+          type: 'success'
+        })
+      )
     }
   }
 

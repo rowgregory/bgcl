@@ -3,11 +3,11 @@
 import { IProgram } from '@/types/entities/program'
 import { motion } from 'framer-motion'
 import { ChevronLeft, Clock, Users, Calendar, MapPin, FileText, Stamp } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 import FacilityClosings from '../FacilityClosings'
 import { IClosing } from '@/types/entities/closing'
 import { useMemo } from 'react'
+import Picture from '../common/Picture'
 
 const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closings: IClosing[] }) => {
   // Randomly select a gradient on component mount (stays consistent during the session)
@@ -229,7 +229,12 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
                 transition={{ delay: 0.25 }}
                 className="relative w-full aspect-square rounded-lg overflow-hidden shadow-lg"
               >
-                <Image src={program?.imageTwo} alt={program?.name || 'Program image'} fill className="object-cover" />
+                <Picture
+                  src={program?.imageTwo}
+                  alt={program?.name || 'Program image'}
+                  priority={true}
+                  className="object-cover w-full h-full"
+                />
               </motion.div>
             )}
 

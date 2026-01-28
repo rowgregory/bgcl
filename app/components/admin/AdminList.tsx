@@ -51,7 +51,7 @@ export function AdminListPage<T extends AdminListItem>({
           {item.name || item.title || item.month || 'Unnamed'}
         </h3>
         <p className="text-xs dark:text-neutral-500 text-neutral-600 truncate">
-          {item.descriptions[0] ||
+          {item?.descriptions?.[0] ||
             item.paragraph1 ||
             item.year ||
             item.url ||

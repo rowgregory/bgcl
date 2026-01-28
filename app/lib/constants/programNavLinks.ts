@@ -1,4 +1,4 @@
-import { LucideIcon, DoorOpen } from 'lucide-react'
+import { LucideIcon, DoorOpen, Orbit } from 'lucide-react'
 
 const isStringInPath = (path: string, str: string) => path.includes(str)
 
@@ -18,6 +18,16 @@ export const programNavigationLinkData = (
   //   }
   // ]
 
+  const userGroup = [
+    {
+      icon: Orbit,
+      label: 'My Space',
+      path: '/supporter/overview',
+      description: 'View your profile & donations',
+      active: isStringInPath(path, 'supporter/overview')
+    }
+  ]
+
   const managementGroup = [
     {
       icon: DoorOpen,
@@ -30,6 +40,7 @@ export const programNavigationLinkData = (
 
   return [
     // { title: 'Dashboard', items: dashboardGroup },
+    { title: 'User', items: userGroup },
     { title: 'Management', items: managementGroup }
   ]
 }

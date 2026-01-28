@@ -9,7 +9,8 @@ const getCachedDonations = unstable_cache(
     return await prisma.order.findMany({
       where: {
         userId,
-        type: { in: ['ONE_TIME_DONATION', 'RECURRING_DONATION'] }
+        type: { in: ['ONE_TIME_DONATION', 'RECURRING_DONATION'] },
+        status: 'CONFIRMED'
       },
       select: {
         id: true,

@@ -1,5 +1,7 @@
-const Monthly = () => {
-  return <div>Monthly</div>
-}
+import MonthlyDonationsClient from '@/app/components/pages/MonthlyDonationsClient'
+import { getRecurringMonthlyDonations } from '@/app/lib/actions/getRecurringMonthlyDonations'
 
-export default Monthly
+export default async function FuelTankMonthlyDonations() {
+  const monthlyDonations = await getRecurringMonthlyDonations()
+  return <MonthlyDonationsClient monthlyDonations={monthlyDonations} />
+}

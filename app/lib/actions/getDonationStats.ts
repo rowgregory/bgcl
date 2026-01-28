@@ -28,6 +28,16 @@ export async function getDonationStats() {
         recurringFrequency: true,
         status: true,
         createdAt: true,
+        customerEmail: true,
+        customerName: true,
+        paidAt: true,
+        notes: true,
+        id: true,
+        feesCovered: true,
+        billingAddress: true,
+        paymentIntentId: true,
+        paymentMethodId: true,
+        paymentMethod: true,
         campaign: true
       }
     })
@@ -45,6 +55,7 @@ export async function getDonationStats() {
         .filter((o) => o.type === 'RECURRING_DONATION' && o.recurringFrequency === 'yearly')
         .reduce((sum, o) => sum + o.totalAmount, 0),
       activeCount: orders.filter((o) => o.status === 'CONFIRMED').length,
+      failedCount: orders.filter((o) => o.status === 'FAILED').length,
       churnRate:
         orders.length > 0
           ? Math.round((orders.filter((o) => o.status === 'CANCELLED').length / orders.length) * 100)
@@ -125,6 +136,7 @@ export async function getDonationStats() {
 
     return {
       ...stats,
+      failedOrders: orders?.filter((order) => order.status === 'FAILED'),
       annualArr,
       trendData,
       retentionData,

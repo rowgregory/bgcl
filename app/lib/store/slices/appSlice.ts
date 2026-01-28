@@ -9,6 +9,7 @@ export interface AppStatePayload {
   capitalCampaignDrawer: boolean
   volunteerDrawer: boolean
   paymentMethodDrawer: boolean
+  isDark: boolean
 }
 
 const initialAppState: AppStatePayload = {
@@ -19,7 +20,8 @@ const initialAppState: AppStatePayload = {
   selectedLanguage: 'English',
   capitalCampaignDrawer: false,
   volunteerDrawer: false,
-  paymentMethodDrawer: false
+  paymentMethodDrawer: false,
+  isDark: false
 }
 
 export const appSlice = createSlice({
@@ -70,6 +72,9 @@ export const appSlice = createSlice({
     },
     setClosePaymentMethodDrawer: (state) => {
       state.paymentMethodDrawer = false
+    },
+    setIsDark: (state, { payload }) => {
+      state.isDark = payload
     }
   }
 })
@@ -91,5 +96,6 @@ export const {
   setCloseVolunteerDrawer,
   setOpenVolunteerDrawer,
   setOpenPaymentMethodDrawer,
-  setClosePaymentMethodDrawer
+  setClosePaymentMethodDrawer,
+  setIsDark
 } = appSlice.actions

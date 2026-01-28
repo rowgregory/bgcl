@@ -32,9 +32,8 @@ export interface Order {
   // User info (nullable - guest checkout allowed)
   userId: string | null
 
-  // Harness specific
-  harnessPaymentId: string | null
-  harnessTransactionId: string | null
+  failureReason?: string | null
+  failureCode?: string | null
 
   // Relations
   orderItems?: OrderItem[]

@@ -4,18 +4,36 @@ import { stripe } from '../stripe/stripeClient'
 
 interface CreateSubscriptionParams {
   setupIntentId: string
+  name?: string
+  email?: string
   frequency: 'monthly' | 'yearly'
   amount: number // in cents
   coverFees?: boolean
   feesCovered?: number
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  country?: string
+  notes?: string
+  campaignId?: string
 }
 
 export async function createSubscriptionAfterSetup({
   setupIntentId,
+  email,
+  name,
   frequency,
   amount,
   coverFees,
-  feesCovered
+  feesCovered,
+  address,
+  city,
+  state,
+  zipCode,
+  country,
+  notes,
+  campaignId
 }: CreateSubscriptionParams) {
   try {
     // Get the confirmed setup intent
@@ -62,11 +80,18 @@ export async function createSubscriptionAfterSetup({
       },
       metadata: {
         userId: setupIntent.metadata?.userId || 'guest',
-        email: setupIntent.metadata?.email || '',
-        name: setupIntent.metadata?.name || '',
+        email: email || '',
+        name: name || '',
         frequency,
         coverFees: coverFees ? 'true' : 'false',
-        feesCovered: feesCovered.toString()
+        feesCovered: feesCovered.toString(),
+        address: address || '',
+        city: city || '',
+        state: state || '',
+        zipCode: zipCode || '',
+        country: country || '',
+        notes: notes || '',
+        campaignId: campaignId || ''
       }
     })
 

@@ -107,7 +107,7 @@ export default function SupporterDonationsClient({ donations }) {
                         <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full -ml-4 -mb-4" />
 
                         <div className="relative z-10 h-full flex items-center justify-between px-6">
-                          <Heart className="w-8 h-8 text-white fill-white" />
+                          <Picture src="/images/horizontal-logo-dark.png" className="w-48" priority={true} />
                           <span className="text-xs font-bold uppercase tracking-wider text-white/90">
                             {donation.type === 'ONE_TIME_DONATION' ? 'One-Time' : 'Recurring'}
                           </span>
@@ -156,7 +156,15 @@ export default function SupporterDonationsClient({ donations }) {
 
                         {/* Status Badge */}
                         <div className="pt-2">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-400">
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
+                              donation.status === 'CONFIRMED'
+                                ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-400'
+                                : donation.status === 'FAILED'
+                                  ? 'bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-400'
+                                  : 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-400'
+                            }`}
+                          >
                             {donation.status}
                           </span>
                         </div>

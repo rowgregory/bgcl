@@ -7,6 +7,10 @@ interface DashboardState {
   adminSidebar: boolean
   programSidebar: boolean
   itemAction: string | null
+  failedPaymentDrawer: boolean
+  failedPayments: null | any
+  donationDrawer: boolean
+  donation: any | null
 }
 
 const initialState: DashboardState = {
@@ -15,7 +19,11 @@ const initialState: DashboardState = {
   actionMenu: false,
   adminSidebar: false,
   programSidebar: false,
-  itemAction: null
+  itemAction: null,
+  failedPaymentDrawer: false,
+  failedPayments: null,
+  donationDrawer: false,
+  donation: null
 }
 export const dashboardSlice = createSlice({
   name: 'dashboard',
@@ -50,6 +58,22 @@ export const dashboardSlice = createSlice({
     },
     setCloseActionDropdownSubmenu: (state) => {
       state.itemAction = null
+    },
+    setOpenFailedPaymentDrawer: (state, { payload }) => {
+      state.failedPaymentDrawer = true
+      state.failedPayments = payload
+    },
+    setCloseFailedPaymentDrawer: (state) => {
+      state.failedPaymentDrawer = false
+      state.failedPayments = null
+    },
+    setOpenDonationDrawer: (state, { payload }) => {
+      state.donationDrawer = true
+      state.donation = payload
+    },
+    setCloseDonationDrawer: (state) => {
+      state.donationDrawer = false
+      state.donation = null
     }
   }
 })
@@ -64,6 +88,11 @@ export const {
   setOpenActionDropdownSubmenu,
   setOpenProgramSidebar,
   setCloseProgramSidebar,
-  setToggleProgramSidebar
+  setToggleProgramSidebar,
+  setCloseFailedPaymentDrawer,
+  setOpenFailedPaymentDrawer,
+  setCloseDonationDrawer,
+  setOpenDonationDrawer
 } = dashboardSlice.actions
+
 export const dashboardReducer = dashboardSlice.reducer

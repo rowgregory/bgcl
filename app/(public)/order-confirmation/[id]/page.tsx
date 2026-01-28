@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Calendar, ArrowLeft, Download, User } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function OrderConfirmationPage({ order }) {
   const isDonation = order?.type?.includes('DONATION')
@@ -16,8 +16,12 @@ export default function OrderConfirmationPage({ order }) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const maxLength = 80
-  const shouldTruncate = order.campaign.description && order.campaign.description.length > maxLength
-  const displayText = isExpanded ? order.campaign.description : order.campaign.description?.slice(0, maxLength)
+  const shouldTruncate = order.campaign?.description && order.campaign?.description?.length > maxLength
+  const displayText = isExpanded ? order.campaign?.description : order.campaign?.description?.slice(0, maxLength)
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-900">
@@ -89,7 +93,11 @@ export default function OrderConfirmationPage({ order }) {
           <div className="flex items-end justify-between">
             <div>
               <p className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wide mb-2">
-                {isDonation ? (isRecurring ? 'Monthly Donation' : 'One-Time Donation') : 'Ticket Purchase'}
+                {isDonation
+                  ? isRecurring
+                    ? `${order.recurringFrequency} Donation`
+                    : 'One-Time Donation'
+                  : 'Ticket Purchase'}
               </p>
               <h2 className="text-5xl font-black text-sky-600 dark:text-sky-400">
                 ${order?.totalAmount?.toLocaleString()}
@@ -225,7 +233,7 @@ export default function OrderConfirmationPage({ order }) {
           )}
 
           {/* Fees Info */}
-          {(order?.coverFees || (order?.feesCovered && order.feesCovered > 0)) && (
+          {order?.coverFees || (order?.feesCovered && order.feesCovered > 0) ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -248,7 +256,7 @@ export default function OrderConfirmationPage({ order }) {
                 )}
               </div>
             </motion.div>
-          )}
+          ) : null}
 
           {/* Campaign Info */}
           {order.campaign && (

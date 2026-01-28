@@ -4,8 +4,6 @@ import { createLog } from '../../actions/createLog'
 import { createStripeCustomer } from '../../actions/createStripeCustomer'
 
 export async function handleGoogleProvider(user: User, account: Account, profile?: any) {
-  console.log('👤 Processing Google sign-in')
-
   const existingUser = await prisma.user.findUnique({
     where: { email: user.email! },
     include: { accounts: true }

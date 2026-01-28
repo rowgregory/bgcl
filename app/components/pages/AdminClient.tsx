@@ -26,10 +26,14 @@ import NewsletterDrawer from '../drawers/NewsletterDrawer'
 import ClubResourceDrawer from '../drawers/ClubResourceDrawer'
 import CampaignDrawer from '../drawers/CampaignDrawer'
 import ClosingDrawer from '../drawers/ClosingDrawer'
+import FailedPaymentsDrawer from '../drawers/FailedPaymentDrawer'
+import DonationDrawer from '../drawers/DonationDrawer'
+import { useSession } from 'next-auth/react'
 
 const AdminLayout: FC<ILayout> = ({ children, themes }) => {
   const pathname = usePathname()
-  const navigationGroups = adminNavigationLinkData(pathname)
+  const session = useSession()
+  const navigationGroups = adminNavigationLinkData(pathname, session.data.user.role === 'SUPERUSER')
   const selectedPage = getCurrentPageId(pathname, navigationGroups)
   const { adminSidebar } = useDashboardSelector()
   const onClose = () => store.dispatch(setCloseAdminSidebar())
@@ -48,6 +52,8 @@ const AdminLayout: FC<ILayout> = ({ children, themes }) => {
       <CampaignDrawer />
       <ClosingDrawer />
       <ActionMenuDropdown actionItems={dropdownActionItems} />
+      <FailedPaymentsDrawer />
+      <DonationDrawer />
 
       {/* Desktop Fixed Header */}
       <header className="hidden lg:block fixed top-0 left-64 right-0 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-b py-2.5 px-6 z-30 h-15.25">

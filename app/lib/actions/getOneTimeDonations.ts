@@ -8,7 +8,9 @@ export const getOneTimeDonations = unstable_cache(
     try {
       const donations = await prisma.order.findMany({
         where: {
-          type: 'ONE_TIME_DONATION'
+          type: 'ONE_TIME_DONATION',
+          isRecurring: false, // Explicitly exclude recurring
+          stripeSubscriptionId: null // Make sure no subscription ID
         },
         include: {
           user: true

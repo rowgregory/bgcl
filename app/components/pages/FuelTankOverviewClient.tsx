@@ -1,6 +1,7 @@
 'use client'
 
-import { useDarkMode } from '@/app/lib/hooks/useDarkMode'
+import { setOpenFailedPaymentDrawer } from '@/app/lib/store/slices/dashboardSlice'
+import { store, useApplicationSelector } from '@/app/lib/store/store'
 import { motion } from 'framer-motion'
 import { Heart, TrendingUp, Users, Calendar, Download, Zap } from 'lucide-react'
 import { useState } from 'react'
@@ -15,9 +16,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  PieChart,
-  Pie,
-  Cell,
   Scatter,
   ScatterChart
 } from 'recharts'
@@ -33,8 +31,6 @@ const formatCurrency = (amount: number) => {
 
 export default function FuelTankOverviewClient({ orders, stats }: { orders: any; stats: any }) {
   const [chartType, setChartType] = useState<'line' | 'bar'>('line')
-  console.log(stats)
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -48,7 +44,7 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
   }
 
-  const isDark = useDarkMode()
+  const { isDark } = useApplicationSelector()
 
   const topStats = [
     {
@@ -60,10 +56,23 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
       icon: TrendingUp
     },
     {
-      id: 'total-donors',
-      label: 'Total Donors',
+      id: 'total-orders',
+      label: 'Total Orders',
       value: stats?.total,
-      description: `${stats?.activeCount} active`,
+      description: (
+        <>
+          {stats?.activeCount} active •{' '}
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              store.dispatch(setOpenFailedPaymentDrawer(stats.failedOrders))
+            }}
+            className="text-red-600 dark:text-red-400 hover:underline font-semibold"
+          >
+            {stats?.failedCount || 0} failed
+          </button>
+        </>
+      ),
       hoverColor: 'blue',
       icon: Users
     },
@@ -364,7 +373,7 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
                     borderRadius: '8px',
                     color: isDark ? 'rgb(255, 255, 255)' : 'rgb(17, 24, 39)'
                   }}
-                  formatter={(value) => `$${value}`}
+                  formatter={(value) => `$${Number(value).toFixed(2)}`}
                   labelStyle={{ color: isDark ? 'rgb(255, 255, 255)' : 'rgb(17, 24, 39)' }}
                 />
                 <Legend />
@@ -407,7 +416,7 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
                     borderRadius: '8px',
                     color: isDark ? 'rgb(255, 255, 255)' : 'rgb(17, 24, 39)'
                   }}
-                  formatter={(value) => `$${value}`}
+                  formatter={(value) => `$${Number(value).toFixed(2)}`}
                   labelStyle={{ color: isDark ? 'rgb(255, 255, 255)' : 'rgb(17, 24, 39)' }}
                 />
                 <Legend />
@@ -541,7 +550,11 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
                 <span className="text-lg font-black dark:text-amber-400 text-amber-600">{stats?.oneTime}</span>
               </div>
               <p className="text-xs dark:text-neutral-500 text-neutral-600">
-                Total: ${orders?.filter((o) => o.type === 'one_time').reduce((sum, o) => sum + o.amount, 0) ?? 0}
+                Total: $
+                {orders
+                  ?.filter((o) => o.type === 'one-time')
+                  .reduce((sum, o) => sum + o.amount / 100, 0)
+                  .toLocaleString('en-US') ?? 0}
               </p>
             </div>
           </div>

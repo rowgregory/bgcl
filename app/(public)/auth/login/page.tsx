@@ -28,11 +28,21 @@ const Login = () => {
 
     try {
       await signIn('google', {
-        callbackUrl: '/supporter/overview',
         redirect: true
       })
     } catch (error) {
-      console.error('Error during sign-in:', error)
+      // Check for specific error types
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
+
+      store.dispatch(
+        showToast({
+          message: 'Sign-in failed',
+          description: errorMessage.includes('popup')
+            ? 'Please allow popups and try again'
+            : 'Unable to connect with Google. Please try again.',
+          type: 'error'
+        })
+      )
     }
   }
 
@@ -50,17 +60,36 @@ const Login = () => {
 
       const result = await signIn('email', {
         email,
-        redirect: false,
-        callbackUrl: '/supporter/overview'
+        redirect: false
       })
 
       if (result?.ok) {
-        store.dispatch(showToast({ message: 'Successfully sent magic link' }))
+        store.dispatch(
+          showToast({
+            message: 'Magic link sent!',
+            description: `Check ${email} for your sign-in link`,
+            type: 'success'
+          })
+        )
         setEmail('')
         setErrorMsg('')
+      } else if (result?.error) {
+        store.dispatch(
+          showToast({
+            message: 'Failed to send magic link',
+            description: result.error === 'EmailSignin' ? 'Invalid email address' : 'Please try again',
+            type: 'error'
+          })
+        )
       }
     } catch (error) {
-      console.error('Magic link error:', error)
+      store.dispatch(
+        showToast({
+          message: 'Something went wrong',
+          description: 'Unable to send magic link. Please try again.',
+          type: 'error'
+        })
+      )
     } finally {
       setIsSubmitting(false)
     }

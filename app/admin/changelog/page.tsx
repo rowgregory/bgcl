@@ -21,6 +21,68 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.6.0',
+    date: '2026-01-27',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Unified Preset Donation System',
+        description:
+          'Completely redesigned donation flow with preset amounts for one-time, monthly, and yearly donations. Previously only one-time donations had custom amounts; now all donation types feature suggested preset tiers plus custom amount options for maximum flexibility.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Streamlined Amount Selection',
+        description:
+          'Unified the amount selection logic across all donation types. Users can now choose from preset plans or select "Custom Amount" to enter their own value, with consistent UX across one-time and recurring donations.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Dedicated Recurring Donation Pages',
+        description:
+          'Added separate admin pages for viewing monthly and yearly recurring donations. Administrators can now filter and manage recurring donations by frequency with dedicated list views.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Failed Payment Tracking',
+        description:
+          'Added comprehensive failed payment tracking with admin drawer view. Administrators can now review failed donations, contact donors, and view payment details in Stripe.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Enhanced Toast Notifications',
+        description:
+          'Redesigned toast notification system with better light/dark mode support, mobile responsiveness, and contextual descriptions.',
+        impact: 'low'
+      },
+      {
+        type: 'improvement',
+        title: 'Donation History List View',
+        description:
+          'Replaced card-based donation view with streamlined list layout showing more data at a glance. Desktop users see table-like rows while mobile maintains stacked layout.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Donation Detail Drawer',
+        description:
+          'Added comprehensive donation detail drawer displaying full donor information, billing address, payment details, fees covered, and recurring billing schedules with direct Stripe dashboard links.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Fee Coverage Visibility',
+        description:
+          'Failed payment drawer and donation list now clearly display when donors opted to cover processing fees and the amount covered.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.5.0',
     date: '2026-01-27',
     changes: [
