@@ -1,8 +1,6 @@
-'use server'
-
-import { unstable_cache } from 'next/cache'
 import { TeamMember } from '@prisma/client'
 import prisma from '@/prisma/client'
+import { createLog } from './createLog'
 
 const VALID_ROLES = [
   'officer',
@@ -18,8 +16,8 @@ const VALID_ROLES = [
   'youth'
 ]
 
-export const getTeamMembersByRole = unstable_cache(
-  async (role: string): Promise<TeamMember[]> => {
+export const getTeamMembersByRole = async (role: string): Promise<TeamMember[]> => {
+  try {
     // Validate role
     if (!VALID_ROLES.includes(role)) {
       throw new Error(`Invalid role: ${role}`)
@@ -35,10 +33,11 @@ export const getTeamMembersByRole = unstable_cache(
     })
 
     return teamMembers
-  },
-  [`getTeamMemberByRole`],
-  {
-    tags: ['Team-Member'],
-    revalidate: 60
+  } catch (error) {
+    await createLog('error', 'Failed to fetch team members by role', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
+    throw error
   }
-)
+}

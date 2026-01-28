@@ -4,6 +4,7 @@ import { deleteCampaign } from '@/app/lib/actions/deleteCampaign'
 import { deleteClosing } from '@/app/lib/actions/deleteClosing'
 import { deleteNewsletter } from '@/app/lib/actions/deleteNewsletter'
 import { deleteProgram } from '@/app/lib/actions/deleteProgram'
+import { deleteResource } from '@/app/lib/actions/deleteResource'
 import useGenericListReorder from '@/app/lib/hooks/useGenericListReorder'
 import { initialCampaignFormState } from '@/app/lib/initial-states/campaign'
 import { initialClosingFormState } from '@/app/lib/initial-states/closing'
@@ -211,6 +212,8 @@ export function AdminListPage<T extends AdminListItem>({
                             await deleteProgram(item.id)
                           } else if (itemType === 'closing') {
                             await deleteClosing(item.id)
+                          } else if (itemType === 'club-resource') {
+                            await deleteResource(item.id)
                           }
                         }}
                         className="p-2 dark:text-neutral-600 dark:hover:text-red-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-red-600 hover:bg-neutral-200 rounded-lg transition-colors"

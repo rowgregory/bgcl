@@ -1,34 +1,21 @@
 import prisma from '@/prisma/client'
-import { unstable_cache } from 'next/cache'
+import { createLog } from './createLog'
 
-export const getSubscribers = unstable_cache(
-  async () => {
-    try {
-      const subscribers = await prisma.subscriber.findMany({
-        orderBy: { subscribedAt: 'desc' }
-      })
+export const getSubscribers = async () => {
+  try {
+    const subscribers = await prisma.subscriber.findMany({
+      orderBy: { subscribedAt: 'desc' }
+    })
 
-      return {
-        success: true,
-        data: subscribers
-      }
-    } catch (error) {
-      await prisma.log.create({
-        data: {
-          level: 'error',
-          message: 'Failed to fetch subscribers',
-          metadata: JSON.stringify({
-            error: error instanceof Error ? error.message : 'Unknown error'
-          })
-        }
-      })
-
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch subscribers'
-      }
+    return {
+      success: true,
+      data: subscribers
     }
-  },
-  ['getSubscribers'],
-  { tags: ['Subscriber'] }
-)
+  } catch (error) {
+    await createLog('error', 'Failed to fetch subscribers', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
+    throw error
+  }
+}

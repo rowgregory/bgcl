@@ -2,13 +2,13 @@ import {
   BookOpen,
   Crown,
   LucideIcon,
-  Maximize2,
-  Minimize2,
   Radio,
   Rocket,
   Satellite,
   Shield,
   Star,
+  ToggleLeft,
+  ToggleRight,
   Trophy
 } from 'lucide-react'
 import { setOpenProgramDrawer } from '@/app/lib/store/slices/programSlice'
@@ -62,7 +62,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
   {
     action: 'toggle-modal',
     label: 'Toggle Modal',
-    icon: isModalEnabled ? Maximize2 : Minimize2,
+    icon: isModalEnabled ? ToggleRight : ToggleLeft,
     open: async () => await setToggleModal('home'),
     isUnlocked: true
   },

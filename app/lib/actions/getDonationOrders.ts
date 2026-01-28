@@ -1,7 +1,7 @@
 'use server'
 
-import { unstable_cache } from 'next/cache'
 import prisma from '@/prisma/client'
+import { createLog } from './createLog'
 
 interface DonationOrder {
   id: string
@@ -16,7 +16,7 @@ interface DonationOrder {
   stripeSubscriptionId: string
 }
 
-async function getDonationOrdersFn(): Promise<DonationOrder[]> {
+export async function getDonationOrders(): Promise<DonationOrder[]> {
   try {
     // Fetch all donation orders (one-time and recurring)
     const orders = await prisma.order.findMany({
@@ -63,18 +63,10 @@ async function getDonationOrdersFn(): Promise<DonationOrder[]> {
 
     return formatted
   } catch (error) {
-    console.error('Error fetching donation orders:', error)
-    throw new Error('Failed to fetch donation orders')
+    await createLog('error', 'Error fetching donations orders', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
+    throw error
   }
 }
-
-export const getDonationOrders = unstable_cache(
-  async () => {
-    return getDonationOrdersFn()
-  },
-  ['getDonationOrders'],
-  {
-    tags: ['Order'],
-    revalidate: 60
-  }
-)

@@ -1,14 +1,21 @@
-'use server'
-
 import prisma from '@/prisma/client'
-import { unstable_cache } from 'next/cache'
 import { auth } from '../auth'
+import { createLog } from './createLog'
 
-const getCachedDonations = unstable_cache(
-  async (userId: string) => {
-    return await prisma.order.findMany({
+export const getMyDonations = async () => {
+  try {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: 'Unauthorized'
+      }
+    }
+
+    const donations = await prisma.order.findMany({
       where: {
-        userId,
+        userId: session.user.id,
         type: { in: ['ONE_TIME_DONATION', 'RECURRING_DONATION'] },
         status: 'CONFIRMED'
       },
@@ -29,33 +36,13 @@ const getCachedDonations = unstable_cache(
       },
       orderBy: { createdAt: 'desc' }
     })
-  },
-  ['getMyDonations'],
-  {
-    revalidate: 60,
-    tags: ['Order']
-  }
-)
-
-export const getMyDonations = async () => {
-  try {
-    const session = await auth()
-
-    if (!session?.user?.id) {
-      return {
-        success: false,
-        error: 'Unauthorized'
-      }
-    }
-
-    const donations = await getCachedDonations(session.user.id)
 
     return donations
   } catch (error) {
-    console.error('Error fetching donations:', error)
-    return {
-      success: false,
-      error: 'Failed to fetch donations'
-    }
+    await createLog('error', 'Failed to fetch my donations', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
+    throw error
   }
 }

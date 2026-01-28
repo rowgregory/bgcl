@@ -1,28 +1,18 @@
 import prisma from '@/prisma/client'
-import { unstable_cache } from 'next/cache'
+import { createLog } from './createLog'
 
-export const getContactSubmissions = unstable_cache(
-  async (): Promise<IContactSubmission[]> => {
-    try {
-      const contactSubmissions = await prisma.contactSubmission.findMany({
-        orderBy: { createdAt: 'desc' }
-      })
+export const getContactSubmissions = async (): Promise<IContactSubmission[]> => {
+  try {
+    const contactSubmissions = await prisma.contactSubmission.findMany({
+      orderBy: { createdAt: 'desc' }
+    })
 
-      return contactSubmissions
-    } catch (error) {
-      prisma.log.create({
-        data: {
-          level: 'error',
-          message: 'Failed to fetch contact submissions',
-          metadata: JSON.stringify({
-            error: error instanceof Error ? error.message : 'Unknown error'
-          })
-        }
-      })
+    return contactSubmissions
+  } catch (error) {
+    await createLog('error', 'Failed to fetch contact submissions', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
 
-      return []
-    }
-  },
-  ['getContactSubmissions'],
-  { tags: ['Contact-Submission'] }
-)
+    throw error
+  }
+}

@@ -1,4 +1,5 @@
 import prisma from '@/prisma/client'
+import { createLog } from './createLog'
 
 export async function getLogs(filters?: { level?: string; userId?: string; startDate?: Date; endDate?: Date }) {
   try {
@@ -22,11 +23,10 @@ export async function getLogs(filters?: { level?: string; userId?: string; start
 
     return logs
   } catch (error) {
-    console.error('Error fetching logs:', error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch logs',
-      data: []
-    }
+    await createLog('error', 'Failed to fetch logs', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
+    throw error
   }
 }

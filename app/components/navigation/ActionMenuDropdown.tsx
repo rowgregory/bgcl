@@ -9,7 +9,10 @@ import { ChevronRight } from 'lucide-react'
 import { IActionItems } from '@/app/lib/constants/dropdownActionItems'
 import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
 
-const ActionMenuDropdown: FC<{ actionItems: IActionItems[] }> = ({ actionItems }) => {
+const ActionMenuDropdown: FC<{ actionItems: IActionItems[]; isModalEnabled: boolean }> = ({
+  actionItems,
+  isModalEnabled
+}) => {
   const dispatch = useAppDispatch()
   const router = useRouter()
   const { push } = useRouter()
@@ -116,7 +119,9 @@ const ActionMenuDropdown: FC<{ actionItems: IActionItems[] }> = ({ actionItems }
                     }`}
                   >
                     <div className="flex items-start space-x-3">
-                      <item.icon className="w-4 h-4 mt-0.5 text-gray-400" />
+                      <item.icon
+                        className={`${item.action === 'toggle-modal' && isModalEnabled ? 'text-green-400' : 'text-gray-400'} w-4 h-4 mt-0.5 `}
+                      />
                       <div className="flex flex-col">
                         <span className="font-medium text-sm">{item.label}</span>
                       </div>

@@ -51,7 +51,7 @@ const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
       <ClubResourceDrawer />
       <CampaignDrawer />
       <ClosingDrawer />
-      <ActionMenuDropdown actionItems={dropdownActionItems(isModalEnabled)} />
+      <ActionMenuDropdown actionItems={dropdownActionItems(isModalEnabled)} isModalEnabled={isModalEnabled} />
       <FailedPaymentsDrawer />
       <DonationDrawer />
 
