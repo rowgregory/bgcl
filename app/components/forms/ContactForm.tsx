@@ -19,7 +19,7 @@ interface CreateContactSusmissionInputs {
 }
 
 const ContactForm = () => {
-  const { forms } = useFormSelector()
+  const { forms, isLoading } = useFormSelector()
   const router = useRouter()
   const { handleInput, setErrors } = createFormActions('contactForm', store.dispatch)
   const inputs = forms?.contactForm?.inputs
@@ -144,7 +144,9 @@ const ContactForm = () => {
               onChange={handleInput}
               className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-50 border-neutral-200 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
             >
-              <option value="">Select a subject</option>
+              <option value="" disabled>
+                Select a subject
+              </option>
               <option value="tour">Schedule a Tour</option>
               <option value="other">Other</option>
             </select>
@@ -167,9 +169,17 @@ const ContactForm = () => {
 
           <button
             type="submit"
-            className="w-full px-6 py-3 sm:py-4 text-sm sm:text-base dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors"
+            disabled={isLoading}
+            className="w-full px-6 py-3 sm:py-4 text-sm sm:text-base dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Send Message
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Sending...
+              </>
+            ) : (
+              'Send Message'
+            )}
           </button>
         </div>
       </div>

@@ -2,6 +2,8 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import sendAdminNotification from '../utils/sendAdminNotification'
+import { createLog } from './createLog'
 
 export interface CreateJobApplicationInput {
   applicantName: string
@@ -50,6 +52,22 @@ export const createJobApplication = async (data: CreateJobApplicationInput) => {
         references: true
       }
     })
+
+    // Send admin notification email for job application
+    try {
+      await sendAdminNotification('JOB_APPLICATION', {
+        applicantName: data.applicantName.trim(),
+        email: data.email.trim()
+      })
+    } catch (emailError) {
+      // Log email error but don't fail the submission
+      console.error('Failed to send admin notification email:', emailError)
+      await createLog('error', 'Failed to send admin notification', {
+        type: 'JOB_APPLICATION',
+        email: data.email,
+        error: emailError instanceof Error ? emailError.message : 'Unknown error'
+      })
+    }
 
     revalidateTag('Job-Application', 'default')
 

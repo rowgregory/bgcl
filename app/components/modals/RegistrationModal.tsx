@@ -8,7 +8,7 @@ import Picture from '../common/Picture'
 
 export default function RegistrationModal({ pageContent }) {
   const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(pathname === '/')
+  const [isOpen, setIsOpen] = useState(pathname === '/' && pageContent?.modal.toggleModal)
 
   useEffect(() => {
     if (isOpen) {
@@ -26,7 +26,7 @@ export default function RegistrationModal({ pageContent }) {
     setIsOpen(false)
   }
 
-  if (pathname !== '/') return
+  if (pathname !== '/' && !pageContent?.modal.toggleModal) return
 
   return (
     <AnimatePresence>

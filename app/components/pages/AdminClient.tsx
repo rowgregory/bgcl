@@ -30,7 +30,7 @@ import FailedPaymentsDrawer from '../drawers/FailedPaymentDrawer'
 import DonationDrawer from '../drawers/DonationDrawer'
 import { useSession } from 'next-auth/react'
 
-const AdminLayout: FC<ILayout> = ({ children, themes }) => {
+const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
   const pathname = usePathname()
   const session = useSession()
   const navigationGroups = adminNavigationLinkData(pathname, session.data.user.role === 'SUPERUSER')
@@ -51,7 +51,7 @@ const AdminLayout: FC<ILayout> = ({ children, themes }) => {
       <ClubResourceDrawer />
       <CampaignDrawer />
       <ClosingDrawer />
-      <ActionMenuDropdown actionItems={dropdownActionItems} />
+      <ActionMenuDropdown actionItems={dropdownActionItems(isModalEnabled)} />
       <FailedPaymentsDrawer />
       <DonationDrawer />
 

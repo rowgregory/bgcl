@@ -1,18 +1,21 @@
 import { FC, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { IActionItems } from '@/types/navigation'
 import { useAppDispatch, useDashboardSelector } from '@/app/lib/store/store'
 import { setCloseActionMenu, setOpenActionDropdownSubmenu } from '@/app/lib/store/slices/dashboardSlice'
 import Backdrop from '../common/Backdrop'
 import { setInputs } from '@/app/lib/store/slices/formSlice'
 import { ChevronRight } from 'lucide-react'
+import { IActionItems } from '@/app/lib/constants/dropdownActionItems'
+import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
 
 const ActionMenuDropdown: FC<{ actionItems: IActionItems[] }> = ({ actionItems }) => {
   const dispatch = useAppDispatch()
+  const router = useRouter()
   const { push } = useRouter()
   const onClose = () => dispatch(setCloseActionMenu())
   const { actionMenu, itemAction } = useDashboardSelector()
+  const { play } = useSoundEffect('/sound-effects/on.mp3', true)
 
   useEffect(() => {
     if (actionMenu) {
@@ -26,16 +29,37 @@ const ActionMenuDropdown: FC<{ actionItems: IActionItems[] }> = ({ actionItems }
     }
   }, [actionMenu])
 
-  const handleActionClick = (item: any) => {
+  const handleActionClick = async (item: any) => {
     if (item.hasSubmenu) {
       dispatch(setOpenActionDropdownSubmenu(itemAction === item.action ? null : item.action))
       return
     }
 
     if (item.isUnlocked) {
-      onClose()
-      dispatch(item.open())
-      dispatch(setInputs({ formName: item.formName, data: item.initial }))
+      if (item.action !== 'toggle-modal') {
+        onClose()
+      }
+
+      // Handle different types of actions
+      if (item.open) {
+        const result = item.open()
+
+        // If it returns a Promise, it's an async server action
+        if (result instanceof Promise) {
+          const res = await result
+          if (res.isToggledOn) {
+            play()
+          }
+          router.refresh()
+        } else {
+          // It's a Redux action creator
+          dispatch(result)
+        }
+      }
+
+      if (item.formName && item.initial) {
+        dispatch(setInputs({ formName: item.formName, data: item.initial }))
+      }
     } else {
       onClose()
       push(item.linkKey)

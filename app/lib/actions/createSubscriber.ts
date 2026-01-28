@@ -17,8 +17,7 @@ export async function createSubscriber(data: CreateSubscriberInput) {
 
     if (existingSubscriber) {
       return {
-        success: false,
-        error: 'Email already subscribed'
+        success: true
       }
     }
 

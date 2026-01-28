@@ -1,7 +1,9 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidatePath } from 'next/cache'
+import { revalidateTag } from 'next/cache'
+import sendAdminNotification from '../utils/sendAdminNotification'
+import { createLog } from './createLog'
 
 export const createContactSubmission = async (data: Omit<IContactSubmission, 'id' | 'createdAt'>) => {
   try {
@@ -70,8 +72,26 @@ export const createContactSubmission = async (data: Omit<IContactSubmission, 'id
       data: submissionData
     })
 
-    // Revalidate cache
-    revalidatePath('Contact-Submission')
+    // Send admin notification email based on submission type
+    try {
+      const notificationType = data.type === 'VOLUNTEER' ? 'VOLUNTEER_FORM' : 'CONTACT_FORM'
+
+      await sendAdminNotification(notificationType, {
+        firstName: data.firstName.trim(),
+        lastName: data.lastName.trim(),
+        email: data.email.trim()
+      })
+    } catch (emailError) {
+      // Log email error but don't fail the submission
+      console.error('Failed to send admin notification email:', emailError)
+      await createLog('error', 'Failed to send admin notification', {
+        type: data.type,
+        email: data.email,
+        error: emailError instanceof Error ? emailError.message : 'Unknown error'
+      })
+    }
+
+    revalidateTag('Contact-Submission', 'default')
 
     return {
       success: true

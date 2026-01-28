@@ -16,7 +16,7 @@ export default async function sendConfirmationEmail(
 
     if (orderType === 'ONE_TIME_DONATION') {
       emailHtml = oneTimeDonationTemplate(order.customerName, amount, order.id)
-      subject = 'Thank You for Your Donation'
+      subject = 'Your One Time Donation is Confirmed'
     } else if (orderType === 'RECURRING_DONATION') {
       const frequency = order.recurringFrequency || 'monthly'
       emailHtml = recurringDonationTemplate(order.customerName, amount, frequency, order.id)
@@ -33,7 +33,7 @@ export default async function sendConfirmationEmail(
     }
 
     await resend.emails.send({
-      from: `Boys & Girls Club <${process.env.RESEND_FROM_EMAIL}>`,
+      from: `Boys & Girls Club of Lynn <${process.env.RESEND_FROM_EMAIL}>`,
       to: order.customerEmail,
       subject,
       html: emailHtml

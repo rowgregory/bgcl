@@ -11,6 +11,7 @@ export interface IHeroStudioEditor {
 export interface ILayout {
   children: ReactNode
   themes?: ITheme[]
+  isModalEnabled?: boolean
 }
 
 export interface IForm {

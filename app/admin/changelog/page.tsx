@@ -21,6 +21,47 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.7.0',
+    date: '2026-01-28',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Registration Modal Toggle Control',
+        description:
+          'Added toggle modal button in action dropdown menu allowing administrators to instantly show or hide the homepage registration modal without code changes. The modal state is stored in the page content and persists across sessions.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Modal State Management Server Actions',
+        description:
+          'Created server actions to toggle and retrieve modal visibility state from the home page content. Includes caching for performance with automatic cache invalidation on state changes.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Admin Email Notifications System',
+        description:
+          'Implemented three new admin notification email templates for volunteer applications, contact form submissions, and job applications. All notifications are sent to info@bgcl.org with applicant details and direct login links to view full submissions.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Async Action Support in Dropdown Menu',
+        description:
+          'Enhanced action dropdown menu to support both Redux actions and async server actions, enabling real-time server operations directly from the admin action menu dropdown interface.',
+        impact: 'medium'
+      },
+      {
+        type: 'ui',
+        title: 'Professional Email Templates',
+        description:
+          'Designed three consistent, mobile responsive email templates matching BGCL branding for volunteer forms, contact submissions, and job applications with clear call-to-action buttons.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.6.1',
     date: '2026-01-28',
     changes: [
