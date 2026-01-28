@@ -77,7 +77,7 @@ export const HistorySection = ({ pageContent }) => {
             </p>
 
             <p className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-              {pageContent?.history?.paragraph1}
+              {pageContent?.history?.paragraph4}
             </p>
           </div>
         </motion.div>
@@ -101,7 +101,7 @@ export const HistorySection = ({ pageContent }) => {
               whileHover={{ scale: 1.02 }}
             >
               <div className="relative overflow-hidden w-full h-full">
-                <img src={image.src} alt={image.alt} className="w-full h-full object-cover" loading="lazy" />
+                <Picture src={image.src} alt={image.alt} className="w-full h-full object-cover" priority={false} />
 
                 {/* Label on image */}
                 <motion.div
