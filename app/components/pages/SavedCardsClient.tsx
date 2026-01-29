@@ -136,10 +136,10 @@ export default function SavedCardsClient({ cards }) {
             </div>
           </motion.div>
 
-          {cards && cards.data.length > 0 ? (
+          {cards && cards?.data?.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Cards Grid */}
-              {cards.data.map((card, index) => (
+              {cards?.data?.map((card, index) => (
                 <motion.div
                   key={card.id}
                   initial={{ opacity: 0, y: 20 }}

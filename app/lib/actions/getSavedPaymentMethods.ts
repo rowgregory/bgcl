@@ -1,17 +1,12 @@
+'use server'
+
 import prisma from '@/prisma/client'
-import { auth } from '../auth'
 import { createLog } from './createLog'
 
-export async function getSavedPaymentMethods() {
+export async function getSavedPaymentMethods(userId: string) {
   try {
-    const session = await auth()
-
-    if (!session?.user?.id) {
-      throw new Error('Unauthorized')
-    }
-
     const paymentMethods = await prisma.paymentMethod.findMany({
-      where: { userId: session.user.id },
+      where: { userId },
       orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
       select: {
         id: true,
@@ -34,9 +29,14 @@ export async function getSavedPaymentMethods() {
     }
   } catch (error) {
     await createLog('error', 'Failed to fetch saved payment methods', {
+      userId,
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    throw error
+    return {
+      success: false,
+      error: 'Failed to get saved payment methods.',
+      data: []
+    }
   }
 }

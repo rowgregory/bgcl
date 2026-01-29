@@ -63,19 +63,18 @@ function DonationForm({ campaignName, campaigns }) {
   }, [campaignName, campaigns])
 
   useEffect(() => {
-    if (session.status === 'authenticated') {
-      getSavedPaymentMethods().then((result) => {
+    if (session.status === 'authenticated' && session.data?.user?.id) {
+      getSavedPaymentMethods(session.data.user.id).then((result) => {
         if (result.success) {
           setSavedCards(result.data)
-          // Auto-select default card
           const defaultCard = result.data.find((c) => c.isDefault)
           if (defaultCard) {
-            setSelectedCardId(defaultCard.stripePaymentId) // ✅ Use stripePaymentId
+            setSelectedCardId(defaultCard.stripePaymentId)
           }
         }
       })
     }
-  }, [session.status])
+  }, [session.status, session.data?.user?.id])
 
   // Calculate fees so you receive the exact donation amount
   const calculateFees = (donationAmount: number) => {
