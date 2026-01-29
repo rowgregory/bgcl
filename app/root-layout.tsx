@@ -20,6 +20,7 @@ import MobileNavigationDrawer from './components/MobileNavigationDrawer'
 import { ThemeProvider } from './lib/providers/theme'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
+import TestingBanner from './components/TestingBanner'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -42,6 +43,7 @@ export default function RootLayoutWrapper({ children, programs, pageContent, don
             <CapitalCampaignTab />
             <RegistrationModal pageContent={pageContent?.content} />
             <MobileNavigationDrawer />
+            <TestingBanner />
             {show && <Header />}
             {children}
             {show && <Footer />}

@@ -10,6 +10,8 @@ export interface AppStatePayload {
   volunteerDrawer: boolean
   paymentMethodDrawer: boolean
   isDark: boolean
+  cancelSubscriptionDrawer: boolean
+  cancelSubscriptionDetails: any | null
 }
 
 const initialAppState: AppStatePayload = {
@@ -21,7 +23,9 @@ const initialAppState: AppStatePayload = {
   capitalCampaignDrawer: false,
   volunteerDrawer: false,
   paymentMethodDrawer: false,
-  isDark: false
+  isDark: false,
+  cancelSubscriptionDrawer: false,
+  cancelSubscriptionDetails: null
 }
 
 export const appSlice = createSlice({
@@ -73,6 +77,13 @@ export const appSlice = createSlice({
     setClosePaymentMethodDrawer: (state) => {
       state.paymentMethodDrawer = false
     },
+    setOpenCancelSubscriptionDrawer: (state, { payload }) => {
+      state.cancelSubscriptionDrawer = true
+      state.cancelSubscriptionDetails = payload
+    },
+    setCloseCancelSubscriptionDrawer: (state) => {
+      state.cancelSubscriptionDrawer = false
+    },
     setIsDark: (state, { payload }) => {
       state.isDark = payload
     }
@@ -97,5 +108,7 @@ export const {
   setOpenVolunteerDrawer,
   setOpenPaymentMethodDrawer,
   setClosePaymentMethodDrawer,
-  setIsDark
+  setIsDark,
+  setCloseCancelSubscriptionDrawer,
+  setOpenCancelSubscriptionDrawer
 } = appSlice.actions

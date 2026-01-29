@@ -21,6 +21,40 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.8.0',
+    date: '2026-01-29',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Subscription Cancellation System',
+        description:
+          'Added comprehensive subscription cancellation functionality with cancellation drawer, reason selection, feedback collection, and real-time status updates. Includes visual indicators for cancelled subscriptions throughout the admin dashboard.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Subscription Details Page',
+        description:
+          'Created dedicated subscription management page displaying payment history, billing information, subscription status, and cancellation controls with full mobile responsiveness.',
+        impact: 'high'
+      },
+      {
+        type: 'ui',
+        title: 'Subscription Status Indicators',
+        description:
+          'Added visual badges and styling for subscription types and statuses (active, cancelled, failed) across donation lists and detail views with RefreshCw and XCircle icons.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Cancel Drawer UX',
+        description:
+          'Implemented multi-step cancellation flow with 8 predefined cancellation reasons, optional feedback textarea, loading states, and success confirmation.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.7.1',
     date: '2026-01-28',
     changes: [

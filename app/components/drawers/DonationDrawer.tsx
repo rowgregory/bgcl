@@ -17,7 +17,8 @@ import {
   RefreshCw,
   Phone,
   ExternalLink,
-  AlertCircle
+  AlertCircle,
+  XCircle
 } from 'lucide-react'
 
 export default function DonationDrawer() {
@@ -45,6 +46,8 @@ export default function DonationDrawer() {
       )
     }
   }
+
+  const isCancelled = donation.status === 'CANCELLED'
 
   return (
     <AnimatePresence>
@@ -74,11 +77,15 @@ export default function DonationDrawer() {
                   className={`p-2 rounded-lg ${
                     donation.status === 'FAILED'
                       ? 'bg-red-100 dark:bg-red-900/20'
-                      : 'bg-emerald-100 dark:bg-emerald-900/20'
+                      : isCancelled
+                        ? 'bg-neutral-200 dark:bg-neutral-800'
+                        : 'bg-emerald-100 dark:bg-emerald-900/20'
                   }`}
                 >
                   {donation.status === 'FAILED' ? (
                     <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                  ) : isCancelled ? (
+                    <XCircle className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
                   ) : donation.isRecurring ? (
                     <RefreshCw className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   ) : (
@@ -89,9 +96,11 @@ export default function DonationDrawer() {
                   <h2 className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white">
                     {donation.status === 'FAILED'
                       ? 'Failed Payment'
-                      : donation.isRecurring
-                        ? 'Recurring Donation'
-                        : 'One-Time Donation'}
+                      : isCancelled
+                        ? 'Cancelled Subscription'
+                        : donation.isRecurring
+                          ? 'Recurring Donation'
+                          : 'One-Time Donation'}
                   </h2>
                   <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
                     {formatDate(new Date(donation.createdAt))}
@@ -108,6 +117,23 @@ export default function DonationDrawer() {
 
             {/* Content */}
             <div className="p-4 sm:p-6 space-y-6">
+              {/* Cancelled Subscription Alert Banner */}
+              {isCancelled && (
+                <div className="bg-neutral-100 dark:bg-neutral-800/50 border border-neutral-300 dark:border-neutral-700 rounded-xl p-5">
+                  <div className="flex items-start gap-3">
+                    <XCircle className="w-5 h-5 text-neutral-600 dark:text-neutral-400 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 mb-1">
+                        Subscription Cancelled
+                      </h3>
+                      <p className="text-sm text-neutral-700 dark:text-neutral-300">
+                        This recurring donation has been cancelled and will no longer be charged.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Failed Payment Alert Banner */}
               {donation.status === 'FAILED' && (
                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-xl p-5">
@@ -137,14 +163,18 @@ export default function DonationDrawer() {
                 className={`border rounded-2xl p-6 ${
                   donation.status === 'FAILED'
                     ? 'bg-linear-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border-red-200 dark:border-red-800/50'
-                    : 'bg-linear-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 border-emerald-200 dark:border-emerald-800/50'
+                    : isCancelled
+                      ? 'bg-linear-to-br from-neutral-50 to-neutral-100 dark:from-neutral-800/20 dark:to-neutral-700/20 border-neutral-300 dark:border-neutral-700'
+                      : 'bg-linear-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 border-emerald-200 dark:border-emerald-800/50'
                 }`}
               >
                 <p
                   className={`text-sm font-semibold mb-2 ${
                     donation.status === 'FAILED'
                       ? 'text-red-800 dark:text-red-300'
-                      : 'text-emerald-800 dark:text-emerald-300'
+                      : isCancelled
+                        ? 'text-neutral-700 dark:text-neutral-300'
+                        : 'text-emerald-800 dark:text-emerald-300'
                   }`}
                 >
                   {donation.isRecurring
@@ -155,7 +185,9 @@ export default function DonationDrawer() {
                   className={`text-4xl font-black ${
                     donation.status === 'FAILED'
                       ? 'text-red-900 dark:text-red-100'
-                      : 'text-emerald-900 dark:text-emerald-100'
+                      : isCancelled
+                        ? 'text-neutral-700 dark:text-neutral-300 line-through'
+                        : 'text-emerald-900 dark:text-emerald-100'
                   }`}
                 >
                   ${donation.totalAmount.toFixed(2)}
@@ -163,7 +195,12 @@ export default function DonationDrawer() {
                 {donation.status === 'FAILED' && (
                   <p className="text-xs text-red-700 dark:text-red-400 mt-2 italic">This amount was not charged</p>
                 )}
-                {donation.coverFees && donation.status !== 'FAILED' && (
+                {isCancelled && (
+                  <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-2 italic">
+                    This subscription was cancelled
+                  </p>
+                )}
+                {donation.coverFees && !isCancelled && donation.status !== 'FAILED' && (
                   <div className="flex items-center gap-2 mt-3 pt-3 border-t border-emerald-200 dark:border-emerald-800">
                     <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
@@ -177,19 +214,21 @@ export default function DonationDrawer() {
               <div className="flex items-center gap-2">
                 <span
                   className={`
-        px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide
-        ${
-          donation.status === 'CONFIRMED'
-            ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-            : donation.status === 'FAILED'
-              ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-              : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
-        }
-      `}
+                    px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide
+                    ${
+                      donation.status === 'CONFIRMED'
+                        ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
+                        : donation.status === 'FAILED'
+                          ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                          : isCancelled
+                            ? 'bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300'
+                            : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
+                    }
+                  `}
                 >
                   {donation.status}
                 </span>
-                {donation.isRecurring && (
+                {donation.isRecurring && !isCancelled && (
                   <span className="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
                     {donation.recurringFrequency}
                   </span>
@@ -274,7 +313,7 @@ export default function DonationDrawer() {
                     <Calendar className="w-4 h-4 text-neutral-400 shrink-0" />
                     <div>
                       <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-0.5">
-                        {donation.status === 'FAILED' ? 'Attempted At' : 'Paid At'}
+                        {donation.status === 'FAILED' ? 'Attempted At' : isCancelled ? 'Originally Created' : 'Paid At'}
                       </p>
                       <p className="text-sm font-semibold text-neutral-900 dark:text-white">
                         {formatDate(new Date(donation.createdAt))}
@@ -308,8 +347,8 @@ export default function DonationDrawer() {
                 )}
               </div>
 
-              {/* Recurring Details - Only show if not failed */}
-              {donation.isRecurring && donation.nextBillingDate && donation.status !== 'FAILED' && (
+              {/* Recurring Details - Only show if not failed and not cancelled */}
+              {donation.isRecurring && donation.nextBillingDate && !isCancelled && donation.status !== 'FAILED' && (
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-xl p-5">
                   <h3 className="text-sm font-black text-blue-900 dark:text-blue-100 mb-4 uppercase tracking-wide flex items-center gap-2">
                     <RefreshCw className="w-4 h-4" />

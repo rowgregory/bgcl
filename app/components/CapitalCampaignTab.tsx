@@ -42,6 +42,10 @@ export default function CapitalCampaignTab() {
 
   if (CAPITAL_CAMPAIGN_LINKS.some((link) => pathname.includes(link))) return null
 
+  const goalAmount = 30000000
+  const raisedAmount = 17071500
+  const progressPercent = (raisedAmount / goalAmount) * 100
+
   return (
     <>
       {/* Desktop Version - Side Tab */}
@@ -111,10 +115,13 @@ export default function CapitalCampaignTab() {
                   <div className="mb-3">
                     <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400 mb-1">
                       <span>$17.1M raised</span>
-                      <span>85%</span>
+                      <span>{progressPercent.toFixed(2)}%</span>
                     </div>
                     <div className="h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                      <div className="h-full w-[85%] bg-linear-to-r from-sky-500 to-sky-600 rounded-full" />
+                      <div
+                        style={{ width: `${progressPercent}%` }}
+                        className={`h-full bg-linear-to-r from-sky-500 to-sky-600 rounded-full`}
+                      />
                     </div>
                   </div>
                   <p className="text-xs text-neutral-600 dark:text-neutral-400">Click to learn more →</p>

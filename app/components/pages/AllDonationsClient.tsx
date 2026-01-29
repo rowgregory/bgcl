@@ -2,7 +2,18 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { DollarSign, Search, User, Mail, Calendar, CreditCard, Check, AlertCircle } from 'lucide-react'
+import {
+  DollarSign,
+  Search,
+  User,
+  Mail,
+  Calendar,
+  CreditCard,
+  Check,
+  AlertCircle,
+  XCircle,
+  RefreshCw
+} from 'lucide-react'
 import { store } from '@/app/lib/store/store'
 import { setOpenDonationDrawer } from '@/app/lib/store/slices/dashboardSlice'
 
@@ -28,10 +39,14 @@ export default function AllDonationsClient({ donations }: { donations: any }) {
   const [searchQuery, setSearchQuery] = useState('')
 
   const filteredDonations = donations.filter((donation) => {
+    // If search is empty, show all records
+    if (!searchQuery || searchQuery.trim() === '') {
+      return true
+    }
+
     const matchesSearch =
-      searchQuery === '' ||
-      donation.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      donation.email?.toLowerCase().includes(searchQuery.toLowerCase())
+      donation.customerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      donation.customerEmail?.toLowerCase().includes(searchQuery.toLowerCase())
 
     return matchesSearch
   })
@@ -82,48 +97,32 @@ export default function AllDonationsClient({ donations }: { donations: any }) {
               <p className="text-sm">All donations will appear here</p>
             </motion.div>
           ) : (
-            <motion.div
-              className="space-y-2"
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: {
-                  opacity: 1,
-                  transition: {
-                    staggerChildren: 0.03
-                  }
-                }
-              }}
-            >
+            <motion.div className="space-y-2">
               {/* Header - Hidden on mobile */}
               <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-6 py-3 text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider border-b border-neutral-200 dark:border-neutral-800">
                 <div className="col-span-2">Amount</div>
                 <div className="col-span-2">Donor</div>
-                <div className="col-span-3">Email</div>
+                <div className="col-span-2">Email</div>
                 <div className="col-span-2">Date</div>
-                <div className="col-span-2">Payment ID</div>
+                <div className="col-span-3">Payment ID</div>
                 <div className="col-span-1">Fees</div>
               </div>
 
-              {/* List Items */}
               {filteredDonations.map((donation) => (
                 <motion.div
-                  onClick={() => store.dispatch(setOpenDonationDrawer(donation))}
-                  key={donation.id}
                   variants={{
                     hidden: { opacity: 0, y: 20 },
                     visible: { opacity: 1, y: 0 }
                   }}
-                  whileHover={{ scale: 1.01 }}
-                  className={`
-    bg-white dark:bg-neutral-900/50 border rounded-lg transition-all p-4 lg:px-6 lg:py-4
-    ${
-      donation.status === 'FAILED'
-        ? 'border-red-200 dark:border-red-800/50 hover:border-red-300 dark:hover:border-red-700 opacity-75'
-        : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'
-    }
-  `}
+                  onClick={() => store.dispatch(setOpenDonationDrawer(donation))}
+                  key={donation.id}
+                  className={`bg-white dark:bg-neutral-900/50 border rounded-lg transition-all p-4 lg:px-6 lg:py-4 ${
+                    donation.status === 'FAILED'
+                      ? 'border-red-200 dark:border-red-800/50 hover:border-red-300 dark:hover:border-red-700 opacity-75'
+                      : donation.status === 'CANCELLED'
+                        ? 'border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-600 opacity-60'
+                        : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'
+                  }`}
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 lg:items-center">
                     {/* Amount - Full width mobile, col-span-2 desktop */}
@@ -133,7 +132,9 @@ export default function AllDonationsClient({ donations }: { donations: any }) {
                           className={`text-2xl lg:text-lg font-bold ${
                             donation.status === 'FAILED'
                               ? 'text-red-600 dark:text-red-400'
-                              : 'text-emerald-600 dark:text-emerald-400'
+                              : donation.status === 'CANCELLED'
+                                ? 'text-neutral-500 dark:text-neutral-400 line-through'
+                                : 'text-emerald-600 dark:text-emerald-400'
                           }`}
                         >
                           {formatCurrency(donation.totalAmount * 100)}
@@ -141,9 +142,21 @@ export default function AllDonationsClient({ donations }: { donations: any }) {
                         {donation.status === 'FAILED' && (
                           <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 lg:hidden" />
                         )}
+                        {donation.status === 'CANCELLED' && (
+                          <XCircle className="w-5 h-5 text-neutral-500 dark:text-neutral-400 lg:hidden" />
+                        )}
+                        {/* Subscription badge on mobile */}
+                        {donation.type === 'RECURRING_DONATION' &&
+                          donation.status !== 'FAILED' &&
+                          donation.status !== 'CANCELLED' && (
+                            <div className="lg:hidden flex items-center gap-1 px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/30 rounded-full">
+                              <RefreshCw className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                              <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">Sub</span>
+                            </div>
+                          )}
                       </div>
                       {/* Fees indicator - shown inline on mobile */}
-                      {donation.coverFees && donation.status !== 'FAILED' && (
+                      {donation.coverFees && donation.status !== 'FAILED' && donation.status !== 'CANCELLED' && (
                         <div className="flex items-center gap-1 lg:hidden">
                           <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                           <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
@@ -159,7 +172,7 @@ export default function AllDonationsClient({ donations }: { donations: any }) {
                         <User className="w-4 h-4 text-neutral-400 shrink-0" />
                         <span
                           className={`text-sm font-medium truncate ${
-                            donation.status === 'FAILED'
+                            donation.status === 'FAILED' || donation.status === 'CANCELLED'
                               ? 'text-neutral-500 dark:text-neutral-500'
                               : 'text-neutral-900 dark:text-white'
                           }`}
@@ -169,15 +182,15 @@ export default function AllDonationsClient({ donations }: { donations: any }) {
                       </div>
                     </div>
 
-                    {/* Email - Full width mobile, col-span-3 desktop */}
-                    <div className="lg:col-span-3">
+                    {/* Email - Full width mobile, col-span-2 desktop */}
+                    <div className="lg:col-span-2">
                       <div className="flex items-center gap-2">
                         <Mail className="w-4 h-4 text-neutral-400 shrink-0" />
 
                         <a
                           href={`mailto:${donation.customerEmail}`}
                           className={`text-sm hover:underline truncate ${
-                            donation.status === 'FAILED'
+                            donation.status === 'FAILED' || donation.status === 'CANCELLED'
                               ? 'text-neutral-500 dark:text-neutral-500'
                               : 'text-blue-600 dark:text-blue-400'
                           }`}
@@ -193,7 +206,7 @@ export default function AllDonationsClient({ donations }: { donations: any }) {
                         <Calendar className="w-4 h-4 text-neutral-400 shrink-0" />
                         <span
                           className={`text-sm ${
-                            donation.status === 'FAILED'
+                            donation.status === 'FAILED' || donation.status === 'CANCELLED'
                               ? 'text-neutral-500 dark:text-neutral-500'
                               : 'text-neutral-900 dark:text-white'
                           }`}
@@ -203,13 +216,27 @@ export default function AllDonationsClient({ donations }: { donations: any }) {
                       </div>
                     </div>
 
-                    {/* Payment ID or Status Badge - Full width mobile, col-span-2 desktop */}
-                    <div className="lg:col-span-2">
+                    {/* Payment ID, Status Badge, or Subscription Badge - Full width mobile, col-span-2 desktop */}
+                    <div className="lg:col-span-3">
                       {donation.status === 'FAILED' ? (
                         <div className="flex items-center gap-2">
                           <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0 hidden lg:block" />
                           <span className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase">
                             Payment Failed
+                          </span>
+                        </div>
+                      ) : donation.status === 'CANCELLED' ? (
+                        <div className="flex items-center gap-2">
+                          <XCircle className="w-4 h-4 text-neutral-500 dark:text-neutral-400 shrink-0 hidden lg:block" />
+                          <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase">
+                            Cancelled
+                          </span>
+                        </div>
+                      ) : donation.type === 'RECURRING_DONATION' ? (
+                        <div className="hidden lg:flex items-center gap-1.5 px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 rounded-full w-fit">
+                          <RefreshCw className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                          <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+                            Subscription
                           </span>
                         </div>
                       ) : donation.paymentMethodId ? (
@@ -226,7 +253,7 @@ export default function AllDonationsClient({ donations }: { donations: any }) {
 
                     {/* Fees - Hidden on mobile (shown inline with amount), col-span-1 desktop */}
                     <div className="hidden lg:block lg:col-span-1">
-                      {donation.status === 'FAILED' ? (
+                      {donation.status === 'FAILED' || donation.status === 'CANCELLED' ? (
                         <span className="text-xs text-neutral-400">—</span>
                       ) : donation.coverFees ? (
                         <div className="flex items-center gap-1.5">

@@ -122,7 +122,7 @@ export default function CapitalCampaign() {
   const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % renderings.length)
   const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + renderings.length) % renderings.length)
 
-  const goalAmount = 20000000
+  const goalAmount = 30000000
   const raisedAmount = 17071500
   const progressPercent = (raisedAmount / goalAmount) * 100
 

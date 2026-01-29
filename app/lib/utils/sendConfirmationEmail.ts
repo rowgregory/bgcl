@@ -3,7 +3,6 @@ import recurringDonationTemplate from '../email-templates/recurring-donation'
 import ticketPurchaseTemplate from '../email-templates/ticket-purchase'
 import { resend } from '@/app/lib/resend'
 
-// Helper function for sending confirmation emails
 export default async function sendConfirmationEmail(
   order: any,
   orderType: 'ONE_TIME_DONATION' | 'RECURRING_DONATION' | 'TICKET_PURCHASE',
@@ -38,8 +37,6 @@ export default async function sendConfirmationEmail(
       subject,
       html: emailHtml
     })
-
-    console.log('Confirmation email sent to:', order.customerEmail)
   } catch (emailError) {
     console.error('Error sending confirmation email:', emailError)
   }

@@ -16,8 +16,7 @@ export const getMyDonations = async () => {
     const donations = await prisma.order.findMany({
       where: {
         userId: session.user.id,
-        type: { in: ['ONE_TIME_DONATION', 'RECURRING_DONATION'] },
-        status: 'CONFIRMED'
+        type: { in: ['ONE_TIME_DONATION', 'RECURRING_DONATION'] }
       },
       select: {
         id: true,
@@ -32,7 +31,8 @@ export const getMyDonations = async () => {
           select: {
             name: true
           }
-        }
+        },
+        stripeSubscriptionId: true
       },
       orderBy: { createdAt: 'desc' }
     })

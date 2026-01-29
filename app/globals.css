@@ -76,6 +76,23 @@ html {
   animation: gradient 4s linear infinite;
 }
 
+.anim-gradient-bg {
+  background: linear-gradient(
+    90deg,
+    #7c3aed,
+    /* purple */ #22c55e,
+    /* green */ #f97316,
+    /* orange */ #2563eb,
+    /* blue */ #7c3aed /* purple */
+  );
+  background-size: 300% auto;
+  animation: gradient 15s linear infinite;
+}
+
+.group:hover .anim-gradient-bg {
+  animation-duration: 15s;
+}
+
 .group:hover .sqysh-gradient {
   animation-duration: 1.5s;
 }

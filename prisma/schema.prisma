@@ -706,6 +706,7 @@ enum OrderStatus {
   CANCELLED // Order cancelled
   REFUNDED // Order refunded
   FAILED // Payment failed
+  PENDING_CANCELLATION // Subscription will cancel at period end
 }
 
 enum OrderType {

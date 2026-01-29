@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Heart, Calendar, ArrowRight, TrendingUp, ChevronRight, CreditCard } from 'lucide-react'
+import { Heart, Calendar, ArrowRight, TrendingUp, ChevronRight, CreditCard, Rocket } from 'lucide-react'
 import Link from 'next/link'
 import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
 import { useSession } from 'next-auth/react'
@@ -33,7 +33,21 @@ const SupporterOverviewClient = ({ data }) => {
               priority
             />
           </MotionLink>
-          <LogoutButton />
+          <div className="flex items-center gap-x-3">
+            {(session.data.user.role === 'ADMIN' ||
+              session.data.user.role === 'PROGRAM' ||
+              session.data.user.role === 'SUPERUSER') && (
+              <MotionLink
+                href="/auth/login"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-zinc-700 bg-neutral-200 border-neutral-300 hover:bg-neutral-300 rounded-lg transition-all"
+              >
+                <Rocket className="w-5 h-5 dark:text-zinc-400 text-neutral-700" />
+              </MotionLink>
+            )}
+            <LogoutButton />
+          </div>
         </div>
       </div>
       <div className="p-6 md:p-8 lg:p-12 space-y-8">
