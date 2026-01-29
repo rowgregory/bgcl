@@ -55,7 +55,7 @@ export const homeTextData = {
         value3: 'Ages 5-18 with 50/50 gender ratio'
       },
       statThree: {
-        value1: '$24.5M',
+        value1: '$30M',
         value2: 'Phase 2 Capital Project',
         value3: 'Opening January 2027'
       }

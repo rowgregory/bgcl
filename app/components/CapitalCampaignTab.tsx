@@ -196,7 +196,7 @@ export default function CapitalCampaignTab() {
                   </div>
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wide opacity-90">Capital Campaign</p>
-                    <p className="text-sm font-bold">$17.1M / $24.5M Goal</p>
+                    <p className="text-sm font-bold">$17.1M / $30M Goal</p>
                   </div>
                 </div>
 
