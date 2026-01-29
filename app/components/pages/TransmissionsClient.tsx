@@ -30,10 +30,10 @@ export default function TransmissionsClient({ transmissions }: { transmissions: 
 
     const matchesSearch =
       searchQuery === '' ||
-      transmission.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      transmission.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      transmission.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      transmission.subject.toLowerCase().includes(searchQuery.toLowerCase())
+      transmission?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      transmission?.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      transmission?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      transmission?.subject?.toLowerCase().includes(searchQuery.toLowerCase())
 
     return matchesTab && matchesSearch
   })

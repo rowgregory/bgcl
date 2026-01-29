@@ -13,22 +13,12 @@ export async function updateJobApplicationStatus(id: string, status: JobApplicat
     })
 
     if (!jobApplication) {
-      await createLog('warn', 'Job application not found for status update', {
-        jobApplicationId: id
-      })
       return { success: false, error: 'Job application not found', status: 404 }
     }
 
     const updatedJobApplication = await prisma.jobApplication.update({
       where: { id },
       data: { status }
-    })
-
-    await createLog('info', 'Job application status updated successfully', {
-      jobApplicationId: updatedJobApplication.id,
-      jobApplicationApplicantName: updatedJobApplication.applicantName,
-      previousStatus: jobApplication.status,
-      newStatus: updatedJobApplication.status
     })
 
     revalidateTag('Job-Application', 'default')
@@ -42,8 +32,7 @@ export async function updateJobApplicationStatus(id: string, status: JobApplicat
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update job application status',
-      status: 500
+      error: 'Failed to update job application status. Please try again.'
     }
   }
 }

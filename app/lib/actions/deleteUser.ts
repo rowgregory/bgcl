@@ -2,36 +2,45 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 export async function deleteUser(id: string) {
   try {
-    if (!id) {
-      throw new Error('User ID is required')
-    }
-
     const user = await prisma.user.findUnique({
-      where: { id }
+      where: { id },
+      select: { id: true, firstName: true, lastName: true, email: true, role: true }
     })
 
     if (!user) {
-      throw new Error('User not found')
+      return {
+        success: false,
+        error: 'User not found'
+      }
     }
 
     await prisma.user.delete({
       where: { id }
     })
 
+    await createLog('info', 'User deleted', {
+      userId: id,
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      role: user.role
+    })
+
     revalidateTag('User', 'default')
 
-    return {
-      success: true,
-      message: `${user.firstName} ${user.lastName} deleted successfully`
-    }
+    return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to delete user'
+    await createLog('error', 'Failed to delete user', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      userId: id
+    })
+
     return {
       success: false,
-      error: errorMessage
+      error: 'Failed to delete user. Please try again.'
     }
   }
 }

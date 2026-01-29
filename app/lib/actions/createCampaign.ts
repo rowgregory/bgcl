@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
 import { trimAndTransformData } from '../utils/trimAndTransformData'
+import { createLog } from './createLog'
 
 export interface CreateCampaignInput {
   name: string
@@ -27,21 +28,28 @@ export async function createCampaign(data: CreateCampaignInput) {
       ignoreFields: ['id', 'createdAt', 'updatedAt']
     })
 
-    await prisma.campaign.create({
+    const campaign = await prisma.campaign.create({
       data: processedData
+    })
+
+    await createLog('info', 'Campaign created', {
+      campaignId: campaign.id,
+      name: campaign.name,
+      goalAmount: campaign.goalAmount
     })
 
     revalidateTag('Campaign', 'default')
 
-    return {
-      success: true,
-      message: 'Campaign created successfully'
-    }
+    return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create campaign'
+    await createLog('error', 'Failed to create campaign', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      name: data.name
+    })
+
     return {
       success: false,
-      error: errorMessage
+      error: 'Failed to create campaign. Please try again.'
     }
   }
 }

@@ -13,6 +13,6 @@ export const getThemes = async () => {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    return null
+    return error
   }
 }

@@ -1,28 +1,29 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import prisma from '@/prisma/client'
+import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
 export async function deleteEvent(id: string) {
   try {
     const event = await prisma.event.findUnique({
-      where: { id }
+      where: { id },
+      select: { id: true, title: true }
     })
 
     if (!event) {
-      await createLog('warn', 'Event not found for deletion', {
-        eventId: id
-      })
-      return { success: false, error: 'Event not found', status: 404 }
+      return {
+        success: false,
+        error: 'Event not found'
+      }
     }
 
     await prisma.event.delete({
       where: { id }
     })
 
-    await createLog('info', 'Event deleted successfully', {
-      eventId: event.id,
+    await createLog('info', 'Event deleted', {
+      eventId: id,
       eventTitle: event.title
     })
 
@@ -37,8 +38,7 @@ export async function deleteEvent(id: string) {
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete event',
-      status: 500
+      error: 'Failed to delete event. Please try again.'
     }
   }
 }

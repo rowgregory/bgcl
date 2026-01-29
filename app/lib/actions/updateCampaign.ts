@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
 import { trimAndTransformData } from '../utils/trimAndTransformData'
+import { createLog } from './createLog'
 
 export interface UpdateCampaignInput {
   id: string
@@ -21,11 +22,14 @@ export interface UpdateCampaignInput {
 
 export async function updateCampaign(data: UpdateCampaignInput) {
   try {
-    if (!data.id) {
-      throw new Error('Campaign ID is required')
-    }
-
     const campaignId = data.id
+
+    if (!campaignId) {
+      return {
+        success: false,
+        error: 'Campaign ID is required.'
+      }
+    }
 
     // Process and trim data
     const processedData = trimAndTransformData(data, {
@@ -47,23 +51,22 @@ export async function updateCampaign(data: UpdateCampaignInput) {
       throw new Error('No valid data to update')
     }
 
-    const campaign = await prisma.campaign.update({
+    await prisma.campaign.update({
       where: { id: campaignId },
       data: cleanData
     })
 
     revalidateTag('Campaign', 'default')
 
-    return {
-      success: true,
-      campaign,
-      message: 'Campaign updated successfully'
-    }
+    return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to update campaign'
+    await createLog('error', 'Failed to update update', {
+      error: error instanceof Error ? error.message : 'Failed to update campaign'
+    })
+
     return {
       success: false,
-      error: errorMessage
+      error: 'Failed to update campaign. Please try again.'
     }
   }
 }

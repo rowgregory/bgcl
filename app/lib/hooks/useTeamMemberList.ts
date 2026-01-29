@@ -2,7 +2,7 @@ import { useRouter } from 'next/navigation'
 import { startTransition, useState } from 'react'
 import { store } from '../store/store'
 import { showToast } from '../store/slices/toastSlice'
-import { updateTeamMembersOrder } from '../actions/updateTeamMemberOrder'
+import { reorderTeamMembers } from '../actions/reorderTeamMembers'
 
 export default function useTeamMemberList(data: any, role: string) {
   const router = useRouter()
@@ -62,7 +62,7 @@ export default function useTeamMemberList(data: any, role: string) {
     // Save to backend
     startTransition(async () => {
       try {
-        await updateTeamMembersOrder(role, updatedList)
+        await reorderTeamMembers(role, updatedList)
 
         router.refresh()
         store.dispatch(

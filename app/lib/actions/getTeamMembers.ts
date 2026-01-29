@@ -30,7 +30,7 @@ interface TeamData {
   staffMembers: StaffMembers
 }
 
-export async function getAllTeamMembers(): Promise<TeamData> {
+export async function getTeamMembers(): Promise<TeamData> {
   try {
     // Fetch all team members
     const allMembers = await prisma.teamMember.findMany({
@@ -104,7 +104,6 @@ export async function getAllTeamMembers(): Promise<TeamData> {
       staffMembers
     }
   } catch (error) {
-    console.error('Error fetching team members:', error)
-    throw new Error('Failed to fetch team members')
+    throw error
   }
 }

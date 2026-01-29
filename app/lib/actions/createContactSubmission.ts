@@ -97,11 +97,16 @@ export const createContactSubmission = async (data: Omit<IContactSubmission, 'id
       success: true
     }
   } catch (error) {
-    console.error('Error creating contact submission:', error)
+    await createLog('error', 'Failed to create contact submission', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email
+    })
+
     return {
       success: false,
-      error: 'Failed to submit form. Please try again.',
-      data: null
+      error: 'Failed to create contact submission. Please try again.'
     }
   }
 }

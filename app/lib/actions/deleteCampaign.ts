@@ -2,35 +2,43 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 export async function deleteCampaign(id: string) {
   try {
+    const campaign = await prisma.campaign.findUnique({
+      where: { id },
+      select: { id: true, name: true }
+    })
+
+    if (!campaign) {
+      return {
+        success: false,
+        error: 'Campaign not found'
+      }
+    }
+
     await prisma.campaign.delete({
       where: { id }
     })
 
+    await createLog('info', 'Campaign deleted', {
+      campaignId: id,
+      campaignName: campaign.name
+    })
+
     revalidateTag('Campaign', 'default')
 
-    return {
-      success: true,
-      message: 'Campaign deleted successfully'
-    }
+    return { success: true }
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to delete campaign',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error',
-          campaignId: id
-        })
-      }
+    await createLog('error', 'Failed to delete campaign', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      campaignId: id
     })
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete campaign',
-      message: 'Failed to delete campaign'
+      error: 'Failed to delete campaign. Please try again.'
     }
   }
 }

@@ -7,10 +7,7 @@ export const getSubscribers = async () => {
       orderBy: { subscribedAt: 'desc' }
     })
 
-    return {
-      success: true,
-      data: subscribers
-    }
+    return subscribers
   } catch (error) {
     await createLog('error', 'Failed to fetch subscribers', {
       error: error instanceof Error ? error.message : 'Unknown error'

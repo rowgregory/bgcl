@@ -11,17 +11,17 @@ export async function deleteResource(id: string) {
     })
 
     if (!resource) {
-      await createLog('warn', 'Resource not found for deletion', {
+      await createLog('warn', 'Club resource not found for deletion', {
         resourceId: id
       })
-      return { success: false, error: 'Resource not found', status: 404 }
+      return { success: false, error: 'Club resource not found', status: 404 }
     }
 
     await prisma.resource.delete({
       where: { id }
     })
 
-    await createLog('info', 'Resource deleted successfully', {
+    await createLog('info', 'Club resource deleted successfully', {
       resourceId: resource.id,
       title: resource.title
     })
@@ -30,15 +30,14 @@ export async function deleteResource(id: string) {
 
     return { success: true }
   } catch (error) {
-    await createLog('error', 'Failed to delete resource', {
+    await createLog('error', 'Failed to delete club resource', {
       error: error instanceof Error ? error.message : 'Unknown error',
       resourceId: id
     })
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete resource',
-      status: 500
+      error: 'Failed to delete club resource. Please try again.'
     }
   }
 }

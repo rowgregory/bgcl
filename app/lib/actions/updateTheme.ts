@@ -5,7 +5,7 @@ import { revalidateTag } from 'next/cache'
 
 export async function updateTheme(data: IUpdateTheme) {
   try {
-    const theme = await prisma.theme.update({
+    await prisma.theme.update({
       where: { id: data.id },
       data: {
         ...(data.title && { title: data.title }),
@@ -14,23 +14,18 @@ export async function updateTheme(data: IUpdateTheme) {
       }
     })
 
-    await createLog('info', 'Theme updated successfully', {
-      themeId: theme.id,
-      title: theme.title
-    })
-
     revalidateTag('Program', 'default')
     revalidateTag('Theme', 'default')
 
     return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to update theme'
-
     await createLog('error', 'Failed to update theme', {
-      error: errorMessage,
-      themeId: data.id
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    throw new Error(errorMessage)
+    return {
+      success: false,
+      error: 'Failed to update theme. Please try again.'
+    }
   }
 }

@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { CreateNewsletterInput } from './createNewsletter'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 export interface UpdateNewsletterInput extends CreateNewsletterInput {
   id: string
@@ -10,7 +11,7 @@ export interface UpdateNewsletterInput extends CreateNewsletterInput {
 
 export async function updateNewsletter(data: UpdateNewsletterInput) {
   try {
-    const newsletter = await prisma.newsletter.update({
+    await prisma.newsletter.update({
       where: { id: data.id },
       data: {
         month: data.month,
@@ -22,26 +23,15 @@ export async function updateNewsletter(data: UpdateNewsletterInput) {
 
     revalidateTag('Newsletter', 'default')
 
-    return {
-      success: true,
-      data: newsletter,
-      message: 'Newsletter updated successfully'
-    }
+    return { success: true }
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to update newsletter',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error',
-          newsletterId: data.id
-        })
-      }
+    await createLog('error', 'Failed to update newsletter', {
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update newsletter'
+      error: 'Failed to update newsletter. Please try again.'
     }
   }
 }

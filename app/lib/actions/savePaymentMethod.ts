@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { stripe } from '../stripe/stripeClient'
+import { createLog } from './createLog'
 
 export async function savePaymentMethod(userId: string, paymentMethodId: string, isDefault: boolean = false) {
   try {
@@ -14,7 +15,7 @@ export async function savePaymentMethod(userId: string, paymentMethodId: string,
     if (!user?.stripeCustomerId) {
       return {
         success: false,
-        error: 'Customer not found'
+        error: 'Customer not found.'
       }
     }
 
@@ -35,7 +36,7 @@ export async function savePaymentMethod(userId: string, paymentMethodId: string,
     }
 
     // Save to database
-    const savedMethod = await prisma.paymentMethod.upsert({
+    await prisma.paymentMethod.upsert({
       where: { stripePaymentId: paymentMethodId },
       update: { isDefault },
       create: {
@@ -49,22 +50,15 @@ export async function savePaymentMethod(userId: string, paymentMethodId: string,
       }
     })
 
-    return {
-      success: true,
-      paymentMethod: {
-        id: savedMethod.id,
-        brand: savedMethod.cardBrand,
-        last4: savedMethod.cardLast4,
-        expMonth: savedMethod.cardExpMonth,
-        expYear: savedMethod.cardExpYear,
-        isDefault: savedMethod.isDefault
-      }
-    }
+    return { success: true }
   } catch (error) {
-    console.error('Error saving payment method:', error)
+    await createLog('error', 'Failed to save payment method', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
     return {
       success: false,
-      error: 'Failed to save payment method'
+      error: 'Failed to save payment method. Please try again.'
     }
   }
 }

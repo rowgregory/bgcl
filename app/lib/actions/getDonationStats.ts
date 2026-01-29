@@ -142,8 +142,7 @@ export async function getDonationStats() {
       retentionData,
       campaigns
     } as DonationStats & { annualArr: number }
-  } catch (error) {
-    console.error('Error fetching donation stats:', error)
+  } catch {
     return {
       success: false,
       error: 'Failed to fetch donation stats'

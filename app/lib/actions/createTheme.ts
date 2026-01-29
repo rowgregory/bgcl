@@ -34,15 +34,14 @@ export async function createTheme(data: ICreateTheme) {
 
     return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create theme'
-
     await createLog('error', 'Failed to create theme', {
-      error: errorMessage,
-      inputData: {
-        title: data.title
-      }
+      error: error instanceof Error ? error.message : 'Unknown error',
+      title: data.title
     })
 
-    throw new Error(errorMessage)
+    return {
+      success: false,
+      error: 'Failed to create theme. Please try again.'
+    }
   }
 }

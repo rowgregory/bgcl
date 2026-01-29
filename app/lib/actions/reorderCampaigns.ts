@@ -2,8 +2,9 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
-export async function updateCampaignsOrder(
+export async function reorderCampaigns(
   campaigns: Array<{ id: string; order?: number }>
 ): Promise<{ success: boolean; error?: string }> {
   try {
@@ -17,9 +18,13 @@ export async function updateCampaignsOrder(
     )
 
     revalidateTag('Campaign', 'default')
+
     return { success: true }
   } catch (error) {
-    console.error('Error reordering campaigns:', error)
-    return { success: false, error: 'Failed to reorder campaigns' }
+    await createLog('error', 'Failed to reorder campaigns', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
+    return { success: false, error: 'Failed to reorder campaigns. Please try again.' }
   }
 }

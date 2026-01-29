@@ -9,8 +9,7 @@ export async function updatePageBySlug(slug: string, content: any) {
     if (!content || typeof content !== 'object') {
       return {
         success: false,
-        error: 'Content must be a valid object',
-        status: 400
+        error: 'Content must be a valid object'
       }
     }
 
@@ -35,8 +34,7 @@ export async function updatePageBySlug(slug: string, content: any) {
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update page',
-      status: 500
+      error: 'Failed to update page. Please try again.'
     }
   }
 }

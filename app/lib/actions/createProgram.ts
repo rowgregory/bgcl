@@ -44,15 +44,14 @@ export async function createProgram(data: ICreateProgram) {
 
     return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create program'
-
     await createLog('error', 'Failed to create program', {
-      error: errorMessage,
-      inputData: {
-        name: data.name
-      }
+      error: error instanceof Error ? error.message : 'Unknown error',
+      name: data.name
     })
 
-    throw new Error(errorMessage)
+    return {
+      success: false,
+      error: 'Failed to create program. Please try again.'
+    }
   }
 }

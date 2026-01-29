@@ -1,13 +1,13 @@
 import { useRouter } from 'next/navigation'
 import { startTransition, useState } from 'react'
-import { updateProgramsOrder } from '../actions/updateProgramsOrder'
+import { reorderPrograms } from '../actions/reorderPrograms'
 import { store } from '../store/store'
 import { showToast } from '../store/slices/toastSlice'
-import { updateNewsOrder } from '../actions/updateNewsOrder'
-import { updateNewslettersOrder } from '../actions/updateNewslettersOrder'
-import { updateClubResourcesOrder } from '../actions/updateClubResourcesOrder'
-import { updateCampaignsOrder } from '../actions/updateCampaignsOrder'
-import { updateClosingsOrder } from '../actions/updateClosingsOrder'
+import { reorderNews } from '../actions/reorderNews'
+import { reorderNewsletters } from '../actions/reorderNewsletters'
+import { reorderClubResources } from '../actions/reorderClubResources'
+import { reorderCampaigns } from '../actions/reorderCampaigns'
+import { reorderClosings } from '../actions/reorderClosings'
 
 interface ReorderItem {
   id: string
@@ -17,12 +17,12 @@ interface ReorderItem {
 type ItemType = 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign' | 'closing'
 
 const actionMap: Record<ItemType, (items: any[]) => Promise<any>> = {
-  program: async (items) => await updateProgramsOrder(items),
-  news: async (items) => await updateNewsOrder(items),
-  newsletter: async (items) => await updateNewslettersOrder(items),
-  'club-resource': async (items) => await updateClubResourcesOrder(items),
-  campaign: async (items) => await updateCampaignsOrder(items),
-  closing: async (items) => await updateClosingsOrder(items)
+  program: async (items) => await reorderPrograms(items),
+  news: async (items) => await reorderNews(items),
+  newsletter: async (items) => await reorderNewsletters(items),
+  'club-resource': async (items) => await reorderClubResources(items),
+  campaign: async (items) => await reorderCampaigns(items),
+  closing: async (items) => await reorderClosings(items)
 }
 
 export default function useGenericListReorder<T extends ReorderItem>(data: T[], itemType: ItemType) {

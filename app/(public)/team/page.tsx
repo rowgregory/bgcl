@@ -1,7 +1,7 @@
 import { TeamClient } from '@/app/components/pages/TeamClient'
-import { getAllTeamMembers } from '@/app/lib/actions/getAllTeamMembers'
+import { getTeamMembers } from '@/app/lib/actions/getTeamMembers'
 
 export default async function TeamPage() {
-  const team = await getAllTeamMembers()
+  const team = await getTeamMembers()
   return <TeamClient team={team} />
 }

@@ -60,8 +60,6 @@ export const createJobApplication = async (data: CreateJobApplicationInput) => {
         email: data.email.trim()
       })
     } catch (emailError) {
-      // Log email error but don't fail the submission
-      console.error('Failed to send admin notification email:', emailError)
       await createLog('error', 'Failed to send admin notification', {
         type: 'JOB_APPLICATION',
         email: data.email,
@@ -76,10 +74,15 @@ export const createJobApplication = async (data: CreateJobApplicationInput) => {
       jobApplicationId: jobApplication.id
     }
   } catch (error) {
-    console.error('Error creating job application:', error)
+    await createLog('error', 'Failed to create job application', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      applicantName: data.applicantName,
+      email: data.email
+    })
+
     return {
       success: false,
-      error: 'Failed to create job application'
+      error: 'Failed to create job application. Please try again.'
     }
   }
 }

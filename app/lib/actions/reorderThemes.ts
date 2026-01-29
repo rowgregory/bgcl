@@ -2,7 +2,7 @@ import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
-export async function updateThemesOrder(themes: { id: string; order: number }[]) {
+export async function reorderThemes(themes: Array<{ id: string; order: number }>) {
   try {
     await prisma.$transaction(
       themes.map(({ id, order }) =>
@@ -17,10 +17,13 @@ export async function updateThemesOrder(themes: { id: string; order: number }[])
 
     return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to reorder themes'
+    await createLog('error', 'Failed to reorder themes', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
 
-    await createLog('error', 'Failed to reorder themes', { error: errorMessage })
-
-    throw new Error(errorMessage)
+    return {
+      success: false,
+      error: 'Failed to reorder themes. Please try again.'
+    }
   }
 }

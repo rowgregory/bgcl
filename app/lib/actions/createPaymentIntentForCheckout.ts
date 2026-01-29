@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { stripe } from '../stripe/stripeClient'
 import Stripe from 'stripe'
+import { createLog } from './createLog'
 
 interface CheckoutParams {
   userId?: string
@@ -142,10 +143,15 @@ export async function createPaymentIntentForCheckout({
       paymentIntentId: paymentIntent.id
     }
   } catch (error) {
-    console.error('Payment intent creation error:', error)
+    await createLog('error', 'Payment intent creation error', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      name,
+      email
+    })
+
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to create payment'
+      error: 'Payment intent creation error. Please try again.'
     }
   }
 }

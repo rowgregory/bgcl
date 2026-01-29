@@ -20,6 +20,7 @@ export const getPageBySlug = async (slug: string) => {
       error: error instanceof Error ? error.message : 'Unknown error',
       slug
     })
+
     return error
   }
 }

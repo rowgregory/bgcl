@@ -40,8 +40,7 @@ export async function updateHero(id: string, body: IUpdateHero) {
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update hero',
-      status: 500
+      error: 'Failed to update hero. Please try again.'
     }
   }
 }

@@ -20,7 +20,7 @@ export async function updateHeroStatus(id: string, status: HeroStatus) {
     }
 
     // Use transaction to ensure atomicity - only one hero is active
-    const result = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       // First, set all heroes to DRAFT
       await tx.hero.updateMany({
         where: { status: 'ACTIVE' },
@@ -36,13 +36,6 @@ export async function updateHeroStatus(id: string, status: HeroStatus) {
       return activatedHero
     })
 
-    await createLog('info', 'Hero status updated successfully', {
-      heroId: result.id,
-      heroTitle: result.title,
-      previousStatus: hero.status,
-      newStatus: result.status
-    })
-
     revalidateTag('Hero', 'default')
 
     return { success: true }
@@ -54,8 +47,7 @@ export async function updateHeroStatus(id: string, status: HeroStatus) {
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update hero status',
-      status: 500
+      error: 'Failed to update hero status. Please try again.'
     }
   }
 }

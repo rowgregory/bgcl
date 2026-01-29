@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 export async function createUser(data: {
   email: string
@@ -18,7 +19,10 @@ export async function createUser(data: {
     })
 
     if (existingUser) {
-      throw new Error('User with this email already exists')
+      return {
+        success: false,
+        error: `User with this email already exists`
+      }
     }
 
     const newUser = await prisma.user.create({
@@ -33,18 +37,25 @@ export async function createUser(data: {
       }
     })
 
+    await createLog('info', 'User created', {
+      userId: newUser.id,
+      firstName: newUser.firstName,
+      lastName: newUser.lastName
+    })
+
     revalidateTag('User', 'default')
 
-    return {
-      success: true,
-      user: newUser,
-      message: `${data.role.toLowerCase()} user created successfully`
-    }
+    return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create user'
+    await createLog('error', 'Failed to create user', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      firstName: data.firstName,
+      lastName: data.lastName
+    })
+
     return {
       success: false,
-      error: errorMessage
+      error: 'Failed to create user. Please try again.'
     }
   }
 }

@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 export interface CreateSubscriberInput {
   email: string
@@ -36,20 +37,14 @@ export async function createSubscriber(data: CreateSubscriberInput) {
       message: 'Subscriber created successfully'
     }
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to create subscriber',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error',
-          email: data.email
-        })
-      }
+    await createLog('error', 'Failed to create subscriber', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      email: data.email
     })
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to create subscriber'
+      error: 'Failed to create subscriber. Please try again.'
     }
   }
 }

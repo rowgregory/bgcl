@@ -13,7 +13,7 @@ interface TeamMember {
   displayOrder: number
 }
 
-export async function updateTeamMembersOrder(role: string, teamMembers: TeamMember[]) {
+export async function reorderTeamMembers(role: string, teamMembers: TeamMember[]) {
   try {
     // Validation
     if (!teamMembers || !Array.isArray(teamMembers) || teamMembers.length === 0) {
@@ -39,11 +39,6 @@ export async function updateTeamMembersOrder(role: string, teamMembers: TeamMemb
     // Update database with recalculated orders
     const savedMembers = await updateOrderInDatabase(updatedMembers)
 
-    await createLog('info', `${role} member order updated successfully`, {
-      savedCount: savedMembers.length,
-      role
-    })
-
     revalidateTag('Team-Member', 'default')
 
     return {
@@ -55,14 +50,14 @@ export async function updateTeamMembersOrder(role: string, teamMembers: TeamMemb
       }
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to update team member order'
-
-    await createLog('error', 'Failed to update team member order', {
-      error: errorMessage,
-      role
+    await createLog('error', 'Failed to reorder team members', {
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    throw new Error(errorMessage)
+    return {
+      success: false,
+      error: 'Failed to reorder team members. Please try again.'
+    }
   }
 }
 

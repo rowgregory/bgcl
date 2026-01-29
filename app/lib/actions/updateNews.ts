@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 export interface UpdateNewsInput {
   id: string
@@ -35,21 +36,13 @@ export async function updateNews(data: UpdateNewsInput) {
       message: 'News updated successfully'
     }
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to update news',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error',
-          newsId: data.id
-        })
-      }
+    await createLog('error', 'Failed to update news.', {
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update news',
-      message: 'Failed to update news'
+      error: 'Failed to update news. Please try again.'
     }
   }
 }

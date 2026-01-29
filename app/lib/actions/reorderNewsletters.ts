@@ -2,8 +2,9 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
-export async function updateNewslettersOrder(
+export async function reorderNewsletters(
   newsletters: Array<{ id: string; order?: number }>
 ): Promise<{ success: boolean; error?: string }> {
   try {
@@ -17,9 +18,13 @@ export async function updateNewslettersOrder(
     )
 
     revalidateTag('Newsletter', 'default')
+
     return { success: true }
   } catch (error) {
-    console.error('Error reordering newsletters:', error)
-    return { success: false, error: 'Failed to reorder newsletters' }
+    await createLog('error', 'Failed to reorder newsletters', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
+    return { success: false, error: 'Failed to reorder newsletters. Please try again.' }
   }
 }

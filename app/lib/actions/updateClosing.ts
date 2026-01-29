@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 export interface UpdateClosingInput {
   id: string
@@ -12,7 +13,7 @@ export interface UpdateClosingInput {
 
 export async function updateClosing(data: UpdateClosingInput) {
   try {
-    const closing = await prisma.closing.update({
+    await prisma.closing.update({
       where: { id: data.id },
       data: {
         title: data.title,
@@ -23,27 +24,15 @@ export async function updateClosing(data: UpdateClosingInput) {
 
     revalidateTag('Closing', 'default')
 
-    return {
-      success: true,
-      data: closing,
-      message: 'Closing updated successfully'
-    }
+    return { success: true }
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to update closing',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error',
-          closingId: data.id
-        })
-      }
+    await createLog('error', 'Failed to update closing', {
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update closing',
-      message: 'Failed to update closing'
+      error: 'Failed to update closing. Please try again.'
     }
   }
 }

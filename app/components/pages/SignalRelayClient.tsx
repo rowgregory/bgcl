@@ -5,6 +5,8 @@ import { motion } from 'framer-motion'
 import { Trash2, Mail, Search } from 'lucide-react'
 import { deleteSubscriber } from '@/app/lib/actions/deleteSubscriber'
 import { useRouter } from 'next/navigation'
+import { store } from '@/app/lib/store/store'
+import { showToast } from '@/app/lib/store/slices/toastSlice'
 
 const TABS = ['All', 'Members', 'Non-Members', 'Donors'] as const
 type TabType = (typeof TABS)[number]
@@ -29,7 +31,7 @@ export default function SignalRelayClient({ subscribers }) {
   }
 
   //   const copyEmails = async () => {
-  //     const emails = subscribers?.data?.map((sub) => sub.email).join('; ')
+  //     const emails = subscribers?.map((sub) => sub.email).join('; ')
   //     try {
   //       await navigator.clipboard.writeText(emails)
   //       setCopied(true)
@@ -42,19 +44,16 @@ export default function SignalRelayClient({ subscribers }) {
   const handleDelete = async (id: string) => {
     try {
       setDeleting(true)
-      const result = await deleteSubscriber(id)
-      if (result.success) {
-        router.refresh()
-        setDeleteId(null)
-      }
-    } catch (error) {
-      console.error('Failed to delete subscriber:', error)
-    } finally {
-      setDeleting(false)
+      await deleteSubscriber(id)
+      router.refresh()
+      setDeleteId(null)
+      store.dispatch(showToast({ message: 'Subscriber deleted successfully!' }))
+    } catch {
+      store.dispatch(showToast({ message: 'Failed to delete subscriber.', type: 'error' }))
     }
   }
 
-  const filteredSubscribers = subscribers?.data?.filter((subscriber) => {
+  const filteredSubscribers = subscribers?.filter((subscriber) => {
     const matchesTab = TAB_TO_TYPE[activeTab] === 'All' || subscriber?.type === TAB_TO_TYPE[activeTab]
 
     const matchesSearch = searchQuery === '' || subscriber.email?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -111,7 +110,7 @@ export default function SignalRelayClient({ subscribers }) {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={copyEmails}
-            disabled={subscribers?.data?.length === 0}
+            disabled={subscribers?.length === 0}
             className="flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 disabled:bg-neutral-400 dark:disabled:bg-neutral-700 text-white text-sm font-semibold rounded-lg transition-colors shrink-0"
           >
             {copied ? (

@@ -75,10 +75,8 @@ export async function updateEvent(id: string, body: UpdateEventData) {
 
     return { success: true, event }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to update event'
-
     await createLog('error', 'Failed to update event', {
-      error: errorMessage,
+      error: error instanceof Error ? error.message : 'Failed to update event',
       inputData: {
         eventId: body.id,
         title: body.title,
@@ -87,6 +85,9 @@ export async function updateEvent(id: string, body: UpdateEventData) {
       }
     })
 
-    throw new Error(errorMessage)
+    return {
+      success: false,
+      error: 'Failed to update event. Please try again.'
+    }
   }
 }

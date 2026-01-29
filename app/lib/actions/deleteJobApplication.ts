@@ -2,35 +2,44 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 export async function deleteJobApplication(id: string) {
   try {
+    const application = await prisma.jobApplication.findUnique({
+      where: { id },
+      select: { id: true, applicantName: true, email: true }
+    })
+
+    if (!application) {
+      return {
+        success: false,
+        error: 'Job application not found'
+      }
+    }
+
     await prisma.jobApplication.delete({
       where: { id }
     })
 
+    await createLog('info', 'Job application deleted', {
+      applicationId: id,
+      applicantName: application.applicantName,
+      email: application.email
+    })
+
     revalidateTag('Job-Application', 'default')
 
-    return {
-      success: true,
-      message: 'Job application deleted successfully'
-    }
+    return { success: true }
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to delete job application',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error',
-          jobApplicationId: id
-        })
-      }
+    await createLog('error', 'Failed to delete job application', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      applicationId: id
     })
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete job application',
-      message: 'Failed to delete job application'
+      error: 'Failed to delete job application. Please try again.'
     }
   }
 }

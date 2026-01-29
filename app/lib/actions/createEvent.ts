@@ -84,16 +84,14 @@ export async function createEvent(data: CreateEventData) {
 
     return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create event'
-
     await createLog('error', 'Failed to create event', {
-      error: errorMessage,
-      inputData: {
-        title: data.title,
-        type: data.type
-      }
+      error: error instanceof Error ? error.message : 'Unknown error',
+      title: data.title
     })
 
-    throw new Error(errorMessage)
+    return {
+      success: false,
+      error: 'Failed to create event. Please try again.'
+    }
   }
 }

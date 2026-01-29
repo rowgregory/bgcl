@@ -5,13 +5,15 @@ import { auth } from '../auth'
 import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
-// app/actions/payment-methods.ts
 export async function setDefaultPaymentMethod(paymentMethodId: string) {
   try {
     const session = await auth()
 
     if (!session?.user?.id) {
-      throw new Error('Unauthorized')
+      return {
+        success: false,
+        error: 'Unauthorized'
+      }
     }
 
     // Verify the payment method belongs to the user
@@ -47,15 +49,15 @@ export async function setDefaultPaymentMethod(paymentMethodId: string) {
       userId: session.user.id
     })
 
-    return {
-      success: true,
-      message: 'Default payment method updated'
-    }
+    return { success: true }
   } catch (error) {
-    console.error('Error setting default payment method:', error)
+    await createLog('error', 'Failed to set default payment method', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update default payment method'
+      error: 'Failed to update default payment method. Please try again.'
     }
   }
 }

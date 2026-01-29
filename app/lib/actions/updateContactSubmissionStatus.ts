@@ -41,8 +41,7 @@ export async function updateContactSubmissionStatus(id: string, status: ContactS
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update contact submission status',
-      status: 500
+      error: 'Failed to update contact submission status. Please try again.'
     }
   }
 }

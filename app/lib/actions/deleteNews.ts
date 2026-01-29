@@ -2,35 +2,43 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 export async function deleteNews(id: string) {
   try {
+    const news = await prisma.news.findUnique({
+      where: { id },
+      select: { id: true, title: true }
+    })
+
+    if (!news) {
+      return {
+        success: false,
+        error: 'News not found'
+      }
+    }
+
     await prisma.news.delete({
       where: { id }
     })
 
+    await createLog('info', 'News deleted', {
+      newsId: id,
+      title: news.title
+    })
+
     revalidateTag('News', 'default')
 
-    return {
-      success: true,
-      message: 'News deleted successfully'
-    }
+    return { success: true }
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to delete news',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error',
-          newsId: id
-        })
-      }
+    await createLog('error', 'Failed to delete news', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      newsId: id
     })
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete news',
-      message: 'Failed to delete news'
+      error: 'Failed to delete news. Please try again.'
     }
   }
 }

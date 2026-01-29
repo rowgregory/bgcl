@@ -11,7 +11,6 @@ export async function getLogStats() {
 
     return { total, errorCount, warningCount, infoCount }
   } catch (error) {
-    console.error('Error fetching log stats:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch stats',

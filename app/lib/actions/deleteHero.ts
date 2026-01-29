@@ -10,19 +10,8 @@ export async function deleteHero(id: string) {
       where: { id }
     })
 
-    if (!hero) {
-      await createLog('warn', 'Hero not found for deletion', {
-        heroId: id
-      })
-      return { success: false, error: 'Hero not found', status: 404 }
-    }
-
     // Prevent deleting active hero (optional - remove if you want to allow it)
     if (hero.status === 'ACTIVE') {
-      await createLog('warn', 'Cannot delete active hero', {
-        heroId: id,
-        heroName: hero.name
-      })
       return {
         success: false,
         error: 'Cannot delete active hero. Please activate another hero first.'
@@ -49,8 +38,7 @@ export async function deleteHero(id: string) {
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete hero',
-      status: 500
+      error: 'Failed to delete hero. Please try again.'
     }
   }
 }

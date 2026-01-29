@@ -20,6 +20,7 @@ export const getProgramById = async (id: string) => {
       error: error instanceof Error ? error.message : 'Unknown error',
       programId: id
     })
+
     return error
   }
 }

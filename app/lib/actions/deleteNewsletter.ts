@@ -1,35 +1,45 @@
 'use server'
 
 import prisma from '@/prisma/client'
+import { createLog } from './createLog'
 import { revalidateTag } from 'next/cache'
 
 export async function deleteNewsletter(id: string) {
   try {
+    const newsletter = await prisma.newsletter.findUnique({
+      where: { id },
+      select: { id: true, year: true, month: true }
+    })
+
+    if (!newsletter) {
+      return {
+        success: false,
+        error: 'Newsletter not found'
+      }
+    }
+
     await prisma.newsletter.delete({
       where: { id }
     })
 
+    await createLog('info', 'Newsletter deleted', {
+      newsletterId: id,
+      year: newsletter.year,
+      month: newsletter.month
+    })
+
     revalidateTag('Newsletter', 'default')
 
-    return {
-      success: true,
-      message: 'Newsletter deleted successfully'
-    }
+    return { success: true }
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to delete newsletter',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error',
-          newsletterId: id
-        })
-      }
+    await createLog('error', 'Failed to delete newsletter', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      newsletterId: id
     })
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete newsletter'
+      error: 'Failed to delete newsletter. Please try again.'
     }
   }
 }

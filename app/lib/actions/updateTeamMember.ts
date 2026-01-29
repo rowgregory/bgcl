@@ -2,15 +2,12 @@
 
 import prisma from '@/prisma/client'
 import { ITeamMember } from '@/types/entities/team-member'
-import { revalidateTag, unstable_cache } from 'next/cache'
+import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
-async function updateTeamMemberFn(id: string, data: Partial<Omit<ITeamMember, 'id' | 'createdAt' | 'updatedAt'>>) {
+export async function updateTeamMember(id: string, data: Partial<Omit<ITeamMember, 'id' | 'createdAt' | 'updatedAt'>>) {
   try {
-    if (!id) {
-      throw new Error('Team member ID is required')
-    }
-
-    // Omit null values and metadata
+    // Omit null values and metadata fields
     const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
       if (value !== null && !['isUpdating'].includes(key)) {
         acc[key] = value
@@ -18,34 +15,23 @@ async function updateTeamMemberFn(id: string, data: Partial<Omit<ITeamMember, 'i
       return acc
     }, {} as any)
 
-    const updatedTeamMember = await prisma.teamMember.update({
+    await prisma.teamMember.update({
       where: { id },
       data: cleanData
     })
 
     revalidateTag('Team-Member', 'default')
 
-    return {
-      success: true,
-      teamMember: updatedTeamMember,
-      message: `${updatedTeamMember.name} updated successfully`
-    }
+    return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to update team member'
+    await createLog('error', 'Failed to update team member', {
+      teamMemberId: id,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
     return {
       success: false,
-      error: errorMessage
+      error: 'Failed to update team member. Please try again.'
     }
   }
 }
-
-export const updateTeamMember = unstable_cache(
-  async (id: string, data: Partial<Omit<ITeamMember, 'id' | 'createdAt' | 'updatedAt'>>) => {
-    return updateTeamMemberFn(id, data)
-  },
-  ['updateTeamMember'],
-  {
-    tags: ['Team-Member'],
-    revalidate: 60
-  }
-)

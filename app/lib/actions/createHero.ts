@@ -73,15 +73,15 @@ export async function createHero(data: ICreateHero) {
 
     return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create hero'
-
     await createLog('error', 'Failed to create hero', {
-      error: errorMessage,
-      inputData: {
-        name: data.name
-      }
+      error: error instanceof Error ? error.message : 'Unknown error',
+      name: data.name,
+      title: data.title
     })
 
-    throw new Error(errorMessage)
+    return {
+      success: false,
+      error: 'Failed to create hero. Please try again.'
+    }
   }
 }

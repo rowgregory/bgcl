@@ -13,7 +13,7 @@ interface CreateTicketData {
   sortOrder?: number
 }
 
-export async function createTicket(eventId: string, body: CreateTicketData) {
+export async function createTicket(eventId: string, data: CreateTicketData) {
   try {
     const event = await prisma.event.findUnique({
       where: { id: eventId }
@@ -28,12 +28,12 @@ export async function createTicket(eventId: string, body: CreateTicketData) {
 
     const ticket = await prisma.ticket.create({
       data: {
-        name: body.name,
-        description: body.description,
-        price: Number(body.price),
-        totalQuantity: Number(body.totalQuantity),
-        isAvailable: body.isAvailable ?? true,
-        sortOrder: body.sortOrder ? Number(body.sortOrder) : 0,
+        name: data.name,
+        description: data.description,
+        price: Number(data.price),
+        totalQuantity: Number(data.totalQuantity),
+        isAvailable: data.isAvailable ?? true,
+        sortOrder: data.sortOrder ? Number(data.sortOrder) : 0,
         event: {
           connect: { id: eventId }
         }
@@ -49,16 +49,14 @@ export async function createTicket(eventId: string, body: CreateTicketData) {
 
     return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create event ticket'
-
-    await createLog('error', 'Failed to create event ticket', {
-      error: errorMessage,
-      inputData: {
-        name: body.name,
-        price: body.price
-      }
+    await createLog('error', 'Failed to create ticket', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      name: data.name
     })
 
-    throw new Error(errorMessage)
+    return {
+      success: false,
+      error: 'Failed to create ticket. Please try again.'
+    }
   }
 }

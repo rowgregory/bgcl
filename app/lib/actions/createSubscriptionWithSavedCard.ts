@@ -1,6 +1,7 @@
 'use server'
 
 import { stripe } from '../stripe/stripeClient'
+import { createLog } from './createLog'
 
 interface CreateSubscriptionWithSavedCardParams {
   userId: string
@@ -102,7 +103,11 @@ export async function createSubscriptionWithSavedCard({
       status: subscription.status
     }
   } catch (error) {
-    console.error('Subscription creation with saved card error:', error)
+    await createLog('error', 'Subscription creation with saved card error', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      email
+    })
+
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to create subscription with saved card'

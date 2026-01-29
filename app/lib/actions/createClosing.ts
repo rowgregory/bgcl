@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 export interface CreateClosingInput {
   title: string
@@ -11,7 +12,7 @@ export interface CreateClosingInput {
 
 export async function createClosing(data: CreateClosingInput) {
   try {
-    await prisma.closing.create({
+    const closing = await prisma.closing.create({
       data: {
         title: data.title,
         date: data.date,
@@ -19,28 +20,24 @@ export async function createClosing(data: CreateClosingInput) {
       }
     })
 
+    await createLog('info', 'Closing created', {
+      closingId: closing.id,
+      title: closing.title,
+      date: closing.date
+    })
+
     revalidateTag('Closing', 'default')
 
-    return {
-      success: true,
-      message: 'Closing created successfully'
-    }
+    return { success: true }
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to create closing',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error',
-          input: data
-        })
-      }
+    await createLog('error', 'Failed to create closing', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      title: data.title
     })
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to create closing',
-      message: 'Failed to create closing'
+      error: 'Failed to create closing. Please try again.'
     }
   }
 }

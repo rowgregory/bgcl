@@ -1,6 +1,7 @@
 'use server'
 
 import { stripe } from '../stripe/stripeClient'
+import { createLog } from './createLog'
 
 interface CreateSubscriptionParams {
   setupIntentId: string
@@ -101,7 +102,12 @@ export async function createSubscriptionAfterSetup({
       status: subscription.status
     }
   } catch (error) {
-    console.error('Subscription creation error:', error)
+    await createLog('error', 'Subscription creation error', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      name,
+      email
+    })
+
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to create subscription'

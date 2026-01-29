@@ -37,8 +37,7 @@ export async function deleteProgram(id: string) {
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete program',
-      status: 500
+      error: 'Failed to delete program. Please try again.'
     }
   }
 }

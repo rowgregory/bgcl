@@ -12,9 +12,6 @@ export async function updateProgram(programId: string, body: IUpdateProgram) {
     })
 
     if (!existingProgram) {
-      await createLog('warn', 'Program not found for update', {
-        programId
-      })
       return { success: false, error: 'Program not found', status: 404 }
     }
 
@@ -42,7 +39,7 @@ export async function updateProgram(programId: string, body: IUpdateProgram) {
     revalidateTag('Program', 'default')
     revalidateTag('Theme', 'default')
 
-    return { success: true, program }
+    return { success: true }
   } catch (error) {
     await createLog('error', 'Failed to update program', {
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -51,8 +48,7 @@ export async function updateProgram(programId: string, body: IUpdateProgram) {
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update program',
-      status: 500
+      error: 'Failed to update program. Please try again.'
     }
   }
 }

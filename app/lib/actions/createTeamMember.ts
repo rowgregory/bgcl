@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { ITeamMember } from '@/types/entities/team-member'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 type TeamMemberInput = Omit<ITeamMember, 'id' | 'createdAt' | 'updatedAt'>
 
@@ -39,18 +40,23 @@ export async function createTeamMember(data: TeamMemberInput) {
       }
     })
 
+    await createLog('info', 'Team member created successfully', {
+      teamMemberId: newTeamMember.id,
+      teamMemberName: newTeamMember.name
+    })
+
     revalidateTag('Team-Member', 'default')
 
-    return {
-      success: true,
-      teamMember: newTeamMember,
-      message: `${data.name} added successfully`
-    }
+    return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create team member'
+    await createLog('error', 'Failed to create team member', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      name: data.name
+    })
+
     return {
       success: false,
-      error: errorMessage
+      error: 'Failed to create team member. Please try again.'
     }
   }
 }

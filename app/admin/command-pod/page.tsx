@@ -1,7 +1,7 @@
 import { CommandPodClient } from '@/app/components/pages/CommandPodClient'
-import { getAllUsers } from '@/app/lib/actions/getAdminData'
+import { getUsers } from '@/app/lib/actions/getUsers'
 
 export default async function CommandPodPage() {
-  const response = await getAllUsers()
-  return <CommandPodClient users={response.data.users} />
+  const users = await getUsers()
+  return <CommandPodClient users={users} />
 }

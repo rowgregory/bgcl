@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 export interface UpdateClubResourceInput {
   id: string
@@ -23,26 +24,15 @@ export async function updateClubResource(data: UpdateClubResourceInput) {
 
     revalidateTag('Club-Resource', 'default')
 
-    return {
-      success: true,
-      message: 'Club resource updated successfully'
-    }
+    return { success: true }
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to update club resource',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error',
-          clubResourceId: data.id
-        })
-      }
+    await createLog('error', 'Failed to update club resource', {
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update club resource',
-      message: 'Failed to update club resource'
+      error: 'Failed to update club resource. Please try again.'
     }
   }
 }

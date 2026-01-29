@@ -2,8 +2,9 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
-export async function updateClubResourcesOrder(
+export async function reorderClubResources(
   clubResources: Array<{ id: string; order?: number }>
 ): Promise<{ success: boolean; error?: string }> {
   try {
@@ -17,9 +18,13 @@ export async function updateClubResourcesOrder(
     )
 
     revalidateTag('Club-Resource', 'default')
+
     return { success: true }
   } catch (error) {
-    console.error('Error reordering club resources:', error)
+    await createLog('error', 'Failed to reorder club resources', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
     return { success: false, error: 'Failed to reorder club resources' }
   }
 }

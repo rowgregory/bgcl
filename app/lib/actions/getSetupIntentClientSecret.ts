@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { auth } from '../auth'
 import { stripe } from '../stripe/stripeClient'
+import { createLog } from './createLog'
 
 export async function getSetupIntentClientSecret() {
   try {
@@ -49,7 +50,10 @@ export async function getSetupIntentClientSecret() {
       clientSecret: setupIntent.client_secret
     }
   } catch (error) {
-    console.error('Error creating setup intent:', error)
+    await createLog('error', 'Failed to create setup intent', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to get client secret'

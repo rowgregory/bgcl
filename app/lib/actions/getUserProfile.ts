@@ -26,21 +26,15 @@ export async function getUserProfile() {
       return { success: false, error: 'Profile not found', status: 404 }
     }
 
-    await createLog('info', 'Profile retrieved successfully', {
-      userId: session.user.id
-    })
-
     return { success: true, user }
   } catch (error) {
-    await createLog('error', 'Failed to retrieve profile', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+    await createLog('error', 'Failed to fetch user profile', {
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
     return {
       success: false,
-      error: 'Internal server error',
-      status: 500
+      error: 'Failed to fetch user profile. Please try again.'
     }
   }
 }

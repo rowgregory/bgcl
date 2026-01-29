@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { stripe } from '../stripe/stripeClient'
+import { createLog } from './createLog'
 
 interface SetupIntentParams {
   userId?: string
@@ -98,10 +99,15 @@ export async function createSetupIntentForSubscription({
       customerId
     }
   } catch (error) {
-    console.error('SetupIntent creation error:', error)
+    await createLog('error', 'SetupIntent creation error', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      email,
+      name
+    })
+
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to create setup intent'
+      error: 'Failed to create setup intent'
     }
   }
 }

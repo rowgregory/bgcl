@@ -60,8 +60,7 @@ export async function updateTicket(id: string, body: UpdateTicketData) {
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update event ticket',
-      status: 500
+      error: 'Failed to update ticket. Please try again.'
     }
   }
 }

@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 export interface CreateNewsletterInput {
   month: string
@@ -19,7 +20,6 @@ export async function getNextNewsletterOrder(): Promise<number> {
 
     return (lastNewsletter?.order ?? 0) + 1
   } catch (error) {
-    console.error('Failed to get next newsletter order:', error)
     return 0
   }
 }
@@ -45,7 +45,7 @@ export async function createNewsletter(data: CreateNewsletterInput) {
       }
     }
 
-    const newsletter = await prisma.newsletter.create({
+    await prisma.newsletter.create({
       data: {
         month: data.month,
         year: Number(data.year),
@@ -56,27 +56,17 @@ export async function createNewsletter(data: CreateNewsletterInput) {
 
     revalidateTag('Newsletter', 'default')
 
-    return {
-      success: true,
-      data: newsletter,
-      message: 'Newsletter created successfully'
-    }
+    return { success: true }
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to create newsletter',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error',
-          month: data.month,
-          year: data.year
-        })
-      }
+    await createLog('error', 'Failed to create newsletter', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      year: data.year,
+      month: data.month
     })
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to create newsletter'
+      error: 'Failed to create newsletter. Please try again.'
     }
   }
 }

@@ -112,7 +112,7 @@ export async function createPaymentMethod({
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to save payment method'
+      error: 'Failed to save payment method. Please try again.'
     }
   }
 }

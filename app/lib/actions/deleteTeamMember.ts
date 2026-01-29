@@ -2,36 +2,44 @@
 
 import prisma from '@/prisma/client'
 import { revalidateTag } from 'next/cache'
+import { createLog } from './createLog'
 
 export async function deleteTeamMember(id: string) {
   try {
-    if (!id) {
-      throw new Error('Team member ID is required')
-    }
-
     const teamMember = await prisma.teamMember.findUnique({
-      where: { id }
+      where: { id },
+      select: { id: true, name: true, email: true }
     })
 
     if (!teamMember) {
-      throw new Error('Team member not found')
+      return {
+        success: false,
+        error: 'Team member not found'
+      }
     }
 
     await prisma.teamMember.delete({
       where: { id }
     })
 
+    await createLog('info', 'Team member deleted', {
+      teamMemberId: id,
+      name: teamMember.name,
+      email: teamMember.email
+    })
+
     revalidateTag('Team-Member', 'default')
 
-    return {
-      success: true,
-      message: `${teamMember.name} deleted successfully`
-    }
+    return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to delete team member'
+    await createLog('error', 'Failed to delete team member', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      teamMemberId: id
+    })
+
     return {
       success: false,
-      error: errorMessage
+      error: 'Failed to delete team member. Please try again.'
     }
   }
 }

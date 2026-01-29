@@ -6,7 +6,6 @@ import prisma from '@/prisma/client'
 
 export async function setToggleModal(slug: string) {
   try {
-    // Get the current page
     const page = await prisma.page.findUnique({
       where: { slug }
     })
@@ -21,15 +20,11 @@ export async function setToggleModal(slug: string) {
 
     const currentContent = page.content as any
 
-    console.log('!currentContent?.toggleModal : ', currentContent)
-
-    // Toggle the modal value
     const updatedContent = {
       ...currentContent,
       modal: { ...currentContent.modal, toggleModal: !currentContent?.modal.toggleModal }
     }
 
-    // Update the page
     await prisma.page.update({
       where: { slug },
       data: { content: updatedContent }
@@ -55,8 +50,7 @@ export async function setToggleModal(slug: string) {
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to toggle modal',
-      status: 500
+      error: 'Failed to toggle modal. Please try again.'
     }
   }
 }

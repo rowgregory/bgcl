@@ -1,5 +1,6 @@
 import prisma from '@/prisma/client'
 import { IProgram } from '@/types/entities/program'
+import { createLog } from './createLog'
 
 export async function getPrograms(isListed?: boolean): Promise<IProgram[]> {
   try {
@@ -8,21 +9,17 @@ export async function getPrograms(isListed?: boolean): Promise<IProgram[]> {
       orderBy: { order: 'asc' }
     })
 
-    return programs.map((program) => ({
+    const formattedPrograms = programs.map((program) => ({
       ...program,
       descriptions: Array.isArray(program.descriptions) ? program.descriptions : []
     })) as IProgram[]
+
+    return formattedPrograms
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to fetch programs',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error'
-        })
-      }
+    await createLog('error', 'Failed to fetch programs', {
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    return []
+    throw error
   }
 }

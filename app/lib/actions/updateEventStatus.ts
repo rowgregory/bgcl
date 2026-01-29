@@ -42,8 +42,7 @@ export async function updateEventStatus(id: string, status: EventStatus) {
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update event status',
-      status: 500
+      error: 'Failed to update event status. Please try again.'
     }
   }
 }

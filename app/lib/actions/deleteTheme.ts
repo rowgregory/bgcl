@@ -6,6 +6,18 @@ import { revalidateTag } from 'next/cache'
 
 export async function deleteTheme(themeId: string) {
   try {
+    const theme = await prisma.theme.findUnique({
+      where: { id: themeId },
+      select: { id: true, title: true }
+    })
+
+    if (!theme) {
+      return {
+        success: false,
+        error: 'Theme not found'
+      }
+    }
+
     // Get all programs and filter in JavaScript
     const allPrograms = await prisma.program.findMany()
 
@@ -30,23 +42,25 @@ export async function deleteTheme(themeId: string) {
       where: { id: themeId }
     })
 
-    await createLog('info', 'Theme deleted successfully', {
+    await createLog('info', 'Theme deleted', {
       themeId,
+      title: theme.title,
       programsUpdated: programsWithTheme.length
     })
 
     revalidateTag('Theme', 'default')
     revalidateTag('Program', 'default')
 
-    return { success: true, programsUpdated: programsWithTheme.length }
+    return { success: true }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to delete theme'
-
     await createLog('error', 'Failed to delete theme', {
-      error: errorMessage,
+      error: error instanceof Error ? error.message : 'Unknown error',
       themeId
     })
 
-    throw new Error(errorMessage)
+    return {
+      success: false,
+      error: 'Failed to delete theme. Please try again.'
+    }
   }
 }
