@@ -1,15 +1,11 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { loadStripe } from '@stripe/stripe-js'
-import { Elements } from '@stripe/react-stripe-js'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useCartSelector } from '@/app/lib/store/store'
 import { CheckoutForm } from '@/app/components/forms/CheckoutForm'
 import Picture from '@/app/components/common/Picture'
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 export default function CheckoutPage() {
   const { items } = useCartSelector()
@@ -62,9 +58,7 @@ export default function CheckoutPage() {
             </motion.div>
             {/* Checkout Form */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <Elements stripe={stripePromise}>
-                <CheckoutForm />
-              </Elements>
+              <CheckoutForm />
             </motion.div>
           </div>
         </div>

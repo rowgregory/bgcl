@@ -1,9 +1,8 @@
 'use client'
 
-import LogoutButton from '@/app/components/buttons/LogoutButton'
 import Picture from '@/app/components/common/Picture'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Calendar, ArrowLeft, Download, User } from 'lucide-react'
+import { Calendar, ArrowLeft, Download, User, LogIn } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -43,7 +42,12 @@ export default function OrderConfirmationPage({ order }) {
               <User className="w-4 h-4" />
             </Link>
           ) : (
-            <LogoutButton />
+            <Link
+              href="/"
+              className="relative p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-zinc-700 bg-neutral-200 border-neutral-300 hover:bg-neutral-300 rounded-lg transition-all"
+            >
+              <LogIn className="w-5 h-5 dark:text-zinc-400 text-neutral-700" />
+            </Link>
           )}
         </div>
       </div>

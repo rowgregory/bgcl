@@ -18,30 +18,35 @@ import CapitalCampaignTab from './components/CapitalCampaignTab'
 import RegistrationModal from './components/modals/RegistrationModal'
 import MobileNavigationDrawer from './components/MobileNavigationDrawer'
 import { ThemeProvider } from './lib/providers/theme'
+import { Elements } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 export default function RootLayoutWrapper({ children, programs, pageContent, donations }) {
   const pathname = usePathname()
-
   const show = !HIDDEN_PATHS.some((path) => pathname.startsWith(path))
 
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <ThemeProvider>
-          <Toast />
-          <TicketSelectionDrawer />
-          <LanguageDropdown />
-          <DonationNotification donations={donations} />
-          <CapitalCampaignDrawer />
-          <VolunteerDrawer programs={programs} />
-          <FloatingDonateButton />
-          <CapitalCampaignTab />
-          <RegistrationModal pageContent={pageContent?.content} />
-          <MobileNavigationDrawer />
-          {show && <Header />}
-          {children}
-          {show && <Footer />}
-        </ThemeProvider>
+        <Elements stripe={stripePromise}>
+          <ThemeProvider>
+            <Toast />
+            <TicketSelectionDrawer />
+            <LanguageDropdown />
+            <DonationNotification donations={donations} />
+            <CapitalCampaignDrawer />
+            <VolunteerDrawer programs={programs} />
+            <FloatingDonateButton />
+            <CapitalCampaignTab />
+            <RegistrationModal pageContent={pageContent?.content} />
+            <MobileNavigationDrawer />
+            {show && <Header />}
+            {children}
+            {show && <Footer />}
+          </ThemeProvider>
+        </Elements>
       </PersistGate>
     </Provider>
   )

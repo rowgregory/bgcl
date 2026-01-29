@@ -1,15 +1,11 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Elements } from '@stripe/react-stripe-js'
-import { loadStripe } from '@stripe/stripe-js'
 import DonationForm from '@/app/components/forms/DonationForm'
 import Picture from '@/app/components/common/Picture'
 import { MotionLink } from '@/app/components/common/MotionLink'
 import { useSearchParams } from 'next/navigation'
 import { ICampaign } from '@/types/entities/campaign'
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 export default function DonateClient({ campaigns }: { campaigns: ICampaign[] }) {
   const searchParams = useSearchParams()
@@ -95,9 +91,8 @@ export default function DonateClient({ campaigns }: { campaigns: ICampaign[] }) 
               <h2 className="text-xl sm:text-2xl font-bold dark:text-white text-neutral-900 mb-4 sm:mb-6">
                 Make Your Donation
               </h2>
-              <Elements stripe={stripePromise}>
-                <DonationForm campaignName={campaignName} campaigns={campaigns} />
-              </Elements>
+
+              <DonationForm campaignName={campaignName} campaigns={campaigns} />
             </div>
 
             {/* Trust Badge */}

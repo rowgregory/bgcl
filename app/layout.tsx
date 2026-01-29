@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     ]
   },
   facebook: {
-    appId: '1413258010594835' // Your actual FB App ID
+    appId: '1413258010594835'
   },
   twitter: {
     card: 'summary_large_image',
@@ -82,7 +82,7 @@ export const metadata: Metadata = {
       'Empowering youth in Lynn, MA through quality programs and services. After-school care, summer camps, STEAM, sports, and more.',
     images: [
       'https://firebasestorage.googleapis.com/v0/b/boys-and-girls-club-of-l-a2ad0.firebasestorage.app/o/images%2Fbgcl-rich-preview.png?alt=media&token=9f84b230-3ad2-4745-9c25-e84b63cab7cb'
-    ], // You'll need to create this
+    ],
     creator: '@bgcl'
   },
   robots: {
@@ -109,7 +109,7 @@ export const metadata: Metadata = {
     canonical: 'https://bgcl.org'
   },
   verification: {
-    google: 'lf3euFdQqWv05f8h-Ht3ORlK0GghliyZJ4-CWWTrbKE' // Add your Google Search Console verification
+    google: 'lf3euFdQqWv05f8h-Ht3ORlK0GghliyZJ4-CWWTrbKE'
     // yandex: 'your-yandex-verification-code',
     // bing: 'your-bing-verification-code',
   },
@@ -133,10 +133,10 @@ export const jsonLd = {
   description: 'The Boys & Girls Club of Lynn provides safe, enriching programs for youth in Lynn, Massachusetts.',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '25 Henry Avenue', // Update with actual address
+    streetAddress: '25 N Common St',
     addressLocality: 'Lynn',
     addressRegion: 'MA',
-    postalCode: '01902', // Update with actual zip
+    postalCode: '01902',
     addressCountry: 'US'
   },
   geo: {
@@ -146,16 +146,16 @@ export const jsonLd = {
   },
   contactPoint: {
     '@type': 'ContactPoint',
-    telephone: '+1-781-593-1772', // Update with actual phone
+    telephone: '+1-781-593-1772',
     contactType: 'Customer Service',
     areaServed: 'US',
     availableLanguage: ['English', 'Spanish']
   },
   sameAs: [
-    'https://www.facebook.com/bgcl', // Update with actual social media URLs
-    'https://www.instagram.com/bgcl',
-    'https://twitter.com/bgcl',
-    'https://www.youtube.com/bgcl'
+    'https://www.facebook.com/LynnBoysAndGirlsClub',
+    'https://www.instagram.com/bgclynn/',
+    'https://twitter.com/LynnBoysAndGirlsClub',
+    'www.youtube.com/@bgclynn6169'
   ],
   areaServed: {
     '@type': 'City',
