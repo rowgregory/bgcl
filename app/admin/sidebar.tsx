@@ -38,9 +38,16 @@ const AdminSidebar = () => {
         })
       )
     } finally {
-      store.dispatch(setIsLoading(true))
+      store.dispatch(setIsLoading(false))
     }
   }
+
+  // Add early return or guard
+  if (!session?.data?.user) {
+    return null // or a loading spinner
+  }
+
+  const isSuperUser = session.data.user.role === 'SUPERUSER'
 
   return (
     <aside className="w-64 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-r h-screen flex flex-col">
@@ -65,7 +72,7 @@ const AdminSidebar = () => {
 
       {/* Navigation - Scrollable */}
       <nav className="space-y-6 px-6 py-6 flex-1 overflow-y-auto">
-        {adminNavigationLinkData(pathname, session.data.user.role === 'SUPERUSER').map((group) => (
+        {adminNavigationLinkData(pathname, isSuperUser).map((group) => (
           <div key={group.title}>
             <h3 className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase mb-3 px-3">
               {group.title}

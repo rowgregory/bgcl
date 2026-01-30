@@ -60,7 +60,8 @@ const Login = () => {
 
       const result = await signIn('email', {
         email,
-        redirect: false
+        redirect: false,
+        callbackUrl: '/auth/login'
       })
 
       if (result?.ok) {

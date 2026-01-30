@@ -40,7 +40,7 @@ export function useDonationPayment() {
       setProcessingStatus('success')
 
       if (saveCard && session?.data?.user?.id && paymentMethod) {
-        savePaymentMethod(session.data.user.id, paymentMethod as string, true).catch(console.error)
+        savePaymentMethod(session?.data?.user?.id, paymentMethod as string, true).catch(console.error)
       }
 
       router.push(`/order-confirmation/${data.orderId}`)
@@ -88,7 +88,7 @@ export function useDonationPayment() {
 
       // Save payment method if user wants to and is logged in
       if (saveCard && session?.data?.user?.id && paymentMethod) {
-        savePaymentMethod(session.data.user.id, paymentMethod as string, true).catch(console.error)
+        savePaymentMethod(session?.data?.user?.id, paymentMethod as string, true).catch(console.error)
       }
 
       router.push(`/order-confirmation/${data.orderId}`)

@@ -63,8 +63,8 @@ function DonationForm({ campaignName, campaigns }) {
   }, [campaignName, campaigns])
 
   useEffect(() => {
-    if (session.status === 'authenticated' && session.data?.user?.id) {
-      getSavedPaymentMethods(session.data.user.id).then((result) => {
+    if (session?.status === 'authenticated' && session?.data?.user?.id) {
+      getSavedPaymentMethods(session?.data?.user?.id).then((result) => {
         if (result.success) {
           setSavedCards(result.data)
           const defaultCard = result.data.find((c) => c.isDefault)
@@ -74,7 +74,7 @@ function DonationForm({ campaignName, campaigns }) {
         }
       })
     }
-  }, [session.status, session.data?.user?.id])
+  }, [session?.status, session?.data?.user?.id])
 
   // Calculate fees so you receive the exact donation amount
   const calculateFees = (donationAmount: number) => {
@@ -367,7 +367,7 @@ function DonationForm({ campaignName, campaigns }) {
         description={`Add $${calculateFees(baseAmount).toFixed(2)} so 100% of your donation goes to the club`}
       />
 
-      {donationType === 'once' && session.status === 'unauthenticated' && (
+      {donationType === 'once' && session?.status === 'unauthenticated' && (
         <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg mb-6">
           <p className="text-xs text-amber-400">
             <Link href="/auth/login" className="font-semibold hover:text-amber-300 underline">
@@ -378,7 +378,7 @@ function DonationForm({ campaignName, campaigns }) {
         </div>
       )}
 
-      {session.status === 'authenticated' && savedCards && savedCards.length > 0 ? (
+      {session?.status === 'authenticated' && savedCards && savedCards.length > 0 ? (
         <SavedCardsSelection
           savedCards={savedCards}
           selectedCardId={selectedCardId}
@@ -388,7 +388,7 @@ function DonationForm({ campaignName, campaigns }) {
         />
       ) : (
         donationType === 'once' &&
-        session.status === 'authenticated' && (
+        session?.status === 'authenticated' && (
           <CustomSwitch
             checked={saveCard}
             onChange={setSaveCard}
@@ -411,7 +411,7 @@ function DonationForm({ campaignName, campaigns }) {
       )}
 
       {/* CardElement - Show if: not logged in, no saved cards, or using new card */}
-      {(session.status === 'unauthenticated' || !savedCards || savedCards.length === 0 || useNewCard) && (
+      {(session?.status === 'unauthenticated' || !savedCards || savedCards.length === 0 || useNewCard) && (
         <div className="mb-8">
           <label className="block text-sm font-bold text-neutral-900 dark:text-white mb-3 uppercase tracking-wide">
             {useNewCard ? 'New Card' : 'Card Information'}

@@ -34,7 +34,7 @@ export default function OrderConfirmationPage({ order }) {
             <ArrowLeft className="w-4 h-4" />
             <span>Donate</span>
           </Link>
-          {session.data?.user?.id ? (
+          {session?.data?.user?.id ? (
             <Link
               href="/supporter/overview"
               className="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 flex items-center justify-center text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300 transition-colors"

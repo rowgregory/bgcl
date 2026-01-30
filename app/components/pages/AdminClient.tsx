@@ -33,7 +33,7 @@ import { useSession } from 'next-auth/react'
 const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
   const pathname = usePathname()
   const session = useSession()
-  const navigationGroups = adminNavigationLinkData(pathname, session.data.user.role === 'SUPERUSER')
+  const navigationGroups = adminNavigationLinkData(pathname, session?.data?.user?.role === 'SUPERUSER')
   const selectedPage = getCurrentPageId(pathname, navigationGroups)
   const { adminSidebar } = useDashboardSelector()
   const onClose = () => store.dispatch(setCloseAdminSidebar())

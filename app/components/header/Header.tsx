@@ -18,7 +18,7 @@ export default function Header() {
 
   const getLaunchPath = () => {
     if (status !== 'authenticated') return '/auth/login'
-    return ['ADMIN', 'SUPERUSER'].includes(data.user?.role ?? '') ? '/admin/star-map/home' : '/supporter/overview'
+    return ['ADMIN', 'SUPERUSER'].includes(data?.user?.role ?? '') ? '/admin/star-map/home' : '/supporter/overview'
   }
 
   const handleLaunchApp = () => router.push(getLaunchPath())

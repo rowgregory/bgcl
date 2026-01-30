@@ -34,9 +34,9 @@ const SupporterOverviewClient = ({ data }) => {
             />
           </MotionLink>
           <div className="flex items-center gap-x-3">
-            {(session.data.user.role === 'ADMIN' ||
-              session.data.user.role === 'PROGRAM' ||
-              session.data.user.role === 'SUPERUSER') && (
+            {(session?.data?.user?.role === 'ADMIN' ||
+              session?.data?.user?.role === 'PROGRAM' ||
+              session?.data?.user?.role === 'SUPERUSER') && (
               <MotionLink
                 href="/auth/login"
                 whileHover={{ scale: 1.05 }}

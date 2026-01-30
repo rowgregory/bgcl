@@ -21,6 +21,26 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.8.1',
+    date: '2026-01-30',
+    changes: [
+      {
+        type: 'fix',
+        title: 'Session Null Reference on Logout',
+        description:
+          'Fixed crash occurring when logging out due to components attempting to access null session data. Added proper null checks and early return guards in AdminSidebar component.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Magic Link Authentication Flow',
+        description:
+          'Improved magic link authentication by setting proper callback URL to ensure users are redirected to /auth/login after clicking the magic link, where middleware then routes them to their role-appropriate dashboard.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.8.0',
     date: '2026-01-29',
     changes: [
