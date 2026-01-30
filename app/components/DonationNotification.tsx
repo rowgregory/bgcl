@@ -107,7 +107,7 @@ export default function DonationNotification({ donations }) {
           >
             <div className="dark:bg-neutral-900/95 dark:border-neutral-800 bg-white/95 border-neutral-200 rounded-2xl shadow-2xl border overflow-hidden backdrop-blur-xl">
               {/* Header with linear */}
-              <div className={`bg-linear-to-r ${gradient} px-4 py-3 rounded-t-2xl`}>
+              <div className={`bg-linear-to-r ${gradient} px-4 py-3`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <motion.div
@@ -126,21 +126,16 @@ export default function DonationNotification({ donations }) {
               {/* Content */}
               <div className="p-4">
                 <div className="mb-4">
-                  <p className="dark:text-white text-neutral-900 font-black text-3xl mb-1">
-                    ${(currentDonation.amount / 100).toFixed(2)}
+                  <p className="dark:text-white text-neutral-900 font-bold text-lg mb-2">
+                    {currentDonation.donorName ?? currentDonation.customerName}
                   </p>
-                  <p className="dark:text-neutral-400 text-neutral-600 text-sm">
-                    from{' '}
-                    <span className="font-semibold dark:text-neutral-300 text-neutral-700">
-                      {currentDonation.donorName ?? currentDonation.customerName}
-                    </span>
-                  </p>
+                  <p className="dark:text-neutral-400 text-neutral-600 text-sm">just became a supporter</p>
                 </div>
 
                 {/* Footer with links */}
                 <div className="flex items-center justify-between pt-3 border-t dark:border-neutral-800 border-neutral-200">
                   <Link href="/donate" className="text-sm font-semibold hover:underline">
-                    Donate Now →
+                    Join them →
                   </Link>
                   <a
                     href="https://sqysh.io?lead_source=bgcl"
@@ -162,7 +157,7 @@ export default function DonationNotification({ donations }) {
               />
             </div>
           </motion.div>
-          {/* Mobile Version - Bottom (Full Width, Covers Campaign Banner) */}
+          {/* Mobile Version - Bottom (Full Width) */}
           <motion.div
             key={`mobile-${currentDonation.id}-${indexRef.current}`}
             initial={{ opacity: 0, y: 200 }}
@@ -182,42 +177,33 @@ export default function DonationNotification({ donations }) {
 
               {/* Header with linear */}
               <div className="bg-linear-to-r from-sky-500 to-sky-600 px-4 py-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                      <DollarSign className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <span className="text-white font-semibold text-sm block">New Donation</span>
-                      <span className="text-white/80 text-xs">
-                        {getTimeAgo(currentDonation?.startDate || currentDonation?.createdAt)}
-                      </span>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                    <DollarSign className="w-6 h-6 text-white" />
                   </div>
-                  <div className="text-right">
-                    <p className="text-white font-bold text-2xl leading-none">
-                      ${(currentDonation.amount / 100).toFixed(2)}
-                    </p>
+                  <div className="flex-1">
+                    <span className="text-white font-semibold text-sm block">New Donation</span>
+                    <span className="text-white/80 text-xs">
+                      {getTimeAgo(currentDonation?.startDate || currentDonation?.createdAt)}
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Content */}
               <div className="px-4 py-3">
-                <p className="dark:text-neutral-400 text-neutral-600 text-sm mb-3">
-                  from{' '}
-                  <span className="font-semibold dark:text-neutral-200 text-neutral-800">
-                    {currentDonation.donorName}
-                  </span>
+                <p className="dark:text-white text-neutral-900 font-semibold text-base mb-1">
+                  {currentDonation.donorName ?? currentDonation.customerName}
                 </p>
+                <p className="dark:text-neutral-400 text-neutral-600 text-sm mb-3">just became a supporter</p>
 
                 {/* Footer with links */}
                 <div className="flex items-center justify-between">
                   <Link
                     href="/donate"
-                    className="text-sm font-semibold dark:text-orange-400 text-orange-600 hover:underline flex items-center gap-1"
+                    className="text-sm font-semibold bg-linear-to-r from-sky-500 to-sky-600 bg-clip-text text-transparent"
                   >
-                    Donate Now →
+                    Join them →
                   </Link>
                   <a
                     href="https://sqysh.io?lead_source=bgcl"

@@ -18,6 +18,7 @@ export default function GoogleTranslate() {
   const [isOpen, setIsOpen] = useState(false)
   const [currentLang, setCurrentLang] = useState('en')
   const [isReady, setIsReady] = useState(false)
+  const [isTranslating, setIsTranslating] = useState(false)
   const pathname = usePathname()
 
   // Function to get current language from Google Translate
@@ -104,7 +105,10 @@ export default function GoogleTranslate() {
     }
   }, [isReady, pathname, syncLanguageState])
 
-  const changeLanguage = (langCode: string) => {
+  const changeLanguage = async (langCode: string) => {
+    if (isTranslating) return // Prevent multiple clicks
+
+    setIsTranslating(true)
     setCurrentLang(langCode)
     setIsOpen(false)
 
@@ -114,21 +118,70 @@ export default function GoogleTranslate() {
       store.dispatch(setIsNotSpanish())
     }
 
-    // Find and trigger the Google Translate select
-    const select = document.querySelector('.goog-te-combo') as HTMLSelectElement
-    if (select) {
-      select.value = langCode
-      select.dispatchEvent(new Event('change', { bubbles: true }))
+    // Retry mechanism with increasing delays
+    const attemptTranslation = async (attempt: number = 0): Promise<boolean> => {
+      const select = document.querySelector('.goog-te-combo') as HTMLSelectElement
 
-      // Force a small delay to ensure translation triggers
+      if (!select && attempt < 10) {
+        // Wait and retry if select not found
+        await new Promise((resolve) => setTimeout(resolve, 200))
+        return attemptTranslation(attempt + 1)
+      }
+
+      if (!select) {
+        console.error('Google Translate select element not found after retries')
+        setIsTranslating(false)
+        return false
+      }
+
+      // Set the value
+      select.value = langCode
+
+      // Trigger multiple events to ensure it fires
+      select.dispatchEvent(new Event('change', { bubbles: true }))
+      select.dispatchEvent(new Event('input', { bubbles: true }))
+
+      // Also trigger click event on select
+      select.click()
+
+      // Wait for translation to start
+      await new Promise((resolve) => setTimeout(resolve, 300))
+
+      // Verify the translation happened by checking if the language changed
+      const newLang = getCurrentLanguage()
+
+      if (newLang !== langCode && attempt < 3) {
+        // Translation didn't work, retry
+        console.log(`Translation attempt ${attempt + 1} failed, retrying...`)
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        return attemptTranslation(attempt + 1)
+      }
+
+      // Hide the Google Translate frame
       setTimeout(() => {
         const frame = document.querySelector('.goog-te-menu-frame') as HTMLElement
         if (frame) {
           frame.style.display = 'none'
         }
       }, 100)
-    } else {
-      console.warn('Google Translate not ready yet')
+
+      setIsTranslating(false)
+      return true
+    }
+
+    // Start the translation attempt
+    const success = await attemptTranslation()
+
+    if (!success) {
+      console.warn('Translation may not have completed successfully')
+      // Force a page reload as last resort if translation completely fails
+      setTimeout(() => {
+        if (getCurrentLanguage() !== langCode) {
+          // Set cookie manually and reload
+          document.cookie = `googtrans=/en/${langCode}; path=/`
+          window.location.reload()
+        }
+      }, 1000)
     }
   }
 
@@ -141,12 +194,12 @@ export default function GoogleTranslate() {
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex items-center gap-2 px-3 py-2 bg-neutral-200 dark:bg-neutral-800/50 hover:bg-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-lg transition-all notranslate"
-          disabled={!isReady}
+          className="inline-flex items-center gap-2 px-3 py-2 bg-neutral-200 dark:bg-neutral-800/50 hover:bg-neutral-300 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-lg transition-all notranslate disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={!isReady || isTranslating}
         >
-          <Globe className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
+          <Globe className={`w-4 h-4 text-neutral-600 dark:text-neutral-400 ${isTranslating ? 'animate-spin' : ''}`} />
           <span className="text-sm font-medium text-neutral-900 dark:text-white">
-            {LANGUAGES.find((l) => l.code === currentLang)?.name}
+            {isTranslating ? 'Translating...' : LANGUAGES.find((l) => l.code === currentLang)?.name}
           </span>
           <ChevronDown
             className={`w-4 h-4 text-neutral-600 dark:text-neutral-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
@@ -165,7 +218,8 @@ export default function GoogleTranslate() {
                 <button
                   key={lang.code}
                   onClick={() => changeLanguage(lang.code)}
-                  className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                  disabled={isTranslating}
+                  className={`w-full text-left px-4 py-2 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                     currentLang === lang.code
                       ? 'bg-linear-to-r from-blue-500 to-purple-600 text-white font-semibold'
                       : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
