@@ -108,12 +108,18 @@ function DonationForm({ campaignName, campaigns }) {
 
     if (!stripe || !elements) return
 
+    // Validate minimum donation amount
+    const baseAmount = getAmount()
+    if (baseAmount < 5) {
+      setError('Minimum donation is $5')
+      return
+    }
+
     setLoading(true)
     setError('')
     setProcessingStatus('processing')
 
     try {
-      const baseAmount = getAmount()
       const finalAmount = Math.round((coverFees ? getTotalAmount() : baseAmount) * 100)
       const feesCovered = coverFees ? Math.round(calculateFees(baseAmount) * 100) : 0
 

@@ -45,6 +45,12 @@ export async function createPaymentIntentForCheckout({
   savedCardId
 }: CheckoutParams) {
   try {
+    // VALIDATE MINIMUM AMOUNT
+    if (amount < 500) {
+      // Remember: Stripe uses cents, so $5 = 500
+      throw new Error('Minimum donation is $5')
+    }
+
     let customerId: string | undefined
 
     if (userId) {

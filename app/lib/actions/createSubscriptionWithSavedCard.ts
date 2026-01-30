@@ -39,6 +39,12 @@ export async function createSubscriptionWithSavedCard({
   campaignId
 }: CreateSubscriptionWithSavedCardParams) {
   try {
+    // VALIDATE MINIMUM AMOUNT
+    if (amount < 500) {
+      // Stripe uses cents, so $5 = 500
+      throw new Error('Minimum donation is $5')
+    }
+
     // Get the payment method to find the customer
     const paymentMethod = await stripe.paymentMethods.retrieve(savedCardId)
 

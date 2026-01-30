@@ -232,7 +232,7 @@ export default function SubscriptionClient({ data }: SubscriptionClientProps) {
                     className="flex items-center gap-x-2 dark:text-neutral-600 text-neutral-500 hover:dark:text-neutral-400 hover:text-neutral-700 transition-colors text-xs font-semibold uppercase tracking-widest"
                   >
                     <ArrowLeft className="w-5 h-5" />
-                    Subscription Management
+                    My Donations
                   </Link>
                 </div>
                 <div className="space-y-2">

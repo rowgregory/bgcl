@@ -21,6 +21,7 @@ import { ThemeProvider } from './lib/providers/theme'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import TestingBanner from './components/TestingBanner'
+import WelcomeAnimation from './components/WelcomeAnimation'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -44,6 +45,7 @@ export default function RootLayoutWrapper({ children, programs, pageContent, don
             <RegistrationModal pageContent={pageContent?.content} />
             <MobileNavigationDrawer />
             <TestingBanner />
+            <WelcomeAnimation />
             {show && <Header />}
             {children}
             {show && <Footer />}

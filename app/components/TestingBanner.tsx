@@ -15,9 +15,9 @@ export default function TestingBanner() {
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-          <p className="text-sm sm:text-base font-semibold">
-            <span className="hidden sm:inline">Site Testing Mode: </span>
-            Donations will be available starting tomorrow, January 30th, 2026
+          <p className="text-[12px] sm:text-base font-semibold">
+            <span className="hidden sm:inline">Final preparations underway. </span>
+            Check back tomorrow to donate!
           </p>
         </div>
         <button

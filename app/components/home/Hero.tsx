@@ -33,7 +33,7 @@ export const Hero = ({ initialPageData }) => {
               {initialPageData?.hero?.heading}
             </h1>
 
-            <p className="text-lg text-center text-white leading-relaxed">{initialPageData?.hero?.bodyText}</p>
+            <p className="text-lg lg:text-center text-white leading-relaxed">{initialPageData?.hero?.bodyText}</p>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-y-3 sm:gap-x-3">
               {/* Primary Button */}

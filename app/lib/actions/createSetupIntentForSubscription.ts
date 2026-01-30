@@ -24,6 +24,12 @@ export async function createSetupIntentForSubscription({
   feesCovered
 }: SetupIntentParams) {
   try {
+    // VALIDATE MINIMUM AMOUNT
+    if (amount < 500) {
+      // Stripe uses cents, so $5 = 500
+      throw new Error('Minimum donation is $5')
+    }
+
     let customerId: string | undefined
 
     if (userId) {

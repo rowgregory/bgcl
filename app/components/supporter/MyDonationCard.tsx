@@ -36,15 +36,26 @@ const MyDonationCard = ({ donation }) => {
         className="h-full bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden hover:border-neutral-300 dark:hover:border-neutral-700 transition-all shadow-sm hover:shadow-md hover:shadow-neutral-200/50 dark:hover:shadow-neutral-900/50 cursor-pointer flex flex-col"
       >
         {/* Header Background */}
-        <div className="h-24 bg-linear-to-br from-sky-500 to-sky-600 relative overflow-hidden">
+        <div
+          className={`h-24 ${donation.status === 'CANCELLED' ? 'bg-linear-to-br from-red-500 to-red-600' : 'bg-linear-to-br from-sky-500 to-sky-600'} relative overflow-hidden`}
+        >
           <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8" />
           <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full -ml-4 -mb-4" />
 
-          <div className="relative z-10 h-full flex items-center justify-between px-6">
-            <Picture src="/images/horizontal-logo-dark.png" className="w-48" priority={true} />
-            <span className="text-xs font-bold uppercase tracking-wider text-white/90">
-              {donation.type === 'ONE_TIME_DONATION' ? 'One-Time' : 'Recurring'}
-            </span>
+          <div className="relative z-10 h-full flex flex-col justify-between px-6 py-4">
+            <div className="flex items-start justify-between">
+              <Picture src="/images/horizontal-logo-dark.png" className="w-48" priority={true} />
+              {donation.status === 'CANCELLED' && (
+                <span className="text-xs font-bold uppercase tracking-wider text-white bg-white/20 px-3 py-1 rounded">
+                  Cancelled
+                </span>
+              )}
+            </div>
+            <div className="flex justify-end">
+              <span className="text-xs font-bold uppercase tracking-wider text-white/90">
+                {donation.type === 'ONE_TIME_DONATION' ? 'One-Time' : 'Recurring'}
+              </span>
+            </div>
           </div>
         </div>
 

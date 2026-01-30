@@ -13,21 +13,15 @@ export default function Header() {
   const { data, status } = useSession()
   const pathname = usePathname()
   const router = useRouter()
-  // const { languageDropdown, selectedLanguage } = useApplicationSelector()
   const isAtTop = useIsAtTop()
   const { mobileNavigation, isSpanish } = useApplicationSelector()
 
-  const handleLaunchApp = () => {
-    if (status === 'authenticated') {
-      if (data.user?.role === 'ADMIN' || data.user?.role === 'SUPERUSER') {
-        router.push('/admin/star-map/home')
-      } else {
-        router.push('/supporter/overview')
-      }
-    } else {
-      router.push('/auth/login')
-    }
+  const getLaunchPath = () => {
+    if (status !== 'authenticated') return '/auth/login'
+    return ['ADMIN', 'SUPERUSER'].includes(data.user?.role ?? '') ? '/admin/star-map/home' : '/supporter/overview'
   }
+
+  const handleLaunchApp = () => router.push(getLaunchPath())
 
   return (
     <>
@@ -37,15 +31,6 @@ export default function Header() {
       >
         <div className="max-w-7xl flex items-center justify-between mx-auto">
           <div className="flex items-center space-x-6">
-            {/* <button
-              onClick={() => store.dispatch(setOpenLanguageDropdown())}
-              className="flex items-center space-x-2 dark:text-white text-neutral-900 text-sm font-medium dark:hover:text-neutral-300 hover:text-neutral-700 transition-colors"
-            >
-              <span>{selectedLanguage}</span>
-              <motion.div animate={{ rotate: languageDropdown ? 180 : 0 }} transition={{ duration: 0.3 }}>
-                <ChevronDown className="w-4 h-4 dark:text-neutral-400 text-neutral-600" />
-              </motion.div>
-            </button> */}
             <GoogleTranslate />
             <div className="hidden sm:block dark:text-neutral-400 text-neutral-600 text-sm">
               Phone:{' '}

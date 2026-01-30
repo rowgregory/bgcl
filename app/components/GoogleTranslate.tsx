@@ -1,7 +1,8 @@
 // components/LanguageSwitcher.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { usePathname } from 'next/navigation'
 import { Globe, ChevronDown } from 'lucide-react'
 import { store } from '../lib/store/store'
 import { setIsNotSpanish, setIsSpanish } from '../lib/store/slices/appSlice'
@@ -17,6 +18,38 @@ export default function GoogleTranslate() {
   const [isOpen, setIsOpen] = useState(false)
   const [currentLang, setCurrentLang] = useState('en')
   const [isReady, setIsReady] = useState(false)
+  const pathname = usePathname()
+
+  // Function to get current language from Google Translate
+  const getCurrentLanguage = () => {
+    const select = document.querySelector('.goog-te-combo') as HTMLSelectElement
+    if (select && select.value) {
+      return select.value
+    }
+
+    // Fallback: check cookie
+    const cookies = document.cookie.split(';')
+    const googleTransCookie = cookies.find((c) => c.trim().startsWith('googtrans='))
+    if (googleTransCookie) {
+      const lang = googleTransCookie.split('/')[2]
+      return lang || 'en'
+    }
+
+    return 'en'
+  }
+
+  // Sync state with Google Translate
+  const syncLanguageState = useCallback(() => {
+    const lang = getCurrentLanguage()
+    setCurrentLang(lang)
+
+    // Update Redux state
+    if (lang === 'es') {
+      store.dispatch(setIsSpanish())
+    } else {
+      store.dispatch(setIsNotSpanish())
+    }
+  }, [])
 
   useEffect(() => {
     // Initialize Google Translate
@@ -36,6 +69,11 @@ export default function GoogleTranslate() {
         if (select) {
           setIsReady(true)
           clearInterval(checkInterval)
+
+          // Sync state on initial load
+          setTimeout(() => {
+            syncLanguageState()
+          }, 500)
         }
       }, 100)
 
@@ -48,8 +86,23 @@ export default function GoogleTranslate() {
       const script = document.createElement('script')
       script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'
       document.body.appendChild(script)
+    } else {
+      // Script already loaded, just sync state
+      setTimeout(() => {
+        syncLanguageState()
+        setIsReady(true)
+      }, 500)
     }
-  }, [])
+  }, [syncLanguageState])
+
+  // Re-sync on route change
+  useEffect(() => {
+    if (isReady) {
+      setTimeout(() => {
+        syncLanguageState()
+      }, 300)
+    }
+  }, [isReady, pathname, syncLanguageState])
 
   const changeLanguage = (langCode: string) => {
     setCurrentLang(langCode)
