@@ -3,7 +3,7 @@ import { LogOut, X } from 'lucide-react'
 import Link from 'next/link'
 import { store } from '@/app/lib/store/store'
 import { adminNavigationLinkData } from '../lib/constants/adminNavLinks'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { setCloseAdminSidebar } from '../lib/store/slices/dashboardSlice'
 import { setOpenHeroStudio } from '../lib/store/slices/appSlice'
 import { useSession } from 'next-auth/react'
@@ -14,7 +14,6 @@ import { showToast } from '../lib/store/slices/toastSlice'
 const AdminSidebar = () => {
   const pathname = usePathname()
   const session = useSession()
-  const router = useRouter()
   const onClose = () => store.dispatch(setCloseAdminSidebar())
 
   const handleLogout = async (e: { preventDefault: () => void }) => {
@@ -24,11 +23,8 @@ const AdminSidebar = () => {
       store.dispatch(setIsLoading(true))
       await signOut({
         redirect: false,
-        callbackUrl: '/auth/login'
+        callbackUrl: `${window.location.origin}/auth/login` // Use full URL instead of relative
       })
-
-      router.push('/auth/login')
-      setIsLoading(false)
     } catch (error: unknown) {
       store.dispatch(
         showToast({

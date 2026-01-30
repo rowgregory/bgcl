@@ -1,28 +1,23 @@
-import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { LogOut } from 'lucide-react'
 import { showToast } from '../../lib/store/slices/toastSlice'
-import { useAppDispatch } from '../../lib/store/store'
+import { store, useAppDispatch, useFormSelector } from '../../lib/store/store'
+import { setIsLoading } from '@/app/lib/store/slices/formSlice'
 
 const LogoutButton = () => {
-  const { push } = useRouter()
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const { isLoading } = useFormSelector()
   const dispatch = useAppDispatch()
 
   const handleLogout = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
 
     try {
-      setIsLoading(true)
+      store.dispatch(setIsLoading(true))
       await signOut({
         redirect: false, // Prevent automatic redirect
-        callbackUrl: '/auth/login' // Optional: specify where to redirect after signout
+        callbackUrl: `${window.location.origin}/auth/login` // Use full URL instead of relative
       })
-
-      push('/auth/login')
-      setIsLoading(false)
     } catch (error: unknown) {
       dispatch(
         showToast({
@@ -31,6 +26,8 @@ const LogoutButton = () => {
           description: error instanceof Error ? error.message : 'An error occurred'
         })
       )
+    } finally {
+      store.dispatch(setIsLoading(false))
     }
   }
 
