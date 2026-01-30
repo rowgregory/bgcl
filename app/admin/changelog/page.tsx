@@ -21,6 +21,40 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.8.2',
+    date: '2026-01-30',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Live Stripe Integration',
+        description:
+          'Successfully deployed live Stripe payment processing with production API keys, webhook configuration, and real payment handling. System now accepts live donations and manages active subscriptions with proper webhook event handling.',
+        impact: 'high'
+      },
+      {
+        type: 'fix',
+        title: 'Webhook Endpoint Configuration',
+        description:
+          'Resolved 307 redirect issue on webhook endpoint by configuring proper domain (www.bgcl.org) for Stripe webhook delivery. Webhooks now successfully receive and process all subscription and payment events.',
+        impact: 'high'
+      },
+      {
+        type: 'fix',
+        title: 'Stripe Customer ID Handling',
+        description:
+          'Fixed empty string customer ID issue in SetupIntent creation by ensuring customer is always created before processing payments. Added proper customer creation flow for both authenticated and guest users.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Test Data Cleanup',
+        description:
+          'Cleared all test mode Stripe customer IDs and payment data from production database to prepare for live payment processing.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.8.1',
     date: '2026-01-30',
     changes: [

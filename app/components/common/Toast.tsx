@@ -125,10 +125,10 @@ const Toast: React.FC = () => {
             stiffness: 300
           }}
           className={`
-        fixed top-4 right-4 left-4 sm:left-auto z-160 
+        fixed top-0 sm:top-4 right-0 sm:right-4 left-0 sm:left-auto z-160 
         ${getBackgroundColor()} 
         border ${getBorderColor()}
-        rounded-xl shadow-lg 
+        rounded-none sm:rounded-xl shadow-lg 
         p-4 sm:max-w-md w-full sm:w-auto
       `}
         >
