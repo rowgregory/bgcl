@@ -1,18 +1,19 @@
 import Link from 'next/link'
-import { ChevronDown, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import Picture from '../common/Picture'
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { store, useApplicationSelector } from '@/app/lib/store/store'
-import { setOpenLanguageDropdown, setOpenMobileNavigation } from '@/app/lib/store/slices/appSlice'
+import { setOpenMobileNavigation } from '@/app/lib/store/slices/appSlice'
 import { motion } from 'framer-motion'
 import { useIsAtTop } from '@/app/lib/hooks/useIsAtTop'
+import GoogleTranslate from '../GoogleTranslate'
 
 export default function Header() {
   const { data, status } = useSession()
   const pathname = usePathname()
   const router = useRouter()
-  const { languageDropdown, selectedLanguage } = useApplicationSelector()
+  // const { languageDropdown, selectedLanguage } = useApplicationSelector()
   const isAtTop = useIsAtTop()
   const { mobileNavigation } = useApplicationSelector()
 
@@ -36,7 +37,7 @@ export default function Header() {
       >
         <div className="max-w-7xl flex items-center justify-between mx-auto">
           <div className="flex items-center space-x-6">
-            <button
+            {/* <button
               onClick={() => store.dispatch(setOpenLanguageDropdown())}
               className="flex items-center space-x-2 dark:text-white text-neutral-900 text-sm font-medium dark:hover:text-neutral-300 hover:text-neutral-700 transition-colors"
             >
@@ -44,7 +45,8 @@ export default function Header() {
               <motion.div animate={{ rotate: languageDropdown ? 180 : 0 }} transition={{ duration: 0.3 }}>
                 <ChevronDown className="w-4 h-4 dark:text-neutral-400 text-neutral-600" />
               </motion.div>
-            </button>
+            </button> */}
+            <GoogleTranslate />
             <div className="hidden sm:block dark:text-neutral-400 text-neutral-600 text-sm">
               Phone:{' '}
               <a href="tel:+17815931772" className="dark:text-white text-neutral-900 hover:underline">
@@ -157,7 +159,7 @@ export default function Header() {
             <a
               href="https://parentportal.bgcl.org/"
               target="_blank"
-              className="dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 dark:text-black text-white font-bold px-4 sm:px-8 py-2 sm:py-3 rounded-sm transition-colors shadow-lg text-sm sm:text-base"
+              className="dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 dark:text-black text-white font-bold px-4 sm:px-8 py-2 sm:py-3 rounded-sm transition-colors shadow-lg text-sm sm:text-base block whitespace-nowrap"
             >
               <span className="hidden md:inline">Parent Portal</span>
               <span className="md:hidden">Portal</span>

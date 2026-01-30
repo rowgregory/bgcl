@@ -192,6 +192,30 @@ export default async function RootLayout({
              gtag('config', '${GA_ID}');
           `}
         </Script>
+
+        <script
+          type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html: `
+              function googleTranslateElementInit() {
+                new google.translate.TranslateElement(
+                  {
+                    pageLanguage: 'en',
+                    includedLanguages: 'en,es,zh-CN,ht',
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                    autoDisplay: false
+                  },
+                  'google_translate_element'
+                );
+              }
+            `
+          }}
+        />
+        <script
+          async
+          type="text/javascript"
+          src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+        />
       </head>
       <body className={`${lexend.variable} antialiased`}>
         <SessionProvider session={session}>
