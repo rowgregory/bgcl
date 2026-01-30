@@ -15,8 +15,7 @@ const LogoutButton = () => {
     try {
       store.dispatch(setIsLoading(true))
       await signOut({
-        redirect: false, // Prevent automatic redirect
-        callbackUrl: `${window.location.origin}/auth/login` // Use full URL instead of relative
+        callbackUrl: '/auth/login'
       })
     } catch (error: unknown) {
       dispatch(

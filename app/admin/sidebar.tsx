@@ -22,8 +22,7 @@ const AdminSidebar = () => {
     try {
       store.dispatch(setIsLoading(true))
       await signOut({
-        redirect: false,
-        callbackUrl: `${window.location.origin}/auth/login` // Use full URL instead of relative
+        callbackUrl: '/auth/login'
       })
     } catch (error: unknown) {
       store.dispatch(

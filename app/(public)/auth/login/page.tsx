@@ -28,7 +28,8 @@ const Login = () => {
 
     try {
       await signIn('google', {
-        redirect: true
+        redirect: true,
+        callbackUrl: '/auth/custom-callback'
       })
     } catch (error) {
       // Check for specific error types
