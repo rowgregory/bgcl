@@ -3,6 +3,8 @@
 
 import { useState, useEffect } from 'react'
 import { Globe, ChevronDown } from 'lucide-react'
+import { store } from '../lib/store/store'
+import { setIsNotSpanish, setIsSpanish } from '../lib/store/slices/appSlice'
 
 const LANGUAGES = [
   { code: 'en', name: 'English' },
@@ -52,6 +54,12 @@ export default function GoogleTranslate() {
   const changeLanguage = (langCode: string) => {
     setCurrentLang(langCode)
     setIsOpen(false)
+
+    if (langCode === 'es') {
+      store.dispatch(setIsSpanish())
+    } else {
+      store.dispatch(setIsNotSpanish())
+    }
 
     // Find and trigger the Google Translate select
     const select = document.querySelector('.goog-te-combo') as HTMLSelectElement

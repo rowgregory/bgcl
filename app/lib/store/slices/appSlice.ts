@@ -12,6 +12,7 @@ export interface AppStatePayload {
   isDark: boolean
   cancelSubscriptionDrawer: boolean
   cancelSubscriptionDetails: any | null
+  isSpanish: boolean
 }
 
 const initialAppState: AppStatePayload = {
@@ -25,7 +26,8 @@ const initialAppState: AppStatePayload = {
   paymentMethodDrawer: false,
   isDark: false,
   cancelSubscriptionDrawer: false,
-  cancelSubscriptionDetails: null
+  cancelSubscriptionDetails: null,
+  isSpanish: false
 }
 
 export const appSlice = createSlice({
@@ -86,6 +88,12 @@ export const appSlice = createSlice({
     },
     setIsDark: (state, { payload }) => {
       state.isDark = payload
+    },
+    setIsSpanish: (state) => {
+      state.isSpanish = true
+    },
+    setIsNotSpanish: (state) => {
+      state.isSpanish = false
     }
   }
 })
@@ -110,5 +118,7 @@ export const {
   setClosePaymentMethodDrawer,
   setIsDark,
   setCloseCancelSubscriptionDrawer,
-  setOpenCancelSubscriptionDrawer
+  setOpenCancelSubscriptionDrawer,
+  setIsNotSpanish,
+  setIsSpanish
 } = appSlice.actions

@@ -15,7 +15,7 @@ export default function Header() {
   const router = useRouter()
   // const { languageDropdown, selectedLanguage } = useApplicationSelector()
   const isAtTop = useIsAtTop()
-  const { mobileNavigation } = useApplicationSelector()
+  const { mobileNavigation, isSpanish } = useApplicationSelector()
 
   const handleLaunchApp = () => {
     if (status === 'authenticated') {
@@ -118,7 +118,7 @@ export default function Header() {
             </motion.div>
           </Link>
 
-          <nav className="hidden xl:flex items-center space-x-8">
+          <nav className={`hidden xl:flex items-center ${isSpanish ? 'space-x-5' : 'space-x-8'}`}>
             {[
               { label: 'HOME', href: '/' },
               { label: 'ABOUT', href: '/about' },
@@ -134,7 +134,13 @@ export default function Header() {
               <motion.div
                 key={item.label}
                 animate={{
-                  fontSize: isAtTop ? '13px' : '12px'
+                  fontSize: isSpanish
+                    ? isAtTop
+                      ? '11px'
+                      : '9.5px' // Smaller for Spanish
+                    : isAtTop
+                      ? '13px'
+                      : '11.5px' // Normal for English
                 }}
                 transition={{ duration: 0.3 }}
               >
