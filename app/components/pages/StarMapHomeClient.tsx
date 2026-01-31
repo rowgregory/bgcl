@@ -3,7 +3,6 @@
 import { PageContentEditor } from '@/app/components/common/PageContentEditor'
 import { createPage } from '@/app/lib/actions/createPage'
 import { updatePageBySlug } from '@/app/lib/actions/updatePageBySlug'
-import { initialContent } from '@/app/lib/mock-data/home-page'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { store } from '@/app/lib/store/store'
 import { useState } from 'react'
@@ -36,5 +35,5 @@ export const StarMapHomeClient = ({ data }) => {
     setIsSaving(false)
   }
 
-  return <PageContentEditor fields={initialContent} onSave={handleSave} isLoading={isSaving} />
+  return <PageContentEditor fields={data?.content} onSave={handleSave} isLoading={isSaving} />
 }

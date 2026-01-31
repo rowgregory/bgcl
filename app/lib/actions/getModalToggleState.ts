@@ -8,17 +8,17 @@ export const getModalToggleState = async (slug: string = 'home'): Promise<boolea
       select: { content: true }
     })
 
-    if (!page) {
-      return false
-    }
+    if (!page?.content) return false
 
-    const content = page.content as any
-    return content?.modal?.toggleModal === true
+    const content = page.content as Array<{ id: string; value: any }>
+    const modalToggle = content.find((obj) => obj.id === 'modal_toggleModal')
+
+    return modalToggle?.value === 'true' || modalToggle?.value === true
   } catch (error) {
     await createLog('error', 'Failed to fetch modal toggle state', {
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+      slug
     })
-
-    throw error
+    return false
   }
 }

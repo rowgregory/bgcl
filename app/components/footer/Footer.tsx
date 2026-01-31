@@ -55,8 +55,8 @@ export function Footer() {
   }
 
   return (
-    <footer className="dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-t pb-40 md:pb-0">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 py-12 md:py-16">
+    <footer className="px-6 md:px-12 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-t pb-40 md:pb-0">
+      <div className="max-w-7xl mx-auto py-12 md:py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Logo and Nonprofit Info */}

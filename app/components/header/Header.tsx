@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Menu, X } from 'lucide-react'
+import { Menu, ShoppingBasket, X } from 'lucide-react'
 import Picture from '../common/Picture'
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
@@ -54,7 +54,10 @@ export default function Header() {
           </div>
 
           {/* Navigation Links */}
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-6">
+            <Link href="/cart">
+              <ShoppingBasket className="w-4 h-4 dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900" />
+            </Link>
             <button
               onClick={handleLaunchApp}
               className="dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900 text-sm font-medium transition-colors whitespace-nowrap"
@@ -152,7 +155,7 @@ export default function Header() {
             <a
               href="https://parentportal.bgcl.org/"
               target="_blank"
-              className="dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 dark:text-black text-white font-bold px-4 sm:px-8 py-2 sm:py-3 rounded-sm transition-colors shadow-lg text-sm sm:text-base block whitespace-nowrap"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-linear-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-sky-500/25 whitespace-nowrap"
             >
               <span className="hidden md:inline">Parent Portal</span>
               <span className="md:hidden">Portal</span>

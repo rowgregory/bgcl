@@ -56,7 +56,6 @@ export default function DonationNotification({ donations }) {
 
           setGradient(getRandomGradient())
           setIsVisible(true)
-          runCycle()
         }, 15000)
 
         timersRef.current.push(showTimer)

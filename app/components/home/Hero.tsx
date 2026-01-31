@@ -1,6 +1,6 @@
 'use client'
 
-import { Heart } from 'lucide-react'
+import { ArrowRight, Heart } from 'lucide-react'
 import Link from 'next/link'
 
 export const Hero = ({ hero }) => {
@@ -38,24 +38,25 @@ export const Hero = ({ hero }) => {
             <div className="flex flex-col sm:flex-row sm:items-center gap-y-3 sm:gap-x-3">
               {/* Primary Button */}
               <Link
-                href={hero?.button1Link ?? ''}
-                className="inline-flex items-center justify-center rounded-lg bg-sky-600 hover:bg-sky-700 dark:bg-sky-600 dark:hover:bg-sky-700 text-white border-2 border-sky-600 dark:border-sky-600 px-8 py-3 font-bold transition-all duration-300 hover:shadow-lg hover:shadow-sky-600/50 dark:hover:shadow-sky-500/50 group"
+                href={hero?.button1Link}
+                className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-linear-to-r from-sky-500 to-sky-600 text-white font-semibold rounded-2xl transition-all overflow-hidden h-15"
               >
-                {hero?.button1Text}
+                <div className="absolute inset-0 bg-linear-to-r from-sky-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity blur-xl" />
+                <span className="relative z-10">{hero?.button1Text}</span>
+                <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
               </Link>
 
               {/* Secondary Button */}
-              {hero && (
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={hero?.button2Link}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-transparent hover:bg-sky-700 dark:hover:bg-sky-700 text-white border-2 border-white hover:border-sky-600 dark:border-white dark:hover:border-sky-600 px-8 py-3 font-bold transition-all duration-300 hover:shadow-lg hover:shadow-sky-600/50 dark:hover:shadow-sky-500/50 group"
-                >
-                  <Heart className="text-white w-4 h-4" />
-                  {hero?.button2Text}
-                </a>
-              )}
+
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={hero?.button2Link}
+                className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 dark:bg-white/5 backdrop-blur-sm border-2 border-white/20 dark:border-white/10 hover:border-sky-500/50 text-white dark:text-white font-semibold rounded-2xl transition-all h-15"
+              >
+                <Heart className="w-5 h-5 text-white group-hover:scale-110 transition-transform" strokeWidth={2.5} />
+                {hero?.button2Text}
+              </a>
             </div>
           </div>
         </div>
