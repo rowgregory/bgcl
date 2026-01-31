@@ -6,27 +6,12 @@ import { usePathname } from 'next/navigation'
 import { store, useApplicationSelector } from '../lib/store/store'
 import { setCloseMobileNavigation } from '../lib/store/slices/appSlice'
 import Picture from './common/Picture'
+import { headerNavLinks } from '../lib/constants/headerNavLinks'
 
 export default function MobileNavigationDrawer() {
   const pathname = usePathname()
   const { mobileNavigation } = useApplicationSelector()
-
-  const handleClose = () => {
-    store.dispatch(setCloseMobileNavigation())
-  }
-
-  const navigationItems = [
-    { label: 'HOME', href: '/' },
-    { label: 'ABOUT', href: '/about' },
-    { label: 'TEAM', href: '/team' },
-    { label: 'PROGRAMS', href: '/programs' },
-    { label: 'CAMPAIGNS', href: '/campaigns' },
-    { label: 'EVENTS', href: '/events' },
-    { label: 'AWARD WINNERS', href: '/award-winners' },
-    { label: 'LATEST NEWS', href: '/latest-news' },
-    { label: 'GET INVOLVED', href: '/get-involved' },
-    { label: 'CONTACT', href: '/contact' }
-  ]
+  const handleClose = () => store.dispatch(setCloseMobileNavigation())
 
   return (
     <AnimatePresence>
@@ -70,7 +55,7 @@ export default function MobileNavigationDrawer() {
 
               {/* Navigation Links */}
               <div className="space-y-1">
-                {navigationItems.map((item) => (
+                {headerNavLinks.map((item) => (
                   <Link
                     key={item.label}
                     href={item.href}

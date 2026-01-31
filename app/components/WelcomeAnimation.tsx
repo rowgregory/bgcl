@@ -5,16 +5,17 @@ import { useEffect, useState } from 'react'
 import Picture from './common/Picture'
 
 export default function WelcomeAnimation() {
-  const [isVisible, setIsVisible] = useState(true)
+  const [isVisible, setIsVisible] = useState(() => {
+    // Check localStorage on initial render
+    if (typeof window !== 'undefined') {
+      return !localStorage.getItem('hasSeenWelcome')
+    }
+    return true
+  })
   const [showLogo, setShowLogo] = useState(false)
 
   useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem('hasSeenWelcome')
-
-    if (hasSeenWelcome) {
-      setIsVisible(false)
-      return
-    }
+    if (!isVisible) return // Already hidden, no need to run timers
 
     const logoTimer = setTimeout(() => setShowLogo(true), 800)
     const exitTimer = setTimeout(() => {
@@ -26,7 +27,7 @@ export default function WelcomeAnimation() {
       clearTimeout(logoTimer)
       clearTimeout(exitTimer)
     }
-  }, [])
+  }, [isVisible])
 
   // Boys & Girls Club colors
   const colors = [

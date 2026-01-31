@@ -15,7 +15,8 @@ import {
   DoorOpen,
   // User,
   Orbit,
-  Logs
+  Logs,
+  Rocket
 } from 'lucide-react'
 
 const isStringInPath = (path: string, str: string) => path.includes(str)
@@ -37,15 +38,15 @@ export const adminNavigationLinkData = (
     }
   ]
 
-  // const dashboardGroup = [
-  //   {
-  //     icon: Rocket,
-  //     label: 'Mission Control',
-  //     path: '/admin/mission-control',
-  //     description: 'Dashboard',
-  //     active: isStringInPath(path, 'mission-control')
-  //   }
-  // ]
+  const dashboardGroup = [
+    {
+      icon: Rocket,
+      label: 'Mission Control',
+      path: '/admin/mission-control',
+      description: 'Dashboard',
+      active: isStringInPath(path, 'mission-control')
+    }
+  ]
 
   const contentGroup = [
     {
@@ -157,7 +158,7 @@ export const adminNavigationLinkData = (
   // ]
 
   return [
-    // { title: 'Dashboard', items: dashboardGroup },
+    { title: 'Dashboard', items: dashboardGroup },
     { title: 'User', items: userGroup },
     { title: 'Content', items: contentGroup },
     { title: 'Operations', items: operationsGroup },

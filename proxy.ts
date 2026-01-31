@@ -10,7 +10,7 @@ export async function proxy(request) {
     const { role } = session.user
 
     if (role === 'ADMIN' || role === 'SUPERUSER') {
-      return NextResponse.redirect(new URL('/admin/star-map/home', request.url))
+      return NextResponse.redirect(new URL('/admin/mission-control', request.url))
     }
 
     if (role === 'PROGRAM') {
@@ -36,7 +36,7 @@ export async function proxy(request) {
     // Helper function to redirect to correct dashboard
     const redirectToDashboard = (userRole: string) => {
       if (userRole === 'ADMIN' || userRole === 'SUPERUSER') {
-        return NextResponse.redirect(new URL('/admin/star-map/home', request.url))
+        return NextResponse.redirect(new URL('/admin/mission-control', request.url))
       }
       if (userRole === 'PROGRAM') {
         return NextResponse.redirect(new URL('/program/airlock', request.url))

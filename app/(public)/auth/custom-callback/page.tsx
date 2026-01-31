@@ -16,7 +16,7 @@ export default function CustomCallback() {
       const { role } = session.user
 
       if (role === 'ADMIN' || role === 'SUPERUSER') {
-        router.push('/admin/star-map/home')
+        router.push('/admin/mission-control')
       } else if (role === 'PROGRAM') {
         router.push('/program/airlock')
       } else {

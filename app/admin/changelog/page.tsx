@@ -21,6 +21,47 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.8.4',
+    date: '2026-01-31',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Mission Control Dashboard',
+        description:
+          'Launched comprehensive Mission Control center providing unified access to all platform analytics and management tools. Features integrated cards for Google Analytics, Google Search Console, Stripe, Hotjar, and Meta Pixel (coming soon) with direct links, credentials display, and real-time status indicators.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Tracking Infrastructure Setup',
+        description:
+          'Implemented Hotjar (Contentsquare) tracking for session recordings and heatmaps, organized SEO metadata and JSON-LD structured data into dedicated directory structure for better maintainability.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Extended Breakpoint System',
+        description:
+          'Expanded Tailwind breakpoint configuration to support ultra-wide displays up to 3200px with conventional breakpoint naming (3xl, 4xl, 5xl). Optimized dashboard grid layouts to utilize available screen space on larger monitors.',
+        impact: 'low'
+      },
+      {
+        type: 'fix',
+        title: 'Welcome Animation Flash',
+        description:
+          'Fixed welcome animation flash on page load by initializing visibility state from localStorage immediately, preventing brief black screen display for returning users.',
+        impact: 'low'
+      },
+      {
+        type: 'ui',
+        title: 'Dark Mode Consistency',
+        description:
+          'Ensured complete dark/light mode support across all new Mission Control components including page content editor, section collapsibles, field inputs, and preview panel with proper contrast ratios and hover states.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.8.3',
     date: '2026-01-30',
     changes: [

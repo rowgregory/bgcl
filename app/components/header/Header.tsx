@@ -8,6 +8,7 @@ import { setOpenMobileNavigation } from '@/app/lib/store/slices/appSlice'
 import { motion } from 'framer-motion'
 import { useIsAtTop } from '@/app/lib/hooks/useIsAtTop'
 import GoogleTranslate from '../GoogleTranslate'
+import { headerNavLinks } from '@/app/lib/constants/headerNavLinks'
 
 export default function Header() {
   const { data, status } = useSession()
@@ -18,7 +19,11 @@ export default function Header() {
 
   const getLaunchPath = () => {
     if (status !== 'authenticated') return '/auth/login'
-    return ['ADMIN', 'SUPERUSER'].includes(data?.user?.role ?? '') ? '/admin/star-map/home' : '/supporter/overview'
+    return ['ADMIN', 'SUPERUSER'].includes(data?.user?.role ?? '')
+      ? '/admin/mission-control'
+      : data?.user?.role === 'PROGRAM'
+        ? '/program/airlock'
+        : '/supporter/overview'
   }
 
   const handleLaunchApp = () => router.push(getLaunchPath())
@@ -112,18 +117,7 @@ export default function Header() {
           </Link>
 
           <nav className={`hidden 2xl:flex items-center ${isSpanish ? 'space-x-4' : 'space-x-6'}`}>
-            {[
-              { label: 'HOME', href: '/' },
-              { label: 'ABOUT', href: '/about' },
-              { label: 'TEAM', href: '/team' },
-              { label: 'PROGRAMS', href: '/programs' },
-              { label: 'CAMPAIGNS', href: '/campaigns' },
-              { label: 'EVENTS', href: '/events' },
-              { label: 'AWARD WINNERS', href: '/award-winners' },
-              { label: 'LATEST NEWS', href: '/latest-news' },
-              { label: 'GET INVOLVED', href: '/get-involved' },
-              { label: 'CONTACT', href: '/contact' }
-            ].map((item) => (
+            {headerNavLinks.map((item) => (
               <motion.div
                 key={item.label}
                 animate={{
