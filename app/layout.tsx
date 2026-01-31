@@ -7,8 +7,8 @@ import { ReactNode } from 'react'
 import RootLayoutWrapper from './root-layout'
 import { getPrograms } from './lib/actions/getPrograms'
 import { getPageBySlugClient } from './lib/actions/getPageBySlugClient'
-import Script from 'next/script'
 import { getDonationOrders } from './lib/actions/getDonationOrders'
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const lexend = Lexend({
   subsets: ['latin'],
@@ -184,38 +184,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {` window.dataLayer = window.dataLayer || [];
-             function gtag(){dataLayer.push(arguments);}
-             gtag('js', new Date());
-             gtag('config', '${GA_ID}');
-          `}
-        </Script>
-
-        <script
-          type="text/javascript"
-          dangerouslySetInnerHTML={{
-            __html: `
-              function googleTranslateElementInit() {
-                new google.translate.TranslateElement(
-                  {
-                    pageLanguage: 'en',
-                    includedLanguages: 'en,es,zh-CN,ht',
-                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-                    autoDisplay: false
-                  },
-                  'google_translate_element'
-                );
-              }
-            `
-          }}
-        />
-        <script
-          async
-          type="text/javascript"
-          src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
-        />
+        <GoogleAnalytics gaId={GA_ID!} />
       </head>
       <body className={`${lexend.variable} antialiased`}>
         <SessionProvider session={session}>
