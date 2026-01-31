@@ -1,11 +1,34 @@
 import ProgramDetailsClient from '@/app/components/pages/ProgramDetailsClient'
 import { getClosings } from '@/app/lib/actions/getClosings'
 import { getProgramById } from '@/app/lib/actions/getProgramById'
+import prisma from '@/prisma/client'
 import { IProgram } from '@/types/entities/program'
+import { redirect } from 'next/navigation'
 
 export default async function ProgramDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const { program } = await getProgramById(id)
+
+  // If not found by ID, try to find by slug/name (old URL structure)
+  if (!program) {
+    // Convert slug back to readable name: "camp-creighton" -> "camp creighton"
+    const programName = id.replace(/-/g, ' ')
+
+    const programBySlug = await prisma.program.findFirst({
+      where: {
+        name: {
+          contains: programName,
+          mode: 'insensitive'
+        }
+      }
+    })
+
+    if (programBySlug) {
+      // Permanently redirect to the correct ID-based URL
+      redirect(`/programs/${programBySlug.id}`)
+    }
+  }
+
   const closings = await getClosings()
 
   const normalizedProgram: IProgram = {
