@@ -25,7 +25,7 @@ const StarMapLayout: FC<{ children: ReactNode }> = ({ children }) => {
           </nav>
         </div>
       </div>
-      <main className="pt-17">{children}</main>
+      <main>{children}</main>
     </>
   )
 }

@@ -1,7 +1,7 @@
 import AboutPageClient from '@/app/components/pages/AboutClient'
-import { getPageBySlug } from '@/app/lib/actions/getPageBySlug'
+import { getPageBySlugClient } from '@/app/lib/actions/getPageBySlugClient'
 
 export default async function AboutPage() {
-  const pageData = await getPageBySlug('about')
-  return <AboutPageClient initalPageData={pageData?.content} />
+  const pageData = await getPageBySlugClient('about')
+  return <AboutPageClient initialPageData={pageData} />
 }

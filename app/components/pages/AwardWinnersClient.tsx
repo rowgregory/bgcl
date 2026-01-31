@@ -2,14 +2,14 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowRight, Briefcase, Calendar, Heart, Trophy } from 'lucide-react'
-import { formatDate } from '@/app/lib/utils/date-utils'
+import { Briefcase, Heart, Trophy } from 'lucide-react'
 import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
 import Picture from '@/app/components/common/Picture'
 import { store } from '@/app/lib/store/store'
 import { setOpenVolunteerDrawer } from '@/app/lib/store/slices/appSlice'
+import YouthOfTheYearSection from '../home/YouthOfTheYearSection'
 
-const StoriesClient = ({ newsAndTeamMembers }) => {
+const AwardWinnersClient = ({ newsAndTeamMembers }) => {
   return (
     <div className="dark:bg-neutral-950 bg-white">
       {/* Hero Section */}
@@ -26,93 +26,13 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
                 News, Updates & Recognition
               </p>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-                Stories
+                Award Winners
               </h1>
               <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
                 Stay informed about what's happening at the Boys & Girls Club of Lynn. Read our latest news, celebrate
                 our honorees, and discover the impact we're making in our community.
               </p>
             </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* News Section */}
-      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="mb-16"
-          >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4">
-              Latest News & Updates
-            </h2>
-            <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">
-              Stay connected with the latest news, events, and announcements from our community.
-            </p>
-          </motion.div>
-
-          {/* News Grid */}
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {newsAndTeamMembers?.data?.news?.map((newsItem) => (
-              <motion.article
-                key={newsItem.id}
-                variants={itemVariants}
-                className="group dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 rounded-xl overflow-hidden border hover:border-sky-500/50 transition-all duration-300 flex flex-col h-full"
-              >
-                {/* News Image */}
-                {newsItem.image && (
-                  <div className="relative h-48 overflow-hidden dark:bg-neutral-800 bg-neutral-100">
-                    <Picture
-                      src={newsItem.image}
-                      alt={newsItem.title}
-                      priority={true}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 dark:bg-black/20 group-hover:dark:bg-black/10 bg-black/10 group-hover:bg-black/5 transition-colors" />
-                  </div>
-                )}
-
-                {/* News Content */}
-                <div className="p-6 flex flex-col flex-1">
-                  {/* Date */}
-                  <div className="flex items-center gap-2 dark:text-neutral-400 text-neutral-600 text-sm mb-3">
-                    <Calendar className="w-4 h-4" />
-                    <time dateTime={newsItem?.createdAt ? new Date(newsItem.createdAt).toISOString() : undefined}>
-                      {formatDate(newsItem.createdAt)}
-                    </time>
-                  </div>
-
-                  {/* Title */}
-                  <h2 className="text-xl font-bold dark:text-white text-neutral-900 mb-3 group-hover:dark:text-sky-400 group-hover:text-sky-600 transition-colors line-clamp-3">
-                    {newsItem.title}
-                  </h2>
-
-                  {/* Preview Text */}
-                  <p className="dark:text-neutral-400 text-neutral-600 text-sm mb-4 flex-1 line-clamp-2">
-                    {newsItem.paragraph1}
-                  </p>
-
-                  {/* Read More Link */}
-                  <Link
-                    href={`/stories/${newsItem.id}`}
-                    className="inline-flex items-center gap-2 dark:text-sky-400 text-sky-600 font-semibold text-sm group-hover:gap-3 transition-all"
-                  >
-                    Read More
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </div>
-              </motion.article>
-            ))}
           </motion.div>
         </div>
       </section>
@@ -154,7 +74,7 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
                     <Picture
                       src={item.image}
                       alt={item.name}
-                      priority={false}
+                      priority={true}
                       className="object-cover group-hover:scale-105 transition-transform duration-300 w-full h-full"
                     />
                   </div>
@@ -169,7 +89,7 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
                         <p className="text-[10px] sm:text-xs font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-widest mb-1.5 sm:mb-2">
                           {item.title}
                         </p>
-                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold dark:text-white text-neutral-900 break-words">
+                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold dark:text-white text-neutral-900 wrap-break-word">
                           {item.name}
                         </h3>
                       </div>
@@ -181,6 +101,8 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
           </motion.div>
         </div>
       </section>
+
+      <YouthOfTheYearSection youth={newsAndTeamMembers.data.teamMembers.youth[0]} />
 
       {/* Hall of Fame Section */}
       <section className="py-20 px-6 md:px-12">
@@ -337,4 +259,4 @@ const StoriesClient = ({ newsAndTeamMembers }) => {
   )
 }
 
-export default StoriesClient
+export default AwardWinnersClient

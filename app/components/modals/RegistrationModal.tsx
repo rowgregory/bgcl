@@ -6,9 +6,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { usePathname } from 'next/navigation'
 import Picture from '../common/Picture'
 
-export default function RegistrationModal({ pageContent }) {
+export default function RegistrationModal({ modal }) {
   const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(pathname === '/' && pageContent?.modal.toggleModal)
+  const [isOpen, setIsOpen] = useState(pathname === '/' && modal.toggleModal)
 
   useEffect(() => {
     if (isOpen) {
@@ -26,7 +26,7 @@ export default function RegistrationModal({ pageContent }) {
     setIsOpen(false)
   }
 
-  if (pathname !== '/' && !pageContent?.modal.toggleModal) return
+  if (pathname !== '/' && !modal.toggleModal) return
 
   return (
     <AnimatePresence>
@@ -105,12 +105,8 @@ export default function RegistrationModal({ pageContent }) {
                     transition={{ delay: 0.3, duration: 0.5 }}
                     className="text-center mb-6"
                   >
-                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-3">
-                      {pageContent?.modal?.heading}
-                    </h2>
-                    <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                      {pageContent?.modal?.subheading}
-                    </p>
+                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-3">{modal?.heading}</h2>
+                    <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">{modal?.subheading}</p>
                   </motion.div>
 
                   {/* CTA Buttons */}
@@ -121,13 +117,13 @@ export default function RegistrationModal({ pageContent }) {
                     className="space-y-3"
                   >
                     <motion.a
-                      href={pageContent?.modal?.button1Link}
+                      href={modal?.button1Link}
                       target="_blank"
                       whileHover={{ scale: 1.02, y: -2 }}
                       whileTap={{ scale: 0.98 }}
                       className="flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl"
                     >
-                      {pageContent?.modal?.button1Text}
+                      {modal?.button1Text}
                       <motion.div
                         animate={{ x: [0, 3, 0] }}
                         transition={{
@@ -145,7 +141,7 @@ export default function RegistrationModal({ pageContent }) {
                       whileTap={{ scale: 0.98 }}
                       className="w-full px-6 py-3 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-xl font-medium transition-colors"
                     >
-                      {pageContent?.modal?.button2Text}
+                      {modal?.button2Text}
                     </motion.button>
                   </motion.div>
 

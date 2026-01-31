@@ -26,7 +26,7 @@ const images = [
   }
 ]
 
-export default function FacilitySection({ pageContent }) {
+export default function FacilitySection({ facility }) {
   const [currentImage, setCurrentImage] = useState(0)
 
   const nextImage = () => {
@@ -49,12 +49,12 @@ export default function FacilitySection({ pageContent }) {
             style={{ originX: 0 }}
           />
           <p className="text-xs sm:text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-wider">
-            {pageContent?.facility?.subheading}
+            {facility?.subheading}
           </p>
         </div>
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 mb-4 sm:mb-6">
-          {pageContent?.facility?.heading1}
-          <span className="font-light dark:text-neutral-400 text-neutral-600">{pageContent?.facility?.heading2}</span>
+          {facility?.heading1}
+          <span className="font-light dark:text-neutral-400 text-neutral-600">{facility?.heading2}</span>
         </h2>
         <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 items-start">
           {/* Text Content */}
@@ -65,15 +65,15 @@ export default function FacilitySection({ pageContent }) {
           >
             <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none space-y-4 sm:space-y-6">
               <p className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-                {pageContent?.facility?.paragraph1}
+                {facility?.paragraph1}
               </p>
 
               <p className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-                {pageContent?.facility?.paragraph2}
+                {facility?.paragraph2}
               </p>
 
               <p className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-                {pageContent?.facility?.paragraph3}
+                {facility?.paragraph3}
               </p>
               <MotionLink
                 href="/contact?subject=tour"

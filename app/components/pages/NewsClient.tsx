@@ -12,31 +12,31 @@ import { setIsLoading } from '@/app/lib/store/slices/formSlice'
 import { createSubscriber } from '@/app/lib/actions/createSubscriber'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 
-const relatedNews = [
-  {
-    id: '2',
-    title: 'Youth of the Year Announced: A Celebration of Excellence',
-    image: 'https://cdn.prod.website-files.com/67ca71addbada9cbbd57ace7/67ca723fe76f5441716e1e97_boxing.jpg',
-    createdAt: new Date('2025-01-05'),
-    updatedAt: new Date('2025-01-05')
-  },
-  {
-    id: '3',
-    title: 'Record Attendance at Winter Programs',
-    image: 'https://cdn.prod.website-files.com/67ca71addbada9cbbd57ace7/67ca71ef75314df465ef53b9_bowling.jpg',
-    createdAt: new Date('2024-12-28'),
-    updatedAt: new Date('2024-12-28')
-  },
-  {
-    id: '4',
-    title: 'Cummings Foundation Grant Strengthens Scholarship Program',
-    image: 'https://cdn.prod.website-files.com/67ca71addbada9cbbd57ace7/67ca71e2c493e82886f0cb7e_basketball.jpg',
-    createdAt: new Date('2024-12-20'),
-    updatedAt: new Date('2024-12-20')
-  }
-]
+// const relatedNews = [
+//   {
+//     id: '2',
+//     title: 'Youth of the Year Announced: A Celebration of Excellence',
+//     image: 'https://cdn.prod.website-files.com/67ca71addbada9cbbd57ace7/67ca723fe76f5441716e1e97_boxing.jpg',
+//     createdAt: new Date('2025-01-05'),
+//     updatedAt: new Date('2025-01-05')
+//   },
+//   {
+//     id: '3',
+//     title: 'Record Attendance at Winter Programs',
+//     image: 'https://cdn.prod.website-files.com/67ca71addbada9cbbd57ace7/67ca71ef75314df465ef53b9_bowling.jpg',
+//     createdAt: new Date('2024-12-28'),
+//     updatedAt: new Date('2024-12-28')
+//   },
+//   {
+//     id: '4',
+//     title: 'Cummings Foundation Grant Strengthens Scholarship Program',
+//     image: 'https://cdn.prod.website-files.com/67ca71addbada9cbbd57ace7/67ca71e2c493e82886f0cb7e_basketball.jpg',
+//     createdAt: new Date('2024-12-20'),
+//     updatedAt: new Date('2024-12-20')
+//   }
+// ]
 
-const StoryClient = ({ story }) => {
+const NewsClient = ({ news }) => {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [copied, setCopied] = useState(false)
@@ -85,8 +85,8 @@ const StoryClient = ({ story }) => {
 
     if (navigator.share) {
       await navigator.share({
-        title: story?.title,
-        text: story?.paragraph1,
+        title: news?.title,
+        text: news?.paragraph1,
         url: url
       })
     } else {
@@ -103,11 +103,11 @@ const StoryClient = ({ story }) => {
         {/* Back Button */}
         <div className="mb-4">
           <Link
-            href="/stories"
+            href="/latest-news"
             className="inline-flex items-center gap-2 dark:text-sky-400 text-sky-600 hover:dark:text-sky-300 hover:text-sky-700 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="font-semibold text-sm">Back to Stories</span>
+            <span className="font-semibold text-sm">Back to Latest News</span>
           </Link>
         </div>
 
@@ -121,9 +121,9 @@ const StoryClient = ({ story }) => {
             className="lg:col-span-2 space-y-8"
           >
             {/* Hero Image */}
-            {story?.image && (
+            {news?.image && (
               <div className="relative h-96 overflow-hidden rounded-xl dark:bg-neutral-800 bg-neutral-100">
-                <Picture src={story?.image} alt={story?.title} className="object-cover w-full h-full" priority />
+                <Picture src={news?.image} alt={news?.title} className="object-cover w-full h-full" priority />
               </div>
             )}
 
@@ -131,8 +131,8 @@ const StoryClient = ({ story }) => {
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div className="flex items-center gap-2 dark:text-neutral-400 text-neutral-600">
                 <Calendar className="w-4 h-4" />
-                <time dateTime={story?.createdAt ? new Date(story?.createdAt).toISOString() : undefined}>
-                  {formatDate(story.createdAt)}
+                <time dateTime={news?.createdAt ? new Date(news?.createdAt).toISOString() : undefined}>
+                  {formatDate(news.createdAt)}
                 </time>
               </div>
               <button
@@ -146,14 +146,14 @@ const StoryClient = ({ story }) => {
 
             {/* Title */}
             <h1 className="text-5xl md:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-              {story?.title}
+              {news?.title}
             </h1>
 
             {/* Body Text */}
             <div className="space-y-6 text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-              {story?.paragraph1 && <p>{story?.paragraph1}</p>}
-              {story?.paragraph2 && <p>{story?.paragraph2}</p>}
-              {story?.paragraph3 && <p>{story?.paragraph3}</p>}
+              {news?.paragraph1 && <p>{news?.paragraph1}</p>}
+              {news?.paragraph2 && <p>{news?.paragraph2}</p>}
+              {news?.paragraph3 && <p>{news?.paragraph3}</p>}
             </div>
           </motion.article>
 
@@ -165,7 +165,7 @@ const StoryClient = ({ story }) => {
             className="space-y-8"
           >
             {/* Related Articles */}
-            <div className="dark:bg-neutral-900/50 bg-neutral-50 rounded-xl p-6">
+            {/* <div className="dark:bg-neutral-900/50 bg-neutral-50 rounded-xl p-6">
               <h3 className="text-xl font-black dark:text-white text-neutral-900 mb-6">Related Articles</h3>
               <div className="space-y-4">
                 {relatedNews.map((article) => (
@@ -180,7 +180,7 @@ const StoryClient = ({ story }) => {
                   </Link>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Newsletter Signup */}
             <div className="relative overflow-hidden dark:bg-linear-to-br dark:from-neutral-900 dark:to-neutral-800 bg-linear-to-br from-white to-neutral-50 rounded-2xl p-6 border dark:border-neutral-800 border-transparent">
@@ -369,4 +369,4 @@ const StoryClient = ({ story }) => {
   )
 }
 
-export default StoryClient
+export default NewsClient

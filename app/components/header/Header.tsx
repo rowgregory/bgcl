@@ -30,13 +30,21 @@ export default function Header() {
         className={`${pathname === '/' ? 'max-w-334' : ''} w-full mx-auto dark:bg-neutral-900 dark:border-neutral-700 bg-neutral-50 border-neutral-200 border-b relative z-100 px-4 sm:px-6 lg:px-8 py-3`}
       >
         <div className="max-w-7xl flex items-center justify-between mx-auto">
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4 lg:space-x-6">
             <GoogleTranslate />
-            <div className="hidden sm:block dark:text-neutral-400 text-neutral-600 text-sm">
-              Phone:{' '}
-              <a href="tel:+17815931772" className="dark:text-white text-neutral-900 hover:underline">
-                781 593 1772
-              </a>
+            <div className="hidden sm:flex items-center space-x-4 lg:space-x-6 dark:text-neutral-400 text-neutral-600 text-sm">
+              <div>
+                Phone:{' '}
+                <a href="tel:+17815931772" className="dark:text-white text-neutral-900 hover:underline">
+                  781 593 1772
+                </a>
+              </div>
+              <div className="hidden md:block">
+                Address: <span className="dark:text-white text-neutral-900">25 N Common St, Lynn, MA 01902</span>
+              </div>
+              <div className="hidden lg:block">
+                Tax ID: <span className="dark:text-white text-neutral-900">04-2103924</span>
+              </div>
             </div>
           </div>
 
@@ -64,7 +72,7 @@ export default function Header() {
           {/* Burger Menu Button */}
           <button
             onClick={() => store.dispatch(setOpenMobileNavigation())}
-            className="block xl:hidden dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900 transition-colors"
+            className="block 2xl:hidden dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900 transition-colors"
             aria-label="Toggle menu"
           >
             {mobileNavigation ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -103,7 +111,7 @@ export default function Header() {
             </motion.div>
           </Link>
 
-          <nav className={`hidden xl:flex items-center ${isSpanish ? 'space-x-5' : 'space-x-8'}`}>
+          <nav className={`hidden 2xl:flex items-center ${isSpanish ? 'space-x-4' : 'space-x-6'}`}>
             {[
               { label: 'HOME', href: '/' },
               { label: 'ABOUT', href: '/about' },
@@ -111,8 +119,8 @@ export default function Header() {
               { label: 'PROGRAMS', href: '/programs' },
               { label: 'CAMPAIGNS', href: '/campaigns' },
               { label: 'EVENTS', href: '/events' },
-              { label: 'STORIES', href: '/stories' },
-              { label: 'HUB', href: '/hub' },
+              { label: 'AWARD WINNERS', href: '/award-winners' },
+              { label: 'LATEST NEWS', href: '/latest-news' },
               { label: 'GET INVOLVED', href: '/get-involved' },
               { label: 'CONTACT', href: '/contact' }
             ].map((item) => (
@@ -131,7 +139,7 @@ export default function Header() {
               >
                 <Link
                   href={item.href}
-                  className={`${item.href === pathname ? 'dark:text-sky-500 text-sky-600' : 'dark:text-white text-neutral-900'} dark:hover:text-sky-400 hover:text-sky-600 transition-colors font-black`}
+                  className={`${item.href === pathname ? 'dark:text-sky-500 text-sky-600' : 'dark:text-white text-neutral-900'} dark:hover:text-sky-400 hover:text-sky-600 transition-colors font-black whitespace-nowrap`}
                 >
                   {item.label}
                 </Link>

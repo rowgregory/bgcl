@@ -11,16 +11,19 @@ export const getProgramById = async (id: string) => {
       await createLog('warn', 'Program not found', {
         programId: id
       })
-      return null
+      return { program: null, error: null }
     }
 
-    return { program }
+    return { program, error: null }
   } catch (error) {
     await createLog('error', 'Failed to fetch program by id', {
       error: error instanceof Error ? error.message : 'Unknown error',
       programId: id
     })
 
-    return error
+    return {
+      program: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }
   }
 }

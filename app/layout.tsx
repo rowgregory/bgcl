@@ -6,7 +6,7 @@ import { auth } from '@/app/lib/auth'
 import { ReactNode } from 'react'
 import RootLayoutWrapper from './root-layout'
 import { getPrograms } from './lib/actions/getPrograms'
-import { getPageBySlug } from './lib/actions/getPageBySlug'
+import { getPageBySlugClient } from './lib/actions/getPageBySlugClient'
 import Script from 'next/script'
 import { getDonationOrders } from './lib/actions/getDonationOrders'
 
@@ -178,7 +178,7 @@ export default async function RootLayout({
   const session = await auth()
   const programs = await getPrograms()
   const donations = await getDonationOrders()
-  const pageContent = await getPageBySlug('home')
+  const pageContent = await getPageBySlugClient('home')
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID
 
   return (

@@ -2,14 +2,16 @@
 
 import { IProgram } from '@/types/entities/program'
 import { motion } from 'framer-motion'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Download } from 'lucide-react'
 import Link from 'next/link'
 import Picture from '../common/Picture'
+import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
+import { IClubResource } from '@/types/entities/club-resource'
 
-const ProgramsClient = ({ programs }: { programs: IProgram[] }) => {
+const ProgramsClient = ({ programs, resources }: { programs: IProgram[]; resources: IClubResource[] }) => {
   return (
-    <div className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
-      <div className="max-w-7xl mx-auto space-y-12 sm:space-y-16">
+    <div className="py-12 sm:py-16 md:py-20">
+      <div className="max-w-7xl mx-auto space-y-12 sm:space-y-16 px-4 sm:px-6 md:px-12">
         {/* Header */}
         <motion.div
           className="space-y-4 sm:space-y-6"
@@ -88,32 +90,80 @@ const ProgramsClient = ({ programs }: { programs: IProgram[] }) => {
             </div>
           )}
         </>
-
-        {/* CTA Section */}
-        <motion.section
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 py-12 sm:py-16 md:py-20 mt-12 sm:mt-16 md:mt-20"
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 sm:space-y-8 flex items-center justify-center flex-col">
-            <div className="space-y-3 sm:space-y-4">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold dark:text-white text-neutral-900">
-                Register for our Summer Programs
-              </h2>
-            </div>
-
-            <a
-              href="https://parentportal.bgcl.org/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block px-6 sm:px-8 py-2.5 sm:py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors w-fit text-sm sm:text-base"
-            >
-              Register
-            </a>
-          </div>
-        </motion.section>
       </div>
+      {/* CTA Section */}
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 py-12 sm:py-16 md:py-20 mt-12 sm:mt-16 md:mt-20"
+      >
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 sm:space-y-8 flex items-center justify-center flex-col">
+          <div className="space-y-3 sm:space-y-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold dark:text-white text-neutral-900">
+              Register for our Summer Programs
+            </h2>
+          </div>
+
+          <a
+            href="https://parentportal.bgcl.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block px-6 sm:px-8 py-2.5 sm:py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors w-fit text-sm sm:text-base"
+          >
+            Register
+          </a>
+        </div>
+      </motion.section>
+
+      {/* Resources Section */}
+      <section className="py-20 px-6 md:px-12">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mb-12"
+          >
+            <h2 className="text-4xl font-black dark:text-white text-neutral-900 mb-4">Club Resources</h2>
+            <p className="text-lg dark:text-neutral-400 text-neutral-600">
+              Access important documents, guides, and tools to make the most of your membership.
+            </p>
+          </motion.div>
+
+          {/* Resources Grid */}
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {resources.map((resource, r) => (
+              <motion.div
+                key={r}
+                variants={itemVariants}
+                className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 border rounded-xl p-6 hover:border-sky-500/50 transition-colors group"
+              >
+                <h3 className="text-lg font-bold dark:text-white text-neutral-900 mb-2 group-hover:dark:text-sky-400 group-hover:text-sky-600 transition-colors">
+                  {resource.title}
+                </h3>
+                {resource.url && (
+                  <a
+                    href={resource.url}
+                    target="_blank"
+                    className="inline-flex items-center gap-2 dark:text-sky-400 text-sky-600 hover:dark:text-sky-300 hover:text-sky-700 font-semibold text-sm transition-colors"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download
+                  </a>
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
     </div>
   )
 }

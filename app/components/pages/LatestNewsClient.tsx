@@ -5,20 +5,17 @@ import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
 import { setIsLoading } from '@/app/lib/store/slices/formSlice'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { store, useFormSelector } from '@/app/lib/store/store'
-import { IClubResource } from '@/types/entities/club-resource'
 import { INewsletter } from '@/types/entities/newsletter'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Mail, Download } from 'lucide-react'
+import { Mail, Download, Calendar, ArrowRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
+import Picture from '../common/Picture'
+import { formatDate } from '@/app/lib/utils/date-utils'
+import { INews } from '@/types/entities/news'
+import Link from 'next/link'
 
-export default function HubClient({
-  newsletters,
-  resources
-}: {
-  newsletters: INewsletter[]
-  resources: IClubResource[]
-}) {
+export default function LatestNewsClient({ newsletters, news }: { newsletters: INewsletter[]; news: INews[] }) {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [success, setSuccess] = useState(false)
@@ -78,12 +75,74 @@ export default function HubClient({
                 Resources & Updates
               </p>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-                The Hub
+                Latest News
               </h1>
               <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
                 Your one-stop destination for club resources, newsletters, and important information.
               </p>
             </div>
+          </motion.div>
+
+          {/* News Section */}
+
+          {/* News Grid */}
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 sm:mb-16"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {news?.map((newsItem) => (
+              <motion.article
+                key={newsItem.id}
+                variants={itemVariants}
+                className="group dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 rounded-xl overflow-hidden border hover:border-sky-500/50 transition-all duration-300 flex flex-col h-full"
+              >
+                {/* News Image */}
+                {newsItem.image && (
+                  <div className="relative h-48 overflow-hidden dark:bg-neutral-800 bg-neutral-100">
+                    <Picture
+                      src={newsItem.image}
+                      alt={newsItem.title}
+                      priority={true}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 dark:bg-black/20 group-hover:dark:bg-black/10 bg-black/10 group-hover:bg-black/5 transition-colors" />
+                  </div>
+                )}
+
+                {/* News Content */}
+                <div className="p-6 flex flex-col flex-1">
+                  {/* Date */}
+                  <div className="flex items-center gap-2 dark:text-neutral-400 text-neutral-600 text-sm mb-3">
+                    <Calendar className="w-4 h-4" />
+                    <time dateTime={newsItem?.createdAt ? new Date(newsItem.createdAt).toISOString() : undefined}>
+                      {formatDate(newsItem.createdAt)}
+                    </time>
+                  </div>
+
+                  {/* Title */}
+                  <h2 className="text-xl font-bold dark:text-white text-neutral-900 mb-3 group-hover:dark:text-sky-400 group-hover:text-sky-600 transition-colors line-clamp-3">
+                    {newsItem.title}
+                  </h2>
+
+                  {/* Preview Text */}
+                  <p className="dark:text-neutral-400 text-neutral-600 text-sm mb-4 flex-1 line-clamp-2">
+                    {newsItem.paragraph1}
+                  </p>
+
+                  {/* Read More Link */}
+                  <Link
+                    href={`/latest-news/${newsItem.id}`}
+                    className="inline-flex items-center gap-2 dark:text-sky-400 text-sky-600 font-semibold text-sm group-hover:gap-3 transition-all"
+                  >
+                    Read More
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
+              </motion.article>
+            ))}
           </motion.div>
 
           {/* Newsletter Subscription */}
@@ -285,55 +344,6 @@ export default function HubClient({
                 </motion.div>
               ))
               .reverse()}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Resources Section */}
-      <section className="py-20 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="mb-12"
-          >
-            <h2 className="text-4xl font-black dark:text-white text-neutral-900 mb-4">Club Resources</h2>
-            <p className="text-lg dark:text-neutral-400 text-neutral-600">
-              Access important documents, guides, and tools to make the most of your membership.
-            </p>
-          </motion.div>
-
-          {/* Resources Grid */}
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {resources.map((resource, r) => (
-              <motion.div
-                key={r}
-                variants={itemVariants}
-                className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 border rounded-xl p-6 hover:border-sky-500/50 transition-colors group"
-              >
-                <h3 className="text-lg font-bold dark:text-white text-neutral-900 mb-2 group-hover:dark:text-sky-400 group-hover:text-sky-600 transition-colors">
-                  {resource.title}
-                </h3>
-                {resource.url && (
-                  <a
-                    href={resource.url}
-                    target="_blank"
-                    className="inline-flex items-center gap-2 dark:text-sky-400 text-sky-600 hover:dark:text-sky-300 hover:text-sky-700 font-semibold text-sm transition-colors"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download
-                  </a>
-                )}
-              </motion.div>
-            ))}
           </motion.div>
         </div>
       </section>

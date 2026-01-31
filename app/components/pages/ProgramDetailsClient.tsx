@@ -21,13 +21,13 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
     return gradients[Math.floor(Math.random() * gradients.length)]
   }, [])
 
-  if (!program) {
+  if (Object.keys(program).length === 0) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="text-center space-y-4">
-          <h1 className="text-3xl font-bold text-white">Program Not Found</h1>
+          <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Program Not Found</h1>
           <Link href="/programs">
-            <button className="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-lg">
+            <button className="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-lg transition-colors">
               Back to Programs
             </button>
           </Link>

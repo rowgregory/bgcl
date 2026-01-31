@@ -1,387 +1,172 @@
-import { FC, JSX, useState } from 'react'
-import { Eye, EyeOff, Edit2, Check, ChevronDown, ChevronRight } from 'lucide-react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useState } from 'react'
+import { Check, ChevronDown, ChevronRight, Edit2, Eye, EyeOff, Save, X } from 'lucide-react'
+import { PageField } from '@/types/common'
+import { RightPanel } from '../admin/star-map/RightPanel'
 
-interface PageContent {
-  [key: string]: Record<string, any>
-}
+export function Field({ field, onChange }: { field: PageField | any; onChange: (value: string | string[]) => void }) {
+  const [isEditing, setIsEditing] = useState(false)
 
-interface PageContentEditorProps {
-  initialContent: PageContent | null
-  onSave: (content: PageContent) => Promise<void>
-}
-
-export const PageContentEditor: FC<PageContentEditorProps> = ({ initialContent, onSave }) => {
-  const [content, setContent] = useState<PageContent>(initialContent ?? {}) as any
-  const [expandedSections, setExpandedSections] = useState<string[] | null>([])
-  const [editingField, setEditingField] = useState<string | null>(null)
-  const [isPreviewVisible, setIsPreviewVisible] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
-
-  const sections = Object.keys(content ?? {})
-
-  const toggleSection = (sectionId: string) => {
-    setExpandedSections((prev) =>
-      prev?.includes(sectionId) ? prev.filter((s) => s !== sectionId) : [...prev, sectionId]
-    )
-  }
-
-  const handleEdit = (section: string, fieldPath: string, value: string) => {
-    const newContent = structuredClone(content)
-    const pathParts = fieldPath.split('.')
-    let current = newContent[section]
-
-    for (let i = 0; i < pathParts.length - 1; i++) {
-      if (!current[pathParts[i]]) {
-        current[pathParts[i]] = {}
-      }
-      current = current[pathParts[i]]
-    }
-
-    current[pathParts[pathParts.length - 1]] = value
-    setContent(newContent)
-  }
-
-  const handleSave = async () => {
-    setIsSaving(true)
-    try {
-      await onSave(content)
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
-  const renderField = (
-    section: string,
-    fieldName: string,
-    value: string,
-    type: 'text' | 'textarea' = 'text'
-  ): JSX.Element => {
-    const fieldId = `${section}-${fieldName}`
-    const isEditing = editingField === fieldId
-
+  if (field.type === 'array' && Array.isArray(field.value)) {
     return (
-      <div key={fieldId} className="mb-4">
+      <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <label className="text-sm font-medium dark:text-neutral-400 text-neutral-600">
-            {fieldName.charAt(0).toUpperCase() + fieldName.replace(/([A-Z])/g, ' $1').slice(1)}
-          </label>
-          <button
-            onClick={() => setEditingField(isEditing ? null : fieldId)}
-            className="p-1 dark:hover:bg-neutral-800 hover:bg-neutral-200 rounded transition-colors"
-          >
-            {isEditing ? (
-              <Check className="w-4 h-4 text-green-400" />
-            ) : (
-              <Edit2 className="w-4 h-4 dark:text-neutral-500 text-neutral-400" />
-            )}
+          <label className="text-sm font-medium text-neutral-400">{field.label}</label>
+          <button onClick={() => setIsEditing(!isEditing)} className="p-1 hover:bg-neutral-800 rounded">
+            {isEditing ? <Check className="w-4 h-4 text-green-400" /> : <Edit2 className="w-4 h-4 text-neutral-500" />}
           </button>
         </div>
-
-        {type === 'textarea' ? (
-          <textarea
-            value={value}
-            onChange={(e) => handleEdit(section, fieldName, e.target.value)}
-            disabled={!isEditing}
-            rows={4}
-            className={`w-full px-3 py-2 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 text-neutral-900 border rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-sky-500 ${
-              isEditing ? 'dark:border-sky-500 border-sky-500' : 'dark:border-neutral-700 border-neutral-300'
-            } ${!isEditing && 'cursor-not-allowed opacity-75'}`}
-          />
-        ) : (
-          <input
-            type={type}
-            value={value}
-            onChange={(e) => handleEdit(section, fieldName, e.target.value)}
-            disabled={!isEditing}
-            className={`w-full px-3 py-2 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 text-neutral-900 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 ${
-              isEditing ? 'dark:border-sky-500 border-sky-500' : 'dark:border-neutral-700 border-neutral-300'
-            } ${!isEditing && 'cursor-not-allowed opacity-75'}`}
-          />
-        )}
-
-        {isEditing && (
-          <p className="text-xs dark:text-neutral-500 text-neutral-500 mt-1">Click the checkmark to confirm changes</p>
-        )}
+        <div className="space-y-2">
+          {field.value.map((item, i) => (
+            <div key={i} className="flex gap-2">
+              <input
+                value={item}
+                onChange={(e) => {
+                  const newArray = [...field.value]
+                  newArray[i] = e.target.value
+                  onChange(newArray)
+                }}
+                disabled={!isEditing}
+                className={`flex-1 px-3 py-2 bg-neutral-800 border rounded-lg text-white text-sm ${
+                  isEditing ? 'border-indigo-500' : 'border-neutral-700 opacity-75'
+                }`}
+              />
+              {isEditing && (
+                <button
+                  onClick={() => onChange(field?.value?.filter((_, idx) => idx !== i))}
+                  className="px-3 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          ))}
+          {isEditing && (
+            <button
+              onClick={() => onChange([...field.value, ''])}
+              className="w-full px-3 py-2 bg-neutral-700 hover:bg-neutral-600 text-neutral-300 rounded-lg text-sm"
+            >
+              + Add Item
+            </button>
+          )}
+        </div>
       </div>
     )
   }
 
-  const renderSection = (sectionId: string, sectionData: Record<string, any>): JSX.Element => {
-    const isExpanded = expandedSections?.includes(sectionId)
+  const InputComponent = field.type === 'textarea' ? 'textarea' : 'input'
 
-    return (
-      <div
-        key={sectionId}
-        className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 rounded-lg border mb-4"
-      >
-        <button
-          onClick={() => toggleSection(sectionId)}
-          className="w-full flex items-center justify-between p-4 dark:hover:bg-neutral-800/50 hover:bg-neutral-100/50 transition-colors rounded-lg"
-        >
-          <div className="flex items-center gap-3">
-            {isExpanded ? (
-              <ChevronDown className="w-5 h-5 dark:text-neutral-400 text-neutral-600" />
-            ) : (
-              <ChevronRight className="w-5 h-5 dark:text-neutral-400 text-neutral-600" />
-            )}
-            <h3 className="text-base font-semibold dark:text-white text-neutral-900 capitalize">
-              {sectionId.replace(/([A-Z])/g, ' $1')} Section
-            </h3>
-          </div>
-          <span className="text-xs dark:text-neutral-500 text-neutral-600">
-            {Object.keys(sectionData || {}).length} fields
-          </span>
+  return (
+    <div className="mb-4">
+      <div className="flex items-center justify-between mb-2">
+        <label className="text-sm font-medium text-neutral-400">{field.label}</label>
+        <button onClick={() => setIsEditing(!isEditing)} className="p-1 hover:bg-neutral-800 rounded">
+          {isEditing ? <Check className="w-4 h-4 text-green-400" /> : <Edit2 className="w-4 h-4 text-neutral-500" />}
         </button>
+      </div>
+      <InputComponent
+        type={field.type === 'textarea' ? undefined : field.type}
+        value={field.value as string}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={!isEditing}
+        rows={field.type === 'textarea' ? 4 : undefined}
+        className={`w-full px-3 py-2 bg-neutral-800 border rounded-lg text-white text-sm ${
+          field.type === 'textarea' ? 'resize-none' : ''
+        } ${isEditing ? 'border-indigo-500' : 'border-neutral-700 opacity-75'}`}
+      />
+    </div>
+  )
+}
 
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div className="p-4 pt-0 space-y-2">
-                {Object.entries(sectionData).map(([field, value]) => {
-                  if (typeof value === 'string') {
-                    return renderField(sectionId, field, value, value.length > 100 ? 'textarea' : 'text')
-                  } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                    return (
-                      <div key={field} className="ml-4 pl-4 dark:border-neutral-800 border-neutral-300 border-l-2">
-                        <h4 className="text-sm font-medium dark:text-neutral-400 text-neutral-600 mb-3 capitalize">
-                          {field}
-                        </h4>
-                        {Object.entries(value as Record<string, unknown>).map(([subField, subValue]) => (
-                          <div key={subField}>
-                            {typeof subValue === 'string' &&
-                              renderField(sectionId, `${field}.${subField}`, subValue, 'text')}
-                          </div>
-                        ))}
-                      </div>
-                    )
-                  } else if (Array.isArray(value)) {
-                    return (
-                      <div key={field} className="ml-4 pl-4 dark:border-neutral-800 border-neutral-300 border-l-2">
-                        <h4 className="text-sm font-medium dark:text-neutral-400 text-neutral-600 mb-3 capitalize">
-                          {field}
-                        </h4>
-                        {value.map((item, index) => (
-                          <div key={index} className="mb-4 p-3 dark:bg-neutral-800/50 bg-neutral-100/50 rounded-lg">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-xs dark:text-neutral-500 text-neutral-600">Item {index + 1}</span>
-                            </div>
-                            {typeof item === 'string'
-                              ? renderField(sectionId, `${field}[${index}]`, item, 'text')
-                              : Object.entries(item as Record<string, unknown>).map(([itemField, itemValue]) => (
-                                  <div key={itemField}>
-                                    {typeof itemValue === 'string' &&
-                                      renderField(sectionId, `${field}[${index}].${itemField}`, itemValue, 'text')}
-                                  </div>
-                                ))}
-                          </div>
-                        ))}
-                      </div>
-                    )
-                  }
-                  return null
-                })}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+export function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState(true)
+
+  return (
+    <div className="bg-neutral-900 rounded-lg border border-neutral-800 mb-4">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center gap-3 p-4 hover:bg-neutral-800/50 transition-colors"
+      >
+        {isOpen ? (
+          <ChevronDown className="w-5 h-5 text-neutral-400" />
+        ) : (
+          <ChevronRight className="w-5 h-5 text-neutral-400" />
+        )}
+        <h3 className="text-base font-semibold text-white capitalize">{title}</h3>
+      </button>
+      {isOpen && <div className="p-4 pt-0 space-y-4">{children}</div>}
+    </div>
+  )
+}
+
+export function PageContentEditor({
+  fields,
+  onSave,
+  isLoading
+}: {
+  fields: PageField[]
+  onSave: any
+  isLoading: boolean
+}) {
+  const [content, setContent] = useState(fields)
+  const [isPreviewVisible, setIsPreviewVisible] = useState(true)
+
+  if (!fields || !Array.isArray(fields)) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-neutral-950">
+        <div className="text-center">
+          <p className="text-neutral-400 mb-2">Invalid page content format</p>
+          <pre className="text-xs text-neutral-600">{JSON.stringify(fields, null, 2)}</pre>
+        </div>
       </div>
     )
+  }
+  const sections = Array.from(new Set(content.map((f) => f.section)))
+
+  const updateField = (id: string, newValue: string | string[]) => {
+    setContent((prev) => prev.map((f) => (f.id === id ? { ...f, value: newValue } : f)))
   }
 
   return (
-    <div className="flex h-[calc(100vh-130px)] dark:bg-neutral-950 bg-white">
-      {/* Left Panel - Editor */}
-      <div
-        className={`${isPreviewVisible ? 'w-1/2' : 'w-full'} dark:border-neutral-800 border-neutral-200 border-r flex flex-col overflow-hidden transition-all`}
-      >
-        {/* Header */}
-        <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border-b px-6 py-3 flex items-center justify-between">
-          <h1 className="text-lg font-bold dark:text-white text-neutral-900">Page Content Editor</h1>
+    <div className="h-[calc(100dvh-62px)] flex flex-col md:flex-row bg-neutral-950 pt-16.25">
+      {/* Editor */}
+      <div className={`${isPreviewVisible ? 'md:w-1/2' : 'w-full'} flex flex-col border-r border-neutral-800`}>
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {sections.map((section) => (
+            <Section key={section} title={section}>
+              {content
+                ?.filter((f) => f.section === section)
+                ?.map((field) => (
+                  <Field key={field.id} field={field} onChange={(v) => updateField(field.id, v)} />
+                ))}
+            </Section>
+          ))}
         </div>
 
-        {/* Content Editor */}
-        <div className="flex-1 overflow-y-auto px-6 py-6">
-          {sections.map((section) => renderSection(section, content[section]))}
-        </div>
-
-        {/* Footer */}
-        <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border-t px-6 py-4 flex gap-3 justify-end relative">
-          <div className="flex gap-2">
+        {/* Footer - Fixed at Bottom */}
+        <div className="shrink-0 bg-neutral-900 border-t border-neutral-800 px-6 py-4">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:justify-end">
             <button
               onClick={() => setIsPreviewVisible(!isPreviewVisible)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium dark:bg-neutral-800 dark:text-neutral-300 dark:hover:text-white dark:border-neutral-700 bg-neutral-200 text-neutral-700 hover:text-neutral-900 border-neutral-300 rounded-lg border transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium bg-neutral-800 text-neutral-300 hover:text-white rounded-lg border border-neutral-700 transition-colors w-full md:w-fit"
             >
               {isPreviewVisible ? <EyeOff size={16} /> : <Eye size={16} />}
               {isPreviewVisible ? 'Hide' : 'Show'} Preview
             </button>
 
             <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="px-6 py-2 text-sm font-medium dark:bg-sky-600 dark:hover:bg-sky-700 dark:disabled:bg-sky-600/50 bg-sky-600 hover:bg-sky-700 disabled:bg-sky-600/50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+              onClick={() => onSave(content)}
+              disabled={isLoading}
+              className="px-6 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-600/50 disabled:cursor-not-allowed text-white rounded-lg transition-colors w-full md:w-fit"
             >
-              {isSaving ? 'Saving...' : 'Save Changes'}
+              {isLoading ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Right Panel - Live Preview */}
-      {isPreviewVisible && (
-        <div className="w-1/2 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-l overflow-y-auto">
-          <div className="p-12 max-w-2xl mx-auto">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold dark:text-white text-neutral-900 mb-2">Preview</h2>
-              <p className="text-sm dark:text-neutral-400 text-neutral-600">Live preview of all sections</p>
-            </div>
-
-            {Object.entries(content).map(([section, sectionData]) => {
-              if (typeof sectionData !== 'object' || sectionData === null) return null
-
-              const data = sectionData as Record<string, any>
-
-              return (
-                <div key={section} className="mb-12">
-                  {/* Subheading */}
-                  {data.subheading && (
-                    <p className="text-sm dark:text-neutral-500 text-neutral-600 uppercase tracking-widest mb-2">
-                      {data.subheading}
-                    </p>
-                  )}
-
-                  {/* Heading */}
-                  {data.heading && (
-                    <h2 className="text-3xl font-bold dark:text-white text-neutral-900 mb-4">{data.heading}</h2>
-                  )}
-
-                  <div className="flex items-center gap-x-2">
-                    {data.heading1 && (
-                      <h2 className="text-3xl font-bold dark:text-white text-neutral-900 mb-4">{data.heading1}</h2>
-                    )}
-                    {data.heading2 && (
-                      <h2 className="text-3xl font-bold dark:text-white text-neutral-900 mb-4">{data.heading2}</h2>
-                    )}
-                  </div>
-
-                  {/* Body Text */}
-                  {data.bodyText && (
-                    <p className="dark:text-neutral-300 text-neutral-700 leading-relaxed mb-6">{data.bodyText}</p>
-                  )}
-
-                  {/* Outcomes (title + description pairs) */}
-                  {Object.entries(data)
-                    .filter(([key]) => key.startsWith('outcomeTitle'))
-                    .sort(
-                      ([a], [b]) => parseInt(a.replace('outcomeTitle', '')) - parseInt(b.replace('outcomeTitle', ''))
-                    )
-                    .map(([key, title]) => {
-                      const num = key.replace('outcomeTitle', '')
-                      const description = data[`outcomeDescription${num}`]
-
-                      if (!title || !description) return null
-
-                      return (
-                        <div
-                          key={`${section}-${key}`}
-                          className="mb-6 p-6 rounded-xl bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800"
-                        >
-                          <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-3">{title}</h3>
-                          <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed">{description}</p>
-                        </div>
-                      )
-                    })}
-
-                  {/* Stats (value + label pairs) - 2 column grid */}
-                  {Object.entries(data).filter(([key]) => key.startsWith('statValue')).length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                      {Object.entries(data)
-                        .filter(([key]) => key.startsWith('statValue'))
-                        .sort(([a], [b]) => parseInt(a.replace('statValue', '')) - parseInt(b.replace('statValue', '')))
-                        .map(([key, value]) => {
-                          const num = key.replace('statValue', '')
-                          const label = data[`statLabel${num}`]
-
-                          if (!value || !label) return null
-
-                          return (
-                            <div
-                              key={`${section}-${key}`}
-                              className="p-6 rounded-xl bg-neutral-800 dark:bg-neutral-900 border border-neutral-700 dark:border-neutral-800"
-                            >
-                              <h3 className="text-3xl font-black text-white mb-3">{value}</h3>
-                              <p className="text-neutral-300 dark:text-neutral-400 leading-relaxed text-sm">{label}</p>
-                            </div>
-                          )
-                        })}
-                    </div>
-                  )}
-
-                  {/* Paragraphs */}
-                  {Object.entries(data)
-                    .filter(([key]) => key.startsWith('paragraph'))
-                    .map(([key, value]) => (
-                      <p
-                        key={`${section}-${key}`}
-                        className="dark:text-neutral-400 text-neutral-700 leading-relaxed mb-6"
-                      >
-                        {value}
-                      </p>
-                    ))}
-
-                  {/* CTA Text */}
-                  {data.ctaText && (
-                    <p className="dark:text-neutral-300 text-neutral-700 italic mb-6 p-4 dark:bg-neutral-900/50 dark:border-neutral-800 bg-neutral-100/50 border-neutral-300 border rounded-lg">
-                      {data.ctaText}
-                    </p>
-                  )}
-
-                  {/* Stats */}
-                  {Object.entries(data).filter(([key]) => key.startsWith('stat')).length > 0 && (
-                    <div className="grid grid-cols-3 gap-4 mb-6">
-                      {Object.entries(data)
-                        .filter(([key]) => key.startsWith('stat'))
-                        .map(([statKey, statItem]: [string, any]) => (
-                          <div
-                            key={statKey}
-                            className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 p-4 rounded-lg text-center border"
-                          >
-                            <p className="text-2xl font-bold text-sky-500 mb-1">{statItem.value1}</p>
-                            <p className="text-sm dark:text-neutral-300 text-neutral-700 font-semibold mb-1">
-                              {statItem.value2}
-                            </p>
-                            <p className="text-xs dark:text-neutral-500 text-neutral-600">{statItem.value3}</p>
-                          </div>
-                        ))}
-                    </div>
-                  )}
-
-                  {/* Buttons */}
-                  {Object.entries(data)
-                    .filter(([key]) => {
-                      const isButton = key.includes('button') && key.includes('Text')
-                      return isButton && typeof data[key] === 'string'
-                    })
-                    .map(([key, value]) => (
-                      <button
-                        key={`${section}-${key}`}
-                        className="mr-4 mb-4 px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg transition-colors"
-                      >
-                        {value}
-                      </button>
-                    ))}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
+      {/* Preview */}
+      {isPreviewVisible && <RightPanel fields={content} />}
     </div>
   )
 }

@@ -1,35 +1,7 @@
-'use client'
+import { StarMapHomeClient } from '@/app/components/pages/StarMapHomeClient'
+import { getPageBySlug } from '@/app/lib/actions/getPageBySlug'
 
-import { PageContentEditor } from '@/app/components/common/PageContentEditor'
-import { createPage } from '@/app/lib/actions/createPage'
-import { updatePageBySlug } from '@/app/lib/actions/updatePageBySlug'
-import { showToast } from '@/app/lib/store/slices/toastSlice'
-import { store } from '@/app/lib/store/store'
-
-const HomePage = ({ data }) => {
-  const handleSave = async (content: any): Promise<void> => {
-    if (data?.id) {
-      await updatePageBySlug('home', content)
-      store.dispatch(
-        showToast({
-          message: 'Changes saved successfully',
-          description: 'Visitors will see the updated content immediately',
-          type: 'success'
-        })
-      )
-    } else {
-      await createPage('home', content)
-      store.dispatch(
-        showToast({
-          message: 'Page created successfully',
-          description: 'Your home page is now accessible to all visitors',
-          type: 'success'
-        })
-      )
-    }
-  }
-
-  return <PageContentEditor initialContent={data?.content} onSave={handleSave} />
+export default async function StarMapHomePage() {
+  const data = await getPageBySlug('home')
+  return <StarMapHomeClient data={data} />
 }
-
-export default HomePage

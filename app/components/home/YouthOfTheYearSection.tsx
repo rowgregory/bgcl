@@ -1,13 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import Picture from '../common/Picture'
 import { store } from '@/app/lib/store/store'
 import { setOpenVolunteerDrawer } from '@/app/lib/store/slices/appSlice'
 
-export default function YouthOfTheYearSection({ pageContent, youth }) {
+export default function YouthOfTheYearSection({ youth }) {
   return (
     <div className="dark:bg-neutral-950 bg-white">
       {/* Main Content */}
@@ -20,12 +19,12 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
             style={{ originX: 0 }}
           />
           <p className="text-xs sm:text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-wider">
-            {pageContent?.youth?.subheading}
+            Award Winner
           </p>
         </div>
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 mb-4 sm:mb-6">
-          {pageContent?.youth?.heading1}{' '}
-          <span className="font-light dark:text-neutral-400 text-neutral-600">{pageContent?.youth?.heading2}</span>
+          Meet
+          <span className="font-light dark:text-neutral-400 text-neutral-600">Divine</span>
         </h2>
 
         <motion.div
@@ -135,32 +134,6 @@ export default function YouthOfTheYearSection({ pageContent, youth }) {
               </div>
             </motion.div>
           </motion.div>
-        </motion.div>
-
-        {/* Related Stories Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="mt-12 sm:mt-16 md:mt-20 py-12 sm:py-16 border-t border-b dark:border-neutral-800 border-neutral-200"
-        >
-          <div className="space-y-6 sm:space-y-8">
-            <div>
-              <h3 className="text-xl sm:text-2xl font-black dark:text-white text-neutral-900 mb-2">
-                More Youth Stories
-              </h3>
-              <p className="dark:text-neutral-400 text-neutral-600 text-sm sm:text-base">
-                Discover other incredible young people in our community
-              </p>
-            </div>
-            <Link
-              href="/stories"
-              className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold rounded-lg transition-colors text-sm sm:text-base"
-            >
-              View All Stories
-              <ArrowLeft className="w-4 h-4 rotate-180" />
-            </Link>
-          </div>
         </motion.div>
       </div>
     </div>

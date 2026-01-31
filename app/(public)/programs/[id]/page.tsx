@@ -10,7 +10,9 @@ export default async function ProgramDetailsPage({ params }: { params: Promise<{
 
   const normalizedProgram: IProgram = {
     ...program,
-    descriptions: Array.isArray(program.descriptions) ? (program.descriptions as string[]) : []
+    ...(program?.descriptions && {
+      descriptions: Array.isArray(program?.descriptions) ? (program?.descriptions as string[]) : []
+    })
   }
 
   return <ProgramDetailsClient program={normalizedProgram} closings={closings} />

@@ -27,3 +27,11 @@ export interface IForm {
   handleSelectAgeGroup?: (value: string) => void
   themes?: { id?: string; title: string; dates: string; order: number; createdAt: Date; updatedAt: Date }[]
 }
+
+export interface PageField {
+  id: string // Unique identifier
+  section: string // Which section it belongs to (for grouping)
+  label: string // Display name
+  value: string | string[] // The actual content
+  type: 'text' | 'textarea' | 'url' | 'array' | 'boolean'
+}

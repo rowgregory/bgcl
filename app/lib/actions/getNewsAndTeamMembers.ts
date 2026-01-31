@@ -13,7 +13,7 @@ export const getNewsAndTeamMembers = async () => {
       prisma.teamMember.findMany({
         where: {
           role: {
-            in: ['honoree', 'helping', 'commitment', 'fame']
+            in: ['honoree', 'helping', 'commitment', 'fame', 'youth']
           }
         },
         orderBy: { order: 'asc' }
@@ -25,7 +25,8 @@ export const getNewsAndTeamMembers = async () => {
       honoree: allTeamMembers.filter((member) => member.role === 'honoree'),
       helping: allTeamMembers.filter((member) => member.role === 'helping'),
       commitment: allTeamMembers.filter((member) => member.role === 'commitment'),
-      fame: allTeamMembers.filter((member) => member.role === 'fame')
+      fame: allTeamMembers.filter((member) => member.role === 'fame'),
+      youth: allTeamMembers.filter((member) => member.role === 'youth')
     }
 
     return {

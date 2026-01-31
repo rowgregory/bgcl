@@ -21,6 +21,61 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.8.3',
+    date: '2026-01-30',
+    changes: [
+      {
+        type: 'improvement',
+        title: 'Page Content Data Structure Refactor',
+        description:
+          'Refactored page content management system with cleaner data structure and improved organization. Restructured content fields into consistent format with proper typing, better section grouping, and server-side processing for optimal performance. Migrated existing content to new structure across all pages.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Site-Wide Content Reorganization',
+        description:
+          'Restructured multiple page sections across homepage and about page based on client feedback. Reorganized content flow for improved storytelling and user engagement, including reordering of Mission, Programs, History, and other key sections.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Google Translate Reliability Enhancement',
+        description:
+          'Significantly improved language translation reliability with automatic retry mechanism, multiple event triggers, and fallback page reload. Translation now works consistently with visual loading indicators and prevents duplicate translation attempts.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Donation Toast Notification Redesign',
+        description:
+          'Redesigned live donation notifications to focus on community building rather than dollar amounts. Changed from monetary display to supporter recognition with heart icons and social proof messaging ("just became a supporter").',
+        impact: 'low'
+      },
+      {
+        type: 'improvement',
+        title: 'Top Bar Contact Information',
+        description:
+          'Enhanced top navigation bar with responsive display of organization contact details including phone number, physical address, and tax ID. Information progressively displays based on screen size for optimal mobile experience.',
+        impact: 'low'
+      },
+      {
+        type: 'fix',
+        title: 'Toast Notification Mobile Layout',
+        description:
+          'Fixed toast notifications to properly sit at the top edge on mobile devices, touching both sides of the screen for better visibility and user experience.',
+        impact: 'low'
+      },
+      {
+        type: 'fix',
+        title: 'Program Not Found Error Handling',
+        description:
+          'Added proper error handling for invalid program IDs to prevent application crashes. Implemented consistent return types and graceful 404 page display with dark/light mode support.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.8.2',
     date: '2026-01-30',
     changes: [

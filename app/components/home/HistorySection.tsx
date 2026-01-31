@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import Picture from '../common/Picture'
 
-export const HistorySection = ({ pageContent }) => {
+export const HistorySection = ({ history }) => {
   const historyImages = [
     {
       src: '/images/history-2.jpg',
@@ -38,7 +38,7 @@ export const HistorySection = ({ pageContent }) => {
   ]
 
   return (
-    <section className="dark:bg-neutral-950 bg-white py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12">
+    <section className="dark:bg-neutral-950 bg-white py-12 sm:py-16 md:py-20 lg:py-32">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -56,28 +56,28 @@ export const HistorySection = ({ pageContent }) => {
               style={{ originX: 0 }}
             />
             <p className="text-xs sm:text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-wider">
-              {pageContent?.history?.subheading}
+              {history?.subheading}
             </p>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 mb-4 sm:mb-6">
-            {pageContent?.history?.heading1}{' '}
-            <span className="font-light dark:text-neutral-400 text-neutral-600">{pageContent?.history?.heading2}</span>
+            {history?.heading1}{' '}
+            <span className="font-light dark:text-neutral-400 text-neutral-600">{history?.heading2}</span>
           </h2>
           <div className="space-y-3 sm:space-y-4 max-w-4xl">
             <p className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-              {pageContent?.history?.paragraph1}
+              {history?.paragraph1}
             </p>
 
             <p className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-              {pageContent?.history?.paragraph2}
+              {history?.paragraph2}
             </p>
 
             <p className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-              {pageContent?.history?.paragraph3}
+              {history?.paragraph3}
             </p>
 
             <p className="text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-              {pageContent?.history?.paragraph4}
+              {history?.paragraph4}
             </p>
           </div>
         </motion.div>
@@ -129,38 +129,26 @@ export const HistorySection = ({ pageContent }) => {
         >
           <motion.div className="text-center space-y-2" whileHover={{ scale: 1.05 }}>
             <p className="text-3xl sm:text-4xl md:text-5xl font-black dark:text-sky-500 text-sky-600">
-              {pageContent?.history?.statOne?.value1}
+              {history?.statOne_value1}
             </p>
-            <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm">
-              {pageContent?.history?.statOne?.value2}
-            </p>
-            <p className="dark:text-neutral-500 text-neutral-500 text-[10px] sm:text-xs">
-              {pageContent?.history?.statOne?.value3}
-            </p>
+            <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm">{history?.statOne_value2}</p>
+            <p className="dark:text-neutral-500 text-neutral-500 text-[10px] sm:text-xs">{history?.statOne_value3}</p>
           </motion.div>
 
           <motion.div className="text-center space-y-2" whileHover={{ scale: 1.05 }}>
             <p className="text-3xl sm:text-4xl md:text-5xl font-black dark:text-sky-500 text-sky-600">
-              {pageContent?.history?.statTwo?.value1}
+              {history?.statTwo_value1}
             </p>
-            <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm">
-              {pageContent?.history?.statTwo?.value2}
-            </p>
-            <p className="dark:text-neutral-500 text-neutral-500 text-[10px] sm:text-xs">
-              {pageContent?.history?.statTwo?.value3}
-            </p>
+            <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm">{history?.statTwo_value2}</p>
+            <p className="dark:text-neutral-500 text-neutral-500 text-[10px] sm:text-xs">{history?.statTwo_value3}</p>
           </motion.div>
 
           <motion.div className="text-center space-y-2" whileHover={{ scale: 1.05 }}>
             <p className="text-3xl sm:text-4xl md:text-5xl font-black dark:text-sky-500 text-sky-600">
-              {pageContent?.history?.statThree?.value1}
+              {history?.statThree_value1}
             </p>
-            <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm">
-              {pageContent?.history?.statThree?.value2}
-            </p>
-            <p className="dark:text-neutral-500 text-neutral-500 text-[10px] sm:text-xs">
-              {pageContent?.history?.statThree?.value3}
-            </p>
+            <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm">{history?.statThree_value2}</p>
+            <p className="dark:text-neutral-500 text-neutral-500 text-[10px] sm:text-xs">{history?.statThree_value3}</p>
           </motion.div>
         </motion.div>
       </div>

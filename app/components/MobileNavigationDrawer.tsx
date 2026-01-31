@@ -36,7 +36,7 @@ export default function MobileNavigationDrawer() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-110 xl:hidden"
+          className="fixed inset-0 z-120 2xl:hidden"
           onClick={handleClose}
         >
           {/* Backdrop */}

@@ -41,7 +41,7 @@ export default function RootLayoutWrapper({ children, programs, pageContent, don
             <VolunteerDrawer programs={programs} />
             <FloatingDonateButton />
             <CapitalCampaignTab />
-            <RegistrationModal pageContent={pageContent?.content} />
+            <RegistrationModal modal={pageContent?.sections?.modal} />
             <MobileNavigationDrawer />
             <WelcomeAnimation />
             {show && <Header />}
