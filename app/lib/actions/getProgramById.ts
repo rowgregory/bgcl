@@ -8,9 +8,6 @@ export const getProgramById = async (id: string) => {
     })
 
     if (!program) {
-      await createLog('warn', 'Program not found', {
-        programId: id
-      })
       return { program: null, error: null }
     }
 
