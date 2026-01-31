@@ -22,8 +22,8 @@ export default function MobileNavigationDrawer() {
     { label: 'PROGRAMS', href: '/programs' },
     { label: 'CAMPAIGNS', href: '/campaigns' },
     { label: 'EVENTS', href: '/events' },
-    { label: 'STORIES', href: '/stories' },
-    { label: 'HUB', href: '/hub' },
+    { label: 'AWARD WINNERS', href: '/award-winners' },
+    { label: 'LATEST NEWS', href: '/latest-news' },
     { label: 'GET INVOLVED', href: '/get-involved' },
     { label: 'CONTACT', href: '/contact' }
   ]
