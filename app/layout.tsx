@@ -109,7 +109,7 @@ export const metadata: Metadata = {
     canonical: 'https://bgcl.org'
   },
   verification: {
-    google: 'lf3euFdQqWv05f8h-Ht3ORlK0GghliyZJ4-CWWTrbKE'
+    google: 'gjjpmEq-XM8hniW-c8sPOJ6QNa8Pd84HA6nNrEw6H8M'
     // yandex: 'your-yandex-verification-code',
     // bing: 'your-bing-verification-code',
   },
