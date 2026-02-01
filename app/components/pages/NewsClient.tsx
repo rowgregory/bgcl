@@ -357,7 +357,7 @@ const NewsClient = ({ news }) => {
             <p className="text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl mx-auto">
               Explore all the latest news and announcements from the Boys & Girls Club of Lynn.
             </p>
-            <Link href="/news">
+            <Link href="/latest-news">
               <button className="px-8 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors">
                 View All News
               </button>
