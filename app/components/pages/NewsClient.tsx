@@ -169,7 +169,7 @@ const NewsClient = ({ news }) => {
               <h3 className="text-xl font-black dark:text-white text-neutral-900 mb-6">Related Articles</h3>
               <div className="space-y-4">
                 {relatedNews.map((article) => (
-                  <Link key={article?.id} href={`/stories/${article?.id}`}>
+                  <Link key={article?.id} href={`/latest-news/${article?.id}`}>
                     <div className="group cursor-pointer">
                       <h4 className="text-sm font-bold dark:text-white text-neutral-900 mb-2 line-clamp-2 group-hover:dark:text-sky-400 group-hover:text-sky-600 transition-colors">
                         {article?.title}
@@ -196,7 +196,7 @@ const NewsClient = ({ news }) => {
                   <h3 className="text-lg font-bold dark:text-white text-neutral-900">Stay Updated</h3>
                 </div>
                 <p className="text-sm dark:text-neutral-400 text-neutral-600 mb-4">
-                  Get the latest news and stories delivered to your inbox.
+                  Get the latest news delivered to your inbox.
                 </p>
 
                 {/* Error Banner */}
@@ -355,9 +355,9 @@ const NewsClient = ({ news }) => {
           >
             <h2 className="text-4xl font-black dark:text-white text-neutral-900">More News & Updates</h2>
             <p className="text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl mx-auto">
-              Explore all the latest news, announcements, and stories from the Boys & Girls Club of Lynn.
+              Explore all the latest news and announcements from the Boys & Girls Club of Lynn.
             </p>
-            <Link href="/stories">
+            <Link href="/news">
               <button className="px-8 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors">
                 View All News
               </button>
