@@ -83,7 +83,7 @@ export default function SavedCardsClient({ cards }) {
     <div className="min-h-screen bg-white dark:bg-neutral-950">
       {/* Compact Header */}
       <div className="px-6 md:px-8 lg:px-12 pb-4 pt-6 md:pt-8 dark:border-neutral-800 border-neutral-200 border-b">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="max-w-334 mx-auto flex items-center justify-between">
           <Link
             href="/supporter/overview"
             className="inline-flex items-center space-x-1 text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300 transition-colors text-sm font-semibold"
@@ -110,7 +110,7 @@ export default function SavedCardsClient({ cards }) {
       </div>
 
       <div className="px-4 py-12 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-334 mx-auto">
           {/* Header Section */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}

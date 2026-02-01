@@ -38,7 +38,7 @@ export const getPageBySlugClient = async (slug: string) => {
       error: null
     }
   } catch (error) {
-    await createLog('error', 'Failed to fetch page by slug', {
+    await createLog('error', 'Failed to fetch page by slug client', {
       error: error instanceof Error ? error.message : 'Unknown error',
       slug
     })

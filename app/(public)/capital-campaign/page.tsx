@@ -130,7 +130,7 @@ export default function CapitalCampaign() {
     <div className="min-h-screen dark:bg-neutral-950 bg-white">
       {/* Hero Section */}
       <section className="py-20 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-334 mx-auto">
           <motion.div
             className="space-y-6 mb-16"
             initial={{ opacity: 0, y: -20 }}
@@ -379,7 +379,7 @@ export default function CapitalCampaign() {
 
       {/* Renderings Gallery */}
       <section className="py-24 px-6 dark:bg-neutral-950 bg-white">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-334 mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

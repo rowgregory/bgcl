@@ -60,7 +60,7 @@ const JobApplicationPage = ({ application }) => {
     <div className="min-h-screen bg-white dark:bg-neutral-950">
       {/* Hero Section */}
       <div className="bg-linear-to-br from-sky-50 to-white dark:from-neutral-900 dark:to-neutral-950 border-b border-neutral-200 dark:border-neutral-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-334 mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-4">
             <h1 className="text-4xl font-bold text-neutral-900 dark:text-white">Application Submitted</h1>
             <p className="text-neutral-600 dark:text-neutral-400">
@@ -71,7 +71,7 @@ const JobApplicationPage = ({ application }) => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-334 mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Status */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="lg:col-span-1">

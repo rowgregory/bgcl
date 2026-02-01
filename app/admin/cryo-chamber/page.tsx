@@ -1,181 +1,173 @@
-"use client";
+'use client'
 
-import React from "react";
-import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  Calendar,
-  Database,
-  Fuel,
-  Package,
-  Star,
-} from "lucide-react";
-import Link from "next/link";
+import React from 'react'
+import { motion } from 'framer-motion'
+import { ArrowRight, Calendar, Database, Fuel, Package, Star } from 'lucide-react'
+import Link from 'next/link'
 
 export const getCryoChamberStatusBadge = (status: string) => {
   switch (status) {
-    case "not_purchased":
+    case 'not_purchased':
       return {
-        text: "Not Purchased",
-        color: "bg-gray-600/10 text-gray-300 border-gray-600/20",
-        description: "Development starts upon purchase.",
-      };
-    case "available":
+        text: 'Not Purchased',
+        color: 'bg-gray-600/10 text-gray-300 border-gray-600/20',
+        description: 'Development starts upon purchase.'
+      }
+    case 'available':
       return {
-        text: "Available Now",
-        color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-        description: "Ready to enable — no setup required.",
-      };
-    case "beta":
+        text: 'Available Now',
+        color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+        description: 'Ready to enable — no setup required.'
+      }
+    case 'beta':
       return {
-        text: "Private Beta",
-        color: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-        description: "Limited release for early adopters and testing.",
-      };
-    case "development":
+        text: 'Private Beta',
+        color: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+        description: 'Limited release for early adopters and testing.'
+      }
+    case 'development':
       return {
-        text: "Shipyard",
-        color: "bg-blue-600/20 text-blue-400 border-blue-600/30",
-        description:
-          "Purchased — currently being built. We'll notify the group when it's ready.",
-      };
-    case "active":
+        text: 'Shipyard',
+        color: 'bg-blue-600/20 text-blue-400 border-blue-600/30',
+        description: "Purchased — currently being built. We'll notify the group when it's ready."
+      }
+    case 'active':
       return {
-        text: "Hoisted",
-        color: "bg-emerald-600/20 text-emerald-400 border-emerald-600/30",
-        description: "Live and available for the group to use.",
-      };
+        text: 'Hoisted',
+        color: 'bg-emerald-600/20 text-emerald-400 border-emerald-600/30',
+        description: 'Live and available for the group to use.'
+      }
     default:
       return {
-        text: "Coming Soon",
-        color: "bg-gray-500/20 text-gray-400 border-gray-500/30",
-        description: "Planned but not available yet.",
-      };
+        text: 'Coming Soon',
+        color: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+        description: 'Planned but not available yet.'
+      }
   }
-};
+}
 
 const features = [
   {
-    id: "fuel-station",
-    name: "The Fuel Station",
-    tagline: "Donation Platform",
+    id: 'fuel-station',
+    name: 'The Fuel Station',
+    tagline: 'Donation Platform',
     description:
-      "The Fuel Station will replace the current GoHarness donation platform, which costs around $7,500 per year. This new system gives complete control over donation processing and donor management — without ongoing platform fees or outside dependencies.",
+      'The Fuel Station will replace the current GoHarness donation platform, which costs around $7,500 per year. This new system gives complete control over donation processing and donor management — without ongoing platform fees or outside dependencies.',
     icon: Fuel,
-    gradient: "from-indigo-950 via-slate-900 to-black",
-    accentColor: "cyan-400",
+    gradient: 'from-indigo-950 via-slate-900 to-black',
+    accentColor: 'cyan-400',
     capabilities: [
       {
-        title: "Full Donation Control",
-        desc: "Manage donations directly without third-party platforms",
+        title: 'Full Donation Control',
+        desc: 'Manage donations directly without third-party platforms'
       },
       {
-        title: "Donor Management",
-        desc: "Track and organize donor information efficiently",
+        title: 'Donor Management',
+        desc: 'Track and organize donor information efficiently'
       },
       {
-        title: "Custom Reporting",
-        desc: "Generate insights and reports tailored to your needs",
-      },
+        title: 'Custom Reporting',
+        desc: 'Generate insights and reports tailored to your needs'
+      }
     ],
-    status: "not_purchased",
-    linkKey: "/admin/fuel-station",
+    status: 'not_purchased',
+    linkKey: '/admin/fuel-station',
     pricing: {
       build: 3200,
-      monthly: 85,
-    },
+      monthly: 85
+    }
   },
   {
-    id: "capsule",
-    name: "The Capsule",
-    tagline: "Event Management Platform",
+    id: 'capsule',
+    name: 'The Capsule',
+    tagline: 'Event Management Platform',
     description:
-      "The Capsule streamlines event creation, registration, and attendee management. Handle ticket sales, capacity limits, and check-ins all in one place. Perfect for fundraisers, community events, camps, and programs.",
+      'The Capsule streamlines event creation, registration, and attendee management. Handle ticket sales, capacity limits, and check-ins all in one place. Perfect for fundraisers, community events, camps, and programs.',
     icon: Calendar,
-    gradient: "from-purple-950 via-indigo-900 to-black",
-    accentColor: "purple-400",
+    gradient: 'from-purple-950 via-indigo-900 to-black',
+    accentColor: 'purple-400',
     capabilities: [
       {
-        title: "Event Registration",
-        desc: "Online registration with payment processing and capacity management",
+        title: 'Event Registration',
+        desc: 'Online registration with payment processing and capacity management'
       },
       {
-        title: "Ticketing & Check-in",
-        desc: "Digital tickets with QR codes and real-time attendance tracking",
+        title: 'Ticketing & Check-in',
+        desc: 'Digital tickets with QR codes and real-time attendance tracking'
       },
       {
-        title: "Analytics Dashboard",
-        desc: "Track registrations, revenue, and attendance metrics",
-      },
+        title: 'Analytics Dashboard',
+        desc: 'Track registrations, revenue, and attendance metrics'
+      }
     ],
-    status: "not_purchased",
-    linkKey: "/admin/capsule/core",
+    status: 'not_purchased',
+    linkKey: '/admin/capsule/core',
     pricing: {
       build: 2800,
-      monthly: 75,
-    },
+      monthly: 75
+    }
   },
   {
-    id: "blackhole",
-    name: "The Blackhole",
-    tagline: "Legacy Data Migration",
+    id: 'blackhole',
+    name: 'The Blackhole',
+    tagline: 'Legacy Data Migration',
     description:
-      "The Blackhole pulls 13 years of historical data from legacy systems into your new platform. Import youth records, program history, donations, events, and more—ensuring nothing is lost in the transition to modern operations.",
+      'The Blackhole pulls 13 years of historical data from legacy systems into your new platform. Import youth records, program history, donations, events, and more—ensuring nothing is lost in the transition to modern operations.',
     icon: Database, // or Archive, HardDrive
-    gradient: "from-black via-purple-950 to-indigo-950",
-    accentColor: "purple-400",
+    gradient: 'from-black via-purple-950 to-indigo-950',
+    accentColor: 'purple-400',
     capabilities: [
       {
-        title: "Deep Archive Retrieval",
-        desc: "Import 13 years of youth profiles, program enrollments, and attendance records",
+        title: 'Deep Archive Retrieval',
+        desc: 'Import 13 years of youth profiles, program enrollments, and attendance records'
       },
       {
-        title: "Historical Preservation",
-        desc: "Maintain complete donation history, event archives, and transaction records",
+        title: 'Historical Preservation',
+        desc: 'Maintain complete donation history, event archives, and transaction records'
       },
       {
-        title: "Data Integrity Validation",
-        desc: "Automated verification and error checking during the migration process",
-      },
+        title: 'Data Integrity Validation',
+        desc: 'Automated verification and error checking during the migration process'
+      }
     ],
-    status: "not_purchased",
-    linkKey: "/admin/blackhole",
+    status: 'not_purchased',
+    linkKey: '/admin/blackhole',
     pricing: {
       build: 8500, // One-time migration project
-      monthly: 0, // No ongoing cost after migration complete
-    },
+      monthly: 0 // No ongoing cost after migration complete
+    }
   },
   {
-    id: "cargo-bay",
-    name: "The Cargo Bay",
-    tagline: "Instant Impact Store",
+    id: 'cargo-bay',
+    name: 'The Cargo Bay',
+    tagline: 'Instant Impact Store',
     description:
-      "The Cargo Bay lets you create tangible donation items that supporters can instantly purchase. Bundle specific needs into buyable packages—like 10 lunch boxes for $250 or 5 basketballs for $150. Turn abstract donations into concrete impact.",
+      'The Cargo Bay lets you create tangible donation items that supporters can instantly purchase. Bundle specific needs into buyable packages—like 10 lunch boxes for $250 or 5 basketballs for $150. Turn abstract donations into concrete impact.',
     icon: Package, // or ShoppingCart, Box
-    gradient: "from-cyan-950 via-blue-900 to-black",
-    accentColor: "cyan-400",
+    gradient: 'from-cyan-950 via-blue-900 to-black',
+    accentColor: 'cyan-400',
     capabilities: [
       {
-        title: "Impact Packages",
-        desc: "Create specific donation items with real-world outcomes (lunches, equipment, supplies)",
+        title: 'Impact Packages',
+        desc: 'Create specific donation items with real-world outcomes (lunches, equipment, supplies)'
       },
       {
-        title: "Instant Checkout",
-        desc: "One-click purchasing for donors who want immediate, tangible impact",
+        title: 'Instant Checkout',
+        desc: 'One-click purchasing for donors who want immediate, tangible impact'
       },
       {
-        title: "Inventory Tracking",
-        desc: "Monitor what's been funded and what's still needed in real-time",
-      },
+        title: 'Inventory Tracking',
+        desc: "Monitor what's been funded and what's still needed in real-time"
+      }
     ],
-    status: "not_purchased",
-    linkKey: "/admin/cargo-bay",
+    status: 'not_purchased',
+    linkKey: '/admin/cargo-bay',
     pricing: {
       build: 3500,
-      monthly: 50,
-    },
-  },
-];
+      monthly: 50
+    }
+  }
+]
 
 const CryoChamber = () => {
   return (
@@ -198,28 +190,24 @@ const CryoChamber = () => {
           >
             <div className="inline-flex items-center px-3 py-1.5 bg-white/5 border border-white/10 rounded-full mb-6">
               <Star className="w-4 h-4 text-indigo-500 mr-2" />
-              <span className="text-sm font-medium text-gray-300">
-                Squad Add Ons
-              </span>
+              <span className="text-sm font-medium text-gray-300">Squad Add Ons</span>
             </div>
 
-            <h1 className="text-4xl font-bold mb-4 text-white leading-tight">
-              Choose What We Unlock Together
-            </h1>
+            <h1 className="text-4xl font-bold mb-4 text-white leading-tight">Choose What We Unlock Together</h1>
 
             <p className="text-base text-white mb-0 leading-relaxed">
-              Below are features we can enable for our group. Review each one,
-              and confirm which tools we want to use going forward.
+              Below are features we can enable for our group. Review each one, and confirm which tools we want to use
+              going forward.
             </p>
           </motion.div>
         </div>
       </div>
       {/* Features Section */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20">
+      <div className="max-w-334 mx-auto px-6 lg:px-8 py-20">
         <div className="grid xl:grid-cols-3 gap-8">
           {features.map((feature, index) => {
-            const IconComponent = feature.icon;
-            const statusBadge = getCryoChamberStatusBadge(feature.status);
+            const IconComponent = feature.icon
+            const statusBadge = getCryoChamberStatusBadge(feature.status)
 
             return (
               <motion.div
@@ -241,27 +229,21 @@ const CryoChamber = () => {
                       >
                         <IconComponent className="w-6 h-6 text-white" />
                       </motion.div>
-                      <div
-                        className={`px-3 py-1 border rounded-full text-xs font-medium ${statusBadge.color}`}
-                      >
+                      <div className={`px-3 py-1 border rounded-full text-xs font-medium ${statusBadge.color}`}>
                         {statusBadge.text}
                       </div>
                     </div>
 
                     {/* Name + Tagline + Description */}
                     <div>
-                      <h2 className="text-2xl font-bold text-white mb-2">
-                        {feature.name}
-                      </h2>
+                      <h2 className="text-2xl font-bold text-white mb-2">{feature.name}</h2>
                       <p
                         className={`text-sm font-medium mb-3 uppercase tracking-wide`}
                         style={{ color: `var(--${feature.accentColor})` }} // Better approach than dynamic classes
                       >
                         {feature.tagline}
                       </p>
-                      <p className="text-gray-400 text-sm leading-relaxed mb-4">
-                        {feature.description}
-                      </p>
+                      <p className="text-gray-400 text-sm leading-relaxed mb-4">{feature.description}</p>
                     </div>
 
                     {/* Capabilities */}
@@ -277,16 +259,14 @@ const CryoChamber = () => {
                           <div
                             className={`w-2 h-2 rounded-full mt-2 shrink-0 transition-all group-hover:scale-150`}
                             style={{
-                              backgroundColor: `var(--${feature.accentColor})`,
+                              backgroundColor: `var(--${feature.accentColor})`
                             }}
                           />
                           <div>
                             <h4 className="font-semibold text-white text-xs group-hover:text-gray-200 transition-colors">
                               {capability.title}
                             </h4>
-                            <p className="text-gray-500 text-xs mt-1">
-                              {capability.desc}
-                            </p>
+                            <p className="text-gray-500 text-xs mt-1">{capability.desc}</p>
                           </div>
                         </motion.div>
                       ))}
@@ -297,26 +277,18 @@ const CryoChamber = () => {
                   <div className="space-y-4">
                     {/* Status Description */}
                     <div className="py-3 border-y border-white/10">
-                      <p className="text-xs text-gray-500">
-                        {statusBadge.description}
-                      </p>
+                      <p className="text-xs text-gray-500">{statusBadge.description}</p>
                     </div>
 
                     {/* Pricing with better visual hierarchy */}
                     <div className="bg-white/3 border border-white/10 rounded-lg p-4 space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-400">
-                          Initial Build
-                        </span>
-                        <span className="text-lg font-bold text-white">
-                          ${feature.pricing.build.toLocaleString()}
-                        </span>
+                        <span className="text-sm text-gray-400">Initial Build</span>
+                        <span className="text-lg font-bold text-white">${feature.pricing.build.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-400">Monthly</span>
-                        <span className="text-lg font-bold text-white">
-                          ${feature.pricing.monthly}
-                        </span>
+                        <span className="text-lg font-bold text-white">${feature.pricing.monthly}</span>
                       </div>
                     </div>
 
@@ -333,20 +305,18 @@ const CryoChamber = () => {
                         whileTap={{ scale: 0.98 }}
                         className={`w-full px-4 py-2.5 rounded-lg bg-linear-to-r ${feature.gradient} hover:shadow-xl text-sm font-medium text-white transition-all duration-200`}
                       >
-                        {feature.status === "not_purchased"
-                          ? `Purchase ${feature.name}`
-                          : `Manage ${feature.name}`}
+                        {feature.status === 'not_purchased' ? `Purchase ${feature.name}` : `Manage ${feature.name}`}
                       </motion.button>
                     </div>
                   </div>
                 </div>
               </motion.div>
-            );
+            )
           })}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CryoChamber;
+export default CryoChamber

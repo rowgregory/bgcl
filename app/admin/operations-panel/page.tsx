@@ -430,7 +430,7 @@ const OperationsPanel: React.FC = () => {
 
   return (
     <div className="min-h-screen dark:bg-neutral-950 bg-white p-4 md:p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-334 mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 const FacilityClosings = ({ closings }: { closings: IClosing[] }) => {
   return (
     <section className="dark:bg-neutral-900/50 bg-neutral-50 py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-334 mx-auto">
         <motion.div
           className="mb-8 sm:mb-12 text-center"
           initial={{ opacity: 0, y: 20 }}

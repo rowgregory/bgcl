@@ -41,7 +41,7 @@ export default function FacilitySection({ facility }) {
     <>
       {/* Main Content */}
       <div className="px-4 sm:px-6 py-8 sm:py-12 md:py-16">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-334 mx-auto">
           <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
             <motion.div
               className="h-px w-6 sm:w-8 dark:bg-sky-500 bg-sky-600"
@@ -85,7 +85,7 @@ export default function FacilitySection({ facility }) {
                   whileTap={{ scale: 0.98 }}
                   className="inline-block"
                 >
-                  <button className="w-full sm:w-auto bg-white dark:bg-neutral-800 border-2 border-sky-600 dark:border-sky-500 text-sky-600 dark:text-sky-400 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-base lg:text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-sky-50 dark:hover:bg-neutral-700">
+                  <button className="relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-linear-to-r from-sky-500 to-sky-600 text-white font-semibold rounded-2xl transition-all overflow-hidden h-15 cursor-pointer hover:from-sky-600 hover:to-sky-700 duration-300">
                     Schedule a Tour
                   </button>
                 </MotionLink>

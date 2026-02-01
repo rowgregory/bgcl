@@ -39,7 +39,7 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
   return (
     <div className="dark:bg-neutral-950 bg-white min-h-screen pb-28 md:pb-0">
       <div className="bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 py-3 sm:py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
+        <div className="max-w-334 mx-auto px-4 sm:px-6 md:px-12">
           <Link
             href="/programs"
             className="inline-flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-sky-600 dark:hover:text-sky-400 transition-colors text-sm sm:text-base font-medium"
@@ -65,7 +65,7 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
           />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 relative z-10">
+        <div className="max-w-334 mx-auto px-4 sm:px-6 md:px-12 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -80,7 +80,7 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20">
+      <div className="max-w-334 mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

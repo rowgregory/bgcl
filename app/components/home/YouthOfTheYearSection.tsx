@@ -10,7 +10,7 @@ export default function YouthOfTheYearSection({ youth }) {
   return (
     <div className="dark:bg-neutral-950 bg-white">
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
+      <div className="max-w-334 mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
         <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
           <motion.div
             className="h-px w-6 sm:w-8 dark:bg-sky-500 bg-sky-600"

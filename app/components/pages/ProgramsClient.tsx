@@ -11,7 +11,7 @@ import { IClubResource } from '@/types/entities/club-resource'
 const ProgramsClient = ({ programs, resources }: { programs: IProgram[]; resources: IClubResource[] }) => {
   return (
     <div className="py-12 sm:py-16 md:py-20">
-      <div className="max-w-7xl mx-auto space-y-12 sm:space-y-16 px-4 sm:px-6 md:px-12">
+      <div className="max-w-334 mx-auto space-y-12 sm:space-y-16 px-4 sm:px-6 md:px-12">
         {/* Header */}
         <motion.div
           className="space-y-4 sm:space-y-6"
@@ -118,7 +118,7 @@ const ProgramsClient = ({ programs, resources }: { programs: IProgram[]; resourc
 
       {/* Resources Section */}
       <section className="py-20 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-334 mx-auto">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}

@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { ITeamMember } from '@/types/entities/team-member'
 import { Mail, Phone } from 'lucide-react'
 import Picture from '../common/Picture'
+import SqyshCard from '../SqyshCard'
 
 const TabButton = ({
   active,
@@ -29,7 +30,7 @@ const TabButton = ({
 
 const TeamMemberCard = ({ member }: { member: ITeamMember }) => {
   const isStaffWithContact =
-    (member.role === 'program_staff' || member.role === 'admin_staff') && (member.email || member.phone)
+    member.role === 'program_staff' || member.role === 'admin_staff' || member.email || member.phone
 
   return (
     <motion.div
@@ -45,13 +46,15 @@ const TeamMemberCard = ({ member }: { member: ITeamMember }) => {
             src={member.image}
             alt={member.name}
             priority={true}
-            className="object-cover group-hover:scale-105 transition-transform duration-300 w-full h-full"
+            className="object-cover object-top group-hover:scale-105 transition-transform duration-300 w-full h-full"
           />
         </div>
       )}
 
       <div className={`p-4 grow flex flex-col ${isStaffWithContact ? 'justify-between' : ''}`}>
-        <h3 className="text-lg font-bold dark:text-white text-neutral-900">{member.name}</h3>
+        <h3 className={`text-lg font-bold dark:text-white text-neutral-900 ${member?.isSqysh ? 'sqysh-gradient' : ''}`}>
+          {member.name}
+        </h3>
         <p className="dark:text-sky-400 text-sky-600 font-semibold text-sm mt-1">{member.title}</p>
         <p className="dark:text-neutral-100 text-neutral-600 text-sm">{member.company}</p>
 
@@ -86,12 +89,14 @@ const TeamMemberCard = ({ member }: { member: ITeamMember }) => {
 export const TeamClient = ({ team }) => {
   const [activeTab, setActiveTab] = useState<'board' | 'staff'>('board')
   const [boardSubTab, setBoardSubTab] = useState<'officers' | 'directors' | 'corporators'>('officers')
-  const [staffSubTab, setStaffSubTab] = useState<'admin' | 'program' | 'maintenance'>('admin')
+  const [staffSubTab, setStaffSubTab] = useState<'admin' | 'program' | 'maintenance' | 'tech'>('admin')
+
+  console.log(team)
 
   return (
     <div className="dark:bg-neutral-950 bg-white">
       <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-334 mx-auto">
           <motion.div
             className="space-y-4 sm:space-y-6 mb-12 sm:mb-16"
             initial={{ opacity: 0, y: -20 }}
@@ -209,6 +214,9 @@ export const TeamClient = ({ team }) => {
                 <TabButton active={staffSubTab === 'maintenance'} onClick={() => setStaffSubTab('maintenance')}>
                   MAINTENANCE
                 </TabButton>
+                <TabButton active={staffSubTab === 'tech'} onClick={() => setStaffSubTab('tech')}>
+                  TECH
+                </TabButton>
               </div>
 
               <motion.div
@@ -251,6 +259,31 @@ export const TeamClient = ({ team }) => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                       {team?.staffMembers.maintenance.map((member) => (
                         <TeamMemberCard key={member.id} member={member} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {staffSubTab === 'tech' && (
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-black dark:text-white text-neutral-900 mb-8 sm:mb-12 uppercase">
+                      Tech
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                      {[
+                        {
+                          company: '',
+                          email: '',
+                          id: 'id-sqysh',
+                          image:
+                            'https://firebasestorage.googleapis.com/v0/b/boys-and-girls-club-of-l-a2ad0.firebasestorage.app/o/images%2Fsqysh.gif?alt=media&token=11846ff4-63a3-4bf8-9b49-c913daa4870a',
+                          name: '',
+                          phone: '',
+                          role: 'tech_staff',
+                          title: '',
+                          isSqysh: true
+                        }
+                      ].map((member) => (
+                        <SqyshCard key={member.id} member={member} />
                       ))}
                     </div>
                   </div>

@@ -99,7 +99,7 @@ const NewsClient = ({ news }) => {
 
   return (
     <div className="min-h-screen py-20 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-334 mx-auto">
         {/* Back Button */}
         <div className="mb-4">
           <Link
@@ -345,7 +345,7 @@ const NewsClient = ({ news }) => {
 
       {/* All News CTA */}
       <section className="dark:bg-neutral-900/50 bg-neutral-50 py-16 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-334 mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

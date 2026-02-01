@@ -20,7 +20,7 @@ export const AboutSection = ({
 }) => {
   return (
     <section className="dark:py-20 dark:md:py-40 py-20 md:py-40 dark:px-6 dark:md:px-12 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-334 mx-auto">
         <motion.div
           className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center"
           variants={containerVariants}

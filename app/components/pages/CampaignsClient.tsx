@@ -20,7 +20,7 @@ export default function CampaignsClient({ campaigns }: { campaigns: ICampaign[] 
 
   return (
     <div className="min-h-screen py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
-      <div className="max-w-7xl mx-auto space-y-12 sm:space-y-16">
+      <div className="max-w-334 mx-auto space-y-12 sm:space-y-16">
         {/* Header */}
         <motion.div
           className="space-y-4 sm:space-y-6"

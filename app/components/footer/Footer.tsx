@@ -56,7 +56,7 @@ export function Footer() {
 
   return (
     <footer className="px-6 md:px-12 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-t pb-40 md:pb-0">
-      <div className="max-w-7xl mx-auto py-12 md:py-16">
+      <div className="max-w-334 mx-auto py-12 md:py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Logo and Nonprofit Info */}
@@ -216,7 +216,7 @@ export function Footer() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-3 py-2.5 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:placeholder-neutral-600 dark:focus:ring-orange-500 bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:ring-orange-600 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-3 py-2.5 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:placeholder-neutral-600 dark:focus:ring-purple-500 bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:ring-purple-600 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
                 />
               </div>
 
@@ -235,7 +235,7 @@ export function Footer() {
                       className="sr-only peer"
                       onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
                     />
-                    <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-orange-600 dark:peer-checked:bg-orange-500 peer-checked:border-orange-600 dark:peer-checked:border-orange-500 transition-all" />
+                    <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-purple-600 dark:peer-checked:bg-purple-500 peer-checked:border-purple-600 dark:peer-checked:border-purple-500 transition-all" />
                     <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
                       Member/Parent
                     </span>
@@ -249,7 +249,7 @@ export function Footer() {
                       className="sr-only peer"
                       onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
                     />
-                    <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-orange-600 dark:peer-checked:bg-orange-500 peer-checked:border-orange-600 dark:peer-checked:border-orange-500 transition-all" />
+                    <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-purple-600 dark:peer-checked:bg-purple-500 peer-checked:border-purple-600 dark:peer-checked:border-purple-500 transition-all" />
                     <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
                       Non-Member
                     </span>
@@ -263,7 +263,7 @@ export function Footer() {
                       className="sr-only peer"
                       onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
                     />
-                    <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-orange-600 dark:peer-checked:bg-orange-500 peer-checked:border-orange-600 dark:peer-checked:border-orange-500 transition-all" />
+                    <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-purple-600 dark:peer-checked:bg-purple-500 peer-checked:border-purple-600 dark:peer-checked:border-purple-500 transition-all" />
                     <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
                       Donor
                     </span>
@@ -274,7 +274,7 @@ export function Footer() {
               {/* Subscribe Button */}
               <button
                 type="submit"
-                className="gap-x-2 flex items-center px-6 py-3 dark:bg-orange-600 dark:hover:bg-orange-700 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors whitespace-nowrap cursor-pointer"
+                className="gap-x-2 flex items-center relative justify-center gap-2 px-8 py-4 bg-linear-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-2xl transition-all overflow-hidden h-15 cursor-pointer hover:from-purple-600 hover:to-purple-700 duration-300"
               >
                 {isLoading && <div className="w-4 h-4 rounded-full border-2 border-white border-t-0 animate-spin" />}{' '}
                 Subscribe

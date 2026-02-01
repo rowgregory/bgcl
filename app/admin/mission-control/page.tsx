@@ -1,9 +1,11 @@
 'use client'
 
+import EmailTemplateCard from '@/app/components/admin/mission-control/EmailTemplateCard'
 import GoogleAnalyticsCard from '@/app/components/admin/mission-control/GoogleAnalyticsCard'
 import GoogleSearchConsoleCard from '@/app/components/admin/mission-control/GoogleSearchConsoleCard'
 import HotjarCard from '@/app/components/admin/mission-control/HotjarCard'
 import MetaPixelCard from '@/app/components/admin/mission-control/MetaPixelCard'
+import ParentPortalCard from '@/app/components/admin/mission-control/ParentPortalCard'
 import StripeCard from '@/app/components/admin/mission-control/StripeCard'
 import { containerVariants } from '@/app/lib/constants/motion'
 import { motion } from 'framer-motion'
@@ -24,6 +26,8 @@ const MissionControl = () => {
             <StripeCard />
             <MetaPixelCard />
             <HotjarCard />
+            <EmailTemplateCard />
+            <ParentPortalCard />
           </motion.div>
         </div>
       </div>

@@ -38,8 +38,8 @@ export const HistorySection = ({ history }) => {
   ]
 
   return (
-    <section className="dark:bg-neutral-950 bg-white py-12 sm:py-16 md:py-20 lg:py-32">
-      <div className="max-w-7xl mx-auto">
+    <section id="history" className="dark:bg-neutral-950 bg-white py-12 sm:py-16 md:py-20 lg:py-32">
+      <div className="max-w-334 mx-auto">
         {/* Header */}
         <motion.div
           className="mb-12 sm:mb-16"

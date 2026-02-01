@@ -37,7 +37,7 @@ export function CampaignClient({ campaign }: CampaignPageProps) {
       {/* Sticky Header */}
       <div className="sticky top-0 z-40 dark:bg-neutral-950/80 bg-white/80 backdrop-blur-sm dark:border-neutral-800 border-neutral-200 border-b">
         <div className="px-6 md:px-12 py-4">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="max-w-334 mx-auto flex items-center justify-between">
             <Link
               href="/campaigns"
               className="inline-flex items-center gap-2 dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-700 transition-colors font-semibold"
@@ -61,7 +61,7 @@ export function CampaignClient({ campaign }: CampaignPageProps) {
 
       {/* Main Grid Layout */}
       <div className="px-6 md:px-12 py-12">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="max-w-334 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Left Column - Description & Details */}
           <motion.div
             className="lg:col-span-2 space-y-8"

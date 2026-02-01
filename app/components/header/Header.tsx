@@ -34,7 +34,7 @@ export default function Header() {
       <div
         className={`${pathname === '/' ? 'max-w-334' : ''} w-full mx-auto dark:bg-neutral-900 dark:border-neutral-700 bg-neutral-50 border-neutral-200 border-b relative z-100 px-4 sm:px-6 lg:px-8 py-3`}
       >
-        <div className="max-w-7xl flex items-center justify-between mx-auto">
+        <div className="max-w-334 flex items-center justify-between mx-auto">
           <div className="flex items-center space-x-4 lg:space-x-6">
             <GoogleTranslate />
             <div className="hidden sm:flex items-center space-x-4 lg:space-x-6 dark:text-neutral-400 text-neutral-600 text-sm">
@@ -69,14 +69,14 @@ export default function Header() {
       </div>
 
       <motion.div
-        className={`${pathname === '/' ? 'max-w-334' : ''} w-full mx-auto sticky top-0 dark:border-neutral-700 dark:bg-neutral-950 border-neutral-200 bg-white z-50 px-4 sm:px-6 lg:px-8`}
+        className={`${pathname === '/' ? 'max-w-334' : ''} w-full mx-auto sticky top-0 dark:border-neutral-700 dark:bg-neutral-950 border-neutral-200 bg-white z-50 px-4 sm:px-6 lg:px-8 1xl:rounded-br-xl 1xl:rounded-bl-xl`}
         animate={{
           paddingTop: isAtTop ? '18px' : '10px',
           paddingBottom: isAtTop ? '10px' : '10px'
         }}
         transition={{ duration: 0.3 }}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="max-w-334 mx-auto flex items-center justify-between">
           {/* Burger Menu Button */}
           <button
             onClick={() => store.dispatch(setOpenMobileNavigation())}

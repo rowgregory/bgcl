@@ -81,7 +81,7 @@ export default function PrivacyPolicyPage() {
     <div className="min-h-screen bg-black">
       {/* Hero Section */}
       <div className="bg-zinc-900 border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-334 mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-4">
             <p className="text-blue-400 font-semibold text-sm uppercase tracking-wider">Legal</p>
             <h1 className="text-5xl font-bold text-white">Privacy Policy</h1>

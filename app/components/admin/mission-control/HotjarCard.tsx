@@ -27,9 +27,6 @@ export default function HotjarCard() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-lg bg-linear-to-br from-orange-500 to-red-600 flex items-center justify-center">
-            <Video className="w-6 h-6 text-white" />
-          </div>
           <div>
             <h3 className="text-lg font-semibold dark:text-white text-neutral-900">Hotjar</h3>
             <p className="text-sm dark:text-neutral-400 text-neutral-600">Heatmaps & Session Recordings</p>

@@ -14,7 +14,7 @@ const AwardWinnersClient = ({ newsAndTeamMembers }) => {
     <div className="dark:bg-neutral-950 bg-white">
       {/* Hero Section */}
       <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-334 mx-auto">
           <motion.div
             className="space-y-4 sm:space-y-6"
             initial={{ opacity: 0, y: -20 }}
@@ -39,7 +39,7 @@ const AwardWinnersClient = ({ newsAndTeamMembers }) => {
 
       {/* 2025 Honorees Section */}
       <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 dark:bg-neutral-900/50 bg-neutral-50">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-334 mx-auto">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -106,7 +106,7 @@ const AwardWinnersClient = ({ newsAndTeamMembers }) => {
 
       {/* Hall of Fame Section */}
       <section className="py-20 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-334 mx-auto">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -146,7 +146,7 @@ const AwardWinnersClient = ({ newsAndTeamMembers }) => {
 
       {/* Helping Hands Business of the Year Section */}
       <section className="py-20 px-6 md:px-12 dark:bg-neutral-900/50 bg-neutral-50">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-334 mx-auto">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -185,7 +185,7 @@ const AwardWinnersClient = ({ newsAndTeamMembers }) => {
 
       {/* Commitment to Youth Recipients Section */}
       <section className="py-20 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-334 mx-auto">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}

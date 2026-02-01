@@ -10,7 +10,7 @@ import Link from 'next/link'
 const MissionSection = ({ mission }) => {
   return (
     <section className="py-12 sm:py-16 md:py-20 dark:bg-neutral-950 bg-white">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-334 mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -48,14 +48,14 @@ const MissionSection = ({ mission }) => {
                   store.dispatch(setOpenVolunteerDrawer())
                   store.dispatch(setInputs({ formName: 'volunteerForm', data: { type: 'VOLUNTEER', subject: '' } }))
                 }}
-                className="cursor-pointer px-6 sm:px-8 py-3 sm:py-4 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-bold text-base sm:text-lg rounded-lg transition-colors shadow-lg hover:shadow-xl"
+                className="relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-linear-to-r from-sky-500 to-sky-600 text-white font-semibold rounded-2xl transition-all overflow-hidden h-15 cursor-pointer hover:from-sky-600 hover:to-sky-700 duration-300"
               >
                 {mission.button1Text}
               </button>
 
               <Link
                 href={mission.button2Link}
-                className="px-6 sm:px-8 py-3 sm:py-4 dark:bg-neutral-800 dark:hover:bg-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:text-white text-neutral-900 font-bold text-base sm:text-lg rounded-lg transition-colors border dark:border-neutral-600 border-neutral-300 flex items-center justify-center gap-2"
+                className="px-6 sm:px-8 py-3 sm:py-4 dark:bg-neutral-800 dark:hover:bg-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:text-white text-neutral-900 font-bold text-base sm:text-lg rounded-2xl transition-colors border dark:border-neutral-600 border-neutral-300 flex items-center justify-center gap-2"
               >
                 <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
                 {mission.button2Text}

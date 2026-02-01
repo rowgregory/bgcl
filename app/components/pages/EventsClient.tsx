@@ -84,7 +84,7 @@ const EventsClient = ({ events }) => {
     <div className="dark:bg-neutral-950 bg-white">
       {/* Hero Section */}
       <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-334 mx-auto">
           <motion.div
             className="space-y-4 sm:space-y-6"
             initial={{ opacity: 0, y: -20 }}
@@ -108,7 +108,7 @@ const EventsClient = ({ events }) => {
 
       <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
         {/* Events Grid */}
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-334 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {events?.map((event) => (
               <EventCard key={event.id} event={event} />

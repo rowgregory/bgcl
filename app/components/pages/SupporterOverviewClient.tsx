@@ -18,7 +18,7 @@ const SupporterOverviewClient = ({ data }) => {
       {/* Logo Section */}
       <div className="px-6 md:px-8 lg:px-12 pb-4 pt-6 md:pt-8 dark:border-neutral-800 border-neutral-200 border-b">
         {/* Logo */}
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="max-w-334 mx-auto flex items-center justify-between">
           <MotionLink href="/" className="flex space-x-3 w-28 h-auto">
             <Picture
               src="/images/vertical-logo-light.png"
@@ -51,7 +51,7 @@ const SupporterOverviewClient = ({ data }) => {
         </div>
       </div>
       <div className="p-6 md:p-8 lg:p-12 space-y-8">
-        <div className="max-w-7xl mx-auto space-y-8">
+        <div className="max-w-334 mx-auto space-y-8">
           {/* Header */}
           <motion.div
             className="space-y-6"

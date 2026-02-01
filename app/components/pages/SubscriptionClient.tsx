@@ -216,7 +216,7 @@ export default function SubscriptionClient({ data }: SubscriptionClientProps) {
   return (
     <div className="min-h-screen dark:bg-neutral-950 bg-white">
       <div className="p-6 md:p-8 lg:p-12 space-y-8">
-        <div className="max-w-7xl mx-auto space-y-8">
+        <div className="max-w-334 mx-auto space-y-8">
           {/* Header */}
           <motion.div
             className="space-y-6"

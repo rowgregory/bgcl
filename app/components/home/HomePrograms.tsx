@@ -6,16 +6,14 @@ import Picture from '../common/Picture'
 import Link from 'next/link'
 
 interface CarouselProps {
-  subheading?: string
-  heading1?: string
-  heading2?: string
-  items?: IProgram[]
+  programText?: any
+  programs?: IProgram[]
 }
 
-export const HomePrograms: React.FC<CarouselProps> = ({ subheading, heading1, heading2, items }) => {
+export const HomePrograms: React.FC<CarouselProps> = ({ programText, programs }) => {
   return (
     <section className="py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-334 mx-auto">
         {/* Header */}
         <motion.div
           className="mb-12 sm:mb-16"
@@ -27,11 +25,12 @@ export const HomePrograms: React.FC<CarouselProps> = ({ subheading, heading1, he
           <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
             <div className="h-px w-6 sm:w-8 dark:bg-sky-500 bg-sky-600" />
             <p className="text-xs sm:text-sm font-semibold dark:text-sky-400 text-sky-600 uppercase tracking-wider">
-              {subheading}
+              {programText?.subheading}
             </p>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900">
-            {heading1} <span className="font-light dark:text-neutral-400 text-neutral-600">{heading2}</span>
+            {programText?.heading1}{' '}
+            <span className="font-light dark:text-neutral-400 text-neutral-600">{programText?.heading2}</span>
           </h2>
         </motion.div>
 
@@ -43,7 +42,7 @@ export const HomePrograms: React.FC<CarouselProps> = ({ subheading, heading1, he
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          {items.map((program, index) => {
+          {programs?.map((program, index) => {
             const gradients = [
               'from-sky-500 to-blue-600',
               'from-purple-500 to-indigo-600',

@@ -32,30 +32,44 @@ export default function DonationNotification({ donations }) {
       'from-orange-500 to-orange-600'
     ]
 
-    const getRandomGradient = () => {
+    const getRandomGradient = (currentGradient: string) => {
       let next: string
       do {
         next = gradients[Math.floor(Math.random() * gradients.length)]
-      } while (next === gradient)
+      } while (next === currentGradient)
       return next
     }
 
     setCurrentDonation(donations[0])
     setIsVisible(true)
     indexRef.current = 0
+    let currentGradient = gradient
 
-    const runCycle = () => {
+    const runCycle = (index: number) => {
+      // If we've shown all donations, stop
+      if (index >= donations.length) {
+        return
+      }
+
       // Hide after 5 seconds
       const hideTimer = setTimeout(() => {
         setIsVisible(false)
 
         // Wait 15 seconds, then show next donation
         const showTimer = setTimeout(() => {
-          indexRef.current = (indexRef.current + 1) % donations.length
-          setCurrentDonation(donations[indexRef.current])
+          const nextIndex = index + 1
 
-          setGradient(getRandomGradient())
-          setIsVisible(true)
+          // Only continue if there are more donations to show
+          if (nextIndex < donations.length) {
+            indexRef.current = nextIndex
+            setCurrentDonation(donations[nextIndex])
+            currentGradient = getRandomGradient(currentGradient)
+            setGradient(currentGradient)
+            setIsVisible(true)
+
+            // Recursively call for the next donation
+            runCycle(nextIndex)
+          }
         }, 15000)
 
         timersRef.current.push(showTimer)
@@ -64,13 +78,14 @@ export default function DonationNotification({ donations }) {
       timersRef.current.push(hideTimer)
     }
 
-    runCycle()
+    runCycle(0)
 
     return () => {
       timersRef.current.forEach((timer) => clearTimeout(timer))
       timersRef.current = []
     }
-  }, [donations, gradient])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [donations])
 
   if (['/admin/', '/program/', '/supporter'].some((link) => pathname.includes(link))) return null
 

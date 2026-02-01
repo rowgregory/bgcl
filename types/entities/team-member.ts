@@ -10,6 +10,7 @@ export interface ITeamMember {
   order?: number
   year?: number | null
   company?: string
+  isSqysh?: boolean
   paragraph1?: string | null
   paragraph2?: string | null
   paragraph3?: string | null

@@ -1,6 +1,5 @@
 'use client'
 
-import { Share2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export default function MetaPixelCard() {
@@ -22,9 +21,6 @@ export default function MetaPixelCard() {
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-linear-to-br from-pink-500 to-blue-600 flex items-center justify-center opacity-50">
-              <Share2 className="w-6 h-6 text-white" />
-            </div>
             <div>
               <h3 className="text-lg font-semibold text-neutral-900 dark:text-white opacity-50">Meta Pixel</h3>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 opacity-50">

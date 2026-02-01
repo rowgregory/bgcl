@@ -6,6 +6,11 @@ import { RightPanel } from '../admin/star-map/RightPanel'
 export function Field({ field, onChange }: { field: PageField | any; onChange: (value: string | string[]) => void }) {
   const [isEditing, setIsEditing] = useState(false)
 
+  // Hide modal_toggleModal field entirely
+  if (field.id === 'modal_toggleModal') {
+    return null
+  }
+
   if (field.type === 'array' && Array.isArray(field.value)) {
     return (
       <div className="mb-4">
