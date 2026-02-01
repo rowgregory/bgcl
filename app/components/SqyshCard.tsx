@@ -244,7 +244,7 @@ export default function SqyshCard({ member }: SqyshCardProps) {
                       <ActionButton
                         onClick={() => handleYes()}
                         title="Yes"
-                        description={`You want your site to be sqysh'd`}
+                        description={`Yes, I want my site to be sqysh'd`}
                         dotColor="bg-teal-500"
                       />
                       <ActionButton
