@@ -61,10 +61,6 @@ export default function ParentPortalCard() {
           </div>
           <div className="flex items-start gap-2 text-xs text-neutral-500 dark:text-neutral-500">
             <div className="w-1.5 h-1.5 rounded-full bg-neutral-400 dark:bg-neutral-600 mt-1 shrink-0"></div>
-            <span className="">Event registration and payments</span>
-          </div>
-          <div className="flex items-start gap-2 text-xs text-neutral-500 dark:text-neutral-500">
-            <div className="w-1.5 h-1.5 rounded-full bg-neutral-400 dark:bg-neutral-600 mt-1 shrink-0"></div>
             <span className="">Direct messaging with staff</span>
           </div>
         </div>
