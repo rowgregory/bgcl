@@ -21,6 +21,19 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.8.5',
+    date: '2026-02-03',
+    changes: [
+      {
+        type: 'ui',
+        title: 'Social Media Integration',
+        description:
+          'Added Facebook, Instagram, and YouTube social media icons to the footer with hover effects and dark mode support',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.8.4',
     date: '2026-01-31',
     changes: [

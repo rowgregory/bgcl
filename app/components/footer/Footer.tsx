@@ -10,6 +10,7 @@ import { store, useFormSelector } from '@/app/lib/store/store'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { useRouter } from 'next/navigation'
 import { setIsLoading } from '@/app/lib/store/slices/formSlice'
+import { FacebookIcon, InstagramIcon, YouTubeIcon } from '../ui/icons/SocialIconts'
 
 export function Footer() {
   const router = useRouter()
@@ -88,10 +89,44 @@ export function Footer() {
               <p className="text-sm text-neutral-500 dark:text-neutral-500 font-mono">Tax ID: 04-2103924</p>
             </div>
 
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-md">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-md mb-6">
               To inspire and enable all young people, especially those that need us the most, to realize their full
               potential as productive responsible and caring citizens.
             </p>
+
+            {/* Social Media Icons */}
+            <motion.div
+              className="flex items-center gap-4"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              <Link
+                href="https://www.facebook.com/LynnBoysAndGirlsClub"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-neutral-400 dark:text-neutral-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
+              >
+                <FacebookIcon />
+              </Link>
+              <Link
+                href="https://instagram.com/bgclynn"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-neutral-400 dark:text-neutral-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
+              >
+                <InstagramIcon />
+              </Link>
+              <Link
+                href="https://www.youtube.com/@bgclynn6169"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-neutral-400 dark:text-neutral-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
+              >
+                <YouTubeIcon />
+              </Link>
+            </motion.div>
           </div>
 
           {/* Quick Links */}
