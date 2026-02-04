@@ -21,6 +21,26 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.8.6',
+    date: '2026-02-04',
+    changes: [
+      {
+        type: 'ui',
+        title: 'Failed Payment Status Styling',
+        description:
+          'Added visual indicators for failed one-time donation payments with red warning badges, error states, and clear status messaging to help administrators quickly identify and resolve payment issues.',
+        impact: 'high'
+      },
+      {
+        type: 'ui',
+        title: 'LinkedIn Social Media Integration',
+        description:
+          'Replaced YouTube social media icon with LinkedIn in the footer to better reflect professional networking presence. Maintained consistent hover effects and dark mode support across all social icons.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.8.5',
     date: '2026-02-03',
     changes: [

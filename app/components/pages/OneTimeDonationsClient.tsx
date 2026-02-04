@@ -2,7 +2,18 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { DollarSign, Search, User, Mail, Calendar, CreditCard, Check } from 'lucide-react'
+import {
+  DollarSign,
+  Search,
+  User,
+  Mail,
+  Calendar,
+  CreditCard,
+  Check,
+  AlertCircle,
+  XCircle,
+  RefreshCw
+} from 'lucide-react'
 import { store } from '@/app/lib/store/store'
 import { setOpenDonationDrawer } from '@/app/lib/store/slices/dashboardSlice'
 
@@ -111,23 +122,44 @@ export default function OneTimeDonationsClient({ oneTimeDonations }: { oneTimeDo
               {/* List Items */}
               {filteredDonations.map((donation) => (
                 <motion.div
-                  key={donation.id}
-                  onClick={() => store.dispatch(setOpenDonationDrawer(donation))}
                   variants={{
                     hidden: { opacity: 0, y: 20 },
                     visible: { opacity: 1, y: 0 }
                   }}
-                  whileHover={{ scale: 1.01 }}
-                  className="bg-white dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 rounded-lg hover:border-neutral-300 dark:hover:border-neutral-700 transition-all p-4 lg:px-6 lg:py-4"
+                  onClick={() => store.dispatch(setOpenDonationDrawer(donation))}
+                  key={donation.id}
+                  className={`bg-white dark:bg-neutral-900/50 border rounded-lg transition-all p-4 lg:px-6 lg:py-4 ${
+                    donation.status === 'FAILED'
+                      ? 'border-red-200 dark:border-red-800/50 hover:border-red-300 dark:hover:border-red-700 opacity-75'
+                      : donation.status === 'CANCELLED'
+                        ? 'border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-600 opacity-60'
+                        : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'
+                  }`}
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 lg:items-center">
                     {/* Amount - Full width mobile, col-span-2 desktop */}
                     <div className="lg:col-span-2 flex items-center justify-between lg:justify-start">
-                      <span className="text-2xl lg:text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                        {formatCurrency(donation.totalAmount * 100)}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`text-2xl lg:text-lg font-bold ${
+                            donation.status === 'FAILED'
+                              ? 'text-red-600 dark:text-red-400'
+                              : donation.status === 'CANCELLED'
+                                ? 'text-neutral-500 dark:text-neutral-400 line-through'
+                                : 'text-emerald-600 dark:text-emerald-400'
+                          }`}
+                        >
+                          {formatCurrency(donation.totalAmount * 100)}
+                        </span>
+                        {donation.status === 'FAILED' && (
+                          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 lg:hidden" />
+                        )}
+                        {donation.status === 'CANCELLED' && (
+                          <XCircle className="w-5 h-5 text-neutral-500 dark:text-neutral-400 lg:hidden" />
+                        )}
+                      </div>
                       {/* Fees indicator - shown inline on mobile */}
-                      {donation.coverFees && (
+                      {donation.coverFees && donation.status !== 'FAILED' && donation.status !== 'CANCELLED' && (
                         <div className="flex items-center gap-1 lg:hidden">
                           <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                           <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
@@ -141,19 +173,30 @@ export default function OneTimeDonationsClient({ oneTimeDonations }: { oneTimeDo
                     <div className="lg:col-span-2">
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4 text-neutral-400 shrink-0" />
-                        <span className="text-sm font-medium text-neutral-900 dark:text-white truncate">
+                        <span
+                          className={`text-sm font-medium truncate ${
+                            donation.status === 'FAILED' || donation.status === 'CANCELLED'
+                              ? 'text-neutral-500 dark:text-neutral-500'
+                              : 'text-neutral-900 dark:text-white'
+                          }`}
+                        >
                           {donation.customerName}
                         </span>
                       </div>
                     </div>
 
-                    {/* Email - Full width mobile, col-span-3 desktop */}
-                    <div className="lg:col-span-3">
+                    {/* Email - Full width mobile, col-span-2 desktop */}
+                    <div className="lg:col-span-2">
                       <div className="flex items-center gap-2">
                         <Mail className="w-4 h-4 text-neutral-400 shrink-0" />
+
                         <a
                           href={`mailto:${donation.customerEmail}`}
-                          className="text-sm text-blue-600 dark:text-blue-400 hover:underline truncate"
+                          className={`text-sm hover:underline truncate ${
+                            donation.status === 'FAILED' || donation.status === 'CANCELLED'
+                              ? 'text-neutral-500 dark:text-neutral-500'
+                              : 'text-blue-600 dark:text-blue-400'
+                          }`}
                         >
                           {donation.customerEmail}
                         </a>
@@ -164,15 +207,35 @@ export default function OneTimeDonationsClient({ oneTimeDonations }: { oneTimeDo
                     <div className="lg:col-span-2">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-neutral-400 shrink-0" />
-                        <span className="text-sm text-neutral-900 dark:text-white">
+                        <span
+                          className={`text-sm ${
+                            donation.status === 'FAILED' || donation.status === 'CANCELLED'
+                              ? 'text-neutral-500 dark:text-neutral-500'
+                              : 'text-neutral-900 dark:text-white'
+                          }`}
+                        >
                           {formatDate(donation.createdAt)}
                         </span>
                       </div>
                     </div>
 
-                    {/* Payment ID - Full width mobile, col-span-2 desktop */}
-                    <div className="lg:col-span-2">
-                      {donation.paymentMethodId ? (
+                    {/* Payment ID, Status Badge, or Subscription Badge - Full width mobile, col-span-2 desktop */}
+                    <div className="lg:col-span-3">
+                      {donation.status === 'FAILED' ? (
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0 hidden lg:block" />
+                          <span className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase">
+                            Payment Failed
+                          </span>
+                        </div>
+                      ) : donation.status === 'CANCELLED' ? (
+                        <div className="flex items-center gap-2">
+                          <XCircle className="w-4 h-4 text-neutral-500 dark:text-neutral-400 shrink-0 hidden lg:block" />
+                          <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase">
+                            Cancelled
+                          </span>
+                        </div>
+                      ) : donation.paymentMethodId ? (
                         <div className="flex items-center gap-2">
                           <CreditCard className="w-4 h-4 text-neutral-400 shrink-0" />
                           <span className="text-xs font-mono text-neutral-600 dark:text-neutral-400 truncate">
@@ -186,7 +249,9 @@ export default function OneTimeDonationsClient({ oneTimeDonations }: { oneTimeDo
 
                     {/* Fees - Hidden on mobile (shown inline with amount), col-span-1 desktop */}
                     <div className="hidden lg:block lg:col-span-1">
-                      {donation.coverFees ? (
+                      {donation.status === 'FAILED' || donation.status === 'CANCELLED' ? (
+                        <span className="text-xs text-neutral-400">—</span>
+                      ) : donation.coverFees ? (
                         <div className="flex items-center gap-1.5">
                           <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                           <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
