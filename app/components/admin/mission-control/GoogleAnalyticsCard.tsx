@@ -11,18 +11,10 @@ interface AnalyticsCredentials {
   gcpUrl: string
 }
 
-export default function GoogleAnalyticsCard() {
+export default function GoogleAnalyticsCard({ credentials }: { credentials: AnalyticsCredentials }) {
   const [showPassword, setShowPassword] = useState(false)
   const [copiedEmail, setCopiedEmail] = useState(false)
   const [copiedPassword, setCopiedPassword] = useState(false)
-
-  const credentials: AnalyticsCredentials = {
-    analyticsId: 'G-XXXXXXXXXX',
-    email: 'dev.bgc.lynn@gmail.com',
-    password: process.env.NEXT_PUBLIC_GOOGLE_ANALYRICS_PASSWORD,
-    gcpUrl:
-      'https://analytics.google.com/analytics/web/#/a337968536p518966189/reports/intelligenthome?params=_u..nav%3Dmaui'
-  }
 
   const handleCopy = async (text: string, type: 'email' | 'password') => {
     await navigator.clipboard.writeText(text)

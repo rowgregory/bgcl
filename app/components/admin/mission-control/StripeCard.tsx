@@ -11,17 +11,10 @@ interface StripeCredentials {
   dashboardUrl: string
 }
 
-export default function StripeCard() {
+export default function StripeCard({ credentials }: { credentials: StripeCredentials }) {
   const [showPassword, setShowPassword] = useState(false)
   const [copiedEmail, setCopiedEmail] = useState(false)
   const [copiedPassword, setCopiedPassword] = useState(false)
-
-  const credentials: StripeCredentials = {
-    accountId: 'acct_XXXXXXXXXX',
-    email: 'dev.bgc.lynn@gmail.com',
-    password: process.env.NEXT_PUBLIC_STRIPE_PASSWORD,
-    dashboardUrl: 'https://dashboard.stripe.com'
-  }
 
   const handleCopy = async (text: string, type: 'email' | 'password') => {
     await navigator.clipboard.writeText(text)
