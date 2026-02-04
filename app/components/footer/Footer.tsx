@@ -10,7 +10,7 @@ import { store, useFormSelector } from '@/app/lib/store/store'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { useRouter } from 'next/navigation'
 import { setIsLoading } from '@/app/lib/store/slices/formSlice'
-import { FacebookIcon, InstagramIcon, YouTubeIcon } from '../ui/icons/SocialIconts'
+import { FacebookIcon, InstagramIcon, LinkedInIcon, YouTubeIcon } from '../ui/icons/SocialIconts'
 
 export function Footer() {
   const router = useRouter()
@@ -124,7 +124,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="text-neutral-400 dark:text-neutral-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
               >
-                <YouTubeIcon />
+                <LinkedInIcon />
               </Link>
             </motion.div>
           </div>
