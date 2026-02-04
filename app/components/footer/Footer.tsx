@@ -119,7 +119,7 @@ export function Footer() {
                 <InstagramIcon />
               </Link>
               <Link
-                href="https://www.youtube.com/@bgclynn6169"
+                href="https://www.linkedin.com/company/boys-girls-club-of-lynn"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-neutral-400 dark:text-neutral-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
