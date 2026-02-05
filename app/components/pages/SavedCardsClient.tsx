@@ -38,10 +38,14 @@ export default function SavedCardsClient({ cards }) {
   const handleDelete = async (cardId: string) => {
     setDeleting(true)
     try {
-      await deletePaymentMethod(cardId)
-      setDeleteId(null)
-      router.refresh()
-      store.dispatch(showToast({ message: 'Payment method successfully deleted!' }))
+      const res = await deletePaymentMethod(cardId)
+      if (res.error) {
+        store.dispatch(showToast({ message: res.error, type: 'error' }))
+      } else {
+        store.dispatch(showToast({ message: 'Payment method successfully deleted!' }))
+        setDeleteId(null)
+        router.refresh()
+      }
     } catch (error) {
       store.dispatch(showToast({ message: 'Failed to delete payment method', type: 'error' }))
     } finally {
@@ -205,7 +209,7 @@ export default function SavedCardsClient({ cards }) {
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-2 pt-4 relative">
+                      <div className="flex items-center gap-2 pt-4 relative justify-end">
                         {/* Default Badge */}
                         {card.isDefault && (
                           <motion.div
@@ -244,17 +248,15 @@ export default function SavedCardsClient({ cards }) {
                         )}
 
                         {/* Delete Button */}
-                        {!card.isDefault && (
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => setDeleteId(card.id)}
-                            className="p-2.5 text-neutral-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all"
-                            title="Delete card"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </motion.button>
-                        )}
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setDeleteId(card.id)}
+                          className="p-2.5 text-neutral-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all"
+                          title="Delete card"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </motion.button>
                       </div>
                     </div>
                   </div>

@@ -152,7 +152,6 @@ export default function GoogleTranslate() {
 
       if (newLang !== langCode && attempt < 3) {
         // Translation didn't work, retry
-        console.log(`Translation attempt ${attempt + 1} failed, retrying...`)
         await new Promise((resolve) => setTimeout(resolve, 500))
         return attemptTranslation(attempt + 1)
       }

@@ -79,29 +79,34 @@ export async function createSubscriptionWithSavedCard({
     })
 
     // Create subscription with the saved payment method
-    const subscription = await stripe.subscriptions.create({
-      customer: customerId,
-      items: [{ price: price.id }],
-      default_payment_method: savedCardId,
-      payment_settings: {
-        save_default_payment_method: 'on_subscription'
+    const subscription = await stripe.subscriptions.create(
+      {
+        customer: customerId,
+        items: [{ price: price.id }],
+        default_payment_method: savedCardId,
+        payment_settings: {
+          save_default_payment_method: 'on_subscription'
+        },
+        metadata: {
+          userId: userId || 'guest',
+          email: email || '',
+          name: name || '',
+          frequency,
+          coverFees: coverFees ? 'true' : 'false',
+          feesCovered: feesCovered?.toString() || '0',
+          address: address || '',
+          city: city || '',
+          state: state || '',
+          zipCode: zipCode || '',
+          country: country || '',
+          notes: notes || '',
+          campaignId: campaignId || ''
+        }
       },
-      metadata: {
-        userId: userId || 'guest',
-        email: email || '',
-        name: name || '',
-        frequency,
-        coverFees: coverFees ? 'true' : 'false',
-        feesCovered: feesCovered?.toString() || '0',
-        address: address || '',
-        city: city || '',
-        state: state || '',
-        zipCode: zipCode || '',
-        country: country || '',
-        notes: notes || '',
-        campaignId: campaignId || ''
+      {
+        idempotencyKey: `sub_${customerId}_${campaignId || 'general'}_${Date.now()}`
       }
-    })
+    )
 
     return {
       success: true,

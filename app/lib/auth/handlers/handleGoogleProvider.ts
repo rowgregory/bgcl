@@ -37,9 +37,11 @@ export async function handleGoogleProvider(user: User, account: Account, profile
 }
 
 async function linkGoogleAccount(existingUser: any, account: Account) {
-  const hasGoogleAccount = existingUser.accounts.some(
-    (acc: any) => acc.provider === 'google' && acc.providerAccountId === account.providerAccountId
-  )
+  // Handle case where accounts might not be loaded (new user)
+  const hasGoogleAccount =
+    existingUser.accounts?.some(
+      (acc: any) => acc.provider === 'google' && acc.providerAccountId === account.providerAccountId
+    ) || false
 
   if (!hasGoogleAccount) {
     await prisma.account.create({

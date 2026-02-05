@@ -91,8 +91,6 @@ export const TeamClient = ({ team }) => {
   const [boardSubTab, setBoardSubTab] = useState<'officers' | 'directors' | 'corporators'>('officers')
   const [staffSubTab, setStaffSubTab] = useState<'admin' | 'program' | 'maintenance' | 'tech'>('admin')
 
-  console.log(team)
-
   return (
     <div className="dark:bg-neutral-950 bg-white">
       <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">

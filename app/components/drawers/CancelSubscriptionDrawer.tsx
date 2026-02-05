@@ -67,6 +67,8 @@ export default function CancelSubscriptionDrawer() {
       store.dispatch(showToast({ message: 'Successfully canceled subscription' }))
     } catch {
       store.dispatch(showToast({ message: 'Failed to cancel subscription', type: 'error' }))
+    } finally {
+      store.dispatch(setIsLoading(false))
     }
   }
 

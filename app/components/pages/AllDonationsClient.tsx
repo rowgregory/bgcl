@@ -51,7 +51,11 @@ export default function AllDonationsClient({ donations }: { donations: any }) {
     return matchesSearch
   })
 
-  const totalDonations = donations.reduce((sum, d) => sum + d.totalAmount * 100, 0)
+  const donationsLength = donations?.filter((donation) => donation.paymentMethodId != null)?.length
+
+  const totalDonations = donations
+    ?.filter((donation) => donation.paymentMethodId != null)
+    ?.reduce((sum, d) => sum + d.totalAmount * 100, 0)
 
   return (
     <div className="h-screen bg-white dark:bg-neutral-950 flex flex-col">
@@ -63,7 +67,7 @@ export default function AllDonationsClient({ donations }: { donations: any }) {
             <div className="flex gap-6">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-neutral-500 dark:text-neutral-400">Total Donations:</span>
-                <span className="text-sm font-semibold text-neutral-900 dark:text-white">{donations.length}</span>
+                <span className="text-sm font-semibold text-neutral-900 dark:text-white">{donationsLength}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-neutral-500 dark:text-neutral-400">Total Amount:</span>

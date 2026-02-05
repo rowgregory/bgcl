@@ -1,41 +1,26 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { IHero } from "@/types/entities/hero";
+import React, { useState } from 'react'
+import { motion } from 'framer-motion'
+import { IHero } from '@/types/entities/hero'
 
 const FloatingButton = ({ hero }: { hero: IHero }) => {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isHovered, setIsHovered] = useState(false)
 
   const positionClasses = {
-    "top-left": "top-8 left-8",
-    "top-right": "top-8 right-8",
-    "bottom-left": "bottom-8 left-8",
-    "bottom-right": "bottom-8 right-8",
-  };
+    'top-left': 'top-8 left-8',
+    'top-right': 'top-8 right-8',
+    'bottom-left': 'bottom-8 left-8',
+    'bottom-right': 'bottom-8 right-8'
+  }
 
   const icons = {
     none: null,
     arrow: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M14 5l7 7m0 0l-7 7m7-7H3"
-        />
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
       </svg>
     ),
     phone: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -45,12 +30,7 @@ const FloatingButton = ({ hero }: { hero: IHero }) => {
       </svg>
     ),
     email: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -60,12 +40,7 @@ const FloatingButton = ({ hero }: { hero: IHero }) => {
       </svg>
     ),
     chat: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -75,12 +50,7 @@ const FloatingButton = ({ hero }: { hero: IHero }) => {
       </svg>
     ),
     info: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -90,12 +60,7 @@ const FloatingButton = ({ hero }: { hero: IHero }) => {
       </svg>
     ),
     help: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -103,78 +68,77 @@ const FloatingButton = ({ hero }: { hero: IHero }) => {
           d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
         />
       </svg>
-    ),
-  };
+    )
+  }
 
   const handleClick = () => {
-    if (hero.floatingButtonAction === "modal") {
-      alert("Modal would open here");
-    } else if (hero.floatingButtonAction === "drawer") {
-      alert("Drawer would slide in here");
-    } else if (hero.floatingButtonAction === "internal") {
-      console.log("Navigate to:", hero.floatingButtonLink);
-    } else if (hero.floatingButtonAction === "external") {
-      window.open(hero.floatingButtonLink, "_blank");
+    if (hero.floatingButtonAction === 'modal') {
+      alert('Modal would open here')
+    } else if (hero.floatingButtonAction === 'drawer') {
+      alert('Drawer would slide in here')
+    } else if (hero.floatingButtonAction === 'internal') {
+    } else if (hero.floatingButtonAction === 'external') {
+      window.open(hero.floatingButtonLink, '_blank')
     }
-  };
+  }
 
   // Get animation based on type
   const getAnimation = () => {
-    const base = { opacity: 1, scale: 1 };
+    const base = { opacity: 1, scale: 1 }
 
     switch (hero.floatingButtonAnimation) {
-      case "pulse":
-        return { ...base, scale: [1, 1.05, 1] };
-      case "bounce":
-        return { ...base, y: [0, -10, 0] };
-      case "shake":
-        return { ...base, x: [0, -5, 5, -5, 5, 0] };
+      case 'pulse':
+        return { ...base, scale: [1, 1.05, 1] }
+      case 'bounce':
+        return { ...base, y: [0, -10, 0] }
+      case 'shake':
+        return { ...base, x: [0, -5, 5, -5, 5, 0] }
       default:
-        return base;
+        return base
     }
-  };
+  }
 
   const getTransition = () => {
     const baseTransition = {
       opacity: { duration: 0.5, delay: 1 },
-      scale: { duration: 0.5, delay: 1 },
-    };
+      scale: { duration: 0.5, delay: 1 }
+    }
 
     switch (hero.floatingButtonAnimation) {
-      case "pulse":
+      case 'pulse':
         return {
           ...baseTransition,
           scale: {
             duration: 2,
             repeat: Infinity,
-            ease: "easeInOut" as const,
-            delay: 1.5,
-          },
-        };
-      case "bounce":
+            ease: 'easeInOut' as const,
+            delay: 1.5
+          }
+        }
+      case 'bounce':
         return {
           ...baseTransition,
           y: {
             duration: 1.5,
             repeat: Infinity,
-            ease: "easeInOut" as const,
-            delay: 1.5,
-          },
-        };
-      case "shake":
+            ease: 'easeInOut' as const,
+            delay: 1.5
+          }
+        }
+      case 'shake':
         return {
           ...baseTransition,
           x: {
             duration: 0.5,
             repeat: Infinity,
             repeatDelay: 3,
-            delay: 1.5,
-          },
-        };
+            delay: 1.5
+          }
+        }
       default:
-        return baseTransition;
+        return baseTransition
     }
-  };
+  }
 
   return (
     <motion.button
@@ -193,14 +157,11 @@ const FloatingButton = ({ hero }: { hero: IHero }) => {
         borderRadius: `${hero.floatingButtonBorderRadius}px`,
         boxShadow: isHovered
           ? `0 15px 35px ${hero.floatingButtonBgColor}60`
-          : `0 10px 25px ${hero.floatingButtonBgColor}40`,
+          : `0 10px 25px ${hero.floatingButtonBgColor}40`
       }}
     >
-      {hero.floatingButtonIcon !== "none" && (
-        <motion.div
-          animate={{ rotate: isHovered ? [0, -10, 10, -10, 0] : 0 }}
-          transition={{ duration: 0.5 }}
-        >
+      {hero.floatingButtonIcon !== 'none' && (
+        <motion.div animate={{ rotate: isHovered ? [0, -10, 10, -10, 0] : 0 }} transition={{ duration: 0.5 }}>
           {icons[hero.floatingButtonIcon]}
         </motion.div>
       )}
@@ -208,23 +169,23 @@ const FloatingButton = ({ hero }: { hero: IHero }) => {
       <span className="relative z-10">{hero.floatingButtonText}</span>
 
       {/* Ripple effect for pulse animation */}
-      {hero.floatingButtonAnimation === "pulse" && (
+      {hero.floatingButtonAnimation === 'pulse' && (
         <motion.div
           className="absolute inset-0 -z-10"
           style={{
             backgroundColor: hero.floatingButtonBgColor,
-            borderRadius: `${hero.floatingButtonBorderRadius}px`,
+            borderRadius: `${hero.floatingButtonBorderRadius}px`
           }}
           initial={{ scale: 1, opacity: 0 }}
           animate={{
             scale: [1, 1.5],
-            opacity: [0.5, 0],
+            opacity: [0.5, 0]
           }}
           transition={{
             delay: 1.5,
             duration: 2,
             repeat: Infinity,
-            ease: "easeOut" as const,
+            ease: 'easeOut' as const
           }}
         />
       )}
@@ -235,21 +196,21 @@ const FloatingButton = ({ hero }: { hero: IHero }) => {
         animate={
           isHovered
             ? {
-                x: ["-100%", "100%"],
-                opacity: [0, 0.2, 0],
+                x: ['-100%', '100%'],
+                opacity: [0, 0.2, 0]
               }
             : {}
         }
         transition={{
           duration: 0.6,
-          ease: "easeInOut" as const,
+          ease: 'easeInOut' as const
         }}
         style={{
-          borderRadius: `${hero.floatingButtonBorderRadius}px`,
+          borderRadius: `${hero.floatingButtonBorderRadius}px`
         }}
       />
     </motion.button>
-  );
-};
+  )
+}
 
-export default FloatingButton;
+export default FloatingButton

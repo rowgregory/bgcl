@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { DollarSign, Search, User, Mail, Calendar, CreditCard, Check } from 'lucide-react'
+import { DollarSign, Search, User, Mail, Calendar, CreditCard, Check, XCircle } from 'lucide-react'
 import { store } from '@/app/lib/store/store'
 import { setOpenDonationDrawer } from '@/app/lib/store/slices/dashboardSlice'
 
@@ -118,16 +118,33 @@ export default function MonthlyDonationsClient({ monthlyDonations }: { monthlyDo
                     visible: { opacity: 1, y: 0 }
                   }}
                   whileHover={{ scale: 1.01 }}
-                  className="bg-white dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 rounded-lg hover:border-neutral-300 dark:hover:border-neutral-700 transition-all p-4 lg:px-6 lg:py-4"
+                  className={`bg-white dark:bg-neutral-900/50 border rounded-lg transition-all p-4 lg:px-6 lg:py-4 ${
+                    donation.status === 'CANCELLED'
+                      ? 'border-red-300 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20'
+                      : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'
+                  }`}
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 lg:items-center">
                     {/* Amount - Full width mobile, col-span-2 desktop */}
                     <div className="lg:col-span-2 flex items-center justify-between lg:justify-start">
-                      <span className="text-2xl lg:text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                      <span
+                        className={`text-2xl lg:text-lg font-bold ${
+                          donation.status === 'CANCELLED'
+                            ? 'text-red-600 dark:text-red-400 line-through'
+                            : 'text-emerald-600 dark:text-emerald-400'
+                        }`}
+                      >
                         {formatCurrency(donation.totalAmount * 100)}
                       </span>
+                      {/* Status badge - shown on mobile when cancelled */}
+                      {donation.status === 'CANCELLED' && (
+                        <div className="flex items-center gap-1 lg:hidden">
+                          <XCircle className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
+                          <span className="text-xs font-semibold text-red-600 dark:text-red-400">Cancelled</span>
+                        </div>
+                      )}
                       {/* Fees indicator - shown inline on mobile */}
-                      {donation.coverFees && (
+                      {donation.coverFees && donation.status !== 'CANCELLED' && (
                         <div className="flex items-center gap-1 lg:hidden">
                           <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                           <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
@@ -140,8 +157,18 @@ export default function MonthlyDonationsClient({ monthlyDonations }: { monthlyDo
                     {/* Donor - Full width mobile, col-span-2 desktop */}
                     <div className="lg:col-span-2">
                       <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-neutral-400 shrink-0" />
-                        <span className="text-sm font-medium text-neutral-900 dark:text-white truncate">
+                        <User
+                          className={`w-4 h-4 shrink-0 ${
+                            donation.status === 'CANCELLED' ? 'text-red-400 dark:text-red-600' : 'text-neutral-400'
+                          }`}
+                        />
+                        <span
+                          className={`text-sm font-medium truncate ${
+                            donation.status === 'CANCELLED'
+                              ? 'text-neutral-500 dark:text-neutral-500'
+                              : 'text-neutral-900 dark:text-white'
+                          }`}
+                        >
                           {donation.customerName}
                         </span>
                       </div>
@@ -150,10 +177,19 @@ export default function MonthlyDonationsClient({ monthlyDonations }: { monthlyDo
                     {/* Email - Full width mobile, col-span-3 desktop */}
                     <div className="lg:col-span-3">
                       <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-neutral-400 shrink-0" />
+                        <Mail
+                          className={`w-4 h-4 shrink-0 ${
+                            donation.status === 'CANCELLED' ? 'text-red-400 dark:text-red-600' : 'text-neutral-400'
+                          }`}
+                        />
+
                         <a
                           href={`mailto:${donation.customerEmail}`}
-                          className="text-sm text-blue-600 dark:text-blue-400 hover:underline truncate"
+                          className={`text-sm truncate ${
+                            donation.status === 'CANCELLED'
+                              ? 'text-neutral-500 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-400'
+                              : 'text-blue-600 dark:text-blue-400 hover:underline'
+                          }`}
                         >
                           {donation.customerEmail}
                         </a>
@@ -163,8 +199,18 @@ export default function MonthlyDonationsClient({ monthlyDonations }: { monthlyDo
                     {/* Date - Full width mobile, col-span-2 desktop */}
                     <div className="lg:col-span-2">
                       <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-neutral-400 shrink-0" />
-                        <span className="text-sm text-neutral-900 dark:text-white">
+                        <Calendar
+                          className={`w-4 h-4 shrink-0 ${
+                            donation.status === 'CANCELLED' ? 'text-red-400 dark:text-red-600' : 'text-neutral-400'
+                          }`}
+                        />
+                        <span
+                          className={`text-sm ${
+                            donation.status === 'CANCELLED'
+                              ? 'text-neutral-500 dark:text-neutral-500'
+                              : 'text-neutral-900 dark:text-white'
+                          }`}
+                        >
                           {formatDate(donation.createdAt)}
                         </span>
                       </div>
@@ -174,8 +220,18 @@ export default function MonthlyDonationsClient({ monthlyDonations }: { monthlyDo
                     <div className="lg:col-span-2">
                       {donation.paymentMethodId ? (
                         <div className="flex items-center gap-2">
-                          <CreditCard className="w-4 h-4 text-neutral-400 shrink-0" />
-                          <span className="text-xs font-mono text-neutral-600 dark:text-neutral-400 truncate">
+                          <CreditCard
+                            className={`w-4 h-4 shrink-0 ${
+                              donation.status === 'CANCELLED' ? 'text-red-400 dark:text-red-600' : 'text-neutral-400'
+                            }`}
+                          />
+                          <span
+                            className={`text-xs font-mono truncate ${
+                              donation.status === 'CANCELLED'
+                                ? 'text-neutral-500 dark:text-neutral-500'
+                                : 'text-neutral-600 dark:text-neutral-400'
+                            }`}
+                          >
                             {donation.paymentMethodId}
                           </span>
                         </div>
@@ -184,9 +240,14 @@ export default function MonthlyDonationsClient({ monthlyDonations }: { monthlyDo
                       )}
                     </div>
 
-                    {/* Fees - Hidden on mobile (shown inline with amount), col-span-1 desktop */}
+                    {/* Fees/Status - Hidden on mobile (shown inline with amount), col-span-1 desktop */}
                     <div className="hidden lg:block lg:col-span-1">
-                      {donation.coverFees ? (
+                      {donation.status === 'CANCELLED' ? (
+                        <div className="flex items-center gap-1.5">
+                          <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
+                          <span className="text-xs font-semibold text-red-600 dark:text-red-400">Cancelled</span>
+                        </div>
+                      ) : donation.coverFees ? (
                         <div className="flex items-center gap-1.5">
                           <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                           <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">

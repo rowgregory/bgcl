@@ -27,17 +27,17 @@ function DonationForm({ campaignName, campaigns }) {
   const stripe = useStripe()
   const elements = useElements()
   const session = useSession()
-  const [email, setEmail] = useState<string>('')
-  const [name, setName] = useState<string>('')
+  const [email, setEmail] = useState<string>('dev.bgc.lynn@gmail.com')
+  const [name, setName] = useState<string>('Gregory Row')
   const [error, setError] = useState<string>('')
   const [amount, setAmount] = useState(50)
   const [selectedPlan, setSelectedPlan] = useState<string>('once_friend')
   const [processingStatus, setProcessingStatus] = useState<'idle' | 'processing' | 'success' | 'failed'>('idle')
   const [donationType, setDonationType] = useState<'once' | 'monthly' | 'yearly'>('once')
-  const [address, setAddress] = useState<string>('')
-  const [city, setCity] = useState<string>('')
-  const [state, setState] = useState<string>('')
-  const [zipCode, setZipCode] = useState<string>('')
+  const [address, setAddress] = useState<string>('123 Main St')
+  const [city, setCity] = useState<string>('Lynn')
+  const [state, setState] = useState<string>('MA')
+  const [zipCode, setZipCode] = useState<string>('01902')
   const [country, setCountry] = useState<string>('United States')
   const [notes, setNotes] = useState<string>('')
   const [campaign, setCampaign] = useState<ICampaign | null>(null)
@@ -192,7 +192,6 @@ function DonationForm({ campaignName, campaigns }) {
         }
       } else {
         // Recurring donation flow - SetupIntent or Saved Card
-
         if (selectedCardId && !useNewCard) {
           // Using saved card - skip setup intent, go straight to subscription
           const subscriptionResult = await createSubscriptionWithSavedCard({
@@ -218,15 +217,7 @@ function DonationForm({ campaignName, campaigns }) {
           }
 
           // Wait for order via Pusher
-          setupPusherListenerRecurring(
-            subscriptionResult,
-            processingStatus,
-            setError,
-            setProcessingStatus,
-            setLoading,
-            saveCard,
-            selectedCardId
-          )
+          setupPusherListenerRecurring(subscriptionResult, processingStatus, setError, setProcessingStatus, setLoading)
         } else {
           // New card - create setup intent
           const setupResult = await createSetupIntentForSubscription({
@@ -261,30 +252,42 @@ function DonationForm({ campaignName, campaigns }) {
             return
           }
 
-          // Create subscription with confirmed card
-          const subscriptionResult = await createSubscriptionAfterSetup({
-            setupIntentId,
-            email,
-            name,
-            frequency: donationType === 'monthly' ? 'monthly' : 'yearly',
-            amount: finalAmount,
-            coverFees,
-            feesCovered,
-            address,
-            city,
-            state,
-            zipCode,
-            country,
-            notes,
-            campaignId: campaign?.id
-          })
+          try {
+            const subscriptionResult = await createSubscriptionAfterSetup({
+              setupIntentId,
+              email,
+              name,
+              frequency: donationType === 'monthly' ? 'monthly' : 'yearly',
+              amount: finalAmount,
+              coverFees,
+              feesCovered,
+              address,
+              city,
+              state,
+              zipCode,
+              country,
+              notes,
+              campaignId: campaign?.id
+            })
 
-          if (!subscriptionResult.success) {
-            throw new Error(subscriptionResult.error || 'Failed to create subscription')
+            if (!subscriptionResult.success) {
+              throw new Error(subscriptionResult.error || 'Failed to create subscription')
+            }
+
+            // Wait for order via Pusher
+            setupPusherListenerRecurring(
+              subscriptionResult,
+              processingStatus,
+              setError,
+              setProcessingStatus,
+              setLoading
+            )
+          } catch (error) {
+            console.error('Error in createSubscriptionAfterSetup:', error)
+            setError(error instanceof Error ? error.message : 'Failed to create subscription')
+            setProcessingStatus('failed')
+            setLoading(false)
           }
-
-          // Wait for order via Pusher
-          setupPusherListenerRecurring(subscriptionResult, processingStatus, setError, setProcessingStatus, setLoading)
         }
       }
     } catch (err) {

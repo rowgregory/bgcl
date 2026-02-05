@@ -21,6 +21,75 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.9.0',
+    date: '2026-02-05',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Auto-Account Creation for Recurring Donors',
+        description:
+          'Guest users creating recurring donations now automatically receive user accounts with their email and name. Accounts are created server-side during subscription setup, enabling full donation management and payment method tracking.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Automatic Payment Method Saving',
+        description:
+          'Payment methods used for recurring donations are automatically saved to user accounts, allowing donors to manage their cards and view payment history without manual setup.',
+        impact: 'high'
+      },
+      {
+        type: 'fix',
+        title: 'Corrected Stripe Subscription Webhook Flow',
+        description:
+          'Fixed critical issue where orders were created on subscription.created instead of invoice.payment_succeeded, causing duplicate charges and missing payment intent IDs. Orders now create only when actual payment occurs.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Enhanced Subscription Status Tracking',
+        description:
+          'Implemented comprehensive subscription status webhook handlers (updated, deleted) to keep database in sync with Stripe. Automatically updates order status when subscriptions are cancelled, past due, or unpaid.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Unified Order Retrieval by Email',
+        description:
+          'Users can now view all their orders (both authenticated and guest) by matching either userId or customerEmail, providing complete donation history after account creation.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Idempotency Key Protection',
+        description:
+          'Added idempotency keys to all Stripe subscription creation calls to prevent duplicate subscriptions from network retries or double-clicks.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Production-Ready Webhook Logging',
+        description:
+          'Replaced all console.log statements with structured database logging using createLog, providing comprehensive audit trails for all webhook events, errors, and subscription lifecycle changes.',
+        impact: 'low'
+      },
+      {
+        type: 'fix',
+        title: 'Next Billing Date Calculation',
+        description:
+          'Fixed invalid Date errors by using invoice.period_end instead of subscription.current_period_end, which was missing from Stripe API responses.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Payment Method Deletion Protection',
+        description:
+          'Enhanced payment method deletion with validation preventing users from removing default cards when active recurring subscriptions exist, with clear error messaging.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.8.6',
     date: '2026-02-04',
     changes: [

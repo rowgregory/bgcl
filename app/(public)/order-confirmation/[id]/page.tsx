@@ -43,7 +43,7 @@ export default function OrderConfirmationPage({ order }) {
             </Link>
           ) : (
             <Link
-              href="/"
+              href="/auth/login"
               className="relative p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-zinc-700 bg-neutral-200 border-neutral-300 hover:bg-neutral-300 rounded-lg transition-all"
             >
               <LogIn className="w-5 h-5 dark:text-zinc-400 text-neutral-700" />

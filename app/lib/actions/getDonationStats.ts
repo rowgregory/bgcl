@@ -38,7 +38,8 @@ export async function getDonationStats() {
         paymentIntentId: true,
         paymentMethodId: true,
         paymentMethod: true,
-        campaign: true
+        campaign: true,
+        stripeSubscriptionId: true
       }
     })
 
@@ -47,7 +48,7 @@ export async function getDonationStats() {
       oneTime: orders.filter((o) => o.type === 'ONE_TIME_DONATION').length,
       monthly: orders.filter((o) => o.type === 'RECURRING_DONATION' && o.recurringFrequency === 'monthly').length,
       yearly: orders.filter((o) => o.type === 'RECURRING_DONATION' && o.recurringFrequency === 'yearly').length,
-      totalRaised: orders.reduce((sum, o) => sum + o.totalAmount, 0),
+      totalRaised: orders.filter((order) => order.paymentMethodId !== null).reduce((sum, o) => sum + o.totalAmount, 0),
       monthlyRecurring: orders
         .filter((o) => o.type === 'RECURRING_DONATION' && o.recurringFrequency === 'monthly')
         .reduce((sum, o) => sum + o.totalAmount, 0),
@@ -56,6 +57,7 @@ export async function getDonationStats() {
         .reduce((sum, o) => sum + o.totalAmount, 0),
       activeCount: orders.filter((o) => o.status === 'CONFIRMED').length,
       failedCount: orders.filter((o) => o.status === 'FAILED').length,
+      cancelledCount: orders.filter((o) => o.status === 'CANCELLED').length,
       churnRate:
         orders.length > 0
           ? Math.round((orders.filter((o) => o.status === 'CANCELLED').length / orders.length) * 100)
@@ -116,6 +118,10 @@ export async function getDonationStats() {
 
     orders.forEach((order) => {
       const campaignName = order.campaign?.name || null
+
+      // Skip orders without a campaign name
+      if (!campaignName) return
+
       const existing = campaignMap.get(campaignName) || { total: 0, count: 0 }
       campaignMap.set(campaignName, {
         total: existing.total + order.totalAmount,

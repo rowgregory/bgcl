@@ -62,17 +62,15 @@ export function useDonationPayment() {
     processingStatus?: string,
     setError?: any,
     setProcessingStatus?: any,
-    setLoading?: any,
-    saveCard?: boolean,
-    paymentMethod?: string
+    setLoading?: any
   ) => {
-    const channelId = session?.data?.user?.id || `guest-${subscriptionResult.subscriptionId}`
+    const channelId = `payment-${subscriptionResult.subscriptionId}`
 
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER
     })
 
-    const channel = pusher.subscribe(`payment-${channelId}`)
+    const channel = pusher.subscribe(channelId)
 
     const timeout = setTimeout(() => {
       if (processingStatus === 'processing') {
@@ -85,12 +83,6 @@ export function useDonationPayment() {
     channel.bind('order-created', (data: any) => {
       clearTimeout(timeout)
       setProcessingStatus('success')
-
-      // Save payment method if user wants to and is logged in
-      if (saveCard && session?.data?.user?.id && paymentMethod) {
-        savePaymentMethod(session?.data?.user?.id, paymentMethod as string, true).catch(console.error)
-      }
-
       router.push(`/order-confirmation/${data.orderId}`)
       channel.unbind('order-created')
     })
@@ -105,19 +97,7 @@ export function useDonationPayment() {
     })
   }
 
-  const handleOneTimeDonation = async (params) => {
-    // All your one-time donation logic (saved + new card)
-    // Returns success/error
-  }
-
-  const handleRecurringDonation = async (params) => {
-    // All your recurring donation logic
-    // Returns success/error
-  }
-
   return {
-    handleOneTimeDonation,
-    handleRecurringDonation,
     getPaymentMethodId,
     setupPusherListenerOneTime,
     setupPusherListenerRecurring

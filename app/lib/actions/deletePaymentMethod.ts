@@ -48,11 +48,28 @@ export async function deletePaymentMethod(paymentMethodId: string) {
       }
     }
 
-    // Don't allow deleting default payment method
+    // Don't allow deleting default payment method if they have active subscriptions
     if (paymentMethod.isDefault) {
+      // Check for active recurring subscriptions
+      const activeSubscription = await prisma.order.findFirst({
+        where: {
+          userId: session.user.id,
+          isRecurring: true,
+          status: 'CONFIRMED'
+        }
+      })
+
+      if (activeSubscription) {
+        return {
+          success: false,
+          error:
+            'Cannot delete the default payment method while you have an active recurring donation. Please cancel your subscription or set another card as default first.'
+        }
+      }
+
       return {
         success: false,
-        error: 'Cannot delete the default payment method. Set another as default first.'
+        error: 'Cannot delete the default payment method. Set another card as default first.'
       }
     }
 

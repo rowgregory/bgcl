@@ -29,21 +29,21 @@ const formatCurrency = (amount: number) => {
   }).format(amount)
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05, delayChildren: 0.1 }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+}
+
 export default function FuelTankOverviewClient({ orders, stats }: { orders: any; stats: any }) {
   const [chartType, setChartType] = useState<'line' | 'bar'>('line')
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.05, delayChildren: 0.1 }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-  }
-
   const { isDark } = useApplicationSelector()
 
   const topStats = [
@@ -51,7 +51,7 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
       id: 'total-raised',
       label: 'Total Raised',
       value: `$${(stats?.totalRaised).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
-      description: '+12% vs last period',
+      description: 'All-time donations collected',
       hoverColor: 'sky',
       icon: TrendingUp
     },
@@ -71,6 +71,8 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
           >
             {stats?.failedCount || 0} failed
           </button>
+          {' • '}
+          <span className="text-neutral-500 dark:text-neutral-400">{stats?.cancelledCount || 0} cancelled</span>
         </>
       ),
       hoverColor: 'blue',
@@ -142,12 +144,11 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
           variants={itemVariants}
           className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-2xl border p-6"
         >
-          <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-6">Donations by Campaign</h3>
+          <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-6"> Average Donation per Campaign</h3>
           <motion.div
             variants={itemVariants}
             className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 h-125"
           >
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-6">Donations by Campaign</h3>
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -155,13 +156,13 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
                   dataKey="count"
                   name="Donors"
                   stroke="#9ca3af"
-                  label={{ value: 'Number of Donors', position: 'insideBottomRight', offset: -10 }}
+                  label={{ value: 'Number of Donors', position: 'insideBottomCenter', offset: -10 }}
                 />
                 <YAxis
                   dataKey="averageDonation"
                   name="Avg Donation"
                   stroke="#9ca3af"
-                  label={{ value: 'Average Donation ($)', angle: -90, position: 'insideLeft' }}
+                  label={{ value: 'Average Donation ($)', angle: -90, position: 'insideCenter' }}
                 />
                 <Tooltip
                   cursor={{ strokeDasharray: '3 3' }}
@@ -205,58 +206,60 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
           <motion.div variants={itemVariants} className="space-y-4">
             <h3 className="text-lg font-bold text-neutral-900 dark:text-white">Campaign Performance</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {stats.campaigns.map((campaign, idx) => (
-                <motion.div
-                  key={idx}
-                  whileHover={{ y: -2 }}
-                  className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 hover:border-neutral-300 dark:hover:border-neutral-700 transition-all"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <p className="text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-1">Campaign</p>
-                      <p className="text-lg font-bold text-neutral-900 dark:text-white">
-                        {campaign.campaignName || 'No Campaign'}
-                      </p>
-                    </div>
-                    <div
-                      className="w-4 h-4 rounded-full shrink-0"
-                      style={{ backgroundColor: COLORS[idx % COLORS.length] }}
-                    />
-                  </div>
-
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-1">Total Raised</p>
-                      <p className="text-2xl font-black text-sky-600 dark:text-sky-400">
-                        {formatCurrency(campaign.totalAmount)}
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
+              {stats.campaigns
+                .filter((campaign) => campaign.campaignName != null)
+                .map((campaign, idx) => (
+                  <motion.div
+                    key={idx}
+                    whileHover={{ y: -2 }}
+                    className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 hover:border-neutral-300 dark:hover:border-neutral-700 transition-all"
+                  >
+                    <div className="flex items-start justify-between mb-4">
                       <div>
-                        <p className="text-xs text-neutral-600 dark:text-neutral-400">Donors</p>
-                        <p className="text-lg font-bold text-neutral-900 dark:text-white">{campaign.count}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-neutral-600 dark:text-neutral-400">Avg</p>
+                        <p className="text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-1">Campaign</p>
                         <p className="text-lg font-bold text-neutral-900 dark:text-white">
-                          {formatCurrency(campaign.averageDonation)}
+                          {campaign.campaignName || 'No Campaign'}
+                        </p>
+                      </div>
+                      <div
+                        className="w-4 h-4 rounded-full shrink-0"
+                        style={{ backgroundColor: COLORS[idx % COLORS.length] }}
+                      />
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-1">Total Raised</p>
+                        <p className="text-2xl font-black text-sky-600 dark:text-sky-400">
+                          {formatCurrency(campaign.totalAmount)}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <p className="text-xs text-neutral-600 dark:text-neutral-400">Donors</p>
+                          <p className="text-lg font-bold text-neutral-900 dark:text-white">{campaign.count}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-neutral-600 dark:text-neutral-400">Avg</p>
+                          <p className="text-lg font-bold text-neutral-900 dark:text-white">
+                            {formatCurrency(campaign.averageDonation)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                        <p className="text-xs font-semibold text-neutral-600 dark:text-neutral-400">
+                          {(
+                            (campaign.totalAmount / stats.campaigns.reduce((sum, c) => sum + c.totalAmount, 0)) *
+                            100
+                          ).toFixed(1)}
+                          % of total
                         </p>
                       </div>
                     </div>
-
-                    <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
-                      <p className="text-xs font-semibold text-neutral-600 dark:text-neutral-400">
-                        {(
-                          (campaign.totalAmount / stats.campaigns.reduce((sum, c) => sum + c.totalAmount, 0)) *
-                          100
-                        ).toFixed(1)}
-                        % of total
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
             </div>
           </motion.div>
         </motion.div>
@@ -602,14 +605,14 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
           </div>
 
           {/* Export Button */}
-          <motion.button
+          {/* <motion.button
             className="w-full flex items-center justify-center gap-2 px-4 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-all"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <Download className="w-4 h-4" />
             Export Report
-          </motion.button>
+          </motion.button> */}
         </motion.div>
       </motion.div>
     </div>

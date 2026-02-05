@@ -5,6 +5,5 @@ export const dynamic = 'force-dynamic'
 
 export default async function SupporterOverviewPage() {
   const data = await getSupporterDashboard()
-
   return <SupporterOverviewClient data={data} />
 }

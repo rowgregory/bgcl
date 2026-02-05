@@ -69,7 +69,6 @@ export async function POST(_: NextRequest) {
       message: 'Test data cleared'
     })
   } catch (error) {
-    console.error('Error clearing test data:', error)
     return NextResponse.json({ error: 'Failed to clear test data' }, { status: 500 })
   }
 }

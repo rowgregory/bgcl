@@ -32,10 +32,7 @@ export async function POST(req: NextRequest) {
           startingAfter = prices.data[prices.data.length - 1].id
         }
       }
-
-      console.log(`Deactivated ${deletedPrices} prices`)
     } catch (error) {
-      console.error('Error deactivating prices:', error)
       errors.push(`Error with prices: ${error}`)
     }
 
@@ -64,8 +61,6 @@ export async function POST(req: NextRequest) {
           startingAfter = products.data[products.data.length - 1].id
         }
       }
-
-      console.log(`Deleted ${deletedProducts} products`)
     } catch (error) {
       console.error('Error deleting products:', error)
       errors.push(`Error deleting products: ${error}`)

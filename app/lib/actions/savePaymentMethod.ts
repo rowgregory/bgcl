@@ -19,11 +19,6 @@ export async function savePaymentMethod(userId: string, paymentMethodId: string,
       }
     }
 
-    // Attach payment method to customer
-    await stripe.paymentMethods.attach(paymentMethodId, {
-      customer: user.stripeCustomerId
-    })
-
     // Get payment method details
     const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId)
 

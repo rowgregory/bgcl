@@ -13,7 +13,7 @@ export async function getSupporterDashboard() {
     // Get all orders for this user
     const orders = await prisma.order.findMany({
       where: {
-        userId: session.user.id
+        OR: [{ userId: session.user.id }, { customerEmail: session.user.email }]
       },
       include: {
         orderItems: {
@@ -32,7 +32,7 @@ export async function getSupporterDashboard() {
     const donationOrders = orders.filter(
       (o) =>
         (o.type === 'ONE_TIME_DONATION' || o.type === 'RECURRING_DONATION') &&
-        (o.status === 'CONFIRMED' || o.status === 'PROCESSING')
+        (o.status === 'CONFIRMED' || o.status === 'PROCESSING' || o.status === 'CANCELLED')
     )
     const ticketOrders = orders.filter((o) => o.type === 'TICKET_PURCHASE' && o.status === 'CONFIRMED')
 
@@ -93,7 +93,7 @@ export async function getSupporterDashboard() {
         },
         {
           label: 'Monthly Support',
-          value: `$${(monthlyCount * 25).toFixed(2)}`,
+          value: `$${monthlyAmount.toFixed(2)}`,
           subtext: `${monthlyCount} active plans`,
           icon: 'Zap',
           color: 'text-blue-400',

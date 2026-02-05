@@ -73,7 +73,6 @@ export async function createPaymentIntentForCheckout({
       if (existingUser?.stripeCustomerId) {
         // User has account and Stripe customer, use it
         customerId = existingUser.stripeCustomerId
-        console.log('Using existing user Stripe customer:', customerId)
       } else {
         // No user record - check Stripe for existing customer by email
         const stripeCustomers = await stripe.customers.search({
@@ -84,7 +83,6 @@ export async function createPaymentIntentForCheckout({
         if (stripeCustomers.data.length > 0) {
           // Reuse existing Stripe customer (from previous guest donation)
           customerId = stripeCustomers.data[0].id
-          console.log('Using existing Stripe customer by email:', customerId)
         } else {
           // No Stripe customer - create guest customer
           const customer = await stripe.customers.create({
@@ -95,7 +93,6 @@ export async function createPaymentIntentForCheckout({
             }
           })
           customerId = customer.id
-          console.log('Guest customer created:', customerId)
         }
       }
     }
@@ -128,7 +125,7 @@ export async function createPaymentIntentForCheckout({
 
     if (savedCardId) {
       const savedCard = await prisma.paymentMethod.findUnique({
-        where: { stripePaymentId: savedCardId }, // ← Look up by Stripe ID instead
+        where: { stripePaymentId: savedCardId },
         select: { stripePaymentId: true, userId: true }
       })
 
@@ -136,9 +133,16 @@ export async function createPaymentIntentForCheckout({
         throw new Error('Saved card not found or unauthorized')
       }
 
+      // Verify the payment method is attached to the customer
+      const paymentMethod = await stripe.paymentMethods.retrieve(savedCard.stripePaymentId)
+
+      if (paymentMethod.customer !== customerId) {
+        throw new Error('Payment method does not belong to this customer')
+      }
+
       paymentIntentParams.payment_method = savedCard.stripePaymentId
       paymentIntentParams.off_session = true
-      paymentIntentParams.confirm = true // ✅ Add this back
+      paymentIntentParams.confirm = true
     }
 
     const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams)
@@ -149,15 +153,20 @@ export async function createPaymentIntentForCheckout({
       paymentIntentId: paymentIntent.id
     }
   } catch (error) {
+    console.error('Payment intent error details:', error)
+
     await createLog('error', 'Payment intent creation error', {
       error: error instanceof Error ? error.message : 'Unknown error',
+      stripeError: error instanceof Error ? (error as any).code : undefined,
       name,
-      email
+      email,
+      savedCardId,
+      userId
     })
 
     return {
       success: false,
-      error: 'Payment intent creation error. Please try again.'
+      error: error instanceof Error ? error.message : 'Payment intent creation error. Please try again.'
     }
   }
 }

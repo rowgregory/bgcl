@@ -55,7 +55,6 @@ export async function createSetupIntentForSubscription({
       if (stripeCustomers.data.length > 0) {
         // Found existing customer - use it
         customerId = stripeCustomers.data[0].id
-        console.log('Found existing customer:', customerId)
       } else {
         // No customer exists - create new one
         const customer = await stripe.customers.create({
@@ -68,7 +67,6 @@ export async function createSetupIntentForSubscription({
           }
         })
         customerId = customer.id
-        console.log('New customer created:', customerId)
 
         // If logged-in user, save the customer ID to database
         if (userId) {
@@ -96,8 +94,6 @@ export async function createSetupIntentForSubscription({
         feesCovered: feesCovered?.toString() || '0'
       }
     })
-
-    console.log('SetupIntent created:', setupIntent.id)
 
     return {
       success: true,

@@ -67,10 +67,7 @@ export default function SqyshCard({ member }: SqyshCardProps) {
     setIsActive(false)
   }
 
-  const handleYes = () => {
-    console.log('User clicked Yes!')
-    window.open('https://www.sqysh.io/quote?lead_source=bgcl', '_blank', 'noopener,noreferrer')
-  }
+  const handleYes = () => window.open('https://www.sqysh.io/quote?lead_source=bgcl', '_blank', 'noopener,noreferrer')
 
   return (
     <>
