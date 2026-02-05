@@ -1,5 +1,6 @@
 'use client'
 
+import { generateDonationReport } from '@/app/lib/actions/generateDonationsReport'
 import { setOpenFailedPaymentDrawer } from '@/app/lib/store/slices/dashboardSlice'
 import { store, useApplicationSelector } from '@/app/lib/store/store'
 import { motion } from 'framer-motion'
@@ -45,6 +46,33 @@ const itemVariants = {
 export default function FuelTankOverviewClient({ orders, stats }: { orders: any; stats: any }) {
   const [chartType, setChartType] = useState<'line' | 'bar'>('line')
   const { isDark } = useApplicationSelector()
+
+  const [loading, setLoading] = useState(false)
+
+  const handleGenerate = async () => {
+    setLoading(true)
+    try {
+      const result = await generateDonationReport({
+        // Add filters here if needed
+        // startDate: new Date('2024-01-01'),
+        // endDate: new Date()
+      })
+
+      console.log(result)
+
+      if (result.success && result.pdf) {
+        // Open PDF in new tab
+        const link = document.createElement('a')
+        link.href = result.pdf
+        link.download = `donation-report-${new Date().toISOString().split('T')[0]}.pdf`
+        link.click()
+      }
+    } catch (error) {
+      console.error('Error generating report:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const topStats = [
     {
@@ -605,14 +633,15 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
           </div>
 
           {/* Export Button */}
-          {/* <motion.button
+          <motion.button
+            onClick={handleGenerate}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-all"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <Download className="w-4 h-4" />
-            Export Report
-          </motion.button> */}
+            {loading ? 'Generating...' : 'Generate Report'}
+          </motion.button>
         </motion.div>
       </motion.div>
     </div>

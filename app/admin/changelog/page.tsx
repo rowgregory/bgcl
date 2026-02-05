@@ -21,6 +21,33 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.9.1',
+    date: '2026-02-05',
+    changes: [
+      {
+        type: 'feature',
+        title: 'PDF Donation Report Generation',
+        description:
+          'Added ability to generate and download comprehensive donation reports as PDF files with summary statistics, campaign breakdowns, and detailed transaction tables.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Server Action for Report Generation',
+        description:
+          'Created generateDonationsReport server action to handle donation data processing and PDF generation on the server side.',
+        impact: 'medium'
+      },
+      {
+        type: 'fix',
+        title: 'PDF AutoTable Integration',
+        description:
+          'Fixed jsPDF autoTable implementation by using the correct function syntax autoTable(doc, options) instead of doc.autoTable(options).',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.9.0',
     date: '2026-02-05',
     changes: [
