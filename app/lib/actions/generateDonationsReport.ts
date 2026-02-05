@@ -71,6 +71,16 @@ export async function generateDonationReport(filters: ReportFilters = {}) {
       include: {
         campaign: {
           select: { name: true }
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            phone: true,
+            createdAt: true
+          }
         }
       },
       orderBy: { createdAt: 'desc' }
@@ -160,34 +170,48 @@ function calculateStats(orders: any[]): DonationStats {
 function createPDF(orders: any[], stats: DonationStats, filters: ReportFilters): jsPDF {
   const doc = new jsPDF()
   const pageWidth = doc.internal.pageSize.getWidth()
+  const pageHeight = doc.internal.pageSize.getHeight()
   let yPos = 20
 
-  // Header
-  doc.setFontSize(20)
-  doc.setFont('helvetica', 'bold')
-  doc.text('Boys & Girls Club of Lynn Donation Financial Report', pageWidth / 2, yPos, { align: 'center' })
+  // ============ PAGE 1: HEADER & SUMMARY ============
 
-  yPos += 10
-  doc.setFontSize(10)
+  // Header with colored banner
+  doc.setFillColor(74, 139, 179)
+  doc.rect(0, 0, pageWidth, 35, 'F')
+
+  doc.setTextColor(255, 255, 255)
+  doc.setFontSize(22)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Boys & Girls Club of Lynn', pageWidth / 2, 15, { align: 'center' })
+
+  doc.setFontSize(16)
   doc.setFont('helvetica', 'normal')
-  doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, yPos, { align: 'center' })
+  doc.text('Donation Financial Report', pageWidth / 2, 25, { align: 'center' })
+
+  // Reset text color
+  doc.setTextColor(0, 0, 0)
+  yPos = 45
+
+  // Report metadata
+  doc.setFontSize(9)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(100, 100, 100)
+  doc.text(`Generated: ${new Date().toLocaleString()}`, 14, yPos)
 
   if (filters.startDate || filters.endDate) {
     yPos += 5
-    const dateRange = `Period: ${filters.startDate?.toLocaleDateString() || 'All'} - ${filters.endDate?.toLocaleDateString() || 'Present'}`
-    doc.text(dateRange, pageWidth / 2, yPos, { align: 'center' })
+    const dateRange = `Period: ${filters.startDate?.toLocaleDateString() || 'Beginning'} - ${filters.endDate?.toLocaleDateString() || 'Present'}`
+    doc.text(dateRange, 14, yPos)
   }
 
-  yPos += 15
+  yPos += 12
+  doc.setTextColor(0, 0, 0)
 
-  // Summary Statistics
-  doc.setFontSize(14)
+  // Summary Statistics Section
+  doc.setFontSize(16)
   doc.setFont('helvetica', 'bold')
-  doc.text('Summary', 14, yPos)
-  yPos += 8
-
-  doc.setFontSize(10)
-  doc.setFont('helvetica', 'normal')
+  doc.text('Executive Summary', 14, yPos)
+  yPos += 10
 
   const summaryData = [
     ['Total Revenue', `$${stats.totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}`],
@@ -197,11 +221,11 @@ function createPDF(orders: any[], stats: DonationStats, filters: ReportFilters):
     ['', ''],
     [
       'One-Time Donations',
-      `${stats.oneTimeDonations.count} ($${stats.oneTimeDonations.total.toLocaleString('en-US', { minimumFractionDigits: 2 })})`
+      `${stats.oneTimeDonations.count} donations ($${stats.oneTimeDonations.total.toLocaleString('en-US', { minimumFractionDigits: 2 })})`
     ],
     [
       'Recurring Donations',
-      `${stats.recurringDonations.count} ($${stats.recurringDonations.total.toLocaleString('en-US', { minimumFractionDigits: 2 })})`
+      `${stats.recurringDonations.count} donations ($${stats.recurringDonations.total.toLocaleString('en-US', { minimumFractionDigits: 2 })})`
     ],
     ['Active Subscriptions', stats.recurringDonations.activeSubscriptions.toString()]
   ]
@@ -211,10 +235,13 @@ function createPDF(orders: any[], stats: DonationStats, filters: ReportFilters):
     head: [],
     body: summaryData,
     theme: 'plain',
-    styles: { fontSize: 10 },
+    styles: {
+      fontSize: 11,
+      cellPadding: 4
+    },
     columnStyles: {
-      0: { fontStyle: 'bold', cellWidth: 80 },
-      1: { halign: 'right' }
+      0: { fontStyle: 'bold', cellWidth: 85, textColor: [60, 60, 60] },
+      1: { halign: 'right', fontStyle: 'bold', textColor: [0, 0, 0] }
     }
   })
 
@@ -222,63 +249,191 @@ function createPDF(orders: any[], stats: DonationStats, filters: ReportFilters):
 
   // Donations by Campaign
   if (stats.byCampaign.length > 0) {
-    doc.setFontSize(14)
+    doc.setFontSize(16)
     doc.setFont('helvetica', 'bold')
-    doc.text('By Campaign', 14, yPos)
+    doc.text('Donations by Campaign', 14, yPos)
     yPos += 8
+
     autoTable(doc, {
       startY: yPos,
-      head: [['Campaign', 'Count', 'Total']],
+      head: [['Campaign', 'Count', 'Total Amount']],
       body: stats.byCampaign.map((c) => [
         c.name,
         c.count.toString(),
         `$${c.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
       ]),
       theme: 'striped',
-      headStyles: { fillColor: [74, 139, 179] },
-      styles: { fontSize: 10 },
+      headStyles: {
+        fillColor: [74, 139, 179],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        fontSize: 11
+      },
+      styles: { fontSize: 10, cellPadding: 5 },
       columnStyles: {
-        1: { halign: 'center' },
-        2: { halign: 'right' }
+        0: { cellWidth: 'auto' },
+        1: { halign: 'center', cellWidth: 30 },
+        2: { halign: 'right', cellWidth: 40 }
       }
     })
 
     yPos = (doc as any).lastAutoTable.finalY + 15
   }
 
-  // Add new page for transactions
+  // ============ PAGE 2: DONOR DIRECTORY ============
   doc.addPage()
   yPos = 20
 
-  // Recent Transactions
-  doc.setFontSize(14)
+  if (orders.length > 0) {
+    // Section Header
+    doc.setFontSize(18)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(0, 0, 0)
+    doc.text('Donor Directory', 14, yPos)
+    yPos += 6
+
+    // Subtitle
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'italic')
+    doc.setTextColor(100, 100, 100)
+    doc.text(`Total Unique Donors: ${new Set(orders.map((o) => o.userId || o.customerEmail)).size}`, 14, yPos)
+    yPos += 10
+
+    doc.setTextColor(0, 0, 0)
+
+    const donorMap = new Map<string, any>()
+
+    orders.forEach((order) => {
+      const donorKey = order.userId || order.customerEmail
+      const existing = donorMap.get(donorKey)
+
+      if (existing) {
+        existing.count += 1
+        existing.total += order.totalAmount
+      } else {
+        donorMap.set(donorKey, {
+          name: order.user
+            ? `${order.user.firstName || ''} ${order.user.lastName || ''}`.trim() || 'Anonymous'
+            : order.customerName || 'Anonymous',
+          email: order.user?.email || order.customerEmail,
+          count: 1,
+          total: order.totalAmount
+        })
+      }
+    })
+
+    // Sort donors by total contribution (highest first)
+    const sortedDonors = Array.from(donorMap.values()).sort((a, b) => b.total - a.total)
+
+    const donorData = sortedDonors.map((donor, index) => [
+      (index + 1).toString(), // Rank number
+      donor.name,
+      donor.email,
+      donor.count.toString(),
+      `$${donor.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+    ])
+
+    autoTable(doc, {
+      startY: yPos,
+      head: [['#', 'Donor Name', 'Email Address', '# of Gifts', 'Total Contributed']],
+      body: donorData,
+      theme: 'striped',
+      headStyles: {
+        fillColor: [74, 139, 179],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        fontSize: 10,
+        halign: 'center'
+      },
+      styles: {
+        fontSize: 9,
+        cellPadding: 5,
+        lineColor: [220, 220, 220],
+        lineWidth: 0.1
+      },
+      columnStyles: {
+        0: { cellWidth: 12, halign: 'center', textColor: [100, 100, 100] },
+        1: { cellWidth: 50, fontStyle: 'bold' },
+        2: { cellWidth: 60 },
+        3: { cellWidth: 25, halign: 'center' },
+        4: { cellWidth: 40, halign: 'right', fontStyle: 'bold', textColor: [74, 139, 179] }
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252]
+      },
+      didDrawPage: (data) => {
+        // Add page numbers
+        doc.setFontSize(8)
+        doc.setTextColor(128, 128, 128)
+        doc.text(`Page ${doc.getCurrentPageInfo().pageNumber}`, pageWidth / 2, pageHeight - 10, { align: 'center' })
+      }
+    })
+  }
+
+  // ============ PAGE 3: TRANSACTION DETAILS ============
+  doc.addPage()
+  yPos = 20
+
+  doc.setFontSize(18)
   doc.setFont('helvetica', 'bold')
-  doc.text('Recent Transactions', 14, yPos)
+  doc.setTextColor(0, 0, 0)
+  doc.text('Transaction History', 14, yPos)
   yPos += 8
 
+  doc.setFontSize(9)
+  doc.setFont('helvetica', 'italic')
+  doc.setTextColor(100, 100, 100)
+  doc.text(`Showing ${Math.min(orders.length, 100)} most recent transactions`, 14, yPos)
+  yPos += 10
+
+  doc.setTextColor(0, 0, 0)
+
   const transactionData = orders
-    .slice(0, 50)
+    .slice(0, 100)
     .map((order) => [
       new Date(order.createdAt).toLocaleDateString(),
-      order.customerName,
-      order.campaign?.name || 'General',
+      order.customerName || 'Anonymous',
+      order.campaign?.name || 'General Fund',
       order.type === 'ONE_TIME_DONATION' ? 'One-time' : 'Recurring',
-      `$${order.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
-      order.status
+      `$${order.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
     ])
 
   autoTable(doc, {
     startY: yPos,
-    head: [['Date', 'Donor', 'Campaign', 'Type', 'Amount', 'Status']],
+    head: [['Date', 'Donor', 'Campaign', 'Type', 'Amount']],
     body: transactionData,
     theme: 'striped',
-    headStyles: { fillColor: [74, 139, 179] },
-    styles: { fontSize: 8 },
+    headStyles: {
+      fillColor: [74, 139, 179],
+      textColor: [255, 255, 255],
+      fontStyle: 'bold',
+      fontSize: 9
+    },
+    styles: { fontSize: 8, cellPadding: 3 },
     columnStyles: {
-      4: { halign: 'right' },
-      5: { halign: 'center' }
+      0: { cellWidth: 30 },
+      1: { cellWidth: 50 },
+      2: { cellWidth: 55 },
+      3: { cellWidth: 26, halign: 'center' },
+      4: { halign: 'right', cellWidth: 25, fontStyle: 'bold', textColor: [74, 139, 179] }
+    },
+    didDrawPage: (data) => {
+      // Add page numbers
+      doc.setFontSize(8)
+      doc.setTextColor(128, 128, 128)
+      doc.text(`Page ${doc.getCurrentPageInfo().pageNumber}`, pageWidth / 2, pageHeight - 10, { align: 'center' })
     }
   })
+
+  // Footer on last page
+  const finalY = (doc as any).lastAutoTable.finalY
+  if (finalY < pageHeight - 40) {
+    doc.setFontSize(8)
+    doc.setTextColor(128, 128, 128)
+    doc.setFont('helvetica', 'italic')
+    doc.text('This report is confidential and intended for internal use only.', 14, pageHeight - 20)
+    doc.text('Boys & Girls Club of Lynn © 2026', 14, pageHeight - 15)
+  }
 
   return doc
 }
