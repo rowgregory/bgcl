@@ -310,12 +310,17 @@ function createPDF(orders: any[], stats: DonationStats, filters: ReportFilters):
       if (existing) {
         existing.count += 1
         existing.total += order.totalAmount
+        // Keep the first billing address encountered
+        if (!existing.billingAddress && order.billingAddress) {
+          existing.billingAddress = order.billingAddress
+        }
       } else {
         donorMap.set(donorKey, {
           name: order.user
             ? `${order.user.firstName || ''} ${order.user.lastName || ''}`.trim() || 'Anonymous'
             : order.customerName || 'Anonymous',
           email: order.user?.email || order.customerEmail,
+          billingAddress: order.billingAddress,
           count: 1,
           total: order.totalAmount
         })
@@ -325,38 +330,67 @@ function createPDF(orders: any[], stats: DonationStats, filters: ReportFilters):
     // Sort donors by total contribution (highest first)
     const sortedDonors = Array.from(donorMap.values()).sort((a, b) => b.total - a.total)
 
-    const donorData = sortedDonors.map((donor, index) => [
-      (index + 1).toString(), // Rank number
-      donor.name,
-      donor.email,
-      donor.count.toString(),
-      `$${donor.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
-    ])
+    const donorData = sortedDonors.map((donor, index) => {
+      // Parse billing address from JSON
+      let addressStr = 'N/A'
+      if (donor.billingAddress) {
+        try {
+          const addr =
+            typeof donor.billingAddress === 'string' ? JSON.parse(donor.billingAddress) : donor.billingAddress
+
+          // Check if it's an empty array or valid object
+          if (Array.isArray(addr) || Object.keys(addr).length === 0) {
+            addressStr = 'N/A'
+          } else {
+            // Format full address
+            const parts = []
+            if (addr.address) parts.push(addr.address)
+            if (addr.city) parts.push(addr.city)
+            if (addr.state) parts.push(addr.state)
+            if (addr.zipCode || addr.zip) parts.push(addr.zipCode || addr.zip)
+
+            addressStr = parts.length > 0 ? parts.join(', ') : 'N/A'
+          }
+        } catch (e) {
+          addressStr = 'N/A'
+        }
+      }
+
+      return [
+        (index + 1).toString(), // Rank number
+        donor.name,
+        donor.email,
+        addressStr,
+        donor.count.toString(),
+        `$${donor.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+      ]
+    })
 
     autoTable(doc, {
       startY: yPos,
-      head: [['#', 'Donor Name', 'Email Address', '# of Gifts', 'Total Contributed']],
+      head: [['#', 'Donor Name', 'Email Address', 'Billing Address', '# of Gifts', 'Total']],
       body: donorData,
       theme: 'striped',
       headStyles: {
         fillColor: [74, 139, 179],
         textColor: [255, 255, 255],
         fontStyle: 'bold',
-        fontSize: 10,
+        fontSize: 9,
         halign: 'center'
       },
       styles: {
-        fontSize: 9,
-        cellPadding: 5,
+        fontSize: 8,
+        cellPadding: 3,
         lineColor: [220, 220, 220],
         lineWidth: 0.1
       },
       columnStyles: {
-        0: { cellWidth: 12, halign: 'center', textColor: [100, 100, 100] },
-        1: { cellWidth: 50, fontStyle: 'bold' },
-        2: { cellWidth: 60 },
-        3: { cellWidth: 25, halign: 'center' },
-        4: { cellWidth: 40, halign: 'right', fontStyle: 'bold', textColor: [74, 139, 179] }
+        0: { cellWidth: 10, halign: 'center', textColor: [100, 100, 100] },
+        1: { cellWidth: 35, fontStyle: 'bold' },
+        2: { cellWidth: 45 },
+        3: { cellWidth: 60 }, // Wider for full address
+        4: { cellWidth: 18, halign: 'center' },
+        5: { cellWidth: 25, halign: 'right', fontStyle: 'bold', textColor: [74, 139, 179] }
       },
       alternateRowStyles: {
         fillColor: [248, 250, 252]
