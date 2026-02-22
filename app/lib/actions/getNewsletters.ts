@@ -14,7 +14,7 @@ export const getNewsletters = async (): Promise<
 > => {
   try {
     const newsletters = await prisma.newsletter.findMany({
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'desc' }
     })
 
     return newsletters

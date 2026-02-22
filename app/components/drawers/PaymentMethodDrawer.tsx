@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useStripe, useElements, CardElement, Elements } from '@stripe/react-stripe-js'
+import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js'
 import { store, useApplicationSelector, useFormSelector } from '@/app/lib/store/store'
 import { setClosePaymentMethodDrawer } from '@/app/lib/store/slices/appSlice'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
