@@ -152,7 +152,7 @@ export default function CapitalCampaign() {
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Link
-                href="https://bgcl.harnessgiving.org/donate/?method=one-time,monthly,roundup&selected-method=one-time&amount=50&campaign_id=15622"
+                href="/donate?campaignName=Capital Campaign"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-xl transition-colors"
               >
                 Donate Now
@@ -469,7 +469,7 @@ export default function CapitalCampaign() {
             </blockquote>
 
             <Link
-              href="https://bgcl.harnessgiving.org/donate/?method=one-time,monthly,roundup&selected-method=one-time&amount=50&campaign_id=15622"
+              href="/donate?campaignName=Capital Campaign"
               className="inline-flex items-center justify-center gap-2 px-10 py-5 bg-sky-600 hover:bg-sky-500 text-white text-lg font-semibold rounded-xl transition-colors"
             >
               Donate Now
@@ -514,7 +514,7 @@ export default function CapitalCampaign() {
               </p>
 
               <Link
-                href="https://bgcl.harnessgiving.org/donate/?method=one-time,monthly,roundup&selected-method=one-time&amount=50&campaign_id=15622"
+                href="/donate?campaignName=Capital Campaign"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-xl transition-colors"
               >
                 Make a Donation

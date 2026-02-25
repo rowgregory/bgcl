@@ -4,8 +4,8 @@ import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
 import { ICampaign } from '@/types/entities/campaign'
 import { motion } from 'framer-motion'
 import { Heart, Users, Target, ArrowRight, Calendar } from 'lucide-react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { MotionLink } from '../common/MotionLink'
 
 export default function CampaignsClient({ campaigns }: { campaigns: ICampaign[] }) {
   const router = useRouter()
@@ -55,9 +55,13 @@ export default function CampaignsClient({ campaigns }: { campaigns: ICampaign[] 
               const supporters = campaign._count?.orders || 0
 
               return (
-                <Link
+                <div
                   key={campaign.id}
-                  href={campaign?.name === 'Capital Campaign' ? `/capital-campaign` : `/campaigns/${campaign.id}`}
+                  onClick={() =>
+                    campaign?.name === 'Capital Campaign'
+                      ? router.push(`/capital-campaign`)
+                      : router.push(`/campaigns/${campaign.id}`)
+                  }
                 >
                   <motion.div
                     className="group dark:bg-neutral-900 dark:border-neutral-800 dark:hover:border-sky-500/50 bg-white border-neutral-200 border hover:border-sky-500/50 rounded-xl overflow-hidden transition-all duration-300 h-full flex flex-col"
@@ -198,15 +202,9 @@ export default function CampaignsClient({ campaigns }: { campaigns: ICampaign[] 
                       </div>
 
                       {/* CTA */}
-                      <motion.button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          if (campaign.externalLink) {
-                            window.open(campaign.externalLink, '_blank', 'noopener,noreferrer')
-                          } else {
-                            router.push(`/donate?campaignName=${campaign.name}`)
-                          }
-                        }}
+                      <MotionLink
+                        onClick={(e) => e.stopPropagation()}
+                        href={`/donate?campaignName=${campaign.name}`}
                         className="w-full flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors shadow-lg dark:shadow-sky-600/20 shadow-sky-600/20 text-sm sm:text-base"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -214,10 +212,10 @@ export default function CampaignsClient({ campaigns }: { campaigns: ICampaign[] 
                         <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         Donate Now
                         <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      </motion.button>
+                      </MotionLink>
                     </div>
                   </motion.div>
-                </Link>
+                </div>
               )
             })}
           </motion.div>

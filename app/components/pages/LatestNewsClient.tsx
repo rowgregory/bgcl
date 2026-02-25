@@ -310,41 +310,61 @@ export default function LatestNewsClient({ newsletters, news }: { newsletters: I
             </p>
           </motion.div>
 
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {newsletters
-              .map((newsletter, n) => (
+          {Object.entries(
+            newsletters.reduce((acc: Record<number, typeof newsletters>, newsletter) => {
+              if (!acc[newsletter.year]) acc[newsletter.year] = []
+              acc[newsletter.year].push(newsletter)
+              return acc
+            }, {})
+          )
+            .sort(([a], [b]) => Number(b) - Number(a))
+            .map(([year, items]) => (
+              <div key={year} className="mb-12">
+                {/* Year header */}
+                <div className="flex items-center gap-4 mb-6">
+                  <h3 className="text-2xl font-black dark:text-white text-neutral-900">{year}</h3>
+                  <div className="flex-1 h-px dark:bg-neutral-800 bg-neutral-200" />
+                  <span className="text-xs font-semibold dark:bg-neutral-800 bg-neutral-100 dark:text-neutral-400 text-neutral-600 px-3 py-1 rounded-full">
+                    {items.length} issue{items.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+
                 <motion.div
-                  key={n}
-                  variants={itemVariants}
-                  className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 border rounded-xl p-6 hover:border-sky-500/50 transition-colors group"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  variants={containerVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <Mail className="w-6 h-6 dark:text-sky-400 text-sky-600 shrink-0" />
-                    <span className="text-xs font-semibold dark:bg-neutral-800 bg-neutral-100 dark:text-neutral-400 text-neutral-600 px-3 py-1 rounded-full">
-                      {newsletter.month}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-bold dark:text-white text-neutral-900 mb-2 group-hover:dark:text-sky-400 group-hover:text-sky-600 transition-colors">
-                    {newsletter.year}
-                  </h3>
-                  <a
-                    href={newsletter.pdfUrl}
-                    target="_blank"
-                    className="inline-flex items-center gap-2 dark:text-sky-400 text-sky-600 hover:dark:text-sky-300 hover:text-sky-700 font-semibold text-sm transition-colors"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download PDF
-                  </a>
+                  {items.map((newsletter, n) => (
+                    <motion.div
+                      key={n}
+                      variants={itemVariants}
+                      className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 border rounded-xl p-6 hover:border-sky-500/50 transition-colors group"
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <Mail className="w-6 h-6 dark:text-sky-400 text-sky-600 shrink-0" />
+                        <span className="text-xs font-semibold dark:bg-neutral-800 bg-neutral-100 dark:text-neutral-400 text-neutral-600 px-3 py-1 rounded-full">
+                          {newsletter.month}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-bold dark:text-white text-neutral-900 mb-4 group-hover:dark:text-sky-400 group-hover:text-sky-600 transition-colors">
+                        {newsletter.month} {newsletter.year}
+                      </h3>
+
+                      <a
+                        href={newsletter.pdfUrl}
+                        target="_blank"
+                        className="inline-flex items-center gap-2 dark:text-sky-400 text-sky-600 hover:dark:text-sky-300 hover:text-sky-700 font-semibold text-sm transition-colors"
+                      >
+                        <Download className="w-4 h-4" />
+                        Download PDF
+                      </a>
+                    </motion.div>
+                  ))}
                 </motion.div>
-              ))
-              .reverse()}
-          </motion.div>
+              </div>
+            ))}
         </div>
       </section>
 

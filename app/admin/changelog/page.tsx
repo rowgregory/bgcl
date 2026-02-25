@@ -21,6 +21,26 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.9.2',
+    date: '2026-02-25',
+    changes: [
+      {
+        type: 'improvement',
+        title: 'Replaced Harness Donation Links',
+        description:
+          'Removed all external Harness links and replaced them with in-app donate links using campaign query params to route to the correct campaign.',
+        impact: 'high'
+      },
+      {
+        type: 'ui',
+        title: 'Newsletter Year Grouping',
+        description:
+          'Newsletters are now grouped by year with a header, horizontal rule, and issue count badge. Years are sorted newest first.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.9.1',
     date: '2026-02-05',
     changes: [

@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Picture from '../common/Picture'
 import { formatDate } from '@/app/lib/utils/date-utils'
+import { MotionLink } from '../common/MotionLink'
 
 interface CampaignPageProps {
   campaign: ICampaign
@@ -239,21 +240,15 @@ export function CampaignClient({ campaign }: CampaignPageProps) {
 
             {/* CTA Buttons */}
             <div className="space-y-4 sticky top-120">
-              <motion.button
-                onClick={() => {
-                  if (campaign?.externalLink) {
-                    window.open(campaign?.externalLink, '_blank')
-                  } else {
-                    router.push(`/donate?campaignName=${campaign?.name}`)
-                  }
-                }}
+              <MotionLink
+                href={`/donate?campaignName=${campaign?.name}`}
                 className="w-full flex items-center justify-center gap-2 px-6 py-4 dark:bg-linear-to-r dark:from-sky-600 dark:to-sky-700 dark:hover:from-sky-700 dark:hover:to-sky-800 bg-linear-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-black rounded-lg transition-all shadow-lg dark:shadow-sky-600/50 shadow-sky-600/30"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <Heart className="w-5 h-5" />
                 Donate Now
-              </motion.button>
+              </MotionLink>
 
               <motion.button
                 onClick={handleShare}
