@@ -29,7 +29,7 @@ export default function Header() {
   const handleLaunchApp = () => router.push(getLaunchPath())
 
   return (
-    <header role="banner">
+    <>
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-9999 focus:px-4 focus:py-2 focus:bg-sky-600 focus:text-white focus:font-semibold focus:rounded-lg focus:shadow-lg"
@@ -37,7 +37,8 @@ export default function Header() {
         Skip to main content
       </a>
       {/* Top Bar */}
-      <div
+      <header
+        role="banner"
         className={`${pathname === '/' ? 'max-w-334' : ''} w-full mx-auto dark:bg-neutral-900 dark:border-neutral-700 bg-neutral-50 border-neutral-200 border-b relative z-100 px-4 sm:px-6 lg:px-8 py-3`}
       >
         <div className="max-w-334 flex items-center justify-between mx-auto">
@@ -83,9 +84,9 @@ export default function Header() {
             </button>
           </div>
         </div>
-      </div>
+      </header>
 
-      <motion.div
+      <motion.nav
         className={`${pathname === '/' ? 'max-w-334' : ''} w-full mx-auto sticky top-0 dark:border-neutral-700 dark:bg-neutral-950 border-neutral-200 bg-white z-50 px-4 sm:px-6 lg:px-8 1xl:rounded-br-xl 1xl:rounded-bl-xl`}
         animate={{
           paddingTop: isAtTop ? '18px' : '10px',
@@ -191,7 +192,7 @@ export default function Header() {
             </a>
           </motion.div>
         </div>
-      </motion.div>
-    </header>
+      </motion.nav>
+    </>
   )
 }

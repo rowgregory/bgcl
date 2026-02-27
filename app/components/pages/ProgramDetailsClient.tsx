@@ -9,8 +9,7 @@ import { IClosing } from '@/types/entities/closing'
 import { useMemo } from 'react'
 import Picture from '../common/Picture'
 
-const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closings: IClosing[] }) => {
-  // Randomly select a gradient on component mount (stays consistent during the session)
+export const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closings: IClosing[] }) => {
   const gradient = useMemo(() => {
     const gradients = [
       'from-sky-500 to-cyan-600',
@@ -23,40 +22,43 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
 
   if (Object.keys(program).length === 0) {
     return (
-      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
+      <main id="main-content" className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="text-center space-y-4">
           <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Program Not Found</h1>
-          <Link href="/programs">
-            <button className="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-lg transition-colors">
-              Back to Programs
-            </button>
+          <Link
+            href="/programs"
+            className="inline-block px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+          >
+            Back to Programs
           </Link>
         </div>
-      </div>
+      </main>
     )
   }
 
   return (
-    <div className="dark:bg-neutral-950 bg-white min-h-screen pb-28 md:pb-0">
-      <div className="bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 py-3 sm:py-4">
+    <main id="main-content" className="dark:bg-neutral-950 bg-white min-h-screen pb-28 md:pb-0">
+      {/* Back Navigation */}
+      <nav
+        aria-label="Breadcrumb"
+        className="bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 py-3 sm:py-4"
+      >
         <div className="max-w-334 mx-auto px-4 sm:px-6 md:px-12">
           <Link
             href="/programs"
-            className="inline-flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-sky-600 dark:hover:text-sky-400 transition-colors text-sm sm:text-base font-medium"
+            aria-label="Back to all programs"
+            className="inline-flex items-center gap-2 text-neutral-700 dark:text-neutral-300 hover:text-sky-600 dark:hover:text-sky-400 transition-colors text-sm sm:text-base font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
           >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
             Back to Programs
           </Link>
         </div>
-      </div>
+      </nav>
 
-      {/* Compact Hero Section with Gradient */}
+      {/* Hero Section */}
       <div className="relative overflow-hidden py-12 sm:py-16 md:py-20">
-        {/* Gradient Background */}
-        <div className={`absolute inset-0 bg-linear-to-r ${gradient}`} />
-
-        {/* Optional Pattern Overlay */}
-        <div className="absolute inset-0 opacity-10">
+        <div aria-hidden="true" className={`absolute inset-0 bg-linear-to-r ${gradient}`} />
+        <div aria-hidden="true" className="absolute inset-0 opacity-10">
           <div
             className="absolute inset-0"
             style={{
@@ -64,14 +66,8 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
             }}
           />
         </div>
-
         <div className="max-w-334 mx-auto px-4 sm:px-6 md:px-12 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-3 sm:space-y-4"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-lg">
               {program?.name}
             </h1>
@@ -88,140 +84,152 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
         >
           {/* Left Column - Description */}
           <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-            <div className="space-y-3 sm:space-y-4">
-              <h2 className="text-2xl sm:text-3xl font-black dark:text-white text-neutral-900">About This Program</h2>
-              <div className="space-y-3 sm:space-y-4 text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
-                {program?.descriptions && Array.isArray(program.descriptions) && program.descriptions.length > 0 && (
-                  <>
-                    {program.descriptions.map(
-                      (description: string, index: number) => description && <p key={index}>{description}</p>
-                    )}
-                  </>
-                )}
+            <section aria-labelledby="about-heading">
+              <div className="space-y-3 sm:space-y-4">
+                <h2 id="about-heading" className="text-2xl sm:text-3xl font-black dark:text-white text-neutral-900">
+                  About This Program
+                </h2>
+                <div className="space-y-3 sm:space-y-4 text-base sm:text-lg dark:text-neutral-300 text-neutral-700 leading-relaxed">
+                  {program?.descriptions?.map(
+                    (description: string, index: number) => description && <p key={index}>{description}</p>
+                  )}
+                </div>
               </div>
-            </div>
+            </section>
 
             {/* Program Details Grid */}
             <div className="grid grid-cols-1 gap-6">
-              {program?.themes && Array.isArray(program.themes) && program.themes.length > 0 && program.showThemes && (
-                <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6">
+              {/* Weekly Themes */}
+              {program?.themes && Array.isArray(program.themes) && program.showThemes && (
+                <section
+                  aria-labelledby="themes-heading"
+                  className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6"
+                >
                   <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-                    <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" />
-                    <h3 className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">Weekly Themes</h3>
+                    <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" aria-hidden="true" />
+                    <h2 id="themes-heading" className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">
+                      Weekly Themes
+                    </h2>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                  <ul
+                    aria-label="Weekly themes list"
+                    className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 list-none p-0"
+                  >
                     {program.themes
                       .sort((a: { order: number }, b: { order: number }) => a.order - b.order)
-                      .map((theme: { id: string; title: string; dates: string; order: number }, index) => {
+                      .map((theme: { id: string; title: string; dates: string; order: number }, index: number) => {
                         const colors = [
-                          {
-                            badge: 'bg-purple-500'
-                          },
-                          {
-                            badge: 'bg-orange-500'
-                          },
-                          {
-                            badge: 'bg-green-500'
-                          }
+                          { badge: 'bg-purple-500' },
+                          { badge: 'bg-orange-500' },
+                          { badge: 'bg-green-500' }
                         ]
                         const colorScheme = colors[index % 3]
 
                         return (
-                          <div
+                          <li
                             key={theme.id}
-                            className={`relative bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg p-3 sm:p-4 transition-colors`}
+                            className="relative bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-lg p-3 sm:p-4 transition-colors"
                           >
                             <div
+                              aria-hidden="true"
                               className={`absolute -top-2 sm:-top-3 left-3 sm:left-4 ${colorScheme.badge} text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-lg`}
                             >
                               Week {theme.order}
                             </div>
-                            <h4 className="text-sm sm:text-base font-bold dark:text-white text-neutral-900 mt-2 mb-2">
+                            <h3 className="text-sm sm:text-base font-bold dark:text-white text-neutral-900 mt-2 mb-2">
+                              <span className="sr-only">Week {theme.order}: </span>
                               {theme.title}
-                            </h4>
+                            </h3>
                             <div className="flex items-center gap-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
-                              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
                               <span>{theme.dates}</span>
                             </div>
-                          </div>
+                          </li>
                         )
                       })}
-                  </div>
-                </div>
+                  </ul>
+                </section>
               )}
 
-              {program?.additionalDetails &&
-                Array.isArray(program.additionalDetails) &&
-                program.additionalDetails.length > 0 && (
-                  <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6">
-                    <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                      <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" />
-                      <h3 className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">
-                        Additional Details
-                      </h3>
-                    </div>
-                    <div className="space-y-4 sm:space-y-6">
-                      {program.additionalDetails.map(
-                        (detail: { title: string; input1: string; input2: string }, index) => (
-                          <div key={index} className="border-l-4 border-sky-500 pl-3 sm:pl-4">
-                            <h4 className="text-sm sm:text-base font-bold dark:text-white text-neutral-900 mb-2 sm:mb-3">
-                              {detail.title}
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
-                              {detail.input1 && (
-                                <p className="dark:text-neutral-300 text-neutral-700 text-sm sm:text-base">
-                                  {detail.input1}
-                                </p>
-                              )}
-                              {detail.input2 && (
-                                <p className="dark:text-neutral-300 text-neutral-700 text-sm sm:text-base">
-                                  {detail.input2}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        )
-                      )}
-                    </div>
+              {/* Additional Details */}
+              {program?.additionalDetails && Array.isArray(program.additionalDetails) && (
+                <section
+                  aria-labelledby="additional-details-heading"
+                  className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6"
+                >
+                  <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                    <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" aria-hidden="true" />
+                    <h2
+                      id="additional-details-heading"
+                      className="text-base sm:text-lg font-bold dark:text-white text-neutral-900"
+                    >
+                      Additional Details
+                    </h2>
                   </div>
-                )}
+                  <div className="space-y-4 sm:space-y-6">
+                    {program.additionalDetails.map(
+                      (detail: { title: string; input1: string; input2: string }, index: number) => (
+                        <div key={index} className="border-l-4 border-sky-500 pl-3 sm:pl-4">
+                          <h3 className="text-sm sm:text-base font-bold dark:text-white text-neutral-900 mb-2 sm:mb-3">
+                            {detail.title}
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
+                            {detail.input1 && (
+                              <p className="dark:text-neutral-300 text-neutral-700 text-sm sm:text-base">
+                                {detail.input1}
+                              </p>
+                            )}
+                            {detail.input2 && (
+                              <p className="dark:text-neutral-300 text-neutral-700 text-sm sm:text-base">
+                                {detail.input2}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </section>
+              )}
             </div>
           </div>
 
           {/* Right Column - Schedule & CTA */}
-          <div className="space-y-4 sm:space-y-6">
-            {/* Drop-Off Times */}
+          <aside aria-label="Program details and enrollment" className="space-y-4 sm:space-y-6">
+            {/* Schedule */}
             {program?.dropOffStart && program?.dropOffEnd && program?.pickUpStart && program?.pickUpEnd && (
-              <motion.div
+              <motion.section
+                aria-labelledby="schedule-heading"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
                 className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6 space-y-3 sm:space-y-4 lg:sticky lg:top-8"
               >
-                <h3 className="text-lg sm:text-xl font-black dark:text-white text-neutral-900 flex items-center gap-2">
-                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-sky-500" />
+                <h2
+                  id="schedule-heading"
+                  className="text-lg sm:text-xl font-black dark:text-white text-neutral-900 flex items-center gap-2"
+                >
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-sky-500" aria-hidden="true" />
                   Schedule
-                </h3>
-
-                <div className="space-y-3 sm:space-y-4">
+                </h2>
+                <dl className="space-y-3 sm:space-y-4">
                   <div>
-                    <p className="dark:text-sky-400 text-sky-600 text-xs sm:text-sm font-semibold mb-1">Drop-Off</p>
-                    <p className="dark:text-white text-neutral-900 font-semibold text-sm sm:text-base">
-                      {program?.dropOffStart} - {program?.dropOffEnd}
-                    </p>
+                    <dt className="dark:text-sky-400 text-sky-600 text-xs sm:text-sm font-semibold mb-1">Drop-Off</dt>
+                    <dd className="dark:text-white text-neutral-900 font-semibold text-sm sm:text-base">
+                      {program.dropOffStart} - {program.dropOffEnd}
+                    </dd>
                   </div>
-
                   <div className="dark:border-neutral-700 border-neutral-300 border-t pt-3 sm:pt-4">
-                    <p className="dark:text-sky-400 text-sky-600 text-xs sm:text-sm font-semibold mb-1">Pick-Up</p>
-                    <p className="dark:text-white text-neutral-900 font-semibold text-sm sm:text-base">
-                      {program?.pickUpStart} - {program?.pickUpEnd}
-                    </p>
+                    <dt className="dark:text-sky-400 text-sky-600 text-xs sm:text-sm font-semibold mb-1">Pick-Up</dt>
+                    <dd className="dark:text-white text-neutral-900 font-semibold text-sm sm:text-base">
+                      {program.pickUpStart} - {program.pickUpEnd}
+                    </dd>
                   </div>
-                </div>
-              </motion.div>
+                </dl>
+              </motion.section>
             )}
 
-            {/* Image Two */}
+            {/* Program Image */}
             {program?.imageTwo && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -230,90 +238,140 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
                 className="relative w-full aspect-square rounded-lg overflow-hidden shadow-lg"
               >
                 <Picture
-                  src={program?.imageTwo}
-                  alt={program?.name || 'Program image'}
-                  priority={true}
+                  src={program.imageTwo}
+                  alt={`${program.name} program photo`}
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 33vw"
                   className="object-cover w-full h-full"
                 />
               </motion.div>
             )}
 
-            {/* CTA Button */}
+            {/* Enroll CTA */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-              <a href="https://parentportal.bgcl.org/" target="_blank" rel="noopener noreferrer" className="block">
-                <button
-                  className={`w-full px-6 py-3 sm:py-4 bg-linear-to-r ${gradient} text-white font-bold rounded-lg transition-colors text-sm sm:text-base`}
-                >
-                  Enroll Now
-                </button>
-                <p className="text-[10px] sm:text-xs dark:text-neutral-500 text-neutral-500 mt-2">
-                  Opens in new window
-                </p>
+              <a
+                href="https://parentportal.bgcl.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Enroll in ${program?.name} - opens in a new tab`}
+                className={`block w-full px-6 py-3 sm:py-4 bg-linear-to-r ${gradient} text-white font-bold rounded-lg transition-colors text-sm sm:text-base text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2`}
+              >
+                Enroll Now
               </a>
+              <p
+                className="text-[10px] sm:text-xs dark:text-neutral-500 text-neutral-500 mt-2 text-center"
+                aria-hidden="true"
+              >
+                Opens in new window
+              </p>
             </motion.div>
 
+            {/* Age Group */}
             {program?.showAgeGroup && (
-              <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6">
+              <div
+                aria-labelledby="age-group-heading"
+                className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6"
+              >
                 <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                  <Users className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" />
-                  <h3 className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">Age Group</h3>
+                  <Users className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" aria-hidden="true" />
+                  <h2
+                    id="age-group-heading"
+                    className="text-base sm:text-lg font-bold dark:text-white text-neutral-900"
+                  >
+                    Age Group
+                  </h2>
                 </div>
                 <p className="dark:text-neutral-300 text-neutral-700 text-base sm:text-lg font-semibold">
-                  {program?.ageGroup} years
+                  {program.ageGroup} years
                 </p>
               </div>
             )}
 
+            {/* Location */}
             {program?.location && (
-              <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6">
+              <div
+                aria-labelledby="location-heading"
+                className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6"
+              >
                 <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                  <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" />
-                  <h3 className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">Location</h3>
+                  <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" aria-hidden="true" />
+                  <h2 id="location-heading" className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">
+                    Location
+                  </h2>
                 </div>
                 <p className="dark:text-neutral-300 text-neutral-700 text-base sm:text-lg font-semibold">
-                  {program?.location}
+                  {program.location}
                 </p>
               </div>
             )}
 
+            {/* Available Dates */}
             {program?.datesAvailable && (
-              <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6">
+              <div
+                aria-labelledby="dates-heading"
+                className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6"
+              >
                 <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                  <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" />
-                  <h3 className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">Available Dates</h3>
+                  <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" aria-hidden="true" />
+                  <h2 id="dates-heading" className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">
+                    Available Dates
+                  </h2>
                 </div>
                 <p className="dark:text-neutral-300 text-neutral-700 text-base sm:text-lg font-semibold">
-                  {program?.datesAvailable}
+                  {program.datesAvailable}
                 </p>
               </div>
             )}
 
+            {/* Licensing */}
             {program?.license && (
-              <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6">
+              <div
+                aria-labelledby="license-heading"
+                className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6"
+              >
                 <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                  <Stamp className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" />
-                  <h3 className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">Licensing</h3>
+                  <Stamp className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" aria-hidden="true" />
+                  <h2 id="license-heading" className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">
+                    Licensing
+                  </h2>
                 </div>
                 <p className="dark:text-neutral-300 text-neutral-700 text-base sm:text-lg font-semibold">
-                  {program?.license}
+                  {program.license}
                 </p>
               </div>
             )}
 
+            {/* External Link */}
             {program?.externalLink && (
-              <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6">
+              <div
+                aria-labelledby="program-docs-heading"
+                className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6"
+              >
                 <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" />
-                  <h3 className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">Program Details</h3>
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" aria-hidden="true" />
+                  <h2
+                    id="program-docs-heading"
+                    className="text-base sm:text-lg font-bold dark:text-white text-neutral-900"
+                  >
+                    Program Details
+                  </h2>
                 </div>
+
                 <a
-                  href={program?.externalLink}
+                  href={program.externalLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 dark:text-sky-400 text-sky-600 hover:text-sky-700 dark:hover:text-sky-300 text-base sm:text-lg font-semibold transition-colors duration-200 underline underline-offset-4"
+                  aria-label={`View PDF document for ${program.name} - opens in a new tab`}
+                  className="inline-flex items-center gap-2 dark:text-sky-400 text-sky-600 hover:text-sky-700 dark:hover:text-sky-300 text-base sm:text-lg font-semibold transition-colors duration-200 underline underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
                 >
                   View PDF Document
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    aria-hidden="true"
+                    className="w-4 h-4 sm:w-5 sm:h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -326,36 +384,39 @@ const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closin
             )}
 
             {/* Contact Card */}
-            <motion.div
+            <motion.section
+              aria-labelledby="contact-heading"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
               className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6 space-y-2 sm:space-y-3 text-center"
             >
-              <h4 className="dark:text-white text-neutral-900 font-bold text-sm sm:text-base">Questions?</h4>
+              <h2 id="contact-heading" className="dark:text-white text-neutral-900 font-bold text-sm sm:text-base">
+                Questions?
+              </h2>
               <div className="space-y-2 text-xs sm:text-sm">
                 <a
                   href="tel:781-593-1772"
-                  className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-700 font-semibold block transition-colors"
+                  aria-label="Call us at 781-593-1772"
+                  className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-700 font-semibold block transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
                 >
                   (781) 593-1772
                 </a>
 
                 <a
                   href="mailto:info@bgcl.org"
-                  className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-700 font-semibold block transition-colors"
+                  aria-label="Email us at info@bgcl.org"
+                  className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-700 font-semibold block transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
                 >
                   info@bgcl.org
                 </a>
               </div>
-            </motion.div>
-          </div>
+            </motion.section>
+          </aside>
         </motion.div>
       </div>
-      {/* Closings Section */}
+
       <FacilityClosings closings={closings} />
-    </div>
+    </main>
   )
 }
-
-export default ProgramDetailsClient

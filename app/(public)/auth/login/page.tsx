@@ -132,58 +132,49 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side - Visual/Branding */}
-      <div className="hidden lg:flex lg:w-1/2 dark:bg-neutral-950 bg-neutral-50 relative overflow-hidden items-center justify-center p-12">
-        {/* Animated linear orbs */}
+      {/* Left Side - Visual/Branding (decorative, hidden from AT) */}
+      <div
+        aria-hidden="true"
+        className="hidden lg:flex lg:w-1/2 dark:bg-neutral-950 bg-neutral-50 relative overflow-hidden items-center justify-center p-12"
+      >
+        {/* Animated orbs */}
         <motion.div
           className="absolute top-1/4 left-1/3 w-96 h-96 bg-sky-600/30 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.3, 0.6, 0.3]
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity
-          }}
+          animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
+          transition={{ duration: 10, repeat: Infinity }}
         />
         <motion.div
           className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-neutral-500/20 rounded-full blur-3xl"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.4, 0.2, 0.4]
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity
-          }}
+          animate={{ scale: [1.2, 1, 1.2], opacity: [0.4, 0.2, 0.4] }}
+          transition={{ duration: 8, repeat: Infinity }}
         />
 
-        {/* Floating stars */}
         <FloatingStars />
+
         {/* Content */}
         <div className="relative z-10 text-center flex items-center justify-center flex-col">
-          <MotionLink href="/" className="flex space-x-3 w-44 h-auto mb-4">
+          <MotionLink href="/" tabIndex={-1} className="flex space-x-3 w-44 h-auto mb-4">
             <Picture
               src="/images/vertical-logo-light.png"
-              alt="Boys & Girls Club"
-              className="dark:hidden block w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
+              alt=""
+              className="dark:hidden block w-full h-full hover:opacity-80 transition-opacity object-contain"
               priority
             />
             <Picture
               src="/images/vertical-logo-dark.png"
-              alt="Boys & Girls Club"
-              className="dark:block hidden w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
+              alt=""
+              className="dark:block hidden w-full h-full hover:opacity-80 transition-opacity object-contain"
               priority
             />
           </MotionLink>
-          <motion.h1
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
             className="dark:text-white text-neutral-900 text-5xl font-bold mb-4 tracking-tight"
           >
             BGCL PORTAL
-          </motion.h1>
+          </motion.p>
 
           <motion.div
             initial={{ opacity: 0 }}
@@ -211,33 +202,41 @@ const Login = () => {
           transition={{ duration: 0.6 }}
           className="w-full max-w-md"
         >
-          {/* Mobile logo */}
+          {/* Mobile logo — visible to AT since left panel is hidden */}
           <div className="lg:hidden text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-sky-500 to-sky-700 rounded-full mb-4">
-              <Rocket className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="dark:text-white text-neutral-900 text-2xl font-bold">BGCL PORTAL</h1>
+            <Link
+              href="/"
+              aria-label="Boys & Girls Club — go to home page"
+              className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-sky-500 to-sky-700 rounded-full mb-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+            >
+              <Rocket className="w-8 h-8 text-white" aria-hidden="true" />
+            </Link>
+            <p className="dark:text-white text-neutral-900 text-2xl font-bold">BGCL PORTAL</p>
           </div>
 
-          <div>
-            <h2 className="dark:text-white text-neutral-900 text-3xl font-bold mb-2">Welcome back</h2>
+          <main aria-labelledby="login-heading">
+            <h1 id="login-heading" className="dark:text-white text-neutral-900 text-3xl font-bold mb-2">
+              Welcome back
+            </h1>
             <p className="dark:text-neutral-400 text-neutral-600 mb-8">Sign in to access your mission control</p>
 
-            {/* Error Message */}
+            {/* URL Error Message */}
             <AnimatePresence>
               {urlError && (
                 <motion.div
+                  role="alert"
+                  aria-live="assertive"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
                   className="mb-6 p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl backdrop-blur-sm"
                 >
                   <div className="flex items-start space-x-3">
-                    <div className="shrink-0">
+                    <div className="shrink-0" aria-hidden="true">
                       <ShieldX className="w-5 h-5 text-red-500 dark:text-red-400" />
                     </div>
                     <div>
-                      <h3 className="text-red-600 dark:text-red-400 font-semibold text-sm mb-1">{errorInfo?.title}</h3>
+                      <p className="text-red-600 dark:text-red-400 font-semibold text-sm mb-1">{errorInfo?.title}</p>
                       <p className="text-red-600/80 dark:text-red-300 text-sm leading-relaxed">{errorInfo?.message}</p>
                     </div>
                   </div>
@@ -249,12 +248,13 @@ const Login = () => {
               <>
                 {/* Google Sign In */}
                 <motion.button
+                  type="button"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleGoogleSignIn}
-                  className="w-full dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-900 bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-3 transition-colors mb-6"
+                  className="w-full dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-900 bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-3 transition-colors mb-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                 >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                     <path
                       fill="currentColor"
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -276,32 +276,40 @@ const Login = () => {
                 </motion.button>
 
                 {/* Divider */}
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full dark:border-neutral-700 border-neutral-300 border-t"></div>
+                <div role="separator" aria-label="or continue with email" className="relative mb-6">
+                  <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div className="w-full dark:border-neutral-700 border-neutral-300 border-t" />
                   </div>
-                  <div className="relative flex justify-center text-sm">
+                  <div className="relative flex justify-center text-sm" aria-hidden="true">
                     <span className="dark:px-2 dark:bg-neutral-900 dark:text-neutral-500 px-2 bg-white text-neutral-600">
                       or continue with email
                     </span>
                   </div>
                 </div>
 
-                {/* Success Banner */}
+                {/* Inline Error Banner */}
                 <AnimatePresence>
                   {errorMsg && (
                     <motion.div
+                      role="alert"
+                      aria-live="assertive"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.5, ease: 'easeOut' }}
                       className="mb-8 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3"
                     >
-                      <div className="shrink-0">
-                        <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="shrink-0" aria-hidden="true">
+                        <svg
+                          className="w-5 h-5 text-red-600 dark:text-red-400"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
                           <path
                             fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
                             clipRule="evenodd"
                           />
                         </svg>
@@ -314,21 +322,27 @@ const Login = () => {
                   )}
                 </AnimatePresence>
 
-                {/* Magic Link */}
-                <form onSubmit={handleMagicLink}>
+                {/* Magic Link Form */}
+                <form onSubmit={handleMagicLink} noValidate>
                   <div className="mb-6">
                     <label
                       htmlFor="email"
                       className="dark:text-neutral-300 text-neutral-700 block text-sm font-medium mb-2"
                     >
-                      Email address
+                      Email address{' '}
+                      <span aria-hidden="true" className="text-red-500">
+                        *
+                      </span>
+                      <span className="sr-only">(required)</span>
                     </label>
                     <input
                       id="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="sqysh@sqysh.io"
+                      placeholder="you@example.com"
+                      autoComplete="email"
+                      aria-required="true"
                       className="w-full dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-100 border-neutral-300 text-neutral-900 placeholder-neutral-600 focus:ring-sky-500 border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:border-transparent transition-all"
                     />
                   </div>
@@ -338,21 +352,23 @@ const Login = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     disabled={isSubmitting}
-                    className="w-full dark:bg-linear-to-r dark:from-sky-600 dark:to-sky-700 dark:hover:from-sky-500 dark:hover:to-sky-600 bg-linear-to-r from-sky-600 to-sky-700 hover:from-sky-500 hover:to-sky-600 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    aria-disabled={isSubmitting}
+                    aria-busy={isSubmitting}
+                    className="w-full dark:bg-linear-to-r dark:from-sky-600 dark:to-sky-700 dark:hover:from-sky-500 dark:hover:to-sky-600 bg-linear-to-r from-sky-600 to-sky-700 hover:from-sky-500 hover:to-sky-600 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                   >
                     {isSubmitting ? (
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{
-                          duration: 1,
-                          repeat: Infinity,
-                          ease: 'linear'
-                        }}
-                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                      />
+                      <>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                          aria-hidden="true"
+                          className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                        />
+                        <span className="sr-only">Sending magic link, please wait…</span>
+                      </>
                     ) : (
                       <>
-                        <Mail className="w-5 h-5" />
+                        <Mail className="w-5 h-5" aria-hidden="true" />
                         Send Magic Link
                       </>
                     )}
@@ -363,24 +379,32 @@ const Login = () => {
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
                 className="text-center py-8"
               >
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                  aria-hidden="true"
                   className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-sky-500 to-sky-600 rounded-full mb-4"
                 >
                   <Mail className="w-8 h-8 text-white" />
                 </motion.div>
                 <h2 className="dark:text-white text-neutral-900 text-xl font-bold mb-2">Check your email</h2>
                 <p className="dark:text-neutral-400 text-neutral-600 mb-6">
-                  We sent a magic link to <br />
-                  <span className="text-sky-400">{email}</span>
+                  We sent a magic link to{' '}
+                  <span className="text-sky-400">
+                    <span className="sr-only">the address </span>
+                    {email}
+                  </span>
                 </p>
                 <button
+                  type="button"
                   onClick={() => setEmailSent(false)}
-                  className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-500 text-sm transition-colors"
+                  className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-500 text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 rounded"
                 >
                   Try another email
                 </button>
@@ -390,18 +414,21 @@ const Login = () => {
             {/* Footer */}
             <p className="dark:text-neutral-500 text-neutral-600 text-center text-xs mt-8">
               By signing in, you agree to our{' '}
-              <Link href="/terms" className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-500">
+              <Link
+                href="/terms"
+                className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-1 rounded"
+              >
                 Terms of Service
               </Link>{' '}
               and{' '}
               <Link
                 href="/privacy-policy"
-                className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-500"
+                className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-1 rounded"
               >
                 Privacy Policy
               </Link>
             </p>
-          </div>
+          </main>
         </motion.div>
       </div>
     </div>

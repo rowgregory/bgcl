@@ -1,4 +1,4 @@
-import ProgramDetailsClient from '@/app/components/pages/ProgramDetailsClient'
+import { ProgramDetailsClient } from '@/app/components/pages/ProgramDetailsClient'
 import { getClosings } from '@/app/lib/actions/getClosings'
 import { getProgramById } from '@/app/lib/actions/getProgramById'
 import prisma from '@/prisma/client'
@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation'
 export default async function ProgramDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const { program } = await getProgramById(id)
+  const closings = await getClosings()
 
   // If not found by ID, try to find by slug/name (old URL structure)
   if (!program) {
@@ -28,8 +29,6 @@ export default async function ProgramDetailsPage({ params }: { params: Promise<{
       redirect(`/programs/${programBySlug.id}`)
     }
   }
-
-  const closings = await getClosings()
 
   const normalizedProgram: IProgram = {
     ...program,

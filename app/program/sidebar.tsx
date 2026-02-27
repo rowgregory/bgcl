@@ -11,7 +11,7 @@ import { setIsLoading } from '../lib/store/slices/formSlice'
 import { showToast } from '../lib/store/slices/toastSlice'
 import { programNavigationLinkData } from '../lib/constants/programNavLinks'
 
-const ProgramSidebar = () => {
+export const ProgramSidebar = () => {
   const pathname = usePathname()
   const session = useSession()
   const router = useRouter()
@@ -150,5 +150,3 @@ const ProgramSidebar = () => {
     </aside>
   )
 }
-
-export default ProgramSidebar

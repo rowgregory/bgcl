@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
 import { DollarSign } from 'lucide-react'
 import { usePathname } from 'next/navigation'
-import { Order } from '@/types/entities/order'
 
 const originalWarn = console.warn
 console.warn = (...args) => {
@@ -13,8 +12,21 @@ console.warn = (...args) => {
   originalWarn(...args)
 }
 
+interface ICurrentDonation {
+  id: string
+  customerName: string
+  customerEmail: string
+  amount: number
+  frequency: string
+  nextBillingDate: string | Date
+  startDate: string | Date
+  status: string
+  stripeSubscriptionId: string
+  type: string
+}
+
 export default function DonationNotification({ donations }) {
-  const [currentDonation, setCurrentDonation] = useState<Order | null>(donations[0])
+  const [currentDonation, setCurrentDonation] = useState<ICurrentDonation | null>(donations[0])
   const [isVisible, setIsVisible] = useState(true)
   const indexRef = useRef(0)
   const timersRef = useRef<NodeJS.Timeout[]>([])
@@ -125,7 +137,7 @@ export default function DonationNotification({ donations }) {
                     <span className="text-white font-semibold text-sm">New Donation</span>
                   </div>
                   <span className="text-white/80 text-xs" aria-hidden="true">
-                    {getTimeAgo(currentDonation?.createdAt)}
+                    {getTimeAgo(currentDonation?.startDate)}
                   </span>
                 </div>
               </div>
@@ -134,7 +146,7 @@ export default function DonationNotification({ donations }) {
               <div className="p-4">
                 <div className="mb-4">
                   <p className="dark:text-white text-neutral-900 font-bold text-lg mb-2">{donorName}</p>
-                  <p className="dark:text-neutral-400 text-neutral-600 text-sm">just became a supporter</p>
+                  <p className="dark:text-neutral-400 text-neutral-600 text-sm">became a supporter</p>
                 </div>
 
                 {/* Footer */}
@@ -190,7 +202,7 @@ export default function DonationNotification({ donations }) {
                   <div className="flex-1">
                     <span className="text-white font-semibold text-sm block">New Donation</span>
                     <span className="text-white/80 text-xs" aria-hidden="true">
-                      {getTimeAgo(currentDonation?.createdAt)}
+                      {getTimeAgo(currentDonation?.startDate)}
                     </span>
                   </div>
                 </div>
