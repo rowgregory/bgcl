@@ -29,7 +29,13 @@ export default function Header() {
   const handleLaunchApp = () => router.push(getLaunchPath())
 
   return (
-    <>
+    <header role="banner">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-9999 focus:px-4 focus:py-2 focus:bg-sky-600 focus:text-white focus:font-semibold focus:rounded-lg focus:shadow-lg"
+      >
+        Skip to main content
+      </a>
       {/* Top Bar */}
       <div
         className={`${pathname === '/' ? 'max-w-334' : ''} w-full mx-auto dark:bg-neutral-900 dark:border-neutral-700 bg-neutral-50 border-neutral-200 border-b relative z-100 px-4 sm:px-6 lg:px-8 py-3`}
@@ -40,7 +46,10 @@ export default function Header() {
             <div className="hidden sm:flex items-center space-x-4 lg:space-x-6 dark:text-neutral-400 text-neutral-600 text-sm">
               <div>
                 Phone:{' '}
-                <a href="tel:+17815931772" className="dark:text-white text-neutral-900 hover:underline">
+                <a
+                  href="tel:+17815931772"
+                  className="dark:text-white text-neutral-900 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+                >
                   781 593 1772
                 </a>
               </div>
@@ -55,12 +64,20 @@ export default function Header() {
 
           {/* Navigation Links */}
           <div className="flex items-center space-x-6">
-            <Link href="/cart">
-              <ShoppingBasket className="w-4 h-4 dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900" />
+            <Link
+              href="/cart"
+              aria-label="View shopping cart"
+              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+            >
+              <ShoppingBasket
+                className="w-4 h-4 dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900"
+                aria-hidden="true"
+              />
             </Link>
             <button
               onClick={handleLaunchApp}
-              className="dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900 text-sm font-medium transition-colors whitespace-nowrap"
+              className="dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900 text-sm font-medium transition-colors whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+              aria-label="Launch the member app"
             >
               Launch App
             </button>
@@ -80,89 +97,101 @@ export default function Header() {
           {/* Burger Menu Button */}
           <button
             onClick={() => store.dispatch(setOpenMobileNavigation())}
-            className="block 2xl:hidden dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900 transition-colors"
-            aria-label="Toggle menu"
+            className="block 2xl:hidden dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+            aria-label="Toggle navigation menu"
+            aria-expanded={mobileNavigation}
+            aria-controls="mobile-navigation"
           >
-            {mobileNavigation ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileNavigation ? (
+              <X className="w-6 h-6" aria-hidden="true" />
+            ) : (
+              <Menu className="w-6 h-6" aria-hidden="true" />
+            )}
           </button>
 
-          <Link href="/" className="">
+          <Link
+            href="/"
+            aria-label="Boys & Girls Club of Lynn - Home"
+            className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+          >
             <motion.div
               className="flex items-center space-x-3"
               initial={{ scale: 1 }}
-              animate={{
-                scale: isAtTop ? 1 : 0.9
-              }}
+              animate={{ scale: isAtTop ? 1 : 0.9 }}
               transition={{ duration: 0.3 }}
             >
               <motion.div
                 className="overflow-hidden flex items-center justify-center"
                 initial={{ height: '56px' }}
-                animate={{
-                  height: isAtTop ? '56px' : '48px'
-                }}
+                animate={{ height: isAtTop ? '56px' : '48px' }}
                 transition={{ duration: 0.3 }}
               >
                 <Picture
                   src="/images/vertical-logo-light.png"
-                  alt="Boys & Girls Club"
+                  alt="Boys & Girls Club of Lynn"
                   className="dark:hidden block w-auto h-full cursor-pointer hover:opacity-80 transition-opacity"
-                  priority={true}
+                  priority
                 />
                 <Picture
                   src="/images/vertical-logo-dark.png"
-                  alt="Boys & Girls Club"
+                  decorative
                   className="dark:block hidden w-auto h-full cursor-pointer hover:opacity-80 transition-opacity"
-                  priority={true}
+                  priority
                 />
               </motion.div>
             </motion.div>
           </Link>
 
-          <nav className={`hidden 2xl:flex items-center ${isSpanish ? 'space-x-4' : 'space-x-6'}`}>
-            {headerNavLinks.map((item) => (
-              <motion.div
-                key={item.label}
-                animate={{
-                  fontSize: isSpanish
-                    ? isAtTop
-                      ? '11px'
-                      : '9.5px' // Smaller for Spanish
-                    : isAtTop
-                      ? '13px'
-                      : '11.5px' // Normal for English
-                }}
-                transition={{ duration: 0.3 }}
-              >
-                <Link
-                  href={item.href}
-                  className={`${item.href === pathname ? 'dark:text-sky-500 text-sky-600' : 'dark:text-white text-neutral-900'} dark:hover:text-sky-400 hover:text-sky-600 transition-colors font-black whitespace-nowrap`}
-                >
-                  {item.label}
-                </Link>
-              </motion.div>
-            ))}
+          <nav aria-label="Main navigation">
+            <ul className={`hidden 2xl:flex items-center ${isSpanish ? 'space-x-4' : 'space-x-6'} list-none`}>
+              {headerNavLinks.map((item) => (
+                <li key={item.label}>
+                  <motion.div
+                    animate={{
+                      fontSize: isSpanish
+                        ? isAtTop
+                          ? '12px'
+                          : '12px' // Hold at minimum 12px
+                        : isAtTop
+                          ? '13px'
+                          : '12px'
+                    }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Link
+                      href={item.href}
+                      aria-current={item.href === pathname ? 'page' : undefined}
+                      className={`${item.href === pathname ? 'dark:text-sky-500 text-sky-600' : 'dark:text-white text-neutral-900'} dark:hover:text-sky-400 hover:text-sky-600 transition-colors font-black whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded`}
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                </li>
+              ))}
+            </ul>
           </nav>
 
           <motion.div
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
-            animate={{
-              scale: isAtTop ? 1 : 0.9
-            }}
+            animate={{ scale: isAtTop ? 1 : 0.9 }}
             transition={{ duration: 0.3 }}
           >
             <a
               href="https://parentportal.bgcl.org/"
               target="_blank"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-linear-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-sky-500/25 whitespace-nowrap"
+              rel="noopener noreferrer"
+              aria-label="Parent Portal - opens in a new tab"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-linear-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-sky-500/25 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-sky-600"
             >
               <span className="hidden md:inline">Parent Portal</span>
-              <span className="md:hidden">Portal</span>
+              <span className="md:hidden" aria-hidden="true">
+                Portal
+              </span>
             </a>
           </motion.div>
         </div>
       </motion.div>
-    </>
+    </header>
   )
 }

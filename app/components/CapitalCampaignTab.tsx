@@ -18,17 +18,13 @@ export default function CapitalCampaignTab() {
 
     const sequence = () => {
       if (!isMounted) return
-
-      // Open
       setIsHovered(true)
-      // Close after 4 seconds
       setTimeout(() => {
         if (!isMounted) return
         setIsHovered(false)
-        // Re-open after 2 seconds
         setTimeout(() => {
           if (!isMounted) return
-          sequence() // repeat the sequence
+          sequence()
         }, 2000)
       }, 4000)
     }
@@ -59,9 +55,12 @@ export default function CapitalCampaignTab() {
           >
             <Link
               href="/capital-campaign"
-              className="group flex flex-col items-center"
+              aria-label={`Capital Campaign - $17.1M raised of $30M goal (${progressPercent.toFixed(0)}%) - Click to learn more`}
+              className="group flex flex-col items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 rounded-l-xl"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
+              onFocus={() => setIsHovered(true)}
+              onBlur={() => setIsHovered(false)}
             >
               {/* Tab */}
               <div
@@ -69,8 +68,9 @@ export default function CapitalCampaignTab() {
                   isHovered ? 'from-sky-500 to-sky-600 pr-5' : ''
                 }`}
               >
-                {/* Vertical text */}
+                {/* Vertical text — hidden from screen readers, aria-label on Link covers it */}
                 <div
+                  aria-hidden="true"
                   className="text-sm font-semibold tracking-wide whitespace-nowrap"
                   style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
                 >
@@ -78,31 +78,30 @@ export default function CapitalCampaignTab() {
                 </div>
 
                 {/* Icon */}
-                <div className="mt-4 flex justify-center">
-                  <Building2 className="w-5 h-5" />
+                <div aria-hidden="true" className="mt-4 flex justify-center">
+                  <Building2 className="w-5 h-5" aria-hidden="true" />
                 </div>
 
-                {/* Arrow indicator with pulsing */}
+                {/* Arrow indicator */}
                 <motion.div
+                  aria-hidden="true"
                   className={`absolute left-1/2 -translate-x-1/2 bottom-2 transition-opacity ${
                     isHovered ? 'opacity-100' : 'opacity-0'
                   }`}
-                  animate={{
-                    y: [0, 3, 0],
-                    scale: isHovered ? [1, 1.2, 1] : 1
-                  }}
+                  animate={{ y: [0, 3, 0] }}
                   transition={{
                     duration: 1,
                     repeat: Infinity,
                     repeatType: 'loop'
                   }}
                 >
-                  <ArrowRight className="w-4 h-4 -rotate-90 text-white" />
+                  <ArrowRight className="w-4 h-4 -rotate-90 text-white" aria-hidden="true" />
                 </motion.div>
               </div>
 
               {/* Expanded preview */}
               <div
+                aria-hidden="true"
                 className={`absolute right-full top-1/2 -translate-y-1/2 mr-2 pointer-events-none transition-opacity duration-300 ${
                   isHovered ? 'opacity-100' : 'opacity-0'
                 }`}
@@ -120,11 +119,14 @@ export default function CapitalCampaignTab() {
                     <div className="h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
                       <div
                         style={{ width: `${progressPercent}%` }}
-                        className={`h-full bg-linear-to-r from-sky-500 to-sky-600 rounded-full`}
+                        className="h-full bg-linear-to-r from-sky-500 to-sky-600 rounded-full"
                       />
                     </div>
                   </div>
-                  <p className="text-xs text-neutral-600 dark:text-neutral-400">Click to learn more →</p>
+                  <p className="text-xs text-neutral-600 dark:text-neutral-400">
+                    Click to learn more
+                    <span aria-hidden="true"> →</span>
+                  </p>
                 </div>
               </div>
             </Link>
@@ -151,6 +153,9 @@ export default function CapitalCampaignTab() {
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                   className="bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 overflow-hidden"
+                  id="capital-campaign-details"
+                  role="region"
+                  aria-label="Capital Campaign details"
                 >
                   <div className="px-4 py-3">
                     <p className="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wide mb-1">
@@ -160,14 +165,20 @@ export default function CapitalCampaignTab() {
                     <div className="mb-3">
                       <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400 mb-1.5">
                         <span>$17.1M raised</span>
-                        <span>85%</span>
+                        <span>{progressPercent.toFixed(0)}%</span>
                       </div>
-                      <div className="h-2 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: '85%' }}
-                          transition={{ duration: 1, delay: 0.2 }}
+                      <div
+                        role="progressbar"
+                        aria-valuenow={progressPercent}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label={`Capital campaign progress: ${progressPercent.toFixed(0)}% of $30M goal reached`}
+                        className="h-2 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden"
+                      >
+                        <div
+                          style={{ width: `${progressPercent}%` }}
                           className="h-full bg-linear-to-r from-sky-500 to-sky-600 rounded-full"
+                          aria-hidden="true"
                         />
                       </div>
                     </div>
@@ -176,23 +187,34 @@ export default function CapitalCampaignTab() {
               )}
             </AnimatePresence>
 
-            {/* Main banner - always visible */}
+            {/* Main banner */}
             <Link
               href="/capital-campaign"
-              className="block bg-linear-to-r from-sky-600 to-sky-700 text-white"
+              aria-expanded={isMobileExpanded}
+              aria-controls="capital-campaign-details"
+              aria-label={
+                isMobileExpanded
+                  ? 'Collapse Capital Campaign details'
+                  : 'Expand Capital Campaign details - $17.1M of $30M goal raised'
+              }
+              className="block bg-linear-to-r from-sky-600 to-sky-700 text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-inset"
               onClick={(e) => {
                 if (!isMobileExpanded) {
                   e.preventDefault()
                   setIsMobileExpanded(true)
                 } else {
+                  e.preventDefault()
                   setIsMobileExpanded(false)
                 }
               }}
             >
               <div className="flex items-center justify-between px-4 py-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                    <Building2 className="w-5 h-5" />
+                  <div
+                    aria-hidden="true"
+                    className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0"
+                  >
+                    <Building2 className="w-5 h-5" aria-hidden="true" />
                   </div>
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wide opacity-90">Capital Campaign</p>
@@ -200,24 +222,27 @@ export default function CapitalCampaignTab() {
                   </div>
                 </div>
 
-                {/* Toggle/Arrow button */}
+                {/* Toggle indicator */}
                 <motion.div
                   animate={{ rotate: isMobileExpanded ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
                   className="shrink-0"
+                  aria-hidden="true"
                 >
-                  <ChevronUp className="w-5 h-5" />
+                  <ChevronUp className="w-5 h-5" aria-hidden="true" />
                 </motion.div>
               </div>
 
               {/* Progress bar on banner */}
-              <div className="h-1 bg-sky-800/50">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: '85%' }}
-                  transition={{ duration: 1.5, delay: 0.3 }}
-                  className="h-full bg-white/90"
-                />
+              <div
+                role="progressbar"
+                aria-valuenow={progressPercent}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={`Capital campaign: ${progressPercent.toFixed(0)}% of goal reached`}
+                className="h-1 bg-sky-800/50"
+              >
+                <div style={{ width: `${progressPercent}%` }} className="h-full bg-white/90" aria-hidden="true" />
               </div>
             </Link>
           </motion.div>

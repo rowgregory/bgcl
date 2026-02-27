@@ -3,14 +3,14 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Mail } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import Picture from '../common/Picture'
 import { createSubscriber } from '@/app/lib/actions/createSubscriber'
 import { store, useFormSelector } from '@/app/lib/store/store'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { useRouter } from 'next/navigation'
 import { setIsLoading } from '@/app/lib/store/slices/formSlice'
-import { FacebookIcon, InstagramIcon, LinkedInIcon, YouTubeIcon } from '../ui/icons/SocialIconts'
+import { FacebookIcon, InstagramIcon, LinkedInIcon } from '../ui/icons/SocialIconts'
 
 export function Footer() {
   const router = useRouter()
@@ -19,6 +19,10 @@ export function Footer() {
   const [error, setError] = useState(false)
   const { isLoading } = useFormSelector()
   const [memberType, setMemberType] = useState<'member' | 'donor' | 'non-member'>('member')
+  const emailInputId = useId()
+  const memberTypeGroupId = useId()
+  const errorId = useId()
+  const successId = useId()
 
   const handleSubscribe = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -56,9 +60,11 @@ export function Footer() {
   }
 
   return (
-    <footer className="px-6 md:px-12 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-t pb-40 md:pb-0">
+    <footer
+      aria-label="Site footer"
+      className="px-6 md:px-12 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-t pb-40 md:pb-0"
+    >
       <div className="max-w-334 mx-auto py-12 md:py-16">
-        {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Logo and Nonprofit Info */}
           <div className="lg:col-span-2">
@@ -68,16 +74,17 @@ export function Footer() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
+              {/* Only one image announced — dark version is decorative */}
               <Picture
                 src="/images/horizontal-logo-light.png"
                 alt="Boys & Girls Club of Lynn"
-                className="dark:hidden block w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
+                className="dark:hidden block w-full h-full object-contain"
                 priority
               />
               <Picture
                 src="/images/horizontal-logo-dark.png"
-                alt="Boys & Girls Club of Lynn"
-                className="dark:block hidden w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
+                decorative
+                className="dark:block hidden w-full h-full object-contain"
                 priority
               />
             </motion.div>
@@ -106,31 +113,35 @@ export function Footer() {
                 href="https://www.facebook.com/LynnBoysAndGirlsClub"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-neutral-400 dark:text-neutral-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
+                aria-label="Boys & Girls Club of Lynn on Facebook - opens in a new tab"
+                className="text-neutral-400 dark:text-neutral-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
               >
-                <FacebookIcon />
+                <FacebookIcon aria-hidden="true" />
               </Link>
               <Link
                 href="https://instagram.com/bgclynn"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-neutral-400 dark:text-neutral-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
+                aria-label="Boys & Girls Club of Lynn on Instagram - opens in a new tab"
+                className="text-neutral-400 dark:text-neutral-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
               >
-                <InstagramIcon />
+                <InstagramIcon aria-hidden="true" />
               </Link>
               <Link
                 href="https://www.linkedin.com/company/boys-girls-club-of-lynn"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-neutral-400 dark:text-neutral-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
+                aria-label="Boys & Girls Club of Lynn on LinkedIn - opens in a new tab"
+                className="text-neutral-400 dark:text-neutral-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
               >
-                <LinkedInIcon />
+                <LinkedInIcon aria-hidden="true" />
               </Link>
             </motion.div>
           </div>
 
           {/* Quick Links */}
-          <motion.div
+          <motion.nav
+            aria-label="Footer quick links"
             className="space-y-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -139,40 +150,23 @@ export function Footer() {
           >
             <h3 className="dark:text-white text-neutral-900 font-bold text-base">Quick Links</h3>
             <ul className="space-y-3">
-              <li>
-                <Link
-                  href="/"
-                  className="text-sm dark:text-neutral-400 text-neutral-600 dark:hover:text-sky-400 hover:text-sky-600 transition-colors inline-flex items-center group"
-                >
-                  <span className="group-hover:translate-x-1 transition-transform">Home</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/programs"
-                  className="text-sm dark:text-neutral-400 text-neutral-600 dark:hover:text-sky-400 hover:text-sky-600 transition-colors inline-flex items-center group"
-                >
-                  <span className="group-hover:translate-x-1 transition-transform">Programs</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/events"
-                  className="text-sm dark:text-neutral-400 text-neutral-600 dark:hover:text-sky-400 hover:text-sky-600 transition-colors inline-flex items-center group"
-                >
-                  <span className="group-hover:translate-x-1 transition-transform">Events</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
-                  className="text-sm dark:text-neutral-400 text-neutral-600 dark:hover:text-sky-400 hover:text-sky-600 transition-colors inline-flex items-center group"
-                >
-                  <span className="group-hover:translate-x-1 transition-transform">About</span>
-                </Link>
-              </li>
+              {[
+                { href: '/', label: 'Home' },
+                { href: '/programs', label: 'Programs' },
+                { href: '/events', label: 'Events' },
+                { href: '/about', label: 'About' }
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm dark:text-neutral-400 text-neutral-600 dark:hover:text-sky-400 hover:text-sky-600 transition-colors inline-flex items-center group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+                  >
+                    <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
+                  </Link>
+                </li>
+              ))}
             </ul>
-          </motion.div>
+          </motion.nav>
 
           {/* Newsletter */}
           <motion.div
@@ -182,7 +176,9 @@ export function Footer() {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <h3 className="dark:text-white text-neutral-900 font-bold text-base">Stay Connected</h3>
+            <h3 className="dark:text-white text-neutral-900 font-bold text-base" id={memberTypeGroupId}>
+              Stay Connected
+            </h3>
             <p className="text-sm dark:text-neutral-400 text-neutral-600">
               Subscribe to receive updates about our programs and events.
             </p>
@@ -191,13 +187,16 @@ export function Footer() {
             <AnimatePresence>
               {error && (
                 <motion.div
+                  id={errorId}
+                  role="alert"
+                  aria-live="assertive"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.5, ease: 'easeOut' }}
                   className="mb-8 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3"
                 >
-                  <div className="shrink-0">
+                  <div className="shrink-0" aria-hidden="true">
                     <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
@@ -207,25 +206,29 @@ export function Footer() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-red-800 dark:text-red-200">Error!</p>
+                    <p className="text-sm font-semibold text-red-800 dark:text-red-200">Error</p>
                     <p className="text-xs text-red-700 dark:text-red-300">
-                      Please enter a{!email ? 'n' : ' valid'} email
+                      Please enter a{!email ? 'n' : ' valid'} email address
                     </p>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
+
             {/* Success Banner */}
             <AnimatePresence>
               {success && (
                 <motion.div
+                  id={successId}
+                  role="status"
+                  aria-live="polite"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.5, ease: 'easeOut' }}
                   className="mb-8 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-center gap-3"
                 >
-                  <div className="shrink-0">
+                  <div className="shrink-0" aria-hidden="true">
                     <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
@@ -242,76 +245,83 @@ export function Footer() {
               )}
             </AnimatePresence>
 
-            <form onSubmit={handleSubscribe} className="space-y-4">
+            <form onSubmit={handleSubscribe} className="space-y-4" aria-label="Newsletter subscription form" noValidate>
               {/* Email Input */}
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 dark:text-neutral-500 text-neutral-400 pointer-events-none" />
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-3 py-2.5 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:placeholder-neutral-600 dark:focus:ring-purple-500 bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:ring-purple-600 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
-                />
+                <label
+                  htmlFor={emailInputId}
+                  className="block text-xs font-medium dark:text-neutral-400 text-neutral-600 mb-1.5"
+                >
+                  Email address
+                </label>
+                <div className="relative">
+                  <Mail
+                    aria-hidden="true"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 dark:text-neutral-500 text-neutral-400 pointer-events-none"
+                  />
+                  <input
+                    id={emailInputId}
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    aria-required="true"
+                    aria-invalid={error ? 'true' : 'false'}
+                    aria-describedby={error ? errorId : undefined}
+                    autoComplete="email"
+                    className="w-full pl-10 pr-3 py-2.5 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:placeholder-neutral-600 dark:focus:ring-purple-500 bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:ring-purple-600 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
+                  />
+                </div>
               </div>
 
               {/* Membership Type */}
-              <div className="space-y-3">
-                <p className="text-xs font-medium dark:text-neutral-400 text-neutral-600 uppercase tracking-wide">
+              <fieldset className="space-y-3">
+                <legend className="text-xs font-medium dark:text-neutral-400 text-neutral-600 uppercase tracking-wide">
                   I am a:
-                </p>
+                </legend>
                 <div className="space-y-2">
-                  <label className="flex items-center gap-2.5 cursor-pointer group">
-                    <input
-                      type="radio"
-                      name="memberType"
-                      value="member"
-                      defaultChecked
-                      className="sr-only peer"
-                      onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
-                    />
-                    <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-purple-600 dark:peer-checked:bg-purple-500 peer-checked:border-purple-600 dark:peer-checked:border-purple-500 transition-all" />
-                    <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
-                      Member/Parent
-                    </span>
-                  </label>
-
-                  <label className="flex items-center gap-2.5 cursor-pointer group">
-                    <input
-                      type="radio"
-                      name="memberType"
-                      value="non-member"
-                      className="sr-only peer"
-                      onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
-                    />
-                    <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-purple-600 dark:peer-checked:bg-purple-500 peer-checked:border-purple-600 dark:peer-checked:border-purple-500 transition-all" />
-                    <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
-                      Non-Member
-                    </span>
-                  </label>
-
-                  <label className="flex items-center gap-2.5 cursor-pointer group">
-                    <input
-                      type="radio"
-                      name="memberType"
-                      value="donor"
-                      className="sr-only peer"
-                      onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
-                    />
-                    <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-purple-600 dark:peer-checked:bg-purple-500 peer-checked:border-purple-600 dark:peer-checked:border-purple-500 transition-all" />
-                    <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
-                      Donor
-                    </span>
-                  </label>
+                  {(
+                    [
+                      { value: 'member', label: 'Member/Parent' },
+                      { value: 'non-member', label: 'Non-Member' },
+                      { value: 'donor', label: 'Donor' }
+                    ] as const
+                  ).map(({ value, label }) => (
+                    <label key={value} className="flex items-center gap-2.5 cursor-pointer group">
+                      <input
+                        type="radio"
+                        name="memberType"
+                        value={value}
+                        checked={memberType === value}
+                        className="sr-only peer"
+                        onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
+                      />
+                      <div
+                        aria-hidden="true"
+                        className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-purple-600 dark:peer-checked:bg-purple-500 peer-checked:border-purple-600 dark:peer-checked:border-purple-500 transition-all"
+                      />
+                      <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
+                        {label}
+                      </span>
+                    </label>
+                  ))}
                 </div>
-              </div>
+              </fieldset>
 
               {/* Subscribe Button */}
               <button
                 type="submit"
-                className="gap-x-2 flex items-center relative justify-center gap-2 px-8 py-4 bg-linear-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-2xl transition-all overflow-hidden h-15 cursor-pointer hover:from-purple-600 hover:to-purple-700 duration-300"
+                disabled={isLoading}
+                aria-disabled={isLoading}
+                aria-label={isLoading ? 'Subscribing, please wait' : 'Subscribe to newsletter'}
+                className="gap-x-2 flex items-center relative justify-center gap-2 px-8 py-4 bg-linear-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-2xl transition-all overflow-hidden h-15 cursor-pointer hover:from-purple-600 hover:to-purple-700 duration-300 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
               >
-                {isLoading && <div className="w-4 h-4 rounded-full border-2 border-white border-t-0 animate-spin" />}{' '}
+                {isLoading && (
+                  <div
+                    aria-hidden="true"
+                    className="w-4 h-4 rounded-full border-2 border-white border-t-0 animate-spin"
+                  />
+                )}
                 Subscribe
               </button>
             </form>
@@ -319,7 +329,7 @@ export function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="dark:border-neutral-800 border-neutral-200 border-t" />
+        <div aria-hidden="true" className="dark:border-neutral-800 border-neutral-200 border-t" />
 
         {/* Bottom Footer */}
         <motion.div
@@ -330,19 +340,20 @@ export function Footer() {
           transition={{ delay: 0.3 }}
         >
           <p className="dark:text-neutral-500 text-neutral-500">
-            &copy; {new Date().getFullYear()} Boys & Girls Club of Lynn. All rights reserved.
+            &copy; {new Date().getFullYear()} Boys &amp; Girls Club of Lynn. All rights reserved.
           </p>
           <div className="flex items-center gap-1.5 mt-4 md:mt-0 dark:text-neutral-500 text-neutral-500">
-            <span>Designed & built by</span>
+            <span>Designed &amp; built by</span>
             <Link
               href="https://sqysh.io?lead_source=bgcl"
               target="_blank"
               rel="noopener noreferrer"
-              className="sqysh-gradient font-semibold inline-flex items-center gap-1 group relative"
+              aria-label="Sqysh - opens in a new tab"
+              className="sqysh-gradient font-semibold inline-flex items-center gap-1 group relative focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded"
             >
-              <span className="">Sqysh</span>
-
+              <span>Sqysh</span>
               <svg
+                aria-hidden="true"
                 className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-purple-500"
                 fill="none"
                 stroke="currentColor"

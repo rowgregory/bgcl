@@ -3,8 +3,8 @@
 import { IProgram } from '@/types/entities/program'
 import { Hero } from '../home/Hero'
 import { HomePrograms } from '../home/HomePrograms'
+import { MissionSection } from '../home/MissionSection'
 import FacilitySection from '../home/FacilitySection'
-import MissionSection from '../home/MissionSection'
 
 interface HomeClientProps {
   initialPageData?: any
@@ -18,22 +18,22 @@ const HomeClient = ({ initialPageData, programs }: HomeClientProps) => {
   const mission = sections?.mission
 
   if (!sections) {
-    return <div>Loading...</div>
+    return (
+      <div role="status" aria-live="polite" aria-label="Page loading">
+        <span className="sr-only">Loading page content, please wait...</span>
+      </div>
+    )
   }
 
   return (
-    <div className="dark:bg-neutral-950 bg-white">
+    <main id="main-content" className="dark:bg-neutral-950 bg-white">
       <Hero hero={hero} />
-
-      {/* Content that scrolls over */}
       <div className="relative z-10">
         <HomePrograms programText={sections?.programs} programs={programs} />
-
         <MissionSection mission={mission} />
-
         <FacilitySection facility={facility} />
       </div>
-    </div>
+    </main>
   )
 }
 

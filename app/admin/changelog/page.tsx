@@ -21,6 +21,117 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.10.0',
+    date: '2026-02-27',
+    changes: [
+      {
+        type: 'feature',
+        title: 'useOverlayAccessibility hook',
+        description:
+          'Extracted modal/drawer focus management into a reusable hook. Handles body scroll lock, focus trapping, and focus restoration on close.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Picture component ADA updates',
+        description:
+          'Added decorative prop that automatically sets alt="" and aria-hidden="true" for purely visual images. Exposed sizes, role, and className as optional props with sensible defaults.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Header ADA compliance',
+        description:
+          'Added skip navigation link, header landmark, aria-expanded and aria-controls on burger menu, aria-current="page" on active nav links, focus rings on all interactive elements, and new tab warnings on external links.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Hero section ADA compliance',
+        description:
+          'Added pause/play control for autoplay video per WCAG 2.2.2, aria-hidden on decorative elements, motion-safe animation guards, darkened overlay for contrast compliance, and focus rings on CTA buttons.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'HomePrograms ADA compliance',
+        description:
+          'Converted program grid from div to ul/li landmark list, added aria-labelledby on section, aria-current on active links, aria-hidden on decorative overlays and animated SVGs, and focus rings on all card links.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'MissionSection ADA compliance',
+        description:
+          'Added section landmark with aria-labelledby, focus rings on CTA buttons, aria-hidden on Heart icon, and optional chaining on all mission data fields to prevent empty element announcements.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'FacilitySection ADA compliance',
+        description:
+          'Replaced fragment with section landmark, added carousel role and aria-roledescription, dynamic prev/next button labels announcing target slide number, role="tablist" on dots with aria-selected states, and replaced MotionLink wrapping button with a single Link element.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'CapitalCampaignTab ADA compliance',
+        description:
+          'Added aria-label covering full campaign context for screen readers, onFocus/onBlur handlers for keyboard users, role="progressbar" with aria-valuenow on both progress bars, aria-expanded and aria-controls on mobile disclosure widget, and aria-hidden on all decorative elements.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'DonationNotification ADA compliance',
+        description:
+          'Added role="status", aria-live="polite", and aria-atomic="true" on both desktop and mobile notifications, aria-hidden on decorative icons and progress bars, arrow characters wrapped in aria-hidden spans, and new tab warnings on external links.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'RegistrationModal ADA compliance',
+        description:
+          'Added role="dialog", aria-modal="true", aria-labelledby, and aria-describedby. Implemented full focus trap with Tab/Shift+Tab cycling and Escape to close. Focus moves to close button on open and returns to trigger element on close.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Footer ADA compliance',
+        description:
+          'Added footer landmark, useId for stable IDs, visible email label, fieldset and legend for radio group, role="alert" on error banner, role="status" on success banner, aria-invalid and aria-describedby on email input, disabled state on submit during loading, and aria-hidden on decorative SVGs.',
+        impact: 'medium'
+      },
+      {
+        type: 'fix',
+        title: 'Duplicate logo screen reader announcement',
+        description:
+          'Light and dark mode logo pairs across header, footer, and modal now use the decorative prop on the dark variant to prevent screen readers from announcing the organization name twice.',
+        impact: 'medium'
+      },
+      {
+        type: 'fix',
+        title: 'Framer Motion scroll offset warning',
+        description:
+          'Removed scale-based motion.div elements from DonationNotification that were triggering Framer Motion positioning warnings. Progress bars and icon pulse replaced with CSS or static elements.',
+        impact: 'low'
+      },
+      {
+        type: 'performance',
+        title: 'Program card image priority loading',
+        description:
+          'Changed priority={true} on all program cards to priority={index < 3} so only above-the-fold images are eagerly loaded. Remaining images lazy load as the user scrolls.',
+        impact: 'medium'
+      },
+      {
+        type: 'ui',
+        title: 'Framer Motion added to Hero section',
+        description:
+          'Added parallax scroll on video and content layers, staggered fade-up entrance for heading, body text, and buttons, spring animations on CTA button hover and tap, and fade-in on pause/play control.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.9.2',
     date: '2026-02-25',
     changes: [

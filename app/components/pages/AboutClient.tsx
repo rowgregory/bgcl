@@ -3,7 +3,7 @@
 import Picture from '@/app/components/common/Picture'
 import { motion } from 'framer-motion'
 import { HistorySection } from '../home/HistorySection'
-import MissionSection from '../home/MissionSection'
+import { MissionSection } from '../home/MissionSection'
 
 export default function AboutPage({ initialPageData }) {
   const sections = initialPageData?.sections
