@@ -43,7 +43,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
 }
 
-export default function FuelTankOverviewClient({ orders, stats }: { orders: any; stats: any }) {
+export default function FuelTankOverviewClient({ stats }: { stats: any }) {
   const [chartType, setChartType] = useState<'line' | 'bar'>('line')
   const { isDark } = useApplicationSelector()
 
@@ -57,8 +57,6 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
         // startDate: new Date('2024-01-01'),
         // endDate: new Date()
       })
-
-      console.log(result)
 
       if (result.success && result.pdf) {
         // Open PDF in new tab
@@ -580,13 +578,7 @@ export default function FuelTankOverviewClient({ orders, stats }: { orders: any;
                 <span className="text-sm dark:text-neutral-300 text-neutral-700">One-Time</span>
                 <span className="text-lg font-black dark:text-amber-400 text-amber-600">{stats?.oneTime}</span>
               </div>
-              <p className="text-xs dark:text-neutral-500 text-neutral-600">
-                Total: $
-                {orders
-                  ?.filter((o) => o.type === 'one-time')
-                  .reduce((sum, o) => sum + o.amount / 100, 0)
-                  .toLocaleString('en-US') ?? 0}
-              </p>
+              <p className="text-xs dark:text-neutral-500 text-neutral-600">Total: ${stats?.oneTimeTotal ?? 0}</p>
             </div>
           </div>
         </motion.div>

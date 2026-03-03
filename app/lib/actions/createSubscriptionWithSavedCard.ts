@@ -92,6 +92,7 @@ export async function createSubscriptionWithSavedCard({
           email: email || '',
           name: name || '',
           frequency,
+          orderType: 'RECURRING_DONATION',
           coverFees: coverFees ? 'true' : 'false',
           feesCovered: feesCovered?.toString() || '0',
           address: address || '',

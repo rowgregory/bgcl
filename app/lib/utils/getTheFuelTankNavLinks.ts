@@ -1,4 +1,4 @@
-const getTheFuelTankNavLinks = (path: string) => [
+export const getTheFuelTankNavLinks = (path: string) => [
   {
     textKey: 'Overview',
     linkKey: '/admin/fuel-tank/overview',
@@ -10,25 +10,8 @@ const getTheFuelTankNavLinks = (path: string) => [
     isActive: path === '/admin/fuel-tank/campaigns'
   },
   {
-    textKey: 'All',
-    linkKey: '/admin/fuel-tank/all',
-    isActive: path === '/admin/fuel-tank/all'
-  },
-  {
-    textKey: '1x',
-    linkKey: '/admin/fuel-tank/one-time',
-    isActive: path === '/admin/fuel-tank/one-time'
-  },
-  {
-    textKey: 'Monthly',
-    linkKey: '/admin/fuel-tank/monthly',
-    isActive: path === '/admin/fuel-tank/monthly'
-  },
-  {
-    textKey: 'Yearly',
-    linkKey: '/admin/fuel-tank/yearly',
-    isActive: path === '/admin/fuel-tank/yearly'
+    textKey: 'Transactions',
+    linkKey: '/admin/fuel-tank/transactions',
+    isActive: path === '/admin/fuel-tank/transactions'
   }
 ]
-
-export default getTheFuelTankNavLinks

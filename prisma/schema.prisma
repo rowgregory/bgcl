@@ -235,7 +235,7 @@ model Order {
   paymentMethodId String? // stripe payment method ID used
 
   // Recurring donation fields
-  stripeSubscriptionId String?   @unique // For recurring donations
+  stripeSubscriptionId String?
   isRecurring          Boolean   @default(false)
   recurringFrequency   String? // "monthly", "yearly"
   nextBillingDate      DateTime? // Next charge date

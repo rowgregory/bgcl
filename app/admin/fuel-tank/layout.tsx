@@ -1,7 +1,7 @@
 'use client'
 
 import SubNavLink from '@/app/components/navigation/SubNavLink'
-import getTheFuelTankNavLinks from '@/app/lib/utils/getTheFuelTankNavLinks'
+import { getTheFuelTankNavLinks } from '@/app/lib/utils/getTheFuelTankNavLinks'
 import { usePathname } from 'next/navigation'
 
 export default function FuelTankLayout({ children }) {

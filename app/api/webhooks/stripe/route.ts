@@ -105,16 +105,29 @@ export async function POST(req: NextRequest) {
 }
 
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+  const pi = paymentIntent as any
+
   const { id, amount, metadata } = paymentIntent
 
   try {
-    // Skip if this is a subscription payment
-    if (paymentIntent.setup_future_usage === 'off_session' || paymentIntent.description === 'Subscription creation') {
+    if (
+      // Guard 1: metadata-based (works once subscription metadata propagates)
+      metadata?.donationType === 'monthly' ||
+      metadata?.donationType === 'yearly' ||
+      metadata?.orderType === 'RECURRING_DONATION'
+    ) {
+      console.log('EDIT HANDLE PAYMENT INTENT SUCCEEDED')
       return
     }
 
-    // Skip if associated with invoice
-    if ((paymentIntent as any).invoice) {
+    // Guard 2: pi.invoice field (not always populated but worth checking)
+    if (pi.invoice) {
+      return
+    }
+
+    // Guard 3: check if any invoice references this PI — if so it's a subscription charge
+    const invoices = await stripe.invoices.list({ payment_intent: id } as any)
+    if (invoices.data.length > 0) {
       return
     }
 
@@ -128,6 +141,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 
     const orderType =
       (metadata?.orderType as 'ONE_TIME_DONATION' | 'RECURRING_DONATION' | 'TICKET_PURCHASE') || 'ONE_TIME_DONATION'
+
     const userId = metadata?.userId && metadata.userId !== 'guest' ? metadata.userId : null
 
     const order = await prisma.order.create({
@@ -370,19 +384,28 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   try {
-    const order = await prisma.order.update({
-      where: { stripeSubscriptionId: subscription.id },
+    await prisma.order.updateMany({
+      where: {
+        stripeSubscriptionId: subscription.id,
+        status: 'PENDING'
+      },
       data: { status: 'CANCELLED' }
+    })
+
+    // Find latest order for pusher/logging
+    const latestOrder = await prisma.order.findFirst({
+      where: { stripeSubscriptionId: subscription.id },
+      orderBy: { createdAt: 'desc' }
     })
 
     await createLog('info', 'Recurring donation cancelled', {
       subscriptionId: subscription.id,
-      orderId: order.id,
-      userId: order.userId
+      orderId: latestOrder?.id,
+      userId: latestOrder?.userId
     })
 
-    if (order?.userId) {
-      await pusher.trigger(`user-${order.userId}`, 'subscription-cancelled', {
+    if (latestOrder?.userId) {
+      await pusher.trigger(`user-${latestOrder.userId}`, 'subscription-cancelled', {
         subscriptionId: subscription.id
       })
     }
@@ -396,18 +419,19 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   try {
-    const statusMap: Record<string, 'CONFIRMED' | 'PENDING' | 'CANCELLED' | 'FAILED'> = {
-      active: 'CONFIRMED',
-      past_due: 'PENDING',
-      canceled: 'CANCELLED',
-      unpaid: 'FAILED',
-      incomplete: 'PENDING'
+    // Find the most recent order for this subscription
+    const latestOrder = await prisma.order.findFirst({
+      where: { stripeSubscriptionId: subscription.id },
+      orderBy: { createdAt: 'desc' }
+    })
+
+    if (!latestOrder) {
+      return
     }
 
     const order = await prisma.order.update({
-      where: { stripeSubscriptionId: subscription.id },
+      where: { id: latestOrder.id },
       data: {
-        status: statusMap[subscription.status] || 'PENDING',
         nextBillingDate: (subscription as any).current_period_end
           ? new Date((subscription as any).current_period_end * 1000)
           : null
@@ -438,14 +462,9 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   try {
     const invoiceWithSub = invoice as any
-
-    // Check for subscription in multiple locations (Stripe API changes)
+    // Subscription ID - basil uses parent.subscription_details
     let subscriptionId: string | null = null
-
-    if (invoiceWithSub.subscription) {
-      subscriptionId =
-        typeof invoiceWithSub.subscription === 'string' ? invoiceWithSub.subscription : invoiceWithSub.subscription.id
-    } else if (invoiceWithSub.parent?.subscription_details?.subscription) {
+    if (invoiceWithSub.parent?.subscription_details?.subscription) {
       subscriptionId = invoiceWithSub.parent.subscription_details.subscription
     }
 
@@ -455,11 +474,15 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 
     const isFirstPayment = invoice.billing_reason === 'subscription_create'
 
-    const paymentIntentId = invoiceWithSub.payment_intent
-      ? typeof invoiceWithSub.payment_intent === 'string'
-        ? invoiceWithSub.payment_intent
-        : invoiceWithSub.payment_intent?.id
-      : null
+    let paymentIntentId: string | null = null
+    const invoicePayments = await stripe.invoicePayments.list({ invoice: invoice.id })
+    const defaultPayment = invoicePayments.data.find((p) => p.is_default)
+    if (defaultPayment?.payment?.type === 'payment_intent') {
+      paymentIntentId =
+        typeof defaultPayment.payment.payment_intent === 'string'
+          ? defaultPayment.payment.payment_intent
+          : (defaultPayment.payment.payment_intent as any)?.id || null
+    }
 
     // Check if order already exists
     const existingOrder = await prisma.order.findFirst({
@@ -481,6 +504,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     const subscription = subscriptionResponse as Stripe.Subscription
 
     const userId = subscription.metadata?.userId
+
     const frequency = subscription.metadata?.frequency || 'monthly'
     const amount = invoice.amount_paid / 100
     const coverFees = subscription.metadata?.coverFees === 'true'

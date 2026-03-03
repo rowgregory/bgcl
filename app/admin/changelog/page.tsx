@@ -21,6 +21,47 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.10.1',
+    date: '2026-03-03',
+    changes: [
+      {
+        type: 'bug',
+        title: 'Ghost One-Time Donation Orders on Subscription Payments',
+        description:
+          "Fixed a critical issue where Stripe's payment_intent.succeeded webhook was creating ghost ONE_TIME_DONATION orders for every recurring subscription charge. Root cause was twofold: subscription metadata was missing orderType and donationType fields (causing the metadata guard to not fire), and Stripe's 2025-08-27.basil API no longer populates the invoice field on PaymentIntent webhook payloads synchronously. The fix adds orderType: 'RECURRING_DONATION' and donationType: frequency to both createSubscriptionAfterSetup and createSubscriptionWithSavedCard metadata, and adds a fallback guard that queries stripe.invoices.list({ payment_intent }) to detect and skip subscription-related payment intents.",
+        impact: 'high'
+      },
+      {
+        type: 'bug',
+        title: 'Recurring Donation Orders Not Being Created on Renewal',
+        description:
+          'The handleInvoicePaymentSucceeded webhook handler was silently returning early on every renewal because it was reading subscriptionId from invoiceWithSub.subscription — a field that no longer exists in the basil API. Subscription ID is now correctly read from invoiceWithSub.parent.subscription_details.subscription.',
+        impact: 'high'
+      },
+      {
+        type: 'bug',
+        title: 'Unique Constraint Violation on Recurring Donation Renewals',
+        description:
+          'The Order model had a @unique constraint on stripeSubscriptionId, which prevented more than one order record per subscription. This caused all renewal charges after the first to fail with a Prisma unique constraint error. The constraint has been removed — multiple order records per subscription are now correctly created to represent each individual payment in the donation history.',
+        impact: 'high'
+      },
+      {
+        type: 'bug',
+        title: 'Subscription Status Update and Cancellation Handlers Failing',
+        description:
+          'handleSubscriptionUpdated and handleSubscriptionDeleted were using prisma.order.update({ where: { stripeSubscriptionId } }) which became invalid after removing the @unique constraint. Both handlers now use findFirst to locate the latest order by subscription ID before updating. handleSubscriptionDeleted was also updated to use updateMany with a PENDING status filter — confirmed CONFIRMED payments are preserved and not retroactively marked as CANCELLED.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Fuel Tank Consolidated into Single Transactions Page',
+        description:
+          'Replaced the three separate Fuel Tank pages (One-Time, Monthly, Yearly) with a single unified transactions page. Now features filter buttons for All / One-Time / Monthly / Yearly and campaign-based filtering, with all data sourced directly from the Order table.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.10.0',
     date: '2026-02-27',
     changes: [

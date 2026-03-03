@@ -123,6 +123,7 @@ export async function createSubscriptionAfterSetup({
           userId: userId || 'guest',
           email: email || '',
           name: name || '',
+          orderType: 'RECURRING_DONATION',
           frequency,
           coverFees: coverFees ? 'true' : 'false',
           feesCovered: feesCovered.toString(),

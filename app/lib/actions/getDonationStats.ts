@@ -146,7 +146,10 @@ export async function getDonationStats() {
       annualArr,
       trendData,
       retentionData,
-      campaigns
+      campaigns,
+      oneTimeTotal: orders
+        .filter((item) => item.type === 'ONE_TIME_DONATION')
+        .reduce((acc, item) => acc + item.totalAmount, 0)
     } as DonationStats & { annualArr: number }
   } catch {
     return {
