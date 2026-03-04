@@ -1,6 +1,6 @@
 'use client'
 
-import SubNavLink from '@/app/components/navigation/SubNavLink'
+import { SubNavLink } from '@/app/components/navigation/SubNavLink'
 import { getTheFuelTankNavLinks } from '@/app/lib/utils/getTheFuelTankNavLinks'
 import { usePathname } from 'next/navigation'
 

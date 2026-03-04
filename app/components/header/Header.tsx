@@ -94,7 +94,7 @@ export default function Header() {
         }}
         transition={{ duration: 0.3 }}
       >
-        <div className="max-w-334 mx-auto flex items-center justify-between">
+        <div className="max-w-334 mx-auto flex items-center justify-between relative">
           {/* Burger Menu Button */}
           <button
             onClick={() => store.dispatch(setOpenMobileNavigation())}
@@ -113,7 +113,7 @@ export default function Header() {
           <Link
             href="/"
             aria-label="Boys & Girls Club of Lynn - Home"
-            className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+            className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 2xl:relative 2xl:left-auto 2xl:translate-x-0 2xl:top-auto 2xl:translate-y-0"
           >
             <motion.div
               className="flex items-center space-x-3"

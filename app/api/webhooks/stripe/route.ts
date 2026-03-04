@@ -125,12 +125,6 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       return
     }
 
-    // Guard 3: check if any invoice references this PI — if so it's a subscription charge
-    const invoices = await stripe.invoices.list({ payment_intent: id } as any)
-    if (invoices.data.length > 0) {
-      return
-    }
-
     const existingOrder = await prisma.order.findFirst({
       where: { paymentIntentId: id }
     })

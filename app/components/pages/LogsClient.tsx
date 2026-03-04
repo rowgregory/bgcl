@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AlertCircle, AlertTriangle, Info, Filter, X, Calendar, User, FileText, TrendingUp } from 'lucide-react'
 import { formatDate } from '@/app/lib/utils/date-utils'
@@ -13,13 +13,6 @@ interface Log {
   userId: string | null
   createdAt: Date
   updatedAt: Date
-}
-
-interface LogStats {
-  total: number
-  errorCount: number
-  warningCount: number
-  infoCount: number
 }
 
 export default function LogsClient({ logs, stats }) {

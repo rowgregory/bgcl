@@ -1,7 +1,7 @@
 'use client'
 
 import { FC } from 'react'
-import getCurrentPageId from '../../lib/utils/getCurrentPageId'
+import { getCurrentPageId } from '../../lib/utils/getCurrentPageId'
 import { motion } from 'framer-motion'
 import HeroStudio from '../hero-studio/HeroStudio'
 import EventDrawer from '../drawers/EventDrawer'

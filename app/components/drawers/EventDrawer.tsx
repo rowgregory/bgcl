@@ -5,7 +5,7 @@ import validateEventForm from '@/app/lib/validations/event'
 import { setCloseEventDrawer } from '@/app/lib/store/slices/eventSlice'
 import { createFormActions, resetForm, setIsLoading } from '@/app/lib/store/slices/formSlice'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
-import { useAppDispatch, useEventSelector, useFormSelector } from '@/app/lib/store/store'
+import { store, useEventSelector, useFormSelector } from '@/app/lib/store/store'
 import Backdrop from '../common/Backdrop'
 import EventForm from '../forms/EventForm'
 import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
@@ -15,18 +15,17 @@ import { createEvent } from '@/app/lib/actions/createEvent'
 import Drawer from '../common/Drawer'
 
 const EventDrawer = () => {
-  const dispatch = useAppDispatch()
   const router = useRouter()
   const { eventDrawer } = useEventSelector()
   const { forms, isLoading } = useFormSelector()
   const inputs = forms.eventForm.inputs
   const errors = forms.eventForm.errors
   const isUpdating = !!inputs?.isUpdating
-  const { handleInput, setErrors, handleToggle, handleSelect } = createFormActions('eventForm', dispatch)
+  const { handleInput, setErrors, handleToggle, handleSelect } = createFormActions('eventForm', store.dispatch)
 
   const onClose = () => {
-    dispatch(resetForm('eventForm'))
-    dispatch(setCloseEventDrawer())
+    store.dispatch(resetForm('eventForm'))
+    store.dispatch(setCloseEventDrawer())
   }
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
@@ -35,7 +34,7 @@ const EventDrawer = () => {
     if (!validateEventForm(inputs, setErrors)) return
 
     try {
-      dispatch(setIsLoading(true))
+      store.dispatch(setIsLoading(true))
 
       if (inputs?.isUpdating) {
         await updateEvent(inputs.id, inputs)
@@ -47,7 +46,7 @@ const EventDrawer = () => {
 
       onClose()
 
-      dispatch(
+      store.dispatch(
         showToast({
           type: 'success',
           message: `${inputs?.isUpdating ? 'Event Updated!' : 'Event Created!'}`,
@@ -59,7 +58,7 @@ const EventDrawer = () => {
     } catch (error: unknown) {
       const errorMessage = extractErrorMessage(error)
 
-      dispatch(
+      store.dispatch(
         showToast({
           type: 'error',
           message: `${inputs?.isUpdating ? 'Update' : 'Create'} Event Failed`,
@@ -67,7 +66,7 @@ const EventDrawer = () => {
         })
       )
     } finally {
-      dispatch(setIsLoading(false))
+      store.dispatch(setIsLoading(false))
     }
   }
 

@@ -1,23 +1,24 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 
-export const getEvents = async () => {
+export async function getCapsuleTransactions() {
   try {
-    const events = await prisma.event.findMany({
+    const orders = await prisma.order.findMany({
       where: {
-        isPublic: true
+        type: 'TICKET_PURCHASE'
       },
       include: {
-        tickets: true
+        campaign: true,
+        orderItems: true
       },
       orderBy: {
         createdAt: 'desc'
       }
     })
 
-    return events
+    return orders
   } catch (error) {
-    await createLog('error', 'Failed to fetch events', {
+    await createLog('error', 'Error fetching capsule transactions', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 

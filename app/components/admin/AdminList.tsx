@@ -15,6 +15,8 @@ import { store } from '@/app/lib/store/store'
 import { AlertCircle, Check, Plus } from 'lucide-react'
 import { useState } from 'react'
 import AdminListItem from './AdminListItem'
+import { setOpenEventDrawer } from '@/app/lib/store/slices/eventSlice'
+import { initialEventFormState } from '@/app/lib/initial-states/event'
 
 interface AdminListItem {
   id: string
@@ -25,7 +27,7 @@ interface AdminListItem {
 interface AdminListPageProps<T extends AdminListItem> {
   data: T[]
   pageTitle: string
-  itemType: 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign' | 'closing'
+  itemType: 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign' | 'closing' | 'event'
   emptyMessage?: string
 }
 
@@ -82,6 +84,10 @@ export function AdminListPage<T extends AdminListItem>({
       case 'closing':
         store.dispatch(setOpenClosingDrawer())
         store.dispatch(setInputs({ formName: 'closingForm', data: initialClosingFormState }))
+        break
+      case 'event':
+        store.dispatch(setOpenEventDrawer())
+        store.dispatch(setInputs({ formName: 'eventForm', data: initialEventFormState }))
         break
     }
   }

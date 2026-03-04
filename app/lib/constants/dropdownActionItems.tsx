@@ -1,6 +1,7 @@
 import {
   BookOpen,
   Crown,
+  Fuel,
   LucideIcon,
   Radio,
   Rocket,
@@ -12,12 +13,12 @@ import {
   Trophy
 } from 'lucide-react'
 import { setOpenProgramDrawer } from '@/app/lib/store/slices/programSlice'
-// import { setOpenEventDrawer } from '@/app/lib/store/slices/eventSlice'
 import { setOpenTeamMemberDrawer } from '../store/slices/teamMemberSlice'
 import { setOpenUserDrawer } from '../store/slices/userSlice'
 import { setOpenCampaignDrawer } from '../store/slices/campaignSlice'
 import { ActionCreatorWithoutPayload } from '@reduxjs/toolkit'
 import { setToggleModal } from '../actions/setToggleModal'
+import { setOpenEventDrawer } from '../store/slices/eventSlice'
 
 type ActionHandler = ActionCreatorWithoutPayload | (() => void) | ((slug: string) => Promise<any>)
 
@@ -54,7 +55,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
   {
     action: 'create-campaign',
     label: 'Initiate Campaign',
-    icon: Satellite,
+    icon: Fuel,
     open: setOpenCampaignDrawer,
     isUnlocked: true,
     linkKey: '/admin/fuel-tank/overview'
@@ -66,14 +67,14 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
     open: async () => await setToggleModal('home'),
     isUnlocked: true
   },
-  // {
-  //   action: 'manage-events',
-  //   label: 'Create Event',
-  //   icon: Satellite,
-  //   open: setOpenEventDrawer,
-  //   isUnlocked: true,
-  //   linkKey: '/admin/capsule/core'
-  // },
+  {
+    action: 'create-event',
+    label: 'Create Event',
+    icon: Satellite,
+    open: setOpenEventDrawer,
+    isUnlocked: true,
+    linkKey: '/admin/capsule/overview'
+  },
   {
     action: 'the-library',
     label: 'The Library',

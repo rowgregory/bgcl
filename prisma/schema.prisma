@@ -151,6 +151,8 @@ model Event {
   orders    Order[] // ← NEW: One event has many orders
   attendees User[]   @relation("EventAttendees")
 
+  order Int @default(0)
+
   @@index([date])
   @@index([status])
   @@index([status, date])

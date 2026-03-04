@@ -1,4 +1,4 @@
-import { Edit2, GripVertical, Trash2 } from 'lucide-react'
+import { Edit2, GripVertical, Ticket, Trash2 } from 'lucide-react'
 import { deleteCampaign } from '@/app/lib/actions/deleteCampaign'
 import { deleteClosing } from '@/app/lib/actions/deleteClosing'
 import { deleteNews } from '@/app/lib/actions/deleteNews'
@@ -14,6 +14,9 @@ import { setOpenNewsletterDrawer } from '@/app/lib/store/slices/newsletterSlice'
 import { setOpenClubResourceDrawer } from '@/app/lib/store/slices/clubResourceSlice'
 import { setOpenCampaignDrawer } from '@/app/lib/store/slices/campaignSlice'
 import { setOpenClosingDrawer } from '@/app/lib/store/slices/closingSlice'
+import { deleteEvent } from '@/app/lib/actions/deleteEvent'
+import { setOpenEventDrawer } from '@/app/lib/store/slices/eventSlice'
+import { setOpenTicketDrawer } from '@/app/lib/store/slices/ticketSlice'
 
 export function kebabToCamel(str: string): string {
   return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
@@ -51,6 +54,9 @@ const AdminListItem = ({
       case 'news':
         await deleteNews(item.id)
         break
+      case 'event':
+        await deleteEvent(item.id)
+        break
     }
 
     store.dispatch(showToast({ message: `Successfully deleted ${itemType}` }))
@@ -77,6 +83,9 @@ const AdminListItem = ({
         break
       case 'closing':
         store.dispatch(setOpenClosingDrawer())
+        break
+      case 'event':
+        store.dispatch(setOpenEventDrawer())
         break
     }
   }
@@ -127,6 +136,15 @@ const AdminListItem = ({
 
       {/* Action Buttons */}
       <div className="shrink-0 flex items-center gap-2">
+        {itemType === 'event' && (
+          <button
+            onClick={() => store.dispatch(setOpenTicketDrawer())}
+            className="p-2 dark:text-neutral-600 dark:hover:text-sky-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-sky-600 hover:bg-neutral-200 rounded-lg transition-colors"
+            title="Edit item"
+          >
+            <Ticket className="h-4 w-4" />
+          </button>
+        )}
         <button
           onClick={handleEdit}
           className="p-2 dark:text-neutral-600 dark:hover:text-sky-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-sky-600 hover:bg-neutral-200 rounded-lg transition-colors"

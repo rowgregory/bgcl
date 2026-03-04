@@ -1,14 +1,13 @@
-const getCurrentPageId = (path: string, navigationGroups: any[]) => {
-  const pathSegments = path.split('/').filter(Boolean)
-  const lastSegment = pathSegments[pathSegments.length - 1]
-
-  // Flatten all navigation items from groups
+export const getCurrentPageId = (path: string, navigationGroups: any[]) => {
   const allItems = navigationGroups.flatMap((group) => group.items)
 
-  // Find matching navigation item by path or id
-  const matchingItem = allItems.find((item: any) => item.path === path || item.path?.includes(lastSegment))
+  // Exact match first
+  const exactMatch = allItems.find((item: any) => item.path === path)
+  if (exactMatch) return exactMatch.label
 
-  return matchingItem?.label || 'Dashboard'
+  // Fall back to checking if the item path is a prefix of the current path
+  const prefixMatch = allItems.find((item: any) => item.path && path.startsWith(item.path))
+  if (prefixMatch) return prefixMatch.label
+
+  return 'Dashboard'
 }
-
-export default getCurrentPageId

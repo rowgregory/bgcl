@@ -44,6 +44,7 @@ interface Order {
 
 const formatDate = (d: Date | string) =>
   new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
 const formatUSD = (dollars: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(dollars)
 
@@ -190,7 +191,7 @@ export default function FuelTankTransactionsClient({ data }: { data: Order[] }) 
             </motion.div>
           ) : (
             <div className="overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-800">
-              <table className="w-full min-w-[640px] border-collapse">
+              <table className="w-full min-w-160 border-collapse">
                 <thead>
                   <tr className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
                     <th className="text-left px-4 py-3 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">

@@ -8,13 +8,14 @@ import { reorderNewsletters } from '../actions/reorderNewsletters'
 import { reorderClubResources } from '../actions/reorderClubResources'
 import { reorderCampaigns } from '../actions/reorderCampaigns'
 import { reorderClosings } from '../actions/reorderClosings'
+import { reorderEvents } from '../actions/reorderEvents'
 
 interface ReorderItem {
   id: string
   [key: string]: any
 }
 
-type ItemType = 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign' | 'closing'
+type ItemType = 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign' | 'closing' | 'event'
 
 const actionMap: Record<ItemType, (items: any[]) => Promise<any>> = {
   program: async (items) => await reorderPrograms(items),
@@ -22,7 +23,8 @@ const actionMap: Record<ItemType, (items: any[]) => Promise<any>> = {
   newsletter: async (items) => await reorderNewsletters(items),
   'club-resource': async (items) => await reorderClubResources(items),
   campaign: async (items) => await reorderCampaigns(items),
-  closing: async (items) => await reorderClosings(items)
+  closing: async (items) => await reorderClosings(items),
+  event: async (items) => await reorderEvents(items)
 }
 
 export default function useGenericListReorder<T extends ReorderItem>(data: T[], itemType: ItemType) {

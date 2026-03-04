@@ -16,7 +16,8 @@ import {
   // User,
   Orbit,
   Logs,
-  Rocket
+  Rocket,
+  Satellite
 } from 'lucide-react'
 
 const isStringInPath = (path: string, str: string) => path.includes(str)
@@ -72,13 +73,13 @@ export const adminNavigationLinkData = (
   ]
 
   const operationsGroup = [
-    // {
-    //   icon: Satellite,
-    //   label: 'The Capsule',
-    //   path: '/admin/capsule/core',
-    //   description: 'Event Management',
-    //   active: isStringInPath(path, 'capsule')
-    // },
+    {
+      icon: Satellite,
+      label: 'The Capsule',
+      path: '/admin/capsule/overview',
+      description: 'Event Management',
+      active: isStringInPath(path, 'capsule')
+    },
     {
       icon: Fuel,
       label: 'The Fuel Tank',

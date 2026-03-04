@@ -1,7 +1,7 @@
 'use client'
 
 import { FC } from 'react'
-import getCurrentPageId from '../../lib/utils/getCurrentPageId'
+import { getCurrentPageId } from '../../lib/utils/getCurrentPageId'
 import { AnimatePresence, motion } from 'framer-motion'
 import { store, useDashboardSelector } from '../../lib/store/store'
 import { ILayout } from '@/types/common'

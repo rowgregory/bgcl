@@ -3,7 +3,7 @@
 import { FC, ReactNode } from 'react'
 // import { glossyLowbitObscureBleep } from '@/app/lib/constants/sound-effects'
 // import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
-import SubNavLink from '@/app/components/navigation/SubNavLink'
+import { SubNavLink } from '@/app/components/navigation/SubNavLink'
 import { usePathname } from 'next/navigation'
 import { getTheLibraryLinks } from '@/app/lib/utils/getTheLibraryLinks'
 

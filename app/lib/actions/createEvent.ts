@@ -1,7 +1,6 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 import { combineDateTimeToUTC } from '../utils/date-utils'
 import { EventType } from '@prisma/client'
@@ -79,8 +78,6 @@ export async function createEvent(data: CreateEventData) {
       title: event.title,
       type: event.type
     })
-
-    revalidateTag('Event', 'default')
 
     return { success: true }
   } catch (error) {

@@ -6,7 +6,7 @@ interface ISubNavLink {
   item: { linkKey: string; textKey: string; isActive: boolean }
 }
 
-const SubNavLink: FC<ISubNavLink> = ({ handleNav, item }) => {
+export const SubNavLink: FC<ISubNavLink> = ({ handleNav, item }) => {
   return (
     <Link
       onClick={handleNav}
@@ -32,5 +32,3 @@ const SubNavLink: FC<ISubNavLink> = ({ handleNav, item }) => {
     </Link>
   )
 }
-
-export default SubNavLink
