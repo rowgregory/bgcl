@@ -43,7 +43,7 @@ export const ticketTemplates: TicketTemplate[] = [
       totalQuantity: 50,
 
       isAvailable: true,
-      sortOrder: 0
+      sortOrder: 2
     }
   },
   {
@@ -57,7 +57,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 80000,
       totalQuantity: 20,
       isAvailable: true,
-      sortOrder: 2
+      sortOrder: 3
     }
   },
   {
@@ -71,7 +71,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 180000,
       totalQuantity: 10,
       isAvailable: true,
-      sortOrder: 3
+      sortOrder: 4
     }
   },
   {
@@ -85,7 +85,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 2500,
       totalQuantity: 75,
       isAvailable: true,
-      sortOrder: 4
+      sortOrder: 5
     }
   },
   {
@@ -99,7 +99,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 250000,
       totalQuantity: 5,
       isAvailable: true,
-      sortOrder: 5
+      sortOrder: 6
     }
   },
   {
@@ -113,7 +113,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 10,
       totalQuantity: 50,
       isAvailable: true,
-      sortOrder: 6
+      sortOrder: 7
     }
   },
   {
@@ -128,7 +128,7 @@ export const ticketTemplates: TicketTemplate[] = [
       totalQuantity: 40,
 
       isAvailable: true,
-      sortOrder: 7
+      sortOrder: 8
     }
   },
   {
@@ -143,7 +143,7 @@ export const ticketTemplates: TicketTemplate[] = [
       totalQuantity: 10,
 
       isAvailable: true,
-      sortOrder: 8
+      sortOrder: 9
     }
   },
   {
@@ -157,7 +157,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 500000,
       totalQuantity: 15,
       isAvailable: true,
-      sortOrder: 9
+      sortOrder: 10
     }
   }
 ]

@@ -131,10 +131,10 @@ export function PageContentEditor({
 
   if (!fields || !Array.isArray(fields)) {
     return (
-      <div className="h-screen flex items-center justify-center bg-neutral-950">
+      <div className="h-screen flex items-center justify-center bg-white dark:bg-neutral-950">
         <div className="text-center">
-          <p className="text-neutral-400 mb-2">Invalid page content format</p>
-          <pre className="text-xs text-neutral-600">{JSON.stringify(fields, null, 2)}</pre>
+          <p className="text-neutral-500 dark:text-neutral-400 mb-2">Invalid page content format</p>
+          <pre className="text-xs text-neutral-400 dark:text-neutral-600">{JSON.stringify(fields, null, 2)}</pre>
         </div>
       </div>
     )

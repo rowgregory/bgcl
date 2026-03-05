@@ -56,66 +56,73 @@ export default function WelcomeAnimation() {
     <AnimatePresence>
       {isVisible && (
         <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Welcome screen"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.2 }}
           transition={{ duration: 0.8 }}
           className="fixed inset-0 z-9999 bg-black flex items-center justify-center overflow-hidden"
         >
-          {/* Digital rain effect - Boys & Girls Club colors */}
-          {columns.map((col) => (
-            <motion.div
-              key={col.id}
-              initial={{ y: -500 }}
-              animate={{ y: window.innerHeight + 100 }}
-              transition={{
-                duration: col.duration,
-                delay: col.delay,
-                repeat: Infinity,
-                ease: 'linear'
-              }}
-              className="absolute top-0 flex flex-col gap-1 font-mono text-lg sm:text-xl font-bold"
-              style={{
-                left: `${(col.id / 40) * 100}%`
-              }}
-            >
-              {col.chars.map((char, idx) => (
-                <motion.span
-                  key={idx}
-                  animate={{
-                    opacity: [0.1, 1, 0.1],
-                    color: [col.color.base, col.color.light, col.color.base]
-                  }}
-                  transition={{
-                    duration: 0.5,
-                    delay: idx * 0.05,
-                    repeat: Infinity
-                  }}
-                  style={{
-                    color: col.color.base,
-                    textShadow: `0 0 10px ${col.color.base}`
-                  }}
-                >
-                  {char}
-                </motion.span>
-              ))}
-            </motion.div>
-          ))}
+          {/* Screen reader narrative */}
+          <div aria-live="polite" aria-atomic="false" className="sr-only">
+            {isVisible && !showLogo && (
+              <p>
+                Welcome screen loading. A digital rain animation is falling across the screen in Boys and Girls Club
+                colors — blue, green, orange, and purple.
+              </p>
+            )}
+            {showLogo && (
+              <>
+                <p>
+                  The Boys and Girls Club of Lynn logo assembles on screen with a glitch effect, accompanied by a
+                  rainbow scan line sweeping downward across the logo.
+                </p>
+                <p>Text appears letter by letter reading: System Initialized.</p>
+              </>
+            )}
+          </div>
+          {/* Digital rain — decorative, hidden from screen readers */}
+          <div aria-hidden="true">
+            {columns.map((col) => (
+              <motion.div
+                key={col.id}
+                initial={{ y: -500 }}
+                animate={{ y: window.innerHeight + 100 }}
+                transition={{
+                  duration: col.duration,
+                  delay: col.delay,
+                  repeat: Infinity,
+                  ease: 'linear'
+                }}
+                className="absolute top-0 flex flex-col gap-1 font-mono text-lg sm:text-xl font-bold"
+                style={{ left: `${(col.id / 40) * 100}%` }}
+              >
+                {col.chars.map((char, idx) => (
+                  <motion.span
+                    key={idx}
+                    animate={{
+                      opacity: [0.1, 1, 0.1],
+                      color: [col.color.base, col.color.light, col.color.base]
+                    }}
+                    transition={{ duration: 0.5, delay: idx * 0.05, repeat: Infinity }}
+                    style={{ color: col.color.base, textShadow: `0 0 10px ${col.color.base}` }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </motion.div>
+            ))}
+          </div>
 
-          {/* Logo assembly animation */}
+          {/* Logo assembly */}
           {showLogo && (
-            <motion.div className="relative z-10">
-              {/* Glitch layers */}
+            <motion.div className="relative z-10" aria-hidden="true">
+              {/* Glitch layer — decorative */}
               <motion.div
                 initial={{ opacity: 0 }}
-                animate={{
-                  opacity: [0, 0.5, 0],
-                  x: [-5, 5, -5, 5, 0],
-                  y: [-5, 5, -5, 5, 0]
-                }}
-                transition={{
-                  duration: 0.5,
-                  times: [0, 0.2, 0.4, 0.6, 1]
-                }}
+                animate={{ opacity: [0, 0.5, 0], x: [-5, 5, -5, 5, 0], y: [-5, 5, -5, 5, 0] }}
+                transition={{ duration: 0.5, times: [0, 0.2, 0.4, 0.6, 1] }}
                 className="absolute inset-0"
               >
                 <Picture
@@ -125,31 +132,24 @@ export default function WelcomeAnimation() {
                 />
               </motion.div>
 
-              {/* Main logo with scan line effect */}
+              {/* Main logo */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.5, rotateY: 90 }}
                 animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 200,
-                  damping: 20,
-                  duration: 1
-                }}
+                transition={{ type: 'spring', stiffness: 200, damping: 20, duration: 1 }}
                 className="relative"
               >
-                <Picture src="/images/horizontal-logo-dark.png" className="w-72 sm:w-md" priority={true} />
-
-                {/* Scan line - cycling through colors */}
+                <Picture
+                  src="/images/horizontal-logo-dark.png"
+                  alt="Boys & Girls Club of Lynn"
+                  className="w-72 sm:w-md"
+                  priority={true}
+                />
+                {/* Scan line — decorative */}
                 <motion.div
                   initial={{ top: 0 }}
-                  animate={{
-                    top: '100%'
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: 'linear'
-                  }}
+                  animate={{ top: '100%' }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                   className="absolute left-0 right-0 h-1 opacity-50 blur-sm"
                   style={{
                     background:
@@ -158,7 +158,7 @@ export default function WelcomeAnimation() {
                 />
               </motion.div>
 
-              {/* Typing text effect */}
+              {/* Typing text */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -185,14 +185,15 @@ export default function WelcomeAnimation() {
             </motion.div>
           )}
 
-          {/* Grid background with multicolor tint */}
+          {/* Grid background — decorative */}
           <div
+            aria-hidden="true"
             className="absolute inset-0 opacity-10"
             style={{
               backgroundImage: `
-                linear-gradient(0deg, transparent 24%, rgba(59, 130, 246, .3) 25%, rgba(59, 130, 246, .3) 26%, transparent 27%, transparent 74%, rgba(168, 85, 247, .3) 75%, rgba(168, 85, 247, .3) 76%, transparent 77%, transparent),
-                linear-gradient(90deg, transparent 24%, rgba(34, 197, 94, .3) 25%, rgba(34, 197, 94, .3) 26%, transparent 27%, transparent 74%, rgba(249, 115, 22, .3) 75%, rgba(249, 115, 22, .3) 76%, transparent 77%, transparent)
-              `,
+            linear-gradient(0deg, transparent 24%, rgba(59, 130, 246, .3) 25%, rgba(59, 130, 246, .3) 26%, transparent 27%, transparent 74%, rgba(168, 85, 247, .3) 75%, rgba(168, 85, 247, .3) 76%, transparent 77%, transparent),
+            linear-gradient(90deg, transparent 24%, rgba(34, 197, 94, .3) 25%, rgba(34, 197, 94, .3) 26%, transparent 27%, transparent 74%, rgba(249, 115, 22, .3) 75%, rgba(249, 115, 22, .3) 76%, transparent 77%, transparent)
+          `,
               backgroundSize: '50px 50px'
             }}
           />
@@ -205,7 +206,8 @@ export default function WelcomeAnimation() {
               setIsVisible(false)
               localStorage.setItem('hasSeenWelcome', 'true')
             }}
-            className="absolute top-8 right-8 text-white/80 hover:text-white text-sm font-mono font-semibold px-4 py-2 border border-white/30 rounded hover:bg-white/10 transition-all z-20"
+            aria-label="Skip welcome screen"
+            className="absolute top-8 right-8 text-white/80 hover:text-white text-sm font-mono font-semibold px-4 py-2 border border-white/30 rounded hover:bg-white/10 transition-all z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           >
             [SKIP]
           </motion.button>

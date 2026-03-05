@@ -1,11 +1,12 @@
 import { ChangeEvent, FC } from 'react'
+import { motion } from 'framer-motion'
 import { IForm } from '@/types/common'
-import CloseDrawerButton from '../common/CloseDrawerButton'
-import TicketTemplates from '../ticket/TicketTemplates'
+import { TicketTemplates } from '../ticket/TicketTemplates'
 import { ticketTemplates } from '@/app/lib/constants/ticket'
-import TicketList from '../ticket/TicketList'
+import { TicketList } from '../ticket/TicketList'
+import { Save } from 'lucide-react'
 
-const InputStyles = `w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-3 text-white placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all`
+const InputStyles = `w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors`
 
 const TicketForm: FC<IForm> = ({
   errors,
@@ -27,39 +28,43 @@ const TicketForm: FC<IForm> = ({
   }
 
   return (
-    <div className="flex flex-col h-full bg-neutral-900">
-      {/* Top Bar */}
-      <div className="bg-neutral-800 border-b border-neutral-700 px-6 py-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-white font-semibold text-sm">Ticket Settings</h3>
-            <p className="text-neutral-400 text-xs mt-0.5">Manage all ticket options for {inputs.title as string}</p>
-          </div>
-
-          {/* Close Button */}
-          <CloseDrawerButton onClose={onClose} />
-        </div>
-      </div>
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <motion.div
+        className="space-y-2 px-8 py-3"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <h1 className="text-3xl md:text-4xl font-black dark:text-white text-neutral-900">
+          {isUpdating ? 'Edit Ticket' : 'Create Ticket'}
+        </h1>
+        <p className="dark:text-neutral-400 text-neutral-600">Configure your ticket details</p>
+      </motion.div>
 
       {/* Form Content */}
       <div className="flex-1 flex overflow-hidden">
-        {!isUpdating && <TicketTemplates onSelectTemplate={handleSelectTemplate} />}
-        {isUpdating && <TicketList inputs={inputs} onSelectTicket={handleSelectTemplate} tickets={inputs.tickets} />}
+        {inputs.tickets && (
+          <TicketList inputs={inputs} onSelectTicket={handleSelectTemplate} tickets={inputs.tickets} />
+        )}
+        <TicketTemplates onSelectTemplate={handleSelectTemplate} />
 
         <form onSubmit={handleSubmit} className="flex flex-col h-full w-full">
           {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto bg-neutral-900">
+          <div className="flex-1 overflow-y-auto">
             <div className="max-w-5xl mx-auto p-8">
               {/* Ticket Details Form */}
               <div className="mb-8">
-                <h4 className="text-base font-semibold text-white mb-4">
+                <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-4">
                   {isUpdating ? 'Edit Ticket' : 'Add New Ticket'}
-                </h4>
+                </h3>
 
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {/* Ticket Name */}
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-2">Ticket Name *</label>
+                    <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                      Ticket Name *
+                    </label>
                     <input
                       type="text"
                       name="name"
@@ -73,7 +78,9 @@ const TicketForm: FC<IForm> = ({
 
                   {/* Description */}
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-2">Description</label>
+                    <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                      Description
+                    </label>
                     <textarea
                       name="description"
                       value={(inputs?.description as string) || ''}
@@ -88,7 +95,9 @@ const TicketForm: FC<IForm> = ({
                   {/* Price and Quantity */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-neutral-300 mb-2">Price ($) *</label>
+                      <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                        Price ($) *
+                      </label>
                       <input
                         type="number"
                         name="price"
@@ -103,7 +112,9 @@ const TicketForm: FC<IForm> = ({
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-neutral-300 mb-2">Total Quantity *</label>
+                      <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                        Total Quantity *
+                      </label>
                       <input
                         type="number"
                         name="totalQuantity"
@@ -118,9 +129,11 @@ const TicketForm: FC<IForm> = ({
                   </div>
 
                   {/* Additional Options */}
-                  <div className="flex items-center justify-between p-4 bg-neutral-800 border border-neutral-700 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700 rounded-lg">
                     <div>
-                      <label className="text-sm font-medium text-neutral-300">Ticket Available</label>
+                      <label className="text-sm font-medium dark:text-neutral-300 text-neutral-700">
+                        Ticket Available
+                      </label>
                       <p className="text-xs text-neutral-500 mt-1">Allow customers to purchase this ticket</p>
                     </div>
                     <input
@@ -134,7 +147,9 @@ const TicketForm: FC<IForm> = ({
 
                   {/* Sort Order */}
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-2">Display Order</label>
+                    <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                      Display Order
+                    </label>
                     <input
                       type="number"
                       name="sortOrder"
@@ -152,22 +167,23 @@ const TicketForm: FC<IForm> = ({
             </div>
           </div>
 
-          {/* Fixed Footer */}
-          <div className="shrink-0 border-t border-neutral-700 bg-neutral-800 px-8 py-4">
-            <div className="max-w-5xl mx-auto flex items-center justify-between">
+          {/* Fixed Footer with Submit Button */}
+          <div className="shrink-0 border-t border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-8 py-4">
+            <div className="max-w-2xl mx-auto flex items-center justify-between">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2.5 text-sm font-medium text-neutral-300 hover:text-white transition-colors"
+                className="px-6 py-2.5 text-sm font-medium text-neutral-500 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="px-6 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-neutral-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 px-8 py-3 bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold rounded-lg shadow-lg shadow-sky-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-sky-500/50"
               >
-                {isLoading ? 'Saving...' : isUpdating ? 'Update Ticket' : 'Add Ticket'}
+                <Save className="w-4 h-4" />
+                {isLoading ? 'Saving...' : isUpdating ? 'Update Ticket' : 'Create Ticket'}
               </button>
             </div>
           </div>

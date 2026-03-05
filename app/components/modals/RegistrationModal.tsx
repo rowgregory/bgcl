@@ -9,7 +9,7 @@ import { useOverlayAccessibility } from '@/app/lib/hooks/useOverlayAccessibility
 
 export default function RegistrationModal({ modal }) {
   const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(pathname === '/' && modal.toggleModal)
+  const [isOpen, setIsOpen] = useState(pathname === '/' && modal?.toggleModal)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
 
   useOverlayAccessibility(isOpen)
@@ -54,7 +54,7 @@ export default function RegistrationModal({ modal }) {
     setIsOpen(false)
   }
 
-  if (pathname !== '/' && !modal.toggleModal) return null
+  if (pathname !== '/' && !modal?.toggleModal) return null
 
   return (
     <AnimatePresence>

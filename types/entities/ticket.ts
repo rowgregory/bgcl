@@ -64,6 +64,8 @@ export interface Ticket {
   // Relations
   eventId: string
   orderItems?: OrderItem[]
+
+  eventTitle: string
 }
 
 export type CreateTicketInput = Omit<

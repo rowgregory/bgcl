@@ -7,13 +7,13 @@ import {
   EVENT_CATEGORIES,
   EVENT_TYPES,
   MATERIAL_TAGS,
-  REQUIREMENT_TAGS,
-  templates
+  REQUIREMENT_TAGS
 } from '@/app/lib/constants/events'
 import { EventTemplates } from '../events/EventTemplates'
 import { formatDateForInput } from '@/app/lib/utils/date-utils'
 import { EventType } from '@prisma/client'
 import { motion } from 'framer-motion'
+import { formatTimeForInput } from '@/app/lib/utils/time-utils'
 
 const EventForm: FC<IForm> = ({
   errors,
@@ -68,7 +68,7 @@ const EventForm: FC<IForm> = ({
     } as ChangeEvent<HTMLInputElement>)
   }
 
-  const handleSelectTemplate = (templateData: (typeof templates)[0]['data']) => {
+  const handleSelectTemplate = (templateData: { [s: string]: unknown } | ArrayLike<unknown>) => {
     // Prefill all form fields
     Object.entries(templateData).forEach(([key, value]) => {
       handleInput({
@@ -174,7 +174,7 @@ const EventForm: FC<IForm> = ({
                       onChange={handleSelect}
                       className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
                     >
-                      <option value="" className="bg-neutral-800">
+                      <option value="" disabled className="bg-neutral-800">
                         Select...
                       </option>
                       {EVENT_TYPES.map((type) => (
@@ -221,7 +221,7 @@ const EventForm: FC<IForm> = ({
                     <input
                       type="date"
                       name="date"
-                      value={inputs.date || ''}
+                      value={formatDateForInput(inputs.date) || ''}
                       onChange={handleInput}
                       className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
                     />
@@ -235,7 +235,7 @@ const EventForm: FC<IForm> = ({
                     <input
                       type="time"
                       name="time"
-                      value={inputs.time || ''}
+                      value={inputs.time || formatTimeForInput(inputs.date) || ''}
                       onChange={handleInput}
                       className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
                     />

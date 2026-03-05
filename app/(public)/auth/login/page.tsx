@@ -29,7 +29,7 @@ const Login = () => {
     try {
       await signIn('google', {
         redirect: true,
-        callbackUrl: '/auth/custom-callback'
+        callbackUrl: '/auth/login'
       })
     } catch (error) {
       // Check for specific error types
@@ -62,7 +62,7 @@ const Login = () => {
       const result = await signIn('email', {
         email,
         redirect: false,
-        callbackUrl: '/auth/custom-callback'
+        callbackUrl: '/auth/login'
       })
 
       if (result?.ok) {

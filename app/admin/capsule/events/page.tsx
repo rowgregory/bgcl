@@ -9,7 +9,7 @@ export default async function CapsuleEventsPage() {
       tickets: true
     },
     orderBy: {
-      createdAt: 'desc'
+      order: 'asc'
     }
   })
 

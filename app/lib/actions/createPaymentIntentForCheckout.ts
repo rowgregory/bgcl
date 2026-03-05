@@ -4,6 +4,7 @@ import prisma from '@/prisma/client'
 import { stripe } from '../stripe/stripeClient'
 import Stripe from 'stripe'
 import { createLog } from './createLog'
+import { Ticket } from '@/types/entities/ticket'
 
 interface CheckoutParams {
   userId?: string
@@ -23,6 +24,8 @@ interface CheckoutParams {
   notes?: string
   campaignId?: string
   savedCardId?: string
+  tickets?: string
+  eventId?: string
 }
 
 export async function createPaymentIntentForCheckout({
@@ -42,7 +45,9 @@ export async function createPaymentIntentForCheckout({
   country,
   notes,
   campaignId,
-  savedCardId
+  savedCardId,
+  tickets,
+  eventId
 }: CheckoutParams) {
   try {
     // VALIDATE MINIMUM AMOUNT
@@ -119,7 +124,9 @@ export async function createPaymentIntentForCheckout({
         zipCode: zipCode || '',
         country: country || '',
         notes: notes || '',
-        campaignId: campaignId || ''
+        campaignId: campaignId || '',
+        tickets,
+        eventId
       }
     }
 

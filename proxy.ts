@@ -12,77 +12,48 @@ const URL_REDIRECTS: Record<string, string> = {
 export async function proxy(request) {
   const { pathname } = request.nextUrl
   const session = await auth()
+  const role = session?.user?.role
 
-  // Handle URL redirects first (before any other logic)
+  // Handle URL redirects
   if (URL_REDIRECTS[pathname]) {
-    return NextResponse.redirect(
-      new URL(URL_REDIRECTS[pathname], request.url),
-      { status: 301 } // Permanent redirect for SEO
-    )
+    return NextResponse.redirect(new URL(URL_REDIRECTS[pathname], request.url), { status: 301 })
   }
 
-  // If authenticated and on login page, redirect to appropriate dashboard
-  if (pathname === '/auth/login' && session?.user) {
-    const { role } = session.user
+  if (pathname === '/auth/login' && role) {
+    const redirect = request.cookies.get('bgcl_redirect')?.value
 
-    if (role === 'ADMIN' || role === 'SUPERUSER') {
+    if (role === 'ADMIN' || role === 'SUPERUSER')
       return NextResponse.redirect(new URL('/admin/mission-control', request.url))
-    }
+    if (role === 'PROGRAM') return NextResponse.redirect(new URL('/program/airlock', request.url))
 
-    if (role === 'PROGRAM') {
-      return NextResponse.redirect(new URL('/program/airlock', request.url))
-    }
-
-    // SUPPORTER role
-    return NextResponse.redirect(new URL('/supporter/overview', request.url))
+    const response = NextResponse.redirect(new URL(redirect || '/supporter/overview', request.url))
+    response.cookies.delete('bgcl_redirect')
+    return response
   }
 
-  // Protected routes - require authentication
-  const protectedRoutes = ['/supporter/', '/admin/', '/program/']
-  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route))
+  // Protected routes
+  const isProtected = ['/supporter/', '/admin/', '/program/'].some((r) => pathname.startsWith(r))
+  if (!isProtected) return NextResponse.next()
 
-  if (isProtectedRoute) {
-    // Redirect unauthenticated users to login
-    if (!session?.user) {
-      return NextResponse.redirect(new URL('/auth/login', request.url))
-    }
+  // Unauthenticated — send to login
+  if (!role) return NextResponse.redirect(new URL('/auth/login', request.url))
 
-    const { role } = session.user
-
-    // Helper function to redirect to correct dashboard
-    const redirectToDashboard = (userRole: string) => {
-      if (userRole === 'ADMIN' || userRole === 'SUPERUSER') {
-        return NextResponse.redirect(new URL('/admin/mission-control', request.url))
-      }
-      if (userRole === 'PROGRAM') {
-        return NextResponse.redirect(new URL('/program/airlock', request.url))
-      }
+  // Admin routes
+  if (pathname.startsWith('/admin/')) {
+    if (role !== 'ADMIN' && role !== 'SUPERUSER')
       return NextResponse.redirect(new URL('/supporter/overview', request.url))
-    }
+    return NextResponse.next()
+  }
 
-    // ADMIN/SUPERUSER access control
-    if (pathname.startsWith('/admin/')) {
-      if (role !== 'ADMIN' && role !== 'SUPERUSER') {
-        return redirectToDashboard(role)
-      }
-      // Admin/Superuser can access admin routes - allow
-      return NextResponse.next()
-    }
+  // Program routes
+  if (pathname.startsWith('/program/')) {
+    if (role !== 'PROGRAM') return NextResponse.redirect(new URL('/supporter/overview', request.url))
+    return NextResponse.next()
+  }
 
-    // PROGRAM access control
-    if (pathname.startsWith('/program/')) {
-      if (role !== 'PROGRAM') {
-        return redirectToDashboard(role)
-      }
-      // Program can access program routes - allow
-      return NextResponse.next()
-    }
-
-    // SUPPORTER access control - everyone can access /supporter/overview
-    if (pathname.startsWith('/supporter/')) {
-      // Allow all authenticated roles to access supporter routes
-      return NextResponse.next()
-    }
+  // Supporter routes — redirect admins away from entry point
+  if (pathname.startsWith('/supporter/')) {
+    return NextResponse.next()
   }
 
   return NextResponse.next()

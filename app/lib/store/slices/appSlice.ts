@@ -6,7 +6,6 @@ export interface AppStatePayload {
   heroStudio: boolean
   languageDropdown: boolean
   selectedLanguage: string
-  capitalCampaignDrawer: boolean
   volunteerDrawer: boolean
   paymentMethodDrawer: boolean
   isDark: boolean
@@ -21,7 +20,6 @@ const initialAppState: AppStatePayload = {
   heroStudio: false,
   languageDropdown: false,
   selectedLanguage: 'English',
-  capitalCampaignDrawer: false,
   volunteerDrawer: false,
   paymentMethodDrawer: false,
   isDark: false,
@@ -60,12 +58,6 @@ export const appSlice = createSlice({
     },
     setSelectedLanguage: (state, { payload }) => {
       state.selectedLanguage = payload
-    },
-    setOpenCapitalCampaignDrawer: (state) => {
-      state.capitalCampaignDrawer = true
-    },
-    setCloseCapitalCampaignDrawer: (state) => {
-      state.capitalCampaignDrawer = false
     },
     setOpenVolunteerDrawer: (state) => {
       state.volunteerDrawer = true
@@ -110,8 +102,6 @@ export const {
   setCloseLanguageDropdown,
   setOpenLanguageDropdown,
   setSelectedLanguage,
-  setCloseCapitalCampaignDrawer,
-  setOpenCapitalCampaignDrawer,
   setCloseVolunteerDrawer,
   setOpenVolunteerDrawer,
   setOpenPaymentMethodDrawer,

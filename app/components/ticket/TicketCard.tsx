@@ -1,94 +1,115 @@
 'use client'
 
 import { FC } from 'react'
-import { Ticket } from '@prisma/client'
 import { hydrateTicket, setOpenTicketSelectionDrawer } from '@/app/lib/store/slices/ticketSlice'
-import { useAppDispatch } from '@/app/lib/store/store'
+import { store } from '@/app/lib/store/store'
 import { setSelectedEvent } from '@/app/lib/store/slices/eventSlice'
 import { getTicketStatus } from '@/app/lib/utils/event-utils'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { setRedirectCookie } from '@/app/lib/actions/setRedirectCookie'
+import { Ticket } from '@/types/entities/ticket'
 
 interface ITicketCard {
   ticket: Ticket
 }
 
-const TicketCard: FC<ITicketCard> = ({ ticket }) => {
+export const TicketCard: FC<ITicketCard> = ({ ticket }) => {
+  const { data: session } = useSession()
+  const router = useRouter()
   const { available, message } = getTicketStatus(ticket)
-  const dispatch = useAppDispatch()
+
+  console.log(session)
 
   const handleTicketSelect = (ticket: Ticket) => {
-    dispatch(hydrateTicket(ticket))
-    dispatch(setSelectedEvent(ticket.eventId))
-    dispatch(setOpenTicketSelectionDrawer())
+    store.dispatch(hydrateTicket(ticket))
+    store.dispatch(setSelectedEvent(ticket.eventId))
+    store.dispatch(setOpenTicketSelectionDrawer())
   }
 
   return (
-    <>
-      <div
-        className={`
-      p-6 rounded-lg border transition-all
-      ${
+    <div
+      className={`p-5 sm:p-6 rounded-xl border transition-all flex flex-col justify-between ${
         available
-          ? 'bg-zinc-800/50 border-zinc-700 hover:border-cyan-500 hover:shadow-lg hover:shadow-cyan-500/20 cursor-pointer'
-          : 'bg-zinc-900/50 border-zinc-700 opacity-60 cursor-not-allowed'
-      }
-    `}
-      >
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-white">{ticket.name}</h3>
-            {ticket.description && <p className="text-sm text-zinc-400 mt-1">{ticket.description}</p>}
-            <p className="text-2xl font-bold text-cyan-400 mt-3">${ticket.price}</p>
+          ? 'dark:bg-neutral-800/50 dark:border-neutral-700 dark:hover:border-sky-500 dark:hover:shadow-sky-500/20 bg-white border-neutral-200 hover:border-sky-400 hover:shadow-lg hover:shadow-sky-500/10 cursor-pointer'
+          : 'dark:bg-neutral-900/50 dark:border-neutral-800 bg-neutral-50 border-neutral-200 opacity-60 cursor-not-allowed'
+      }`}
+      aria-label={`${ticket.name} — ${available ? `$${ticket.price}` : message}`}
+    >
+      <div className="flex-1 min-w-0">
+        <h3 className="text-base sm:text-lg font-semibold dark:text-white text-neutral-900 truncate">{ticket.name}</h3>
+        {ticket.description && (
+          <p className="text-xs sm:text-sm dark:text-neutral-400 text-neutral-500 mt-1 leading-relaxed">
+            {ticket.description}
+          </p>
+        )}
+      </div>
 
-            {/* Availability info */}
-            <div className="mt-3 text-sm">
-              {!available ? (
-                <div className="flex items-center gap-2">
-                  {message === 'Sold out' && (
-                    <span className="px-2 py-1 bg-red-900/30 text-red-400 rounded-full font-medium border border-red-700/50">
-                      Sold Out
-                    </span>
-                  )}
-                  {message === 'Sales ended' && (
-                    <span className="px-2 py-1 bg-zinc-700/50 text-zinc-400 rounded-full font-medium border border-zinc-600/50">
-                      Sales Ended
-                    </span>
-                  )}
-                  {message === 'Not available' && (
-                    <span className="px-2 py-1 bg-zinc-700/50 text-zinc-400 rounded-full font-medium border border-zinc-600/50">
-                      Not Available
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <span className="text-emerald-400 font-medium">✓ Available</span>
+      <div>
+        <p className="text-xl sm:text-2xl font-bold dark:text-sky-400 text-sky-600 mt-3">${ticket.price}</p>
+
+        {/* Availability */}
+        <div className="mt-3 text-sm">
+          {!available ? (
+            <div className="flex items-center gap-2" role="status">
+              {message === 'Sold out' && (
+                <span className="px-2 py-1 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700/50 bg-red-50 text-red-600 border-red-200 rounded-full text-xs font-medium border">
+                  Sold Out
+                </span>
               )}
-
-              {/* Show remaining quantity */}
-              {available && (
-                <p className="text-zinc-500 mt-1">{ticket.totalQuantity - ticket.quantitySold} remaining</p>
+              {message === 'Sales ended' && (
+                <span className="px-2 py-1 dark:bg-neutral-700/50 dark:text-neutral-400 dark:border-neutral-600/50 bg-neutral-100 text-neutral-500 border-neutral-300 rounded-full text-xs font-medium border">
+                  Sales Ended
+                </span>
+              )}
+              {message === 'Not available' && (
+                <span className="px-2 py-1 dark:bg-neutral-700/50 dark:text-neutral-400 dark:border-neutral-600/50 bg-neutral-100 text-neutral-500 border-neutral-300 rounded-full text-xs font-medium border">
+                  Not Available
+                </span>
               )}
             </div>
-          </div>
+          ) : (
+            <p className="dark:text-emerald-400 text-emerald-600 font-medium flex items-center gap-1" role="status">
+              <span aria-hidden="true">✓</span> Available
+            </p>
+          )}
+
+          {available && (
+            <p className="dark:text-neutral-500 text-neutral-400 text-xs mt-1">
+              {ticket.totalQuantity - ticket.quantitySold} remaining
+            </p>
+          )}
         </div>
 
         {/* Purchase button */}
         <button
-          disabled={!available}
-          onClick={() => available && handleTicketSelect(ticket)}
-          className={`
-          w-full mt-4 py-3 rounded-lg font-medium transition-all
-          ${
-            available
-              ? 'bg-cyan-600 text-white hover:bg-cyan-700 active:scale-[0.98]'
-              : 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
+          disabled={!available && !!session}
+          onClick={async () => {
+            if (!session) {
+              await setRedirectCookie(`/events/${ticket.eventId}`)
+              router.push('/auth/login')
+            } else if (available) {
+              handleTicketSelect(ticket)
+            }
+          }}
+          aria-label={
+            !session
+              ? `Sign in to purchase: ${ticket.name}`
+              : available
+                ? `Select ticket: ${ticket.name}`
+                : `${ticket.name} — ${message}`
           }
-        `}
+          className={`w-full mt-4 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+            !session
+              ? 'bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white focus-visible:ring-sky-500 dark:focus-visible:ring-offset-neutral-900 focus-visible:ring-offset-white'
+              : available
+                ? 'bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white focus-visible:ring-sky-500 dark:focus-visible:ring-offset-neutral-900 focus-visible:ring-offset-white'
+                : 'dark:bg-neutral-700 dark:text-neutral-500 bg-neutral-100 text-neutral-400 cursor-not-allowed'
+          }`}
         >
-          {available ? 'Select Ticket' : message}
+          {!session ? 'Sign In to Purchase' : available ? 'Select Ticket' : message}
         </button>
       </div>
-    </>
+    </div>
   )
 }
-
-export default TicketCard

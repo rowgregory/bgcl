@@ -35,6 +35,8 @@ interface CreateEventData {
   salesStartDate?: string | null
   salesEndDate?: string | null
 
+  order?: number | null
+
   [key: string]: any
 }
 
@@ -69,7 +71,8 @@ export async function createEvent(data: CreateEventData) {
         registrationDeadline: data.registrationDeadline ? new Date(data.registrationDeadline) : new Date(),
         rsvpDeadline: data.rsvpDeadline ? new Date(data.rsvpDeadline) : new Date(),
         allowMultipleTickets: data.allowMultipleTickets ?? false,
-        capacity: data.capacity ? Number(data.capacity) : 200
+        capacity: data.capacity ? Number(data.capacity) : 200,
+        order: data.order ?? 0
       }
     })
 

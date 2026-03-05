@@ -105,33 +105,15 @@ export async function POST(req: NextRequest) {
 }
 
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
-  const pi = paymentIntent as any
-
   const { id, amount, metadata } = paymentIntent
 
   try {
-    if (
-      // Guard 1: metadata-based (works once subscription metadata propagates)
-      metadata?.donationType === 'monthly' ||
-      metadata?.donationType === 'yearly' ||
-      metadata?.orderType === 'RECURRING_DONATION'
-    ) {
-      console.log('EDIT HANDLE PAYMENT INTENT SUCCEEDED')
-      return
-    }
-
-    // Guard 2: pi.invoice field (not always populated but worth checking)
-    if (pi.invoice) {
-      return
-    }
+    if (!metadata?.orderType) return
 
     const existingOrder = await prisma.order.findFirst({
       where: { paymentIntentId: id }
     })
-
-    if (existingOrder) {
-      return
-    }
+    if (existingOrder) return
 
     const orderType =
       (metadata?.orderType as 'ONE_TIME_DONATION' | 'RECURRING_DONATION' | 'TICKET_PURCHASE') || 'ONE_TIME_DONATION'
@@ -167,20 +149,44 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       }
     })
 
-    // Create order items for ticket purchases
-    if (orderType === 'TICKET_PURCHASE' && metadata?.ticketIds) {
-      const ticketIds = JSON.parse(metadata.ticketIds as string)
-      const pricePerTicket = amount / 100 / ticketIds.length
+    if (orderType === 'TICKET_PURCHASE' && metadata?.tickets) {
+      const tickets = JSON.parse(metadata.tickets as string) as Array<{
+        ticketId: string
+        quantity: number
+        pricePerUnit: number
+        ticketName: string
+      }>
 
-      for (const ticketId of ticketIds) {
+      for (const ticket of tickets) {
         await prisma.orderItem.create({
           data: {
             orderId: order.id,
-            ticketId,
-            quantity: 1,
-            pricePerUnit: pricePerTicket,
-            totalPrice: pricePerTicket,
-            ticketName: metadata.ticketName || 'Ticket'
+            ticketId: ticket.ticketId,
+            quantity: ticket.quantity,
+            pricePerUnit: ticket.pricePerUnit,
+            totalPrice: ticket.pricePerUnit * ticket.quantity,
+            ticketName: ticket.ticketName
+          }
+        })
+
+        const updatedTicket = await prisma.ticket.update({
+          where: { id: ticket.ticketId },
+          data: { quantitySold: { increment: ticket.quantity } }
+        })
+
+        await prisma.ticket.update({
+          where: { id: ticket.ticketId },
+          data: { isAvailable: updatedTicket.quantitySold < updatedTicket.totalQuantity }
+        })
+      }
+
+      // Add user to event attendees
+      if (metadata?.eventId && order.userId) {
+        await prisma.event.update({
+          where: { id: metadata.eventId as string },
+          data: {
+            attendees: { connect: { id: order.userId } },
+            attendeeCount: { increment: 1 }
           }
         })
       }

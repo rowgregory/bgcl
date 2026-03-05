@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { templates } from '@/app/lib/constants/events'
+import { eventTemplates } from '@/app/lib/constants/events'
 import { motion } from 'framer-motion'
 import { EventTemplate } from '@/types/entities/event'
 
@@ -17,7 +17,7 @@ export const EventTemplates: FC<EventTemplatesProps> = ({ onSelectTemplate }) =>
         </p>
 
         <div className="space-y-3">
-          {templates.map((template) => (
+          {eventTemplates.map((template) => (
             <motion.button
               key={template.id}
               onClick={() => onSelectTemplate(template.data)}

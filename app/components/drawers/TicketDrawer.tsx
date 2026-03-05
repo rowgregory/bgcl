@@ -88,7 +88,7 @@ const TicketDrawer = () => {
           <Backdrop onClose={onClose} />
 
           {/* Drawer */}
-          <Drawer className="max-w-4xl">
+          <Drawer className="max-w-5xl">
             {/* Form */}
             <TicketsForm
               errors={errors}

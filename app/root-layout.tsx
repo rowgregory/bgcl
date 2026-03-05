@@ -11,9 +11,7 @@ import { HIDDEN_PATHS } from './lib/constants/navigation'
 import { LanguageDropdown } from './components/dropdowns/LanguageDropdown'
 import { Footer } from './components/footer/Footer'
 import DonationNotification from './components/DonationNotification'
-import CapitalCampaignDrawer from './components/drawers/CapitalCampaignDrawer'
 import VolunteerDrawer from './components/drawers/VolunteerDrawer'
-import FloatingDonateButton from './components/FloatingButton'
 import CapitalCampaignTab from './components/CapitalCampaignTab'
 import RegistrationModal from './components/modals/RegistrationModal'
 import MobileNavigationDrawer from './components/MobileNavigationDrawer'
@@ -37,9 +35,7 @@ export default function RootLayoutWrapper({ children, programs, pageContent, don
             <TicketSelectionDrawer />
             <LanguageDropdown />
             <DonationNotification donations={donations} />
-            <CapitalCampaignDrawer />
             <VolunteerDrawer programs={programs} />
-            <FloatingDonateButton />
             <CapitalCampaignTab />
             <RegistrationModal modal={pageContent?.sections?.modal} />
             <MobileNavigationDrawer />

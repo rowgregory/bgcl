@@ -7,13 +7,18 @@ export async function reorderEvents(
   events: Array<{ id: string; order?: number }>
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    await Promise.all(
-      events.map((closing, index) =>
+    const eventsData = await Promise.all(
+      events.map((event, index) =>
         prisma.event.update({
-          where: { id: closing.id },
+          where: { id: event.id },
           data: { order: index + 1 }
         })
       )
+    )
+
+    console.log(
+      'events data: ',
+      eventsData.map((event) => ({ order: event.order, title: event.title }))
     )
 
     return { success: true }

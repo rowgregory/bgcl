@@ -36,5 +36,5 @@ export const StarMapAboutClient = ({ data }) => {
     setIsSaving(false)
   }
 
-  return <PageContentEditor fields={data.content} onSave={handleSave} isLoading={isSaving} />
+  return <PageContentEditor fields={data?.content} onSave={handleSave} isLoading={isSaving} />
 }

@@ -11,7 +11,7 @@ export const getEvents = async () => {
         tickets: true
       },
       orderBy: {
-        createdAt: 'desc'
+        order: 'asc'
       }
     })
 

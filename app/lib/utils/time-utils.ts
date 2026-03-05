@@ -56,3 +56,18 @@ export function regularToMilitaryTime(regularTime: string): string {
     return ''
   }
 }
+
+export const formatTimeForInput = (date: Date | string | null | undefined): string => {
+  if (!date) return ''
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return ''
+  const timeStr = d.toLocaleTimeString('en-US', {
+    timeZone: 'America/New_York',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  })
+  // toLocaleTimeString can return "24:00" for midnight, normalize it
+  const [hours, minutes] = timeStr.split(':')
+  return `${hours === '24' ? '00' : hours}:${minutes}`
+}

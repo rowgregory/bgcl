@@ -6,7 +6,7 @@ const CampaignSelectionAndNotes = ({ campaign, campaigns, setCampaign, notes, se
       <div className="pt-4 dark:border-zinc-700 border-t border-neutral-200">
         <label className="block text-sm font-medium dark:text-zinc-300 text-neutral-700 mb-2">Donation Campaign</label>
         <select
-          value={campaign?.id ?? campaigns[0].id ?? ''}
+          value={campaign?.id ?? campaigns[0]?.id ?? ''}
           onChange={(e) => {
             const selectedCampaign = campaigns?.find((c: ICampaign) => c.id === e.target.value)
             setCampaign(selectedCampaign || null)

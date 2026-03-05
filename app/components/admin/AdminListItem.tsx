@@ -137,13 +137,25 @@ const AdminListItem = ({
       {/* Action Buttons */}
       <div className="shrink-0 flex items-center gap-2">
         {itemType === 'event' && (
-          <button
-            onClick={() => store.dispatch(setOpenTicketDrawer())}
-            className="p-2 dark:text-neutral-600 dark:hover:text-sky-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-sky-600 hover:bg-neutral-200 rounded-lg transition-colors"
-            title="Edit item"
-          >
-            <Ticket className="h-4 w-4" />
-          </button>
+          <div className="relative group/ticket">
+            <button
+              onClick={() => {
+                store.dispatch(setOpenTicketDrawer())
+                store.dispatch(setInputs({ formName: 'ticketForm', data: { tickets: item.tickets, eventId: item.id } }))
+              }}
+              className="relative p-2 dark:text-neutral-600 dark:hover:text-sky-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-sky-600 hover:bg-neutral-200 rounded-lg transition-colors"
+            >
+              <Ticket className="h-4 w-4" />
+              {item.tickets?.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-sky-500 text-white text-[9px] font-bold rounded-full">
+                  {item.tickets.length}
+                </span>
+              )}
+            </button>
+            <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-1 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 text-[10px] font-medium rounded whitespace-nowrap opacity-0 group-hover/ticket:opacity-100 transition-opacity pointer-events-none z-50 shadow-sm">
+              Tickets
+            </div>
+          </div>
         )}
         <button
           onClick={handleEdit}

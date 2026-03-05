@@ -5,7 +5,7 @@ export const initialEventFormState = {
   category: '',
   capacity: 200,
   attendeeCount: 0,
-  type: '',
+  type: 'IN_PERSON',
   dresscode: '',
   date: new Date(),
   time: '',
@@ -25,5 +25,6 @@ export const initialEventFormState = {
   allowMultipleTickets: false,
   salesStartDate: null,
   salesEndDate: null,
-  isUpdating: false
+  isUpdating: false,
+  order: 0
 }
