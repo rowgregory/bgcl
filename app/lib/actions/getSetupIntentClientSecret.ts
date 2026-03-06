@@ -24,15 +24,21 @@ export async function getSetupIntentClientSecret() {
     if (user?.stripeCustomerId) {
       customerId = user.stripeCustomerId
     } else {
-      const customer = await stripe.customers.create({
-        email: session.user.email || undefined,
-        metadata: {
-          userId: session.user.id
-        }
-      })
-      customerId = customer.id
+      const email = session.user.email
 
-      // Save to user
+      // Check Stripe for existing customer first
+      const existing = email ? await stripe.customers.list({ email, limit: 1 }) : { data: [] }
+
+      if (existing.data.length > 0) {
+        customerId = existing.data[0].id
+      } else {
+        const customer = await stripe.customers.create({
+          email: email || undefined,
+          metadata: { userId: session.user.id }
+        })
+        customerId = customer.id
+      }
+
       await prisma.user.update({
         where: { id: session.user.id },
         data: { stripeCustomerId: customerId }

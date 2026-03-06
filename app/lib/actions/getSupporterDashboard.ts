@@ -18,7 +18,11 @@ export async function getSupporterDashboard() {
       include: {
         orderItems: {
           include: {
-            ticket: true
+            ticket: {
+              include: {
+                event: true
+              }
+            }
           }
         },
         event: true
@@ -34,7 +38,6 @@ export async function getSupporterDashboard() {
         (o.type === 'ONE_TIME_DONATION' || o.type === 'RECURRING_DONATION') &&
         (o.status === 'CONFIRMED' || o.status === 'PROCESSING' || o.status === 'CANCELLED')
     )
-    const ticketOrders = orders.filter((o) => o.type === 'TICKET_PURCHASE' && o.status === 'CONFIRMED')
 
     // Calculate totals
     const totalDonated = donationOrders.reduce((sum, o) => sum + o.totalAmount, 0)
@@ -52,7 +55,11 @@ export async function getSupporterDashboard() {
         ? donationOrders.filter((o) => o.recurringFrequency === 'yearly').reduce((sum, o) => sum + o.totalAmount, 0)
         : 0
 
-    const upcomingEvents = ticketOrders.filter((o) => o.event && new Date(o.event.date) > new Date()).slice(0, 3)
+    const ticketOrders = orders.filter((o) => o.type === 'TICKET_PURCHASE' && o.status === 'CONFIRMED')
+
+    const upcomingEvents = ticketOrders
+      .sort((a, b) => new Date(a.event!.date).getTime() - new Date(b.event!.date).getTime())
+      .slice(0, 3)
 
     const totalTickets = ticketOrders.reduce(
       (sum, o) => sum + o.orderItems.reduce((itemSum, item) => itemSum + item.quantity, 0),
@@ -68,6 +75,13 @@ export async function getSupporterDashboard() {
     })
 
     const joinYear = userCreatedAt?.createdAt ? new Date(userCreatedAt.createdAt).getFullYear().toString() : '2026'
+
+    const activeMonthly = donationOrders.filter(
+      (o) => o.recurringFrequency === 'monthly' && o.status === 'CONFIRMED'
+    ).length
+    const cancelledMonthly = donationOrders.filter(
+      (o) => o.recurringFrequency === 'monthly' && o.status === 'CANCELLED'
+    ).length
 
     return {
       donationOrders,
@@ -94,7 +108,14 @@ export async function getSupporterDashboard() {
         {
           label: 'Monthly Support',
           value: `$${monthlyAmount.toFixed(2)}`,
-          subtext: `${monthlyCount} active plans`,
+          subtext:
+            activeMonthly > 0 && cancelledMonthly > 0
+              ? `${activeMonthly} active, ${cancelledMonthly} cancelled`
+              : activeMonthly > 0
+                ? `${activeMonthly} active`
+                : cancelledMonthly > 0
+                  ? `${cancelledMonthly} cancelled`
+                  : '0 plans',
           icon: 'Zap',
           color: 'text-blue-400',
           bg: 'bg-blue-500/10',
@@ -112,7 +133,7 @@ export async function getSupporterDashboard() {
         {
           label: 'Event Tickets',
           value: totalTickets.toString(),
-          subtext: `${ticketOrders.length} purchases`,
+          subtext: `${ticketOrders.length} purchase${ticketOrders.length === 0 || (ticketOrders.length > 1 ? 's' : '')}`,
           icon: 'Ticket',
           color: 'text-sky-400',
           bg: 'bg-sky-500/10',

@@ -1,3 +1,4 @@
+import { Event } from './event'
 import { OrderItem } from './order-item'
 
 export interface TicketPayload {
@@ -63,6 +64,7 @@ export interface Ticket {
 
   // Relations
   eventId: string
+  event: Event
   orderItems?: OrderItem[]
 
   eventTitle: string

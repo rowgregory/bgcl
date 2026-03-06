@@ -16,11 +16,6 @@ export async function reorderEvents(
       )
     )
 
-    console.log(
-      'events data: ',
-      eventsData.map((event) => ({ order: event.order, title: event.title }))
-    )
-
     return { success: true }
   } catch (error) {
     await createLog('error', 'Failed to reorder events', {

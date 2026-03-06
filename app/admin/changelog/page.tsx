@@ -21,6 +21,54 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.10.2',
+    date: '2026-03-06',
+    changes: [
+      {
+        type: 'bug',
+        title: 'Fixed Ghost One-Time Donation Orders on Subscription Renewal',
+        description:
+          'Replaced multi-guard webhook logic with a single metadata check — if a PaymentIntent has no orderType in its metadata it is skipped entirely, since all manual PaymentIntents always include orderType and Stripe-generated subscription PaymentIntents never do.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Stripe Duplicate Customer Prevention',
+        description:
+          'Updated createStripeCustomer, createSetupIntentForSubscription, and getSetupIntentClientSecret to check Stripe by email before creating a new customer, preventing duplicate customer records across all payment flows.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Supporter Ticket Orders Page',
+        description:
+          'Added /supporter/tickets page showing all ticket purchases grouped by event with event name, date, ticket line items, quantities, and order totals. Includes getTicketOrders server action.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Subscription-Linked Card Deletion Warning',
+        description:
+          'Added isCardLinkedToSubscription server action that checks if a specific payment method is attached to an active recurring donation. Attempting to delete a linked card now opens a warning modal directing the user to cancel their subscription first.',
+        impact: 'medium'
+      },
+      {
+        type: 'bug',
+        title: 'Fixed Duplicate Payment Method Saves on One-Time Checkout',
+        description:
+          'Added a ref guard to the Pusher order-created listener to prevent savePaymentMethod from firing more than once per order. Also replaced channel.unbind with channel.unbind_all and pusher.unsubscribe to ensure full cleanup.',
+        impact: 'medium'
+      },
+      {
+        type: 'ui',
+        title: 'Supporter Overview Redesign',
+        description:
+          'Replaced tall CTA cards with compact inline banners, added empty states with CTAs for Donation History and Events sections, added ticket orders section with event name and date above ticket line items, and updated stats grid to 2-col mobile layout.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.10.1',
     date: '2026-03-03',
     changes: [

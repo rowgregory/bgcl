@@ -15,6 +15,7 @@ import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { setOpenPaymentMethodDrawer } from '@/app/lib/store/slices/appSlice'
 import { setDefaultPaymentMethod } from '@/app/lib/actions/setDefaultPaymentMethod'
 import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
+import { isCardLinkedToSubscription } from '@/app/lib/actions/isCardLinkedToSubscription'
 
 const brandColors = {
   visa: 'from-blue-600 to-blue-700',
@@ -28,10 +29,11 @@ const getBrandColor = (brand: string) => {
   return brandColors[brand.toLowerCase() as keyof typeof brandColors] || brandColors.default
 }
 
-export default function SavedCardsClient({ cards }) {
+export default function SupporterSavedCardsClient({ cards }) {
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [settingDefault, setSettingDefault] = useState<string | null>(null)
+  const [showSubscriptionWarning, setShowSubscriptionWarning] = useState<boolean>(false)
   const session = useSession()
   const router = useRouter()
 
@@ -80,6 +82,15 @@ export default function SavedCardsClient({ cards }) {
       )
     } finally {
       setSettingDefault(null)
+    }
+  }
+
+  const handleDeleteClick = async (cardId: string, paymentMethodId: string) => {
+    const linked = await isCardLinkedToSubscription(paymentMethodId)
+    if (linked) {
+      setShowSubscriptionWarning(true)
+    } else {
+      setDeleteId(cardId)
     }
   }
 
@@ -251,7 +262,7 @@ export default function SavedCardsClient({ cards }) {
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          onClick={() => setDeleteId(card.id)}
+                          onClick={() => handleDeleteClick(card.id, card.stripePaymentId)}
                           className="p-2.5 text-neutral-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all"
                           title="Delete card"
                         >
@@ -357,13 +368,73 @@ export default function SavedCardsClient({ cards }) {
                   Cancel
                 </button>
                 <button
-                  onClick={() => deleteId && handleDelete(deleteId)}
+                  onClick={() => handleDelete(deleteId)}
                   disabled={deleting}
                   className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-400 dark:disabled:bg-red-600/50 text-white font-semibold rounded-lg transition-all disabled:cursor-not-allowed"
                 >
                   {deleting ? 'Deleting...' : 'Delete Card'}
                 </button>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Active Subscription Modal */}
+      <AnimatePresence>
+        {showSubscriptionWarning && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+            onClick={() => setShowSubscriptionWarning(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="subscription-warning-title"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-neutral-900 rounded-2xl p-8 max-w-sm border border-neutral-200 dark:border-neutral-800 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                className="flex items-center justify-center w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 mx-auto mb-4"
+                aria-hidden="true"
+              >
+                <AlertTriangle className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+              </div>
+
+              <h3
+                id="subscription-warning-title"
+                className="text-xl font-bold dark:text-white text-neutral-900 mb-3 text-center"
+              >
+                Active Subscription
+              </h3>
+
+              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3 text-center leading-relaxed">
+                This card is linked to an active recurring donation. You'll need to cancel your subscription before
+                removing it.
+              </p>
+
+              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-8 text-center leading-relaxed">
+                You can manage your subscription from your{' '}
+                <Link
+                  href="/supporter/donations"
+                  className="text-sky-600 dark:text-sky-400 hover:underline font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+                >
+                  donation settings
+                </Link>
+                .
+              </p>
+
+              <button
+                onClick={() => setShowSubscriptionWarning(false)}
+                className="w-full px-4 py-3 border border-neutral-200 dark:border-neutral-700 rounded-lg font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+              >
+                Got it
+              </button>
             </motion.div>
           </motion.div>
         )}

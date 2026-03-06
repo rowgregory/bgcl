@@ -19,14 +19,20 @@ export async function createStripeCustomer(userId: string, email: string, name: 
       }
     }
 
-    // Create new Stripe customer
-    const customer = await stripe.customers.create({
-      email,
-      name,
-      metadata: {
-        userId
-      }
-    })
+    // No stored customerId — check Stripe by email first
+    const existing = await stripe.customers.list({ email, limit: 1 })
+
+    if (existing.data.length > 0) {
+      const customerId = existing.data[0].id
+      await prisma.user.update({
+        where: { id: userId },
+        data: { stripeCustomerId: customerId }
+      })
+      return { success: true, customerId }
+    }
+
+    // No customer in Stripe either — create new one
+    const customer = await stripe.customers.create({ email, name, metadata: { userId } })
 
     // Save to database
     await prisma.user.update({

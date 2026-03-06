@@ -1,6 +1,5 @@
 'use client'
 
-import { FC } from 'react'
 import { hydrateTicket, setOpenTicketSelectionDrawer } from '@/app/lib/store/slices/ticketSlice'
 import { store } from '@/app/lib/store/store'
 import { setSelectedEvent } from '@/app/lib/store/slices/eventSlice'
@@ -10,16 +9,10 @@ import { useRouter } from 'next/navigation'
 import { setRedirectCookie } from '@/app/lib/actions/setRedirectCookie'
 import { Ticket } from '@/types/entities/ticket'
 
-interface ITicketCard {
-  ticket: Ticket
-}
-
-export const TicketCard: FC<ITicketCard> = ({ ticket }) => {
+export const TicketCard = ({ ticket }) => {
   const { data: session } = useSession()
   const router = useRouter()
   const { available, message } = getTicketStatus(ticket)
-
-  console.log(session)
 
   const handleTicketSelect = (ticket: Ticket) => {
     store.dispatch(hydrateTicket(ticket))

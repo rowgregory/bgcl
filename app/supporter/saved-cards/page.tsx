@@ -1,11 +1,9 @@
-import SavedCardsClient from '@/app/components/pages/SavedCardsClient'
+import SupporterSavedCardsClient from '@/app/components/pages/SupporterSavedCardsClient'
 import { getSavedPaymentMethods } from '@/app/lib/actions/getSavedPaymentMethods'
-import { auth } from '@/app/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
-export default async function SavedCardsPage() {
-  const session = await auth()
-  const savedPaymentMethods = await getSavedPaymentMethods(session.user.id)
-  return <SavedCardsClient cards={savedPaymentMethods} />
+export default async function SupporterSavedCardsPage() {
+  const savedPaymentMethods = await getSavedPaymentMethods()
+  return <SupporterSavedCardsClient cards={savedPaymentMethods} />
 }

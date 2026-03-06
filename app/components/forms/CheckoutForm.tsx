@@ -42,8 +42,8 @@ export function CheckoutForm() {
   const { setupPusherListenerOneTime, getPaymentMethodId } = useDonationPayment()
 
   useEffect(() => {
-    if (session?.status === 'authenticated' && session?.data?.user?.id) {
-      getSavedPaymentMethods(session?.data?.user?.id).then((result) => {
+    if (session?.status === 'authenticated') {
+      getSavedPaymentMethods().then((result) => {
         if (result.success) {
           setSavedCards(result.data)
           const defaultCard = result.data.find((c) => c.isDefault)
@@ -53,7 +53,7 @@ export function CheckoutForm() {
         }
       })
     }
-  }, [session?.status, session?.data?.user?.id])
+  }, [session?.status])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -432,21 +432,6 @@ export function CheckoutForm() {
         )}
 
         {/* Submit */}
-        {/* <div className="pt-2">
-          <button
-            type="submit"
-            disabled={isProcessing || !stripe || !email || !name}
-            aria-disabled={isProcessing || !stripe || !email || !name}
-            className="w-full px-6 py-4 bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white font-semibold rounded-xl transition-all shadow-lg shadow-sky-600/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-950"
-          >
-            <Lock className="w-4 h-4 shrink-0" aria-hidden="true" />
-            <span>{isProcessing ? 'Processing...' : `Pay $${finalTotal.toFixed(2)}`}</span>
-          </button>
-
-          <p className="text-xs text-neutral-400 dark:text-neutral-500 text-center mt-4">
-            Your payment information is secure and encrypted.
-          </p>
-        </div> */}
         <button
           type="submit"
           disabled={!isValid}

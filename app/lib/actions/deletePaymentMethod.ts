@@ -53,9 +53,11 @@ export async function deletePaymentMethod(paymentMethodId: string) {
       // Check for active recurring subscriptions
       const activeSubscription = await prisma.order.findFirst({
         where: {
-          userId: session.user.id,
-          isRecurring: true,
-          status: 'CONFIRMED'
+          OR: [{ userId: session.user.id }, { customerEmail: session.user.email }],
+          type: 'RECURRING_DONATION',
+          status: 'CONFIRMED',
+          stripeSubscriptionId: { not: null },
+          paymentMethodId: paymentMethod.stripePaymentId
         }
       })
 
@@ -63,13 +65,8 @@ export async function deletePaymentMethod(paymentMethodId: string) {
         return {
           success: false,
           error:
-            'Cannot delete the default payment method while you have an active recurring donation. Please cancel your subscription or set another card as default first.'
+            'Cannot delete the default payment method while you have an active recurring donation. Please cancel your subscription.'
         }
-      }
-
-      return {
-        success: false,
-        error: 'Cannot delete the default payment method. Set another card as default first.'
       }
     }
 

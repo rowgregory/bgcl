@@ -63,8 +63,8 @@ function DonationForm({ campaignName, campaigns }) {
   }, [campaignName, campaigns])
 
   useEffect(() => {
-    if (session?.status === 'authenticated' && session?.data?.user?.id) {
-      getSavedPaymentMethods(session?.data?.user?.id).then((result) => {
+    if (session?.status === 'authenticated') {
+      getSavedPaymentMethods().then((result) => {
         if (result.success) {
           setSavedCards(result.data)
           const defaultCard = result.data.find((c) => c.isDefault)
@@ -74,7 +74,7 @@ function DonationForm({ campaignName, campaigns }) {
         }
       })
     }
-  }, [session?.status, session?.data?.user?.id])
+  }, [session?.status])
 
   // Calculate fees so you receive the exact donation amount
   const calculateFees = (donationAmount: number) => {

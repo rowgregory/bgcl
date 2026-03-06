@@ -25,7 +25,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   callbacks: {
     async signIn({ user, account, profile }) {
-      // Route to appropriate provider handler
       try {
         switch (account?.provider) {
           case 'email':
@@ -38,7 +37,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return true
         }
       } catch (error) {
-        console.error(`❌ Sign-in error for ${account?.provider}:`, error)
         return false
       }
     },

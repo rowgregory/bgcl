@@ -1,5 +1,4 @@
-// lib/types/order.ts
-
+import { Event } from './event'
 import { OrderItem } from './order-item'
 import { IUser } from './user'
 

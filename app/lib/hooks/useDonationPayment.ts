@@ -3,10 +3,13 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Pusher from 'pusher-js'
 import { savePaymentMethod } from '../actions/savePaymentMethod'
+import { useRef } from 'react'
 
 export function useDonationPayment() {
   const router = useRouter()
   const session = useSession()
+  const hasProcessedOrder = useRef(false)
+  const hasProcessedRecurringOrder = useRef(false)
 
   const getPaymentMethodId = (paymentMethod: string | PaymentMethod | undefined): string | undefined => {
     return typeof paymentMethod === 'string' ? paymentMethod : paymentMethod?.id
@@ -36,6 +39,9 @@ export function useDonationPayment() {
     }, 10000)
 
     channel.bind('order-created', (data: any) => {
+      if (hasProcessedOrder.current) return
+      hasProcessedOrder.current = true
+
       clearTimeout(timeout)
       setProcessingStatus('success')
 
@@ -44,7 +50,8 @@ export function useDonationPayment() {
       }
 
       router.push(`/order-confirmation/${data.orderId}`)
-      channel.unbind('order-created')
+      channel.unbind_all()
+      pusher.unsubscribe(`payment-${channelId}`)
     })
 
     channel.bind('order-failed', (data: any) => {
@@ -81,10 +88,14 @@ export function useDonationPayment() {
     }, 10000)
 
     channel.bind('order-created', (data: any) => {
+      if (hasProcessedRecurringOrder.current) return
+      hasProcessedRecurringOrder.current = true
+
       clearTimeout(timeout)
       setProcessingStatus('success')
       router.push(`/order-confirmation/${data.orderId}`)
-      channel.unbind('order-created')
+      channel.unbind_all()
+      pusher.unsubscribe(channelId)
     })
 
     channel.bind('order-failed', (data: any) => {
@@ -92,8 +103,8 @@ export function useDonationPayment() {
       setProcessingStatus('failed')
       setLoading(false)
       setError(data.error || 'Order processing failed')
-      channel.unbind('order-created')
-      channel.unbind('order-failed')
+      channel.unbind_all()
+      pusher.unsubscribe(channelId)
     })
   }
 
