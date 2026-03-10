@@ -1,62 +1,66 @@
-import { Event } from './event'
-import { OrderItem } from './order-item'
+import { JsonValue } from '@prisma/client/runtime/library'
+import { ICampaign } from './campaign'
 import { IUser } from './user'
+import { IEvent } from './event'
+import { IOrderItem } from './order-item'
 
-export interface Order {
+export type OrderType = 'ONE_TIME_DONATION' | 'RECURRING_DONATION' | 'TICKET_PURCHASE'
+export type OrderStatus =
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'COMPLETED'
+  | 'CONFIRMED'
+  | 'CANCELLED'
+  | 'REFUNDED'
+  | 'FAILED'
+  | 'PENDING_CANCELLATION'
+
+export interface IOrder {
   id: string
   createdAt: Date
   updatedAt: Date
 
-  // Order type
-  type: 'DONATION' | 'TICKET_PURCHASE'
-  status: 'PENDING' | 'COMPLETED' | 'CANCELLED' | 'REFUNDED'
+  // Classification
+  type: OrderType
+  status: OrderStatus
 
-  // Payment
+  // Financials
   totalAmount: number
+  coverFees: boolean
+  feesCovered: number
+
+  // Payment processing
   paymentMethod: string | null
+  paymentMethodId?: string | null
   paymentIntentId: string | null
   paidAt: Date | null
 
-  // Customer info
-  customerEmail: string
-  customerName: string
-  customerPhone: string | null
-
-  // Billing info
-  billingAddress: Record<string, any> | null
-
-  // Event info (only for ticket purchases)
-  eventId: string | null
-
-  // User info (nullable - guest checkout allowed)
-  userId: string | null
-
+  // Failure info
   failureReason?: string | null
   failureCode?: string | null
 
-  // Relations
-  orderItems?: OrderItem[]
-  event?: Event
-  user?: IUser
-}
-
-export interface CreateOrderInput {
-  type: 'DONATION' | 'TICKET_PURCHASE'
-  status?: 'PENDING' | 'COMPLETED' | 'CANCELLED' | 'REFUNDED'
-  totalAmount: number
-  paymentMethod?: string | null
-  paymentIntentId?: string | null
-  paidAt?: Date | null
+  // Customer
   customerEmail: string
   customerName: string
-  customerPhone?: string | null
-  billingAddress?: Record<string, any> | null
-  eventId?: string | null
-  userId?: string | null
-  harnessPaymentId?: string | null
-  harnessTransactionId?: string | null
-}
+  customerPhone: string | null
+  billingAddress: Record<string, any> | null | JsonValue
+  notes?: string | null
 
-export interface UpdateOrderInput extends Partial<CreateOrderInput> {
-  id: string
+  // Recurring
+  isRecurring?: boolean
+  recurringFrequency?: string | null
+  stripeSubscriptionId?: string | null
+  nextBillingDate?: Date | null
+
+  // Relations
+  userId: string | null
+  user?: IUser
+
+  eventId?: string | null
+  event?: IEvent
+
+  campaignId?: string | null
+  campaign?: ICampaign
+
+  orderItems?: IOrderItem[]
 }

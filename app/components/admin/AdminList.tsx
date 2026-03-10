@@ -25,7 +25,7 @@ interface AdminListItem {
 }
 
 interface AdminListPageProps<T extends AdminListItem> {
-  data: T[]
+  data: T[] | any
   pageTitle: string
   itemType: 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign' | 'closing' | 'event'
   emptyMessage?: string

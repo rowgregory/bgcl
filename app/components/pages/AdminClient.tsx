@@ -15,9 +15,9 @@ import { adminNavigationLinkData } from '../../lib/constants/adminNavLinks'
 import { usePathname } from 'next/navigation'
 import AdminSidebar from '../../admin/sidebar'
 import { Menu } from 'lucide-react'
-import ActionMenuButton from '../buttons/ActionMenuButton'
-import MobileMenuButton from '../buttons/MobileMenuButton'
-import LogoutButton from '../buttons/LogoutButton'
+import ActionMenuButton from '../ui/buttons/ActionMenuButton'
+import MobileMenuButton from '../ui/buttons/MobileMenuButton'
+import LogoutButton from '../ui/buttons/LogoutButton'
 import ActionMenuDropdown from '../navigation/ActionMenuDropdown'
 import dropdownActionItems from '../../lib/constants/dropdownActionItems'
 import TeamMemberDrawer from '../drawers/TeamMemberDrawer'
@@ -29,6 +29,7 @@ import ClosingDrawer from '../drawers/ClosingDrawer'
 import FailedPaymentsDrawer from '../drawers/FailedPaymentDrawer'
 import DonationDrawer from '../drawers/DonationDrawer'
 import { useSession } from 'next-auth/react'
+import { TicketOrderDrawer } from '../drawers/AdminTicketOrderDrawer'
 
 const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
   const pathname = usePathname()
@@ -54,6 +55,7 @@ const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
       <ActionMenuDropdown actionItems={dropdownActionItems(isModalEnabled)} isModalEnabled={isModalEnabled} />
       <FailedPaymentsDrawer />
       <DonationDrawer />
+      <TicketOrderDrawer />
 
       {/* Desktop Fixed Header */}
       <header className="hidden lg:block fixed top-0 left-64 right-0 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-b py-2.5 px-6 z-30 h-15.25">

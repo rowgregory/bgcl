@@ -3,18 +3,33 @@
 import { hydrateTicket, setOpenTicketSelectionDrawer } from '@/app/lib/store/slices/ticketSlice'
 import { store } from '@/app/lib/store/store'
 import { setSelectedEvent } from '@/app/lib/store/slices/eventSlice'
-import { getTicketStatus } from '@/app/lib/utils/event-utils'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { setRedirectCookie } from '@/app/lib/actions/setRedirectCookie'
-import { Ticket } from '@/types/entities/ticket'
+import { ITicket } from '@/types/entities/ticket'
+import { FC } from 'react'
 
-export const TicketCard = ({ ticket }) => {
+function getTicketStatus(ticket: ITicket): {
+  available: boolean
+  message: string
+} {
+  if (!ticket.isAvailable) {
+    return { available: false, message: 'Not available' }
+  }
+
+  if (ticket.quantitySold >= ticket.totalQuantity) {
+    return { available: false, message: 'Sold out' }
+  }
+
+  return { available: true, message: 'Available' }
+}
+
+export const TicketCard: FC<{ ticket: ITicket & { title: string } }> = ({ ticket }) => {
   const { data: session } = useSession()
   const router = useRouter()
   const { available, message } = getTicketStatus(ticket)
 
-  const handleTicketSelect = (ticket: Ticket) => {
+  const handleTicketSelect = (ticket) => {
     store.dispatch(hydrateTicket(ticket))
     store.dispatch(setSelectedEvent(ticket.eventId))
     store.dispatch(setOpenTicketSelectionDrawer())

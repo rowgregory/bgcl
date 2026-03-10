@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { Ticket } from '@prisma/client'
+import { ITicket } from '@/types/entities/ticket'
 
 export interface CartItem {
   ticketId: string
@@ -30,7 +30,7 @@ export const cartSlice = createSlice({
   reducers: {
     addToCart: (
       state,
-      action: PayloadAction<{ ticket: Ticket; quantity: number; eventId: string; eventTitle: string }>
+      action: PayloadAction<{ ticket: ITicket; quantity: number; eventId: string; eventTitle: string }>
     ) => {
       const { ticket, quantity, eventId, eventTitle } = action.payload
       const existingItem = state.items.find((item) => item.ticketId === ticket.id && item.eventId === eventId)

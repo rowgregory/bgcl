@@ -1,4 +1,3 @@
-import React from 'react'
 import { motion } from 'framer-motion'
 import { useAppDispatch } from '@/app/lib/store/store'
 import { setOpenMobileNavigation } from '@/app/lib/store/slices/appSlice'

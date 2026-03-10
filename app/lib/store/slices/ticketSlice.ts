@@ -1,10 +1,10 @@
-import { Ticket } from '@/types/entities/ticket'
+import { ITicket } from '@/types/entities/ticket'
 import { Reducer, createSlice } from '@reduxjs/toolkit'
 
 export interface TicketStatePayload {
   // Core data
-  tickets: Ticket[]
-  ticket: Ticket
+  tickets: ITicket[]
+  ticket: ITicket
 
   // UI state
   loading: boolean

@@ -1,9 +1,8 @@
-import React from 'react'
 import { motion } from 'framer-motion'
 import { Plus, ChevronDown } from 'lucide-react'
 import { useAppDispatch, useDashboardSelector } from '@/app/lib/store/store'
 import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
-import { setOpenActionMenu } from '../../lib/store/slices/dashboardSlice'
+import { setOpenActionMenu } from '@/app/lib/store/slices/dashboardSlice'
 
 const ActionMenuButton = () => {
   const dispatch = useAppDispatch()

@@ -47,7 +47,9 @@ export async function getSupporterDashboard() {
 
     const monthlyAmount =
       monthlyCount > 0
-        ? donationOrders.filter((o) => o.recurringFrequency === 'monthly').reduce((sum, o) => sum + o.totalAmount, 0)
+        ? donationOrders
+            .filter((o) => o.recurringFrequency === 'monthly' && o.status === 'CONFIRMED')
+            .reduce((sum, o) => sum + o.totalAmount, 0)
         : 0
 
     const yearlyAmount =
@@ -56,6 +58,8 @@ export async function getSupporterDashboard() {
         : 0
 
     const ticketOrders = orders.filter((o) => o.type === 'TICKET_PURCHASE' && o.status === 'CONFIRMED')
+    const totalTicketSpend = ticketOrders.reduce((sum, o) => sum + o.totalAmount, 0)
+    const totalTicketCount = ticketOrders.reduce((sum, o) => sum + o.orderItems.reduce((s, i) => s + i.quantity, 0), 0)
 
     const upcomingEvents = ticketOrders
       .sort((a, b) => new Date(a.event!.date).getTime() - new Date(b.event!.date).getTime())
@@ -82,6 +86,8 @@ export async function getSupporterDashboard() {
     const cancelledMonthly = donationOrders.filter(
       (o) => o.recurringFrequency === 'monthly' && o.status === 'CANCELLED'
     ).length
+
+    const totalSpend = totalDonated + totalTicketSpend
 
     return {
       donationOrders,
@@ -132,21 +138,21 @@ export async function getSupporterDashboard() {
         },
         {
           label: 'Event Tickets',
-          value: totalTickets.toString(),
-          subtext: `${ticketOrders.length} purchase${ticketOrders.length === 0 || (ticketOrders.length > 1 ? 's' : '')}`,
+          value: `$${totalTicketSpend.toFixed(2)}`,
+          subtext: `${totalTicketCount} ticket${totalTicketCount !== 1 ? 's' : ''} purchased`,
           icon: 'Ticket',
-          color: 'text-sky-400',
-          bg: 'bg-sky-500/10',
-          border: 'border-sky-500/30'
-        },
-        {
-          label: 'Member Since',
-          value: joinYear,
-          subtext: 'Active supporter',
-          icon: 'Calendar',
           color: 'text-green-400',
           bg: 'bg-green-500/10',
           border: 'border-green-500/30'
+        },
+        {
+          label: 'Total Spent',
+          value: `$${totalSpend.toFixed(2)}`,
+          subtext: `donations & tickets`,
+          icon: 'DollarSign',
+          color: 'text-sky-400',
+          bg: 'bg-sky-500/10',
+          border: 'border-sky-500/30'
         }
       ]
     }

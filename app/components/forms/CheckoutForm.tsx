@@ -1,8 +1,6 @@
-import { useDispatch } from 'react-redux'
 import { useEffect, useState } from 'react'
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { useApplicationSelector, useCartSelector } from '@/app/lib/store/store'
-import { clearCart } from '@/app/lib/store/slices/cartSlice'
 import { motion } from 'framer-motion'
 import { AlertCircle, Lock } from 'lucide-react'
 import CustomSwitch from '../common/CustomSwitch'
@@ -15,7 +13,6 @@ import { useDonationPayment } from '@/app/lib/hooks/useDonationPayment'
 export function CheckoutForm() {
   const stripe = useStripe()
   const elements = useElements()
-  const dispatch = useDispatch()
   const { items } = useCartSelector()
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -28,7 +25,6 @@ export function CheckoutForm() {
   const [state, setState] = useState('')
   const [zipCode, setZipCode] = useState('')
   const [country, setCountry] = useState('')
-  const [loading, setLoading] = useState(false)
   const [savedCards, setSavedCards] = useState([])
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
   const [useNewCard, setUseNewCard] = useState(false)
@@ -131,10 +127,6 @@ export function CheckoutForm() {
           setProcessingStatus,
           setIsProcessing
         )
-
-        // Clear cart
-        // TODO
-        dispatch(clearCart())
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
@@ -438,7 +430,7 @@ export function CheckoutForm() {
           aria-disabled={!isValid}
           className="w-full px-6 py-4 bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white font-semibold rounded-xl transition-all shadow-lg shadow-sky-600/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-950 disabled:bg-neutral-400 dark:disabled:bg-zinc-700"
         >
-          {loading || isProcessing ? (
+          {isProcessing ? (
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
@@ -449,9 +441,7 @@ export function CheckoutForm() {
             <Lock className="w-4 h-4 shrink-0" aria-hidden="true" />
           )}
           <span>
-            {loading || isProcessing
-              ? 'Processing...'
-              : `Pay $${coverFees ? finalTotal.toFixed(2) : totalPrice.toFixed(2)}`}
+            {isProcessing ? 'Processing...' : `Pay $${coverFees ? finalTotal.toFixed(2) : totalPrice.toFixed(2)}`}
           </span>
         </button>
       </form>

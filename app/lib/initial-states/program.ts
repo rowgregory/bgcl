@@ -22,5 +22,7 @@ export const initialProgramFormState = {
   additionalDetails: [],
   themes: [],
   showThemes: false,
-  externalLink: ''
+  externalLink: '',
+  pdfLink: '',
+  pdfDescription: ''
 }

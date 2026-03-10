@@ -1,3 +1,4 @@
+import { IOrder } from '@/types/entities/order'
 import { Reducer, createSlice } from '@reduxjs/toolkit'
 
 export interface AdminStatePayload {
@@ -6,10 +7,13 @@ export interface AdminStatePayload {
   selectedPage: string
   isActionsOpen: boolean
   isDrawerOpen: boolean
+  isTicketDrawerOpen: boolean
 
   // Form drawers
   addStaffDrawer: boolean
   announcementDrawer: boolean
+
+  order: IOrder | null
 }
 
 const initialAdminState: AdminStatePayload = {
@@ -18,9 +22,12 @@ const initialAdminState: AdminStatePayload = {
   selectedPage: 'mission-control',
   isActionsOpen: false,
   isDrawerOpen: false,
+  isTicketDrawerOpen: false,
 
   addStaffDrawer: false,
-  announcementDrawer: false
+  announcementDrawer: false,
+
+  order: null
 }
 
 export const adminSlice = createSlice({
@@ -50,6 +57,14 @@ export const adminSlice = createSlice({
     },
     setCloseNavigationDrawer: (state) => {
       state.isDrawerOpen = false
+    },
+    setOpenTicketOrderDrawer: (state, { payload }) => {
+      state.isTicketDrawerOpen = true
+      state.order = payload
+    },
+    setCloseTicketOrderDrawer: (state) => {
+      state.isTicketDrawerOpen = false
+      state.order = null
     }
   }
 })
@@ -64,5 +79,7 @@ export const {
   setOpenActionsDropdown,
   toggleNavigationDrawer,
   setOpenNavigationDrawer,
-  setCloseNavigationDrawer
+  setCloseNavigationDrawer,
+  setCloseTicketOrderDrawer,
+  setOpenTicketOrderDrawer
 } = adminSlice.actions

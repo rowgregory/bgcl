@@ -4,7 +4,6 @@ import prisma from '@/prisma/client'
 import { stripe } from '../stripe/stripeClient'
 import Stripe from 'stripe'
 import { createLog } from './createLog'
-import { Ticket } from '@/types/entities/ticket'
 
 interface CheckoutParams {
   userId?: string

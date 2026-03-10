@@ -97,6 +97,39 @@ export const ProgramDetailsClient = ({ program, closings }: { program: IProgram;
               </div>
             </section>
 
+            {/* PDF Section */}
+            {program?.pdfLink && program?.pdfDescription && (
+              <section aria-labelledby="pdf-heading">
+                <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-lg p-4 sm:p-6">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-4">
+                    <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-sky-500" aria-hidden="true" />
+                    <h2 id="pdf-heading" className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">
+                      Program PDF
+                    </h2>
+                  </div>
+
+                  {program?.pdfDescription && (
+                    <p className="text-sm sm:text-base dark:text-neutral-300 text-neutral-700 leading-relaxed mb-4">
+                      {program.pdfDescription}
+                    </p>
+                  )}
+
+                  {program?.pdfLink && (
+                    <a
+                      href={program.pdfLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Download program PDF (opens in new tab)"
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-sky-500 hover:bg-sky-600 text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+                    >
+                      <FileText className="w-4 h-4" aria-hidden="true" />
+                      View PDF
+                    </a>
+                  )}
+                </div>
+              </section>
+            )}
+
             {/* Program Details Grid */}
             <div className="grid grid-cols-1 gap-6">
               {/* Weekly Themes */}
@@ -230,6 +263,23 @@ export const ProgramDetailsClient = ({ program, closings }: { program: IProgram;
             )}
 
             {/* Program Image */}
+            {program?.image && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="relative w-full aspect-square rounded-lg overflow-hidden shadow-lg"
+              >
+                <Picture
+                  src={program.image}
+                  alt={`${program.name} program photo`}
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 33vw"
+                  className="object-cover w-full h-full"
+                />
+              </motion.div>
+            )}
+            {/* Program Image 2*/}
             {program?.imageTwo && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

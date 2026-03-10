@@ -9,7 +9,6 @@ import TicketsForm from '../forms/TicketForm'
 import validateTicketForm from '@/app/lib/validations/ticket'
 import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
 import { updateTicket } from '@/app/lib/actions/updateTicket'
-import { TicketPayload } from '@/types/entities/ticket'
 import { createTicket } from '@/app/lib/actions/createTicket'
 import { useRouter } from 'next/navigation'
 import { setCloseTicketDrawer } from '@/app/lib/store/slices/ticketSlice'
@@ -42,7 +41,7 @@ const TicketDrawer = () => {
       totalQuantity: inputs.totalQuantity,
       isAvailable: inputs.isAvailable,
       sortOrder: inputs.sortOrder
-    } as TicketPayload
+    }
 
     try {
       dispatch(setIsLoading(true))

@@ -21,7 +21,7 @@ export function TicketSelectionDrawer() {
   const onClose = () => store.dispatch(setCloseTicketSelectionDrawer())
 
   const handleAddToCart = () => {
-    store.dispatch(addToCart({ ticket, quantity, eventId: ticket.eventId, eventTitle: ticket.eventTitle }))
+    store.dispatch(addToCart({ ticket, quantity, eventId: ticket.eventId, eventTitle: ticket.event.title }))
     onClose()
 
     store.dispatch(

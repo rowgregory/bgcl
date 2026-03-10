@@ -1,17 +1,9 @@
 import { AdminListPage } from '@/app/components/admin/AdminList'
-import prisma from '@/prisma/client'
+import { getEvents } from '@/app/lib/actions/getEvents'
 
 export const metadata = { title: 'Events - Admin' }
 
 export default async function CapsuleEventsPage() {
-  const data = await prisma.event.findMany({
-    include: {
-      tickets: true
-    },
-    orderBy: {
-      order: 'asc'
-    }
-  })
-
+  const data = await getEvents()
   return <AdminListPage data={data} pageTitle="Events" itemType="event" />
 }

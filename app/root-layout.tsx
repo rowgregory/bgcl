@@ -8,7 +8,6 @@ import { PersistGate } from 'redux-persist/integration/react'
 import Header from './components/header/Header'
 import { usePathname } from 'next/navigation'
 import { HIDDEN_PATHS } from './lib/constants/navigation'
-import { LanguageDropdown } from './components/dropdowns/LanguageDropdown'
 import { Footer } from './components/footer/Footer'
 import DonationNotification from './components/DonationNotification'
 import VolunteerDrawer from './components/drawers/VolunteerDrawer'
@@ -33,7 +32,6 @@ export default function RootLayoutWrapper({ children, programs, pageContent, don
           <ThemeProvider>
             <Toast />
             <TicketSelectionDrawer />
-            <LanguageDropdown />
             <DonationNotification donations={donations} />
             <VolunteerDrawer programs={programs} />
             <CapitalCampaignTab />

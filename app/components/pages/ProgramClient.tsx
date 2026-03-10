@@ -9,8 +9,8 @@ import { setCloseProgramSidebar, setToggleProgramSidebar } from '../../lib/store
 import { usePathname } from 'next/navigation'
 import { ProgramSidebar } from '../../program/sidebar'
 import { Menu } from 'lucide-react'
-import MobileMenuButton from '../buttons/MobileMenuButton'
-import LogoutButton from '../buttons/LogoutButton'
+import MobileMenuButton from '../ui/buttons/MobileMenuButton'
+import LogoutButton from '../ui/buttons/LogoutButton'
 import { programNavigationLinkData } from '@/app/lib/constants/programNavLinks'
 
 export const ProgramClient: FC<ILayout> = ({ children }) => {

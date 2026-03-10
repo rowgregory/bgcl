@@ -2,9 +2,9 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 import EventsClient from '@/app/components/pages/EventsClient'
-import { getEvents } from '@/app/lib/actions/getEvents'
+import { getActiveEvents } from '@/app/lib/actions/getActiveEvents'
 
 export default async function EventsPage() {
-  const events = await getEvents()
+  const events = await getActiveEvents()
   return <EventsClient events={events} />
 }

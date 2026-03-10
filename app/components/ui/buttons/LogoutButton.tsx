@@ -1,13 +1,12 @@
 import { motion } from 'framer-motion'
 import { signOut } from 'next-auth/react'
 import { LogOut } from 'lucide-react'
-import { showToast } from '../../lib/store/slices/toastSlice'
-import { store, useAppDispatch, useFormSelector } from '../../lib/store/store'
 import { setIsLoading } from '@/app/lib/store/slices/formSlice'
+import { store, useFormSelector } from '@/app/lib/store/store'
+import { showToast } from '@/app/lib/store/slices/toastSlice'
 
 const LogoutButton = () => {
   const { isLoading } = useFormSelector()
-  const dispatch = useAppDispatch()
 
   const handleLogout = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -18,7 +17,7 @@ const LogoutButton = () => {
         callbackUrl: '/auth/login'
       })
     } catch (error: unknown) {
-      dispatch(
+      store.dispatch(
         showToast({
           type: 'error',
           message: 'Logout Fail',

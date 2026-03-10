@@ -1,8 +1,24 @@
-import { Event } from '@/types/entities/event'
 import { isValidUrl } from '../utils/isValidUrl'
 import { Errors } from '@/app/lib/store/slices/formSlice'
 
-const validateEventForm = (inputs: Partial<Event | null>, setErrors: (newErrors: Errors) => void) => {
+const validateEventForm = (
+  inputs: {
+    [x: string]: any
+    title?: any
+    category?: any
+    type?: any
+    date?: any
+    time?: any
+    duration?: any
+    location?: any
+    maxAttendees?: any
+    registrationUrl?: any
+    meetingUrl?: any
+    requiresRSVP?: any
+    registrationDeadline?: any
+  },
+  setErrors: (newErrors: Errors) => void
+) => {
   const newErrors: Record<string, string> = {}
 
   if (!inputs?.title || typeof inputs.title !== 'string' || !inputs.title.trim()) {

@@ -16,7 +16,7 @@ export async function getCapsuleOverview() {
       }),
       prisma.order.findMany({
         where: { type: 'TICKET_PURCHASE', status: 'CONFIRMED' },
-        include: { orderItems: true, event: true },
+        include: { orderItems: { include: { ticket: { include: { event: true } } } } },
         orderBy: { createdAt: 'desc' }
       })
     ])

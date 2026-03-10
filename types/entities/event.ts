@@ -1,59 +1,64 @@
-// types/event.ts
-import { Ticket, Order, User } from '@prisma/client'
 import { ReactNode } from 'react'
+import { IOrder } from './order'
+import { ITicket } from './ticket'
+import { IUser } from './user'
 
-export enum EventStatus {
-  UPCOMING = 'UPCOMING',
-  ONGOING = 'ONGOING',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-  POSTPONED = 'POSTPONED'
-}
+export type EventType = 'IN_PERSON' | 'VIRTUAL' | 'HYBRID'
+export type EventStatus = 'UPCOMING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED' | 'POSTPONED' | 'ARCHIVED'
 
-export enum EventType {
-  IN_PERSON = 'IN_PERSON',
-  VIRTUAL = 'VIRTUAL',
-  HYBRID = 'HYBRID'
-}
-
-export interface Event {
+export interface IEvent {
   id: string
   createdAt: Date
   updatedAt: Date
-  type: EventType[0]
+
+  // Classification
+  type: EventType
   status: EventStatus
-  title: string
-  description: string | null
   category: string
-  capacity: number
-  attendeeCount: number
-  dresscode: string | null
-  date: Date
-  time: string
-  duration: string
-  location: string
-  maxAttendees: number | null
   featured: boolean
-  host: string | null
-  requirements: string | null
-  materials: string | null
-  registrationUrl: string | null
-  meetingUrl: string | null
   isPublic: boolean
+
+  // Details
+  title: string
+  description?: string | null
+  host?: string | null
+  dresscode?: string | null
+  requirements?: string | null
+  materials?: string | null
+
+  // Scheduling
+  date: Date
+  duration: string
+  order: number
+
+  // Location / access
+  location: string
+  meetingUrl?: string | null
+  registrationUrl?: string | null
+
+  // Capacity
+  capacity: number
+  maxAttendees?: number | null
+  attendeeCount: number
+
+  // RSVP
   requiresRSVP: boolean
   registrationDeadline: Date
   rsvpDeadline: Date
-  allowMultipleTickets: boolean
 
-  // Make these optional
-  tickets?: Ticket[]
-  orders?: Order[]
-  attendees?: User[]
+  // Ticketing
+  allowMultipleTickets: boolean
+  salesStartDate?: Date | null
+  salesEndDate?: Date | null
+
+  // Relations
+  tickets?: ITicket[]
+  orders?: IOrder[]
+  attendees?: IUser[]
 }
 
-// Event with tickets
 export type EventWithTickets = Event & {
-  tickets: Ticket[]
+  tickets: ITicket[]
   _count?: {
     rsvps: number
   }

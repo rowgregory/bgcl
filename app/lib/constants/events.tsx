@@ -1,4 +1,5 @@
-import { EventTemplate, EventType } from '@/types/entities/event'
+import { EventTemplate } from '@/types/entities/event'
+import { EventType } from '@prisma/client'
 import { Sparkles, Briefcase, Users, Music, GraduationCap, Heart, Trophy, Utensils } from 'lucide-react'
 
 export const EVENT_CATEGORIES = [

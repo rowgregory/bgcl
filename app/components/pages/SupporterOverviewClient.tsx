@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { ArrowRight, Calendar, ChevronRight, CreditCard, Heart, Rocket, Ticket, TrendingUp } from 'lucide-react'
 import { MotionLink } from '../common/MotionLink'
 import Picture from '../common/Picture'
-import LogoutButton from '../buttons/LogoutButton'
+import LogoutButton from '../ui/buttons/LogoutButton'
 
 const containerVariants = {
   hidden: { opacity: 0 },

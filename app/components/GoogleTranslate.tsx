@@ -1,4 +1,3 @@
-// components/LanguageSwitcher.tsx
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -220,7 +219,7 @@ export default function GoogleTranslate() {
                   disabled={isTranslating}
                   className={`w-full text-left px-4 py-2 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                     currentLang === lang.code
-                      ? 'bg-linear-to-r from-blue-500 to-purple-600 text-white font-semibold'
+                      ? 'bg-linear-to-r from-sky-400 via-sky-500 to-sky-600 text-white font-semibold'
                       : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
                   }`}
                 >

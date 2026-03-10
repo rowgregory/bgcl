@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation'
 import Pusher from 'pusher-js'
 import { savePaymentMethod } from '../actions/savePaymentMethod'
 import { useRef } from 'react'
+import { store } from '../store/store'
+import { clearCart } from '../store/slices/cartSlice'
 
 export function useDonationPayment() {
   const router = useRouter()
@@ -48,6 +50,8 @@ export function useDonationPayment() {
       if (saveCard && session?.data?.user?.id && paymentMethod) {
         savePaymentMethod(session?.data?.user?.id, paymentMethod as string, true).catch(console.error)
       }
+
+      store.dispatch(clearCart())
 
       router.push(`/order-confirmation/${data.orderId}`)
       channel.unbind_all()

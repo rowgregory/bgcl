@@ -300,7 +300,7 @@ export const ProgramForm: FC<IForm> = ({
                   name="externalLink"
                   value={(inputs?.externalLink as string) || ''}
                   onChange={handleInput}
-                  placeholder="Ehttps://drive.google.com/file..."
+                  placeholder="https://drive.google.com/file..."
                   className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                 />
               </div>
@@ -708,13 +708,52 @@ export const ProgramForm: FC<IForm> = ({
               </div>
             )}
           </div>
+          <div className="mb-8">
+            <CustomSwitch
+              checked={inputs.isListed ?? false}
+              label="Listed Program"
+              onChange={(checked) =>
+                store.dispatch(setInputs({ formName: 'programForm', data: { isListed: checked } }))
+              }
+              description="Controls whether this program appears on the public programs page"
+            />
+          </div>
 
-          <CustomSwitch
-            checked={inputs.isListed ?? false}
-            label="Listed Program"
-            onChange={(checked) => store.dispatch(setInputs({ formName: 'programForm', data: { isListed: checked } }))}
-            description="Controls whether this program appears on the public programs page"
-          />
+          {/* PDF Section */}
+          <div className="mb-8 space-y-4">
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">PDF</label>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1.5">
+                  PDF Link
+                </label>
+                <input
+                  type="url"
+                  name="pdfLink"
+                  value={inputs?.pdfLink ?? ''}
+                  onChange={handleInput}
+                  placeholder="https://..."
+                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1.5">
+                  PDF Description
+                </label>
+                <input
+                  name="pdfDescription"
+                  value={inputs?.pdfDescription ?? ''}
+                  onChange={handleInput}
+                  placeholder="Describe this PDF..."
+                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

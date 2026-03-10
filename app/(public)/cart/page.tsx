@@ -14,8 +14,7 @@ import {
   ShieldCheck,
   Minus,
   Plus,
-  Trash2,
-  Tag
+  Trash2
 } from 'lucide-react'
 import { CartItem, clearCart, removeFromCart, updateQuantity } from '@/app/lib/store/slices/cartSlice'
 import { store, useCartSelector } from '@/app/lib/store/store'
@@ -216,7 +215,7 @@ export default function CartPage() {
     return (
       <main
         aria-labelledby="empty-cart-heading"
-        className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center px-4"
+        className="min-h-[calc(100vh-730px)] bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center px-4"
       >
         <motion.div
           initial={{ opacity: 0, y: 24 }}

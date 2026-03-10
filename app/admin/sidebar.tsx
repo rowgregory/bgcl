@@ -37,9 +37,8 @@ const AdminSidebar = () => {
     }
   }
 
-  // Add early return or guard
   if (!session?.data?.user) {
-    return null // or a loading spinner
+    return null
   }
 
   const isSuperUser = session.data.user.role === 'SUPERUSER'

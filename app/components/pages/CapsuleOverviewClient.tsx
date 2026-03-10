@@ -1,6 +1,8 @@
 'use client'
 
 import { getCapsuleOverview } from '@/app/lib/actions/getCapsuleOverview'
+import { formatCurrency } from '@/app/lib/utils/currency.utils'
+import { formatDate } from '@/app/lib/utils/date-utils'
 import { motion } from 'framer-motion'
 import { Calendar, DollarSign, Ticket, Users, TrendingUp, Clock, MapPin, CheckCircle } from 'lucide-react'
 
@@ -14,10 +16,14 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 }
 }
 
-const formatUSD = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n)
-
-const formatDate = (d: Date | string) =>
-  new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+const colorMap: Record<string, string> = {
+  emerald: 'text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/20',
+  sky: 'text-sky-600 dark:text-sky-400 bg-sky-100 dark:bg-sky-900/20',
+  indigo: 'text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/20',
+  violet: 'text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/20',
+  amber: 'text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/20',
+  neutral: 'text-neutral-600 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800'
+}
 
 export function CapsuleOverviewClient({ data }: { data: Awaited<ReturnType<typeof getCapsuleOverview>> }) {
   const { stats, upcomingEvents, recentOrders } = data
@@ -26,7 +32,7 @@ export function CapsuleOverviewClient({ data }: { data: Awaited<ReturnType<typeo
     {
       id: 'revenue',
       label: 'Total Revenue',
-      value: formatUSD(stats.totalRevenue),
+      value: formatCurrency(stats.totalRevenue),
       description: 'From confirmed ticket sales',
       icon: DollarSign,
       color: 'emerald'
@@ -72,15 +78,6 @@ export function CapsuleOverviewClient({ data }: { data: Awaited<ReturnType<typeo
       color: 'neutral'
     }
   ]
-
-  const colorMap: Record<string, string> = {
-    emerald: 'text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/20',
-    sky: 'text-sky-600 dark:text-sky-400 bg-sky-100 dark:bg-sky-900/20',
-    indigo: 'text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/20',
-    violet: 'text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/20',
-    amber: 'text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/20',
-    neutral: 'text-neutral-600 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800'
-  }
 
   return (
     <div className="p-6 space-y-8">
@@ -175,7 +172,7 @@ export function CapsuleOverviewClient({ data }: { data: Awaited<ReturnType<typeo
                               {ticketsSold}/{totalTickets} tickets
                             </span>
                             <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                              {formatUSD(revenue)}
+                              {formatCurrency(revenue)}
                             </span>
                           </div>
                           <div className="h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
@@ -227,15 +224,15 @@ export function CapsuleOverviewClient({ data }: { data: Awaited<ReturnType<typeo
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-neutral-900 dark:text-white truncate">
-                        {order.customerName || 'Guest'}
+                        {order?.customerName || 'Guest'}
                       </p>
                       <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
-                        {order.event?.title || '—'} · {formatDate(order.createdAt)}
+                        {order?.orderItems?.[0]?.ticket?.event?.title || '—'} · {formatDate(order.createdAt)}
                       </p>
                     </div>
                   </div>
                   <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 shrink-0 ml-3">
-                    {formatUSD(order.totalAmount)}
+                    {formatCurrency(order?.totalAmount)}
                   </span>
                 </motion.div>
               ))}

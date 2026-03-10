@@ -1,12 +1,15 @@
-'use server'
+'use'
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 
-export async function getEvents() {
+export async function getActiveEvents() {
   try {
     const events = await prisma.event.findMany({
-      where: { NOT: { status: 'ARCHIVED' } },
+      where: {
+        status: { not: 'ARCHIVED' },
+        isPublic: true
+      },
       include: {
         tickets: true
       },
@@ -17,10 +20,10 @@ export async function getEvents() {
 
     return events
   } catch (error) {
-    await createLog('error', 'Error fetching events', {
+    await createLog('error', 'Error fetching active events', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    return { success: false, error: 'Failed to fetch events' }
+    return { success: false, error: 'Failed to fetch active events' }
   }
 }

@@ -21,6 +21,47 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.10.3',
+    date: '2026-03-10',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Program PDF Link & Description',
+        description:
+          'Added pdfLink and pdfDescription fields to the Program model. Admins can now attach an additional PDF URL and a short description to any program. The PDF section renders on the program detail page between the about section and the weekly themes grid, conditionally shown only when both fields are populated.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Program Server Actions Updated',
+        description:
+          'Updated createProgram and updateProgram server actions to handle the new pdfLink and pdfDescription fields. Both fields are optional strings passed through from the admin form inputs.',
+        impact: 'low'
+      },
+      {
+        type: 'ui',
+        title: 'Admin Program Form — PDF Inputs',
+        description:
+          'Added a new PDF section to the admin program drawer with a URL input for the PDF link and an input for the PDF description. Both fields wire into the existing handleInput and formSlice pattern.',
+        impact: 'low'
+      },
+      {
+        type: 'ui',
+        title: 'Admin Program List — View Button',
+        description:
+          'Added a view button to each program row in the admin programs list that opens the live program detail page in a new tab.',
+        impact: 'low'
+      },
+      {
+        type: 'feature',
+        title: 'Event Archiving',
+        description:
+          'Added the ability to archive events from the admin dashboard. Archived events are hidden from the public-facing events list but remain in the database for record keeping. Includes an archive toggle button on each event row and a filter in the admin events list to view archived events.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.10.2',
     date: '2026-03-06',
     changes: [

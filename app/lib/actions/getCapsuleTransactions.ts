@@ -9,7 +9,15 @@ export async function getCapsuleTransactions() {
       },
       include: {
         campaign: true,
-        orderItems: true
+        orderItems: {
+          include: {
+            ticket: {
+              include: {
+                event: true
+              }
+            }
+          }
+        }
       },
       orderBy: {
         createdAt: 'desc'

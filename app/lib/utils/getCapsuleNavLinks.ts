@@ -18,5 +18,10 @@ export const getCapsuleNavLinks = (path: string) => [
     textKey: 'Manifest',
     linkKey: '/admin/capsule/manifest',
     isActive: path === '/admin/capsule/manifest'
+  },
+  {
+    textKey: 'Archive',
+    linkKey: '/admin/capsule/archive',
+    isActive: path === '/admin/capsule/archive'
   }
 ]

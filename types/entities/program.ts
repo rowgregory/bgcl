@@ -21,6 +21,8 @@ export interface IProgram {
   themes: JsonValue
   showThemes: boolean
   externalLink?: string
+  pdfLink?: string
+  pdfDescription?: string
   isListed?: boolean
   createdAt: Date
   updatedAt: Date

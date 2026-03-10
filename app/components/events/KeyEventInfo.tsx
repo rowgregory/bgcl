@@ -2,13 +2,10 @@ import { FC } from 'react'
 import { Calendar, Clock, MapPin, Users } from 'lucide-react'
 import { splitUTCToDateTime } from '@/app/lib/utils/date-utils'
 import { militaryToRegularTime } from '@/app/lib/utils/time-utils'
+import { IEvent } from '@/types/entities/event'
 
-interface IKeyEventInfo {
-  event: any
-}
-
-export const KeyEventInfo: FC<IKeyEventInfo> = ({ event }) => {
-  const { timeString } = splitUTCToDateTime(event.date)
+export const KeyEventInfo: FC<{ event: IEvent }> = ({ event }) => {
+  const { timeString } = splitUTCToDateTime(event?.date)
 
   return (
     <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -19,8 +16,8 @@ export const KeyEventInfo: FC<IKeyEventInfo> = ({ event }) => {
         <div>
           <dt className="text-xs text-white/70 font-medium">Date</dt>
           <dd className="font-bold text-white">
-            <time dateTime={new Date(event.date).toISOString()}>
-              {new Date(event.date).toLocaleDateString('en-US', {
+            <time dateTime={new Date(event?.date).toISOString()}>
+              {new Date(event?.date).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
                 year: 'numeric'
@@ -48,7 +45,7 @@ export const KeyEventInfo: FC<IKeyEventInfo> = ({ event }) => {
         </div>
         <div className="min-w-0">
           <dt className="text-xs text-white/70 font-medium">Location</dt>
-          <dd className="font-bold text-white truncate">{event.location}</dd>
+          <dd className="font-bold text-white truncate">{event?.location}</dd>
         </div>
       </div>
 
@@ -59,8 +56,8 @@ export const KeyEventInfo: FC<IKeyEventInfo> = ({ event }) => {
         <div>
           <dt className="text-xs text-white/70 font-medium">Capacity</dt>
           <dd className="font-bold text-white">
-            <span aria-label={`${event.attendeeCount} of ${event.maxAttendees} spots filled`}>
-              {event.attendeeCount} / {event.maxAttendees}
+            <span aria-label={`${event?.attendeeCount} of ${event?.maxAttendees} spots filled`}>
+              {event?.attendeeCount} / {event?.maxAttendees}
             </span>
           </dd>
         </div>

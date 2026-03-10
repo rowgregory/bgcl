@@ -1,4 +1,3 @@
-// utils/renderGradientTitle.tsx
 export const renderTitleWithGradient = (
   title: string,
   gradientWord: string,
@@ -7,12 +6,12 @@ export const renderTitleWithGradient = (
   useGradient: boolean
 ) => {
   if (!useGradient || !gradientWord) {
-    return title;
+    return title
   }
 
   // Case-insensitive search for the word
-  const regex = new RegExp(`(\\b${gradientWord}\\b)`, "gi");
-  const parts = title.split(regex);
+  const regex = new RegExp(`(\\b${gradientWord}\\b)`, 'gi')
+  const parts = title.split(regex)
 
   return parts.map((part, index) => {
     // Check if this part matches the gradient word (case-insensitive)
@@ -23,16 +22,16 @@ export const renderTitleWithGradient = (
           style={{
             // Use separate properties instead of shorthand 'background'
             backgroundImage: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`,
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
           }}
         >
           {part}
         </span>
-      );
+      )
     }
     // Return regular text parts
-    return part;
-  });
-};
+    return part
+  })
+}

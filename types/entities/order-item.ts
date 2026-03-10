@@ -1,22 +1,23 @@
-// lib/types/index.ts
+import { IOrder } from './order'
+import { ITicket } from './ticket'
 
-import { Order } from './order'
-import { Ticket } from './ticket'
-
-export interface OrderItem {
+export interface IOrderItem {
   id: string
   createdAt: Date
+
+  // Pricing
   quantity: number
   pricePerUnit: number
   totalPrice: number
+
+  // Denormalized ticket info
   ticketName: string
-  ticketDescription: string | null
+  ticketDescription?: string | null
+
+  // Relations
   orderId: string
+  order?: IOrder
+
   ticketId: string
-  ticket?: Ticket
-  order?: Order
+  ticket?: ITicket
 }
-
-export type CreateOrderItemInput = Omit<OrderItem, 'id' | 'createdAt' | 'ticket' | 'order'>
-
-export type UpdateOrderItemInput = Partial<CreateOrderItemInput> & { id: string }

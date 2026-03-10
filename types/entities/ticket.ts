@@ -1,28 +1,5 @@
-import { Event } from './event'
-import { OrderItem } from './order-item'
-
-export interface TicketPayload {
-  name: string
-  description: string
-  price: number
-  totalQuantity: number
-  sortOrder: number
-}
-
-export interface EditTicketPayload {
-  name: string
-  id: string
-  createdAt: Date
-  updatedAt: Date
-  description: string | null
-  price: number
-  totalQuantity: number
-  quantitySold: number
-  quantityReserved: number
-  isAvailable: boolean
-  sortOrder: number
-  eventId: string
-}
+import { IEvent } from './event'
+import { IOrderItem } from './order-item'
 
 export interface TicketTemplate {
   id: string
@@ -41,38 +18,27 @@ export interface TicketTemplate {
   }
 }
 
-export interface Ticket {
+export interface ITicket {
   id: string
   createdAt: Date
   updatedAt: Date
 
-  // Ticket details
+  // Details
   name: string
-  description: string | null
+  description?: string | null
   price: number
 
-  // Inventory management
+  // Inventory
   totalQuantity: number
   quantitySold: number
   quantityReserved: number
 
-  // Ticket availability
+  // Availability
   isAvailable: boolean
-
-  // Ticket metadata
   sortOrder: number
 
   // Relations
   eventId: string
-  event: Event
-  orderItems?: OrderItem[]
-
-  eventTitle: string
+  event?: IEvent
+  orderItems?: IOrderItem[]
 }
-
-export type CreateTicketInput = Omit<
-  Ticket,
-  'id' | 'createdAt' | 'updatedAt' | 'quantitySold' | 'quantityReserved' | 'orderItems'
->
-
-export type UpdateTicketInput = Partial<CreateTicketInput> & { id: string }
