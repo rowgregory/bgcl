@@ -35,3 +35,9 @@ export interface PageField {
   value: string | string[] // The actual content
   type: 'text' | 'textarea' | 'url' | 'array' | 'boolean'
 }
+
+export interface ActionResult {
+  success: boolean
+  error?: string
+  id?: string
+}

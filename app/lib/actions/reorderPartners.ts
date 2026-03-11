@@ -3,14 +3,14 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 
-export async function reorderEvents(
-  events: Array<{ id: string; order?: number }>
+export async function reorderPartners(
+  partners: Array<{ id: string; order?: number }>
 ): Promise<{ success: boolean; error?: string }> {
   try {
     await Promise.all(
-      events.map((event, index) =>
-        prisma.event.update({
-          where: { id: event.id },
+      partners.map((partner, index) =>
+        prisma.partner.update({
+          where: { id: partner.id },
           data: { order: index + 1 }
         })
       )
@@ -18,10 +18,10 @@ export async function reorderEvents(
 
     return { success: true }
   } catch (error) {
-    await createLog('error', 'Failed to reorder events', {
+    await createLog('error', 'Failed to reorder partners', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    return { success: false, error: 'Failed to reorder events. Please try again.' }
+    return { success: false, error: 'Failed to reorder partners. Please try again.' }
   }
 }

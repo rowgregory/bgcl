@@ -640,6 +640,38 @@ model Closing {
   updatedAt DateTime @updatedAt
 }
 
+model Partner {
+  id           String           @id @default(cuid())
+  name         String
+  externalLink String?
+  amount       String?
+  image        String?
+  description  String?
+  isActive     Boolean?         @default(true)
+  isFeatured   Boolean?         @default(false)
+  category     PartnerCategory?
+  notes        String?
+  order        Int?             @default(0)
+  tier         PartnerTier?
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+enum PartnerTier {
+  GOLD
+  SILVER
+  BRONZE
+  COMMUNITY
+}
+
+enum PartnerCategory {
+  CORPORATE
+  NONPROFIT
+  GOVERNMENT
+  INDIVIDUAL
+}
+
 enum EmploymentType {
   FULL_TIME
   PART_TIME

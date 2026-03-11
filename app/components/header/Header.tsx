@@ -28,6 +28,27 @@ export default function Header() {
 
   const handleLaunchApp = () => router.push(getLaunchPath())
 
+  const getVisibilityClass = (priority: number) => {
+    switch (priority) {
+      case 1:
+        return 'hidden lg:block' // always visible in nav range
+      case 2:
+        return 'hidden lg-2:block' // visible from 1100px
+      case 3:
+        return 'hidden lg-3:block' // visible from 1160px
+      case 4:
+        return 'hidden xl:block' // visible from 1280px
+      case 5:
+        return 'hidden 1xl:block' // visible from 1336px
+      case 6:
+        return 'hidden xl-2:block' // visible from 1380px
+      case 7:
+        return 'hidden 2xl:block' // visible from 1536px — first to disappear
+      default:
+        return 'hidden lg:block'
+    }
+  }
+
   return (
     <>
       <a
@@ -39,9 +60,9 @@ export default function Header() {
       {/* Top Bar */}
       <header
         role="banner"
-        className={`${pathname === '/' ? 'max-w-334' : ''} w-full mx-auto dark:bg-neutral-900 dark:border-neutral-700 bg-neutral-50 border-neutral-200 border-b relative z-100 px-4 sm:px-6 lg:px-8 py-3`}
+        className={`${pathname === '/' ? 'max-w-400' : ''} w-full mx-auto dark:bg-neutral-900 dark:border-neutral-700 bg-neutral-50 border-neutral-200 border-b relative z-100 px-4 sm:px-6 lg:px-8 py-3`}
       >
-        <div className="max-w-334 flex items-center justify-between mx-auto">
+        <div className="max-w-375 flex items-center justify-between mx-auto">
           <div className="flex items-center space-x-4 lg:space-x-6">
             <GoogleTranslate />
             <div className="hidden sm:flex items-center space-x-4 lg:space-x-6 dark:text-neutral-400 text-neutral-600 text-sm">
@@ -86,15 +107,16 @@ export default function Header() {
         </div>
       </header>
 
+      {/* Bottom Bar */}
       <motion.nav
-        className={`${pathname === '/' ? 'max-w-334' : ''} w-full mx-auto sticky top-0 dark:border-neutral-700 dark:bg-neutral-950 border-neutral-200 bg-white z-50 px-4 sm:px-6 lg:px-8 1xl:rounded-br-xl 1xl:rounded-bl-xl`}
+        className={`${pathname === '/' ? 'max-w-400' : ''} w-full mx-auto sticky top-0 dark:border-neutral-700 dark:bg-neutral-950 border-neutral-200 bg-white z-50 px-4 sm:px-6 lg:px-8 1xl:rounded-br-xl 1xl:rounded-bl-xl`}
         animate={{
           paddingTop: isAtTop ? '18px' : '10px',
           paddingBottom: isAtTop ? '10px' : '10px'
         }}
         transition={{ duration: 0.3 }}
       >
-        <div className="max-w-334 mx-auto flex items-center justify-between relative">
+        <div className="max-w-375 mx-auto flex items-center justify-between relative">
           {/* Burger Menu Button */}
           <button
             onClick={() => store.dispatch(setOpenMobileNavigation())}
@@ -113,10 +135,10 @@ export default function Header() {
           <Link
             href="/"
             aria-label="Boys & Girls Club of Lynn - Home"
-            className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 2xl:relative 2xl:left-auto 2xl:translate-x-0 2xl:top-auto 2xl:translate-y-0"
+            className="shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 lg:relative lg:left-auto lg:translate-x-0 lg:top-auto lg:translate-y-0"
           >
             <motion.div
-              className="flex items-center space-x-3"
+              className="flex items-center space-x-3 "
               initial={{ scale: 1 }}
               animate={{ scale: isAtTop ? 1 : 0.9 }}
               transition={{ duration: 0.3 }}
@@ -144,9 +166,9 @@ export default function Header() {
           </Link>
 
           <nav aria-label="Main navigation">
-            <ul className={`hidden 2xl:flex items-center ${isSpanish ? 'space-x-4' : 'space-x-6'} list-none`}>
+            <ul className={`flex items-center ${isSpanish ? 'gap-4' : 'gap-6'} list-none`}>
               {headerNavLinks.map((item) => (
-                <li key={item.label}>
+                <li key={item.label} className={getVisibilityClass(item.priority)}>
                   <motion.div
                     animate={{
                       fontSize: isSpanish

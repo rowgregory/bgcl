@@ -21,6 +21,46 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.11.0',
+    date: '2026-03-11',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Partners Page',
+        description:
+          'New public-facing partners page with featured spotlight section, uniform partner grid, and a become-a-partner CTA.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Partner Admin Form',
+        description: 'Full CRUD form for managing partners including name, logo, URL, and active/featured toggles.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Responsive Header Navigation',
+        description:
+          'Nav links now disappear one at a time as the viewport shrinks using a priority system and intermediate breakpoints (lg-2, lg-3, xl-2), replacing the all-or-nothing 2xl threshold.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Custom Breakpoints',
+        description:
+          'Added lg-2 (1100px), lg-3 (1160px), and xl-2 (1380px) to the @theme block in globals.css to support granular responsive header nav behavior.',
+        impact: 'low'
+      },
+      {
+        type: 'improvement',
+        title: 'Image Upload Limits',
+        description:
+          'Increased max file size to 10MB and explicitly specified allowed types (JPEG, PNG, WebP, GIF, SVG) in the ImageUpload component accept attribute.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.10.3',
     date: '2026-03-10',
     changes: [

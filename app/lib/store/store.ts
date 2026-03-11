@@ -25,6 +25,7 @@ import { newsletterReducer } from './slices/newsletterSlice'
 import { clubResourceReducer } from './slices/clubResourceSlice'
 import { campaignReducer } from './slices/campaignSlice'
 import { closingReducer } from './slices/closingSlice'
+import { uiReducer } from './slices/uiSlice'
 
 // Create a noop storage for SSR
 const createNoopStorage = () => {
@@ -90,6 +91,7 @@ const rootReducer = combineReducers({
   clubResource: clubResourceReducer,
   campaign: campaignReducer,
   closing: closingReducer,
+  ui: uiReducer,
   [api.reducerPath]: api.reducer
 })
 
@@ -136,3 +138,4 @@ export const useNewsletterSelector = () => useAppSelector((state) => state.newsl
 export const useClubResourceSelector = () => useAppSelector((state) => state.clubResource)
 export const useCampaignSelector = () => useAppSelector((state) => state.campaign)
 export const useClosingSelector = () => useAppSelector((state) => state.closing)
+export const useUiSelector = () => useAppSelector((state) => state.ui)

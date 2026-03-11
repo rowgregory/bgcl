@@ -24,13 +24,14 @@ const ImageUpload: FC<ImageUploadProps> = ({ inputs, isLoading, errors, formName
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
+    const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       return
     }
 
     // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > 10 * 1024 * 1024) {
       return
     }
 
@@ -101,7 +102,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ inputs, isLoading, errors, formName
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/*,.gif"
             onChange={handleImageChange}
             disabled={isUploading || isLoading}
             className="hidden"
@@ -125,7 +126,7 @@ const ImageUpload: FC<ImageUploadProps> = ({ inputs, isLoading, errors, formName
             <div className="text-center">
               <Upload className="h-8 w-8 text-neutral-400 dark:text-neutral-500 mx-auto mb-2" />
               <p className="text-sm text-neutral-700 dark:text-neutral-300">Click to upload image</p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">PNG, JPG, GIF up to 5MB</p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">PNG, JPG, GIF up to 10MB</p>
             </div>
           )}
         </div>

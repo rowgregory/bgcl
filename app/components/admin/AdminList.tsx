@@ -17,6 +17,8 @@ import { useState } from 'react'
 import AdminListItem from './AdminListItem'
 import { setOpenEventDrawer } from '@/app/lib/store/slices/eventSlice'
 import { initialEventFormState } from '@/app/lib/initial-states/event'
+import { initialPartnerFormState } from '@/app/lib/constants/partner'
+import { setOpenPartnerDrawer } from '@/app/lib/store/slices/uiSlice'
 
 interface AdminListItem {
   id: string
@@ -27,7 +29,7 @@ interface AdminListItem {
 interface AdminListPageProps<T extends AdminListItem> {
   data: T[] | any
   pageTitle: string
-  itemType: 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign' | 'closing' | 'event'
+  itemType: 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign' | 'closing' | 'event' | 'partner'
   emptyMessage?: string
 }
 
@@ -89,81 +91,81 @@ export function AdminListPage<T extends AdminListItem>({
         store.dispatch(setOpenEventDrawer())
         store.dispatch(setInputs({ formName: 'eventForm', data: initialEventFormState }))
         break
+      case 'partner':
+        store.dispatch(setOpenPartnerDrawer())
+        store.dispatch(setInputs({ formName: 'partnerForm', data: initialPartnerFormState }))
+        break
     }
   }
 
   return (
     <div className="min-h-screen dark:bg-neutral-950 bg-white p-6 md:p-8">
       <div className="w-full space-y-12">
-        <div className="space-y-8">
-          <div className="w-full">
-            <div className="mb-8">
-              <div className="flex items-start gap-3">
-                <div className="flex-1">
-                  <h2 className="text-2xl font-semibold dark:text-neutral-100 text-neutral-900">{pageTitle}</h2>
-                  <p className="mt-1 text-sm dark:text-neutral-400 text-neutral-600">
-                    Drag to reorder. Changes save automatically.
-                  </p>
-                </div>
-                <button
-                  onClick={handleCreate}
-                  className="p-1.5 dark:hover:bg-neutral-800 hover:bg-neutral-100 rounded transition-colors shrink-0"
-                  title={`Add ${itemType}`}
-                >
-                  <Plus className="w-4 h-4 dark:text-neutral-500 text-neutral-500" />
-                </button>
-              </div>
+        <div className="mb-8">
+          <div className="flex items-start gap-3">
+            <div className="flex-1">
+              <h2 className="text-2xl font-semibold dark:text-neutral-100 text-neutral-900">{pageTitle}</h2>
+              <p className="mt-1 text-sm dark:text-neutral-400 text-neutral-600">
+                Drag to reorder. Changes save automatically.
+              </p>
             </div>
-
-            {/* Status Messages */}
-            {saveStatus === 'success' && (
-              <div className="mb-6 flex items-center gap-3 rounded-lg dark:bg-sky-950/40 dark:border-sky-800/50 dark:text-sky-200 bg-sky-100/50 border-sky-300/50 text-sky-900 px-4 py-3 border">
-                <Check className="h-5 w-5 dark:text-sky-400 text-sky-600" />
-                <span className="text-sm">Saved successfully</span>
-              </div>
-            )}
-
-            {saveStatus === 'error' && (
-              <div className="mb-6 flex items-center gap-3 rounded-lg dark:bg-red-950/40 dark:border-red-800/50 dark:text-red-200 bg-red-100/50 border-red-300/50 text-red-900 px-4 py-3 border">
-                <AlertCircle className="h-5 w-5 dark:text-red-400 text-red-600" />
-                <span className="text-sm">{errorMessage || 'Failed to save'}</span>
-              </div>
-            )}
-
-            <div className="space-y-2">
-              {data?.length === 0 ? (
-                <div className="rounded-lg dark:bg-neutral-900 dark:text-neutral-400 bg-neutral-100 text-neutral-600 px-6 py-12 text-center">
-                  <p className="text-sm">{emptyMessage}</p>
-                </div>
-              ) : (
-                data?.map((item, index) => (
-                  <AdminListItem
-                    key={index}
-                    dragPosition={dragPosition}
-                    draggedOver={draggedOver}
-                    handleDragEnd={handleDragEnd}
-                    handleDragLeave={handleDragLeave}
-                    handleDragOver={handleDragOver}
-                    handleDragStart={handleDragStart}
-                    handleDropWithFeedback={handleDropWithFeedback}
-                    index={index}
-                    item={item}
-                    itemType={itemType}
-                  />
-                ))
-              )}
-            </div>
-
-            {data?.length > 0 && (
-              <div className="mt-8 text-xs dark:text-neutral-500 text-neutral-600">
-                <p>
-                  Total: {data?.length} {itemType}
-                  {data?.length !== 1 ? 's' : ''}
-                </p>
-              </div>
-            )}
+            <button
+              onClick={handleCreate}
+              className="p-1.5 dark:hover:bg-neutral-800 hover:bg-neutral-100 rounded transition-colors shrink-0"
+              title={`Add ${itemType}`}
+            >
+              <Plus className="w-4 h-4 dark:text-neutral-500 text-neutral-500" />
+            </button>
           </div>
         </div>
+
+        {/* Status Messages */}
+        {saveStatus === 'success' && (
+          <div className="mb-6 flex items-center gap-3 rounded-lg dark:bg-sky-950/40 dark:border-sky-800/50 dark:text-sky-200 bg-sky-100/50 border-sky-300/50 text-sky-900 px-4 py-3 border">
+            <Check className="h-5 w-5 dark:text-sky-400 text-sky-600" />
+            <span className="text-sm">Saved successfully</span>
+          </div>
+        )}
+
+        {saveStatus === 'error' && (
+          <div className="mb-6 flex items-center gap-3 rounded-lg dark:bg-red-950/40 dark:border-red-800/50 dark:text-red-200 bg-red-100/50 border-red-300/50 text-red-900 px-4 py-3 border">
+            <AlertCircle className="h-5 w-5 dark:text-red-400 text-red-600" />
+            <span className="text-sm">{errorMessage || 'Failed to save'}</span>
+          </div>
+        )}
+
+        <div className="space-y-2">
+          {data?.length === 0 ? (
+            <div className="rounded-lg dark:bg-neutral-900 dark:text-neutral-400 bg-neutral-100 text-neutral-600 px-6 py-12 text-center">
+              <p className="text-sm">{emptyMessage}</p>
+            </div>
+          ) : (
+            data?.map((item, index) => (
+              <AdminListItem
+                key={index}
+                dragPosition={dragPosition}
+                draggedOver={draggedOver}
+                handleDragEnd={handleDragEnd}
+                handleDragLeave={handleDragLeave}
+                handleDragOver={handleDragOver}
+                handleDragStart={handleDragStart}
+                handleDropWithFeedback={handleDropWithFeedback}
+                index={index}
+                item={item}
+                itemType={itemType}
+              />
+            ))
+          )}
+        </div>
+
+        {data?.length > 0 && (
+          <div className="mt-8 text-xs dark:text-neutral-500 text-neutral-600">
+            <p>
+              Total: {data?.length} {itemType}
+              {data?.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )

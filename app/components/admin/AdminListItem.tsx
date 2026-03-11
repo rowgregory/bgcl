@@ -1,4 +1,4 @@
-import { Archive, ArchiveRestore, Edit2, ExternalLink, GripVertical, Ticket, Trash2, View } from 'lucide-react'
+import { Archive, ArchiveRestore, Edit2, ExternalLink, GripVertical, Ticket, Trash2 } from 'lucide-react'
 import { deleteCampaign } from '@/app/lib/actions/deleteCampaign'
 import { deleteClosing } from '@/app/lib/actions/deleteClosing'
 import { deleteNews } from '@/app/lib/actions/deleteNews'
@@ -20,7 +20,8 @@ import { setOpenTicketDrawer } from '@/app/lib/store/slices/ticketSlice'
 import { archiveEvent } from '@/app/lib/actions/archiveEvent'
 import { useRouter } from 'next/navigation'
 import { unarchiveEvent } from '@/app/lib/actions/unarchiveEvent'
-import Link from 'next/link'
+import { deletePartner } from '@/app/lib/actions/deletePartner'
+import { setOpenPartnerDrawer } from '@/app/lib/store/slices/uiSlice'
 
 export function kebabToCamel(str: string): string {
   return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
@@ -63,8 +64,11 @@ const AdminListItem = ({
       case 'event':
         await deleteEvent(item.id)
         break
+      case 'partner':
+        await deletePartner(item.id)
+        break
     }
-
+    router.refresh()
     store.dispatch(showToast({ message: `Successfully deleted ${itemType}` }))
   }
 
@@ -92,6 +96,9 @@ const AdminListItem = ({
         break
       case 'event':
         store.dispatch(setOpenEventDrawer())
+        break
+      case 'partner':
+        store.dispatch(setOpenPartnerDrawer())
         break
     }
   }

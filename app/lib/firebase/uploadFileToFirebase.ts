@@ -17,7 +17,7 @@ const uploadFileToFirebase = async (
   }
 
   // Create a storage reference
-  const storageRef = ref(storage, `${type}s/${file.name}`)
+  const storageRef = ref(storage, `${type}s/${Date.now()}-${file.name}`)
 
   // Start the upload task
   const uploadTask = uploadBytesResumable(storageRef, file)

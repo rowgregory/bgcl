@@ -60,3 +60,18 @@ export const cardVariants = {
     transition: { duration: 0.5 }
   }
 }
+
+export const containerVariantsTwo = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.07 } }
+}
+
+export const itemVariantsTwo = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, easing: 'easeOut' } }
+}
+
+export const sectionVariants = {
+  hidden: { opacity: 0, y: -20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+}

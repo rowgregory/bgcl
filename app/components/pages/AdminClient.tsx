@@ -30,6 +30,7 @@ import FailedPaymentsDrawer from '../drawers/FailedPaymentDrawer'
 import DonationDrawer from '../drawers/DonationDrawer'
 import { useSession } from 'next-auth/react'
 import { TicketOrderDrawer } from '../drawers/AdminTicketOrderDrawer'
+import { PartnerDrawer } from '../drawers/PartnerDrawer'
 
 const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
   const pathname = usePathname()
@@ -56,6 +57,7 @@ const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
       <FailedPaymentsDrawer />
       <DonationDrawer />
       <TicketOrderDrawer />
+      <PartnerDrawer />
 
       {/* Desktop Fixed Header */}
       <header className="hidden lg:block fixed top-0 left-64 right-0 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-b py-2.5 px-6 z-30 h-15.25">
