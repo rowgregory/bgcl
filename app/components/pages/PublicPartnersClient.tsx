@@ -218,11 +218,11 @@ export default function PublicPartnersClient({ partners }: { partners: IPartner[
                   Community & Corporate Support
                 </p>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-                  Our Partners
+                  Our Partnerships
                 </h1>
                 <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
-                  The Boys &amp; Girls Club of Lynn is powered by the generosity of our community partners?. Together,
-                  we create opportunities that change the lives of young people every day.
+                  The Boys &amp; Girls Club of Lynn is powered by the generosity of our community partners. Together, we
+                  create opportunities that change the lives of young people every day.
                 </p>
               </div>
 

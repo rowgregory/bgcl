@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation'
 import { store, useApplicationSelector } from '../lib/store/store'
 import { setCloseMobileNavigation } from '../lib/store/slices/appSlice'
 import Picture from './common/Picture'
-import { headerNavLinks } from '../lib/constants/headerNavLinks'
 import { X } from 'lucide-react'
+import { mainNavigationLinks } from '../lib/constants/navigation'
 
 export default function MobileNavigationDrawer() {
   const pathname = usePathname()
@@ -70,7 +70,7 @@ export default function MobileNavigationDrawer() {
 
               {/* Navigation Links */}
               <ul role="list" className="space-y-1 list-none p-0 m-0">
-                {headerNavLinks.map((item) => (
+                {mainNavigationLinks.map((item) => (
                   <li key={item.label}>
                     <Link
                       href={item.href}

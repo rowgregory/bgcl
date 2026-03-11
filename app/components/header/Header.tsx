@@ -8,7 +8,7 @@ import { setOpenMobileNavigation } from '@/app/lib/store/slices/appSlice'
 import { motion } from 'framer-motion'
 import { useIsAtTop } from '@/app/lib/hooks/useIsAtTop'
 import GoogleTranslate from '../GoogleTranslate'
-import { headerNavLinks } from '@/app/lib/constants/headerNavLinks'
+import { mainNavigationLinks } from '@/app/lib/constants/navigation'
 
 export default function Header() {
   const { data, status } = useSession()
@@ -167,7 +167,7 @@ export default function Header() {
 
           <nav aria-label="Main navigation">
             <ul className={`flex items-center ${isSpanish ? 'gap-4' : 'gap-6'} list-none`}>
-              {headerNavLinks.map((item) => (
+              {mainNavigationLinks.map((item) => (
                 <li key={item.label} className={getVisibilityClass(item.priority)}>
                   <motion.div
                     animate={{
