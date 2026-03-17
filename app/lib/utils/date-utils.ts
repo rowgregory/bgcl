@@ -3,16 +3,14 @@
 /**
  * Converts a Date object or ISO string to the format required by HTML input type="date" (YYYY-MM-DD)
  */
-export const formatDateForInput = (date: Date | string | number | boolean | null | undefined): string => {
-  if (!date || typeof date === 'boolean' || typeof date === 'number') return ''
-
-  try {
-    const dateObj = date instanceof Date ? date : new Date(date)
-    if (isNaN(dateObj.getTime())) return ''
-    return dateObj.toISOString().split('T')[0]
-  } catch {
-    return ''
-  }
+export const formatDateForInput = (date: Date | string | null | undefined): string => {
+  if (!date) return ''
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return ''
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 /**
@@ -53,24 +51,23 @@ export function combineDateTimeToUTC(dateInput: string | Date, timeString: strin
  * @returns Object with dateString (YYYY-MM-DD) and timeString (HH:mm)
  */
 export function splitUTCToDateTime(utcDate: Date | string): { dateString: string; timeString: string } {
-  // Convert to Date object if string
   const dateObj = typeof utcDate === 'string' ? new Date(utcDate) : utcDate
 
-  // Convert UTC to local timezone (EST/EDT)
-  const localDate = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * 60 * 1000)
+  const year = dateObj.getFullYear()
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+  const day = String(dateObj.getDate()).padStart(2, '0')
 
-  const year = localDate.getFullYear()
-  const month = String(localDate.getMonth() + 1).padStart(2, '0')
-  const day = String(localDate.getDate()).padStart(2, '0')
-  const hours = String(localDate.getHours()).padStart(2, '0')
-  const minutes = String(localDate.getMinutes()).padStart(2, '0')
+  const timeString = dateObj.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  })
 
   return {
-    dateString: `${year}-${month}-${day}`,
-    timeString: `${hours}:${minutes}`
+    dateString: `${month}-${day}-${year}`,
+    timeString
   }
 }
-
 /**
  * Convert date string to UTC Date (midnight UTC)
  * @param dateString - Date in format "YYYY-MM-DD" (e.g., "2026-01-04")

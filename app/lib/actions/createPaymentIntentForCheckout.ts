@@ -4,13 +4,14 @@ import prisma from '@/prisma/client'
 import { stripe } from '../stripe/stripeClient'
 import Stripe from 'stripe'
 import { createLog } from './createLog'
+import { OrderType } from '@prisma/client'
 
 interface CheckoutParams {
   userId?: string
   email: string
   name: string
   amount: number // in cents
-  orderType: 'ONE_TIME_DONATION' | 'RECURRING_DONATION' | 'TICKET_PURCHASE'
+  orderType: OrderType
   description: string
   saveCard?: boolean
   coverFees?: boolean

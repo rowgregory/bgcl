@@ -24,7 +24,7 @@ function getTicketStatus(ticket: ITicket): {
   return { available: true, message: 'Available' }
 }
 
-export const TicketCard: FC<{ ticket: ITicket & { title: string } }> = ({ ticket }) => {
+export const TicketCard: FC<{ ticket: ITicket }> = ({ ticket }) => {
   const { data: session } = useSession()
   const router = useRouter()
   const { available, message } = getTicketStatus(ticket)
@@ -39,55 +39,68 @@ export const TicketCard: FC<{ ticket: ITicket & { title: string } }> = ({ ticket
     <div
       className={`p-5 sm:p-6 rounded-xl border transition-all flex flex-col justify-between ${
         available
-          ? 'dark:bg-neutral-800/50 dark:border-neutral-700 dark:hover:border-sky-500 dark:hover:shadow-sky-500/20 bg-white border-neutral-200 hover:border-sky-400 hover:shadow-lg hover:shadow-sky-500/10 cursor-pointer'
-          : 'dark:bg-neutral-900/50 dark:border-neutral-800 bg-neutral-50 border-neutral-200 opacity-60 cursor-not-allowed'
+          ? 'dark:bg-neutral-800/50 dark:border-neutral-700 dark:hover:border-sky-500 dark:hover:shadow-sky-500/20 bg-white border-neutral-200 hover:border-sky-400 hover:shadow-lg hover:shadow-sky-500/10'
+          : 'dark:bg-neutral-900/30 dark:border-neutral-800/50 bg-neutral-50/80 border-neutral-100 cursor-not-allowed'
       }`}
       aria-label={`${ticket.name} — ${available ? `$${ticket.price}` : message}`}
     >
       <div className="flex-1 min-w-0">
-        <h3 className="text-base sm:text-lg font-semibold dark:text-white text-neutral-900 truncate">{ticket.name}</h3>
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="text-base sm:text-lg font-semibold dark:text-white text-neutral-900 truncate">
+            {ticket.name}
+          </h3>
+          {!available && (
+            <span
+              className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${
+                message === 'Sold out'
+                  ? 'bg-red-50 dark:bg-red-500/10 text-red-500 dark:text-red-400'
+                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500'
+              }`}
+            >
+              {message}
+            </span>
+          )}
+        </div>
         {ticket.description && (
-          <p className="text-xs sm:text-sm dark:text-neutral-400 text-neutral-500 mt-1 leading-relaxed">
+          <p
+            className={`text-xs sm:text-sm mt-1 leading-relaxed ${available ? 'dark:text-neutral-400 text-neutral-500' : 'dark:text-neutral-600 text-neutral-400'}`}
+          >
             {ticket.description}
           </p>
         )}
       </div>
 
       <div>
-        <p className="text-xl sm:text-2xl font-bold dark:text-sky-400 text-sky-600 mt-3">${ticket.price}</p>
+        <p
+          className={`text-xl sm:text-2xl font-bold mt-3 ${available ? 'dark:text-sky-400 text-sky-600' : 'dark:text-neutral-600 text-neutral-400'}`}
+        >
+          ${ticket.price}
+        </p>
 
-        {/* Availability */}
-        <div className="mt-3 text-sm">
-          {!available ? (
-            <div className="flex items-center gap-2" role="status">
-              {message === 'Sold out' && (
-                <span className="px-2 py-1 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700/50 bg-red-50 text-red-600 border-red-200 rounded-full text-xs font-medium border">
-                  Sold Out
-                </span>
-              )}
-              {message === 'Sales ended' && (
-                <span className="px-2 py-1 dark:bg-neutral-700/50 dark:text-neutral-400 dark:border-neutral-600/50 bg-neutral-100 text-neutral-500 border-neutral-300 rounded-full text-xs font-medium border">
-                  Sales Ended
-                </span>
-              )}
-              {message === 'Not available' && (
-                <span className="px-2 py-1 dark:bg-neutral-700/50 dark:text-neutral-400 dark:border-neutral-600/50 bg-neutral-100 text-neutral-500 border-neutral-300 rounded-full text-xs font-medium border">
-                  Not Available
-                </span>
-              )}
-            </div>
-          ) : (
-            <p className="dark:text-emerald-400 text-emerald-600 font-medium flex items-center gap-1" role="status">
+        {/* Availability + sold count */}
+        <div className="mt-2 flex items-center justify-between">
+          {available ? (
+            <p
+              className="dark:text-emerald-400 text-emerald-600 font-medium flex items-center gap-1 text-sm"
+              role="status"
+            >
               <span aria-hidden="true">✓</span> Available
             </p>
-          )}
-
-          {available && (
-            <p className="dark:text-neutral-500 text-neutral-400 text-xs mt-1">
-              {ticket.totalQuantity - ticket.quantitySold} remaining
+          ) : (
+            <p className="text-xs dark:text-neutral-600 text-neutral-400" role="status">
+              {message}
             </p>
           )}
+          <p className="text-xs dark:text-neutral-500 text-neutral-400 tabular-nums">
+            {ticket.quantitySold} / {ticket.totalQuantity} sold
+          </p>
         </div>
+
+        {available && (
+          <p className="dark:text-neutral-500 text-neutral-400 text-xs mt-0.5">
+            {ticket.totalQuantity - ticket.quantitySold} remaining
+          </p>
+        )}
 
         {/* Purchase button */}
         <button
@@ -111,8 +124,8 @@ export const TicketCard: FC<{ ticket: ITicket & { title: string } }> = ({ ticket
             !session
               ? 'bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white focus-visible:ring-sky-500 dark:focus-visible:ring-offset-neutral-900 focus-visible:ring-offset-white'
               : available
-                ? 'bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white focus-visible:ring-sky-500 dark:focus-visible:ring-offset-neutral-900 focus-visible:ring-offset-white'
-                : 'dark:bg-neutral-700 dark:text-neutral-500 bg-neutral-100 text-neutral-400 cursor-not-allowed'
+                ? 'bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white focus-visible:ring-sky-500 dark:focus-visible:ring-offset-neutral-900 focus-visible:ring-offset-white cursor-pointer'
+                : 'dark:bg-neutral-800/50 dark:text-neutral-600 bg-neutral-100 text-neutral-400 cursor-not-allowed'
           }`}
         >
           {!session ? 'Sign In to Purchase' : available ? 'Select Ticket' : message}

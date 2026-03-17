@@ -1,9 +1,8 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
-import { combineDateTimeToUTC, convertDateToUTC } from '../utils/date-utils'
+import { convertDateToUTC } from '../utils/date-utils'
 import { EventType } from '@prisma/client'
 
 interface UpdateEventData {
@@ -13,7 +12,6 @@ interface UpdateEventData {
   category?: string
   type?: EventType
   date?: string | Date
-  time?: string
   duration?: string
   location?: string
   featured?: boolean
@@ -46,7 +44,6 @@ export async function updateEvent(id: string, body: UpdateEventData) {
 
     const { date, time, registrationDeadline, rsvpDeadline, ...restBody } = body
 
-    const fullDateTime = date && time ? combineDateTimeToUTC(date as string, time as string) : undefined
     const registrationDeadlineDate = registrationDeadline ? convertDateToUTC(registrationDeadline) : undefined
     const rsvpDeadlineDate = rsvpDeadline ? convertDateToUTC(rsvpDeadline) : undefined
 
@@ -54,7 +51,7 @@ export async function updateEvent(id: string, body: UpdateEventData) {
       where: { id },
       data: {
         ...restBody,
-        date: fullDateTime,
+        date: date ? new Date(date) : undefined,
         maxAttendees: body.maxAttendees ? Number(body.maxAttendees) : undefined,
         registrationDeadline: registrationDeadlineDate,
         rsvpDeadline: rsvpDeadlineDate
@@ -70,8 +67,6 @@ export async function updateEvent(id: string, body: UpdateEventData) {
       eventTitle: event.title,
       updatedFields: Object.keys(body)
     })
-
-    revalidateTag('Event', 'default')
 
     return { success: true, event }
   } catch (error) {

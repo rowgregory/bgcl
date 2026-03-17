@@ -14,6 +14,7 @@ import { formatDateForInput } from '@/app/lib/utils/date-utils'
 import { EventType } from '@prisma/client'
 import { motion } from 'framer-motion'
 import { formatTimeForInput } from '@/app/lib/utils/time-utils'
+import { formatEnumLabel } from '@/app/lib/utils/formatEnumLabel'
 
 const EventForm: FC<IForm> = ({
   errors,
@@ -179,7 +180,7 @@ const EventForm: FC<IForm> = ({
                       </option>
                       {EVENT_TYPES.map((type) => (
                         <option key={type} value={type} className="bg-neutral-800">
-                          {type}
+                          {formatEnumLabel(type)}
                         </option>
                       ))}
                     </select>
@@ -222,7 +223,14 @@ const EventForm: FC<IForm> = ({
                       type="date"
                       name="date"
                       value={formatDateForInput(inputs.date) || ''}
-                      onChange={handleInput}
+                      onChange={(e) => {
+                        const [year, month, day] = e.target.value.split('-').map(Number)
+                        const existing = inputs.date ? new Date(inputs.date) : new Date()
+                        const updated = new Date(year, month - 1, day, existing.getHours(), existing.getMinutes(), 0, 0)
+                        handleInput({
+                          target: { name: 'date', value: updated }
+                        } as any)
+                      }}
                       className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
                     />
                     {errors?.date && <p className="mt-2 text-sm text-red-400">{errors.date}</p>}
@@ -234,9 +242,15 @@ const EventForm: FC<IForm> = ({
                     </label>
                     <input
                       type="time"
-                      name="time"
-                      value={inputs.time || formatTimeForInput(inputs.date) || ''}
-                      onChange={handleInput}
+                      value={formatTimeForInput(inputs.date) || ''}
+                      onChange={(e) => {
+                        const [hours, minutes] = e.target.value.split(':')
+                        const updated = new Date(inputs.date)
+                        updated.setHours(parseInt(hours), parseInt(minutes), 0, 0)
+                        handleInput({
+                          target: { name: 'date', value: updated }
+                        } as any)
+                      }}
                       className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
                     />
                     {errors?.time && <p className="mt-2 text-sm text-red-400">{errors.time}</p>}

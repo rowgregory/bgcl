@@ -44,9 +44,10 @@ const TicketForm: FC<IForm> = ({
 
       {/* Form Content */}
       <div className="flex-1 flex overflow-hidden">
-        {inputs.tickets && (
-          <TicketList inputs={inputs} onSelectTicket={handleSelectTemplate} tickets={inputs.tickets} />
-        )}
+        {/* Created Tickets */}
+        {inputs.tickets && <TicketList inputs={inputs} onSelectTicket={handleSelectTemplate} />}
+
+        {/* Ticket Templates */}
         <TicketTemplates onSelectTemplate={handleSelectTemplate} />
 
         <form onSubmit={handleSubmit} className="flex flex-col h-full w-full">
@@ -93,39 +94,60 @@ const TicketForm: FC<IForm> = ({
                   </div>
 
                   {/* Price and Quantity */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
-                        Price ($) *
-                      </label>
-                      <input
-                        type="number"
-                        name="price"
-                        value={(inputs?.price as number) || ''}
-                        onChange={handleInput}
-                        min="0"
-                        step="0.01"
-                        placeholder="0.00"
-                        className={InputStyles}
-                      />
-                      {errors?.price && <p className="mt-2 text-sm text-red-400">{errors.price}</p>}
-                    </div>
 
-                    <div>
-                      <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
-                        Total Quantity *
-                      </label>
-                      <input
-                        type="number"
-                        name="totalQuantity"
-                        value={(inputs?.totalQuantity as number) || ''}
-                        onChange={handleInput}
-                        min="1"
-                        placeholder="100"
-                        className={InputStyles}
-                      />
-                      {errors?.totalQuantity && <p className="mt-2 text-sm text-red-400">{errors.totalQuantity}</p>}
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                      Price ($) *
+                    </label>
+                    <input
+                      type="number"
+                      name="price"
+                      value={(inputs?.price as number) || ''}
+                      onChange={handleInput}
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      className={InputStyles}
+                    />
+                    {errors?.price && <p className="mt-2 text-sm text-red-400">{errors.price}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                      Total Quantity *
+                    </label>
+                    {isUpdating && (
+                      <div className="flex items-center gap-4 mb-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs text-neutral-500 dark:text-neutral-400">Sold:</span>
+                          <span className="text-xs font-semibold text-neutral-900 dark:text-white tabular-nums">
+                            {(inputs?.quantitySold as number) || 0}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs text-neutral-500 dark:text-neutral-400">Remaining:</span>
+                          <span className="text-xs font-semibold text-neutral-900 dark:text-white tabular-nums">
+                            {((inputs?.totalQuantity as number) || 0) - ((inputs?.quantitySold as number) || 0)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    <input
+                      type="number"
+                      name="totalQuantity"
+                      value={(inputs?.totalQuantity as number) || ''}
+                      onChange={handleInput}
+                      min={isUpdating ? (inputs?.quantitySold as number) || 0 : 1}
+                      placeholder="100"
+                      className={InputStyles}
+                    />
+                    {isUpdating && (inputs?.quantitySold as number) > 0 && (
+                      <p className="mt-2 text-xs text-neutral-500">
+                        {inputs?.quantitySold as number} ticket{(inputs?.quantitySold as number) === 1 ? '' : 's'}{' '}
+                        already sold — total quantity cannot go below this
+                      </p>
+                    )}
+                    {errors?.totalQuantity && <p className="mt-2 text-sm text-red-400">{errors.totalQuantity}</p>}
                   </div>
 
                   {/* Additional Options */}

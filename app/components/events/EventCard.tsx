@@ -92,9 +92,7 @@ export function EventCard({ event }: EventCardProps) {
               {event.tickets.slice(0, 2).map((ticket) => (
                 <div key={ticket.id} className="flex items-center justify-between text-sm">
                   <span className="dark:text-neutral-400 text-neutral-600">{ticket.name}</span>
-                  <span className="font-semibold dark:text-sky-400 text-sky-600">
-                    ${(ticket.price / 100).toFixed(2)}
-                  </span>
+                  <span className="font-semibold dark:text-sky-400 text-sky-600">${ticket.price.toFixed(2)}</span>
                 </div>
               ))}
               {event.tickets.length > 2 && (

@@ -8,7 +8,7 @@ import { KeyEventInfo } from '@/app/components/events/KeyEventInfo'
 import { TicketCard } from '@/app/components/ticket/TicketCard'
 import { useCartSelector } from '@/app/lib/store/store'
 import { formatEnumLabel } from '@/app/lib/utils/formatEnumLabel'
-import { Clock, Users, Tag, Info, Shirt, Video, Globe, User, ChevronRight, ShoppingCart } from 'lucide-react'
+import { Clock, Users, Tag, Info, Shirt, Video, User, ChevronRight, ShoppingCart, ExternalLink } from 'lucide-react'
 import { IEvent } from '@/types/entities/event'
 
 const fadeUp = (delay = 0) => ({
@@ -23,7 +23,7 @@ const fade = (delay = 0) => ({
   transition: { duration: 0.4, delay, easing: 'easeOut' }
 })
 
-const EventClient: FC<{ data: IEvent }> = ({ data }) => {
+export const PublicEventDetailsClient: FC<{ data: IEvent }> = ({ data }) => {
   const spotsRemaining = data?.capacity - data?.attendeeCount
   const percentageFilled = (data?.attendeeCount / data?.capacity) * 100
   const colorClass =
@@ -39,7 +39,7 @@ const EventClient: FC<{ data: IEvent }> = ({ data }) => {
       <motion.nav
         {...fade(0)}
         aria-label="Breadcrumb"
-        className="bg-white dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-800"
+        className="sticky top-0 z-10 bg-white dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-800"
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <ol className="flex items-center gap-2 text-sm min-w-0" role="list">
@@ -189,6 +189,12 @@ const EventClient: FC<{ data: IEvent }> = ({ data }) => {
                 Event Details
               </h2>
 
+              {data?.description && (
+                <p className="dark:text-neutral-400 text-neutral-600 text-sm sm:text-base leading-relaxed mb-6 sm:mb-8">
+                  {data.description}
+                </p>
+              )}
+
               <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-4 sm:gap-6">
                 {/* Type */}
                 <div className="dark:bg-neutral-700/30 dark:border-neutral-600/30 bg-neutral-50 border-neutral-200 flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border">
@@ -301,36 +307,30 @@ const EventClient: FC<{ data: IEvent }> = ({ data }) => {
                   />
                   Quick Links
                 </h3>
-                <div className="space-y-3">
-                  {data?.registrationUrl && (
-                    <a
-                      href={data?.registrationUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 sm:p-4 bg-linear-to-br from-sky-500 to-sky-600 hover:opacity-90 rounded-xl font-semibold text-white transition-all shadow-lg group focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-sky-600 text-sm sm:text-base"
-                      aria-label="External Registration — opens in new tab"
-                    >
-                      <Globe
-                        className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 group-hover:scale-110 transition-transform"
-                        aria-hidden="true"
-                      />
-                      External Registration
-                      <span className="sr-only">(opens in new tab)</span>
-                    </a>
-                  )}
+                <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-3">
                   {data?.meetingUrl && (
                     <a
-                      href={data?.meetingUrl}
+                      href={data.meetingUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 sm:p-4 bg-linear-to-br from-sky-500 to-sky-600 hover:opacity-90 rounded-xl font-semibold text-white transition-all shadow-lg group focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-sky-600 text-sm sm:text-base"
                       aria-label="Virtual Meeting Link — opens in new tab"
+                      className="group flex items-center justify-between gap-3 p-4 sm:p-5 border dark:border-neutral-700/50 border-neutral-200 dark:bg-neutral-700/20 bg-neutral-50 rounded-xl hover:border-sky-500/50 dark:hover:border-sky-500/50 hover:bg-sky-500/5 dark:hover:bg-sky-500/10 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                     >
-                      <Video
-                        className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 group-hover:scale-110 transition-transform"
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="bg-sky-500/10 dark:bg-sky-500/20 p-2 rounded-lg shrink-0">
+                          <Video className="w-4 h-4 sm:w-5 sm:h-5 text-sky-500 dark:text-sky-400" aria-hidden="true" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold dark:text-white text-neutral-900 text-sm sm:text-base truncate">
+                            Virtual Meeting
+                          </p>
+                          <p className="text-xs dark:text-neutral-500 text-neutral-400 truncate">{data.meetingUrl}</p>
+                        </div>
+                      </div>
+                      <ExternalLink
+                        className="w-4 h-4 shrink-0 dark:text-neutral-500 text-neutral-400 group-hover:text-sky-500 dark:group-hover:text-sky-400 transition-colors"
                         aria-hidden="true"
                       />
-                      Virtual Meeting Link
                       <span className="sr-only">(opens in new tab)</span>
                     </a>
                   )}
@@ -375,7 +375,7 @@ const EventClient: FC<{ data: IEvent }> = ({ data }) => {
               ) : (
                 <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-4 sm:gap-6">
                   {data?.tickets.map((ticket) => (
-                    <TicketCard key={ticket.id} ticket={{ ...ticket, eventId: data?.id, title: data?.title }} />
+                    <TicketCard key={ticket.id} ticket={{ ...ticket, eventId: data?.id, eventTitle: data?.title }} />
                   ))}
                 </div>
               )}
@@ -485,5 +485,3 @@ const EventClient: FC<{ data: IEvent }> = ({ data }) => {
     </div>
   )
 }
-
-export default EventClient

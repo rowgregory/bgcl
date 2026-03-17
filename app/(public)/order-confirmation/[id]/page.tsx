@@ -1,6 +1,8 @@
 'use client'
 
 import Picture from '@/app/components/common/Picture'
+import { clearCart } from '@/app/lib/store/slices/cartSlice'
+import { store } from '@/app/lib/store/store'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Calendar, ArrowLeft, Download, User, LogIn } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -20,6 +22,7 @@ export default function OrderConfirmationPage({ order }) {
 
   useEffect(() => {
     window.scrollTo(0, 0)
+    store.dispatch(clearCart())
   }, [])
 
   return (
@@ -253,9 +256,7 @@ export default function OrderConfirmationPage({ order }) {
                 {order?.feesCovered && order.feesCovered > 0 && (
                   <div>
                     <p className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-1">Amount Covered</p>
-                    <p className="text-neutral-900 dark:text-white font-bold">
-                      ${(order.feesCovered / 100).toFixed(2)}
-                    </p>
+                    <p className="text-neutral-900 dark:text-white font-bold">${order.feesCovered.toFixed(2)}</p>
                   </div>
                 )}
               </div>
@@ -340,7 +341,7 @@ export default function OrderConfirmationPage({ order }) {
                 Event
               </h3>
               <div className="space-y-2">
-                <p className="font-semibold text-neutral-900 dark:text-white">{order.event.name}</p>
+                <p className="font-semibold text-neutral-900 dark:text-white">{order?.event?.title}</p>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
                   {new Date(order.event.date).toLocaleDateString('en-US', {
                     weekday: 'long',
@@ -348,7 +349,12 @@ export default function OrderConfirmationPage({ order }) {
                     day: 'numeric',
                     year: 'numeric'
                   })}{' '}
-                  at {order.event.time}
+                  at{' '}
+                  {new Date(order.event.date).toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                  })}
                 </p>
               </div>
             </motion.div>
@@ -416,8 +422,10 @@ export default function OrderConfirmationPage({ order }) {
                   className="p-4 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg"
                 >
                   <p className="text-neutral-900 dark:text-white font-bold mb-2">{item.ticketName}</p>
-                  <div className="flex justify-between items-center text-sm">
-                    <p className="text-neutral-600 dark:text-neutral-400">Qty: {item.quantity}</p>
+                  <div className="flex justify-between items-center text-sm mb-1">
+                    <p className="text-neutral-600 dark:text-neutral-400">
+                      {item.quantity} × ${item.pricePerUnit.toFixed(2)}
+                    </p>
                     <p className="text-neutral-900 dark:text-white font-bold">${item.totalPrice.toFixed(2)}</p>
                   </div>
                 </div>

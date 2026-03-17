@@ -32,7 +32,16 @@ export const getOrder = async (id: string) => {
 
     if (!order) return null
 
-    return order
+    return {
+      ...order,
+      totalAmount: Number(order.totalAmount),
+      feesCovered: Number(order.feesCovered),
+      orderItems: order.orderItems.map((item) => ({
+        ...item,
+        pricePerUnit: item.pricePerUnit ? Number(item.pricePerUnit) : null,
+        totalPrice: item.totalPrice ? Number(item.totalPrice) : null
+      }))
+    }
   } catch (error) {
     await createLog('error', 'Failed to fetch order', {
       error: error instanceof Error ? error.message : 'Unknown error'

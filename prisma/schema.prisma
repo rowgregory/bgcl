@@ -216,7 +216,7 @@ model Order {
   // Financials
   totalAmount Float
   coverFees   Boolean @default(false)
-  feesCovered Int     @default(0)
+  feesCovered Decimal @default(0) @db.Decimal(10, 2)
 
   // Payment processing
   paymentMethod   String?

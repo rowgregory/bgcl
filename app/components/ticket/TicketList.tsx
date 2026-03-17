@@ -5,11 +5,10 @@ import { Inputs } from '@/app/lib/store/slices/formSlice'
 
 export interface TicketListProps {
   onSelectTicket: (ticket: Ticket & { isUpdating: boolean }) => void
-  tickets: Ticket[]
   inputs: Inputs
 }
 
-export const TicketList: FC<TicketListProps> = ({ tickets, onSelectTicket, inputs }) => {
+export const TicketList: FC<TicketListProps> = ({ onSelectTicket, inputs }) => {
   return (
     <div className="max-w-80 w-full bg-white dark:bg-neutral-800 border-r border-neutral-200 dark:border-neutral-700 overflow-y-auto">
       <div className="p-6">
@@ -17,7 +16,7 @@ export const TicketList: FC<TicketListProps> = ({ tickets, onSelectTicket, input
         <p className="text-neutral-500 dark:text-neutral-400 text-xs mb-6">Create tickets for your event</p>
 
         <div className="space-y-3">
-          {tickets.map((ticket) => {
+          {inputs.tickets.map((ticket) => {
             const isSelected = inputs?.id === ticket.id
 
             return (
@@ -45,10 +44,28 @@ export const TicketList: FC<TicketListProps> = ({ tickets, onSelectTicket, input
                       {ticket.name}
                     </h4>
                     <p
-                      className={`text-xs line-clamp-2 ${isSelected ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-500 dark:text-neutral-500'}`}
+                      className={`text-xs line-clamp-2 mb-2 ${isSelected ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-500 dark:text-neutral-500'}`}
                     >
                       {ticket.description}
                     </p>
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`text-xs font-semibold tabular-nums ${isSelected ? 'text-sky-600 dark:text-sky-400' : 'text-neutral-500 dark:text-neutral-400'}`}
+                      >
+                        {ticket.quantitySold} / {ticket.totalQuantity} sold
+                      </span>
+                      {ticket.totalQuantity - ticket.quantitySold <= 5 &&
+                        ticket.totalQuantity - ticket.quantitySold > 0 && (
+                          <span className="text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
+                            Only {ticket.totalQuantity - ticket.quantitySold} left
+                          </span>
+                        )}
+                      {ticket.totalQuantity - ticket.quantitySold === 0 && (
+                        <span className="text-[10px] font-semibold uppercase tracking-wide text-red-500 dark:text-red-400">
+                          Sold out
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </motion.button>

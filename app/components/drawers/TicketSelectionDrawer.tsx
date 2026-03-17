@@ -7,8 +7,7 @@ import { Minus, Plus, X } from 'lucide-react'
 import { useState } from 'react'
 import Backdrop from '../common/Backdrop'
 import Drawer from '../common/Drawer'
-import { addToCart } from '@/app/lib/store/slices/cartSlice'
-import { showToast } from '@/app/lib/store/slices/toastSlice'
+import { addToCart, setOpenAddToCartToast } from '@/app/lib/store/slices/cartSlice'
 
 export function TicketSelectionDrawer() {
   const [quantity, setQuantity] = useState(1)
@@ -21,16 +20,9 @@ export function TicketSelectionDrawer() {
   const onClose = () => store.dispatch(setCloseTicketSelectionDrawer())
 
   const handleAddToCart = () => {
-    store.dispatch(addToCart({ ticket, quantity, eventId: ticket.eventId, eventTitle: ticket.event.title }))
+    store.dispatch(addToCart({ ticket, quantity }))
     onClose()
-
-    store.dispatch(
-      showToast({
-        type: 'success',
-        message: 'Added to Cart',
-        description: `${quantity}x ${ticket.name} added to your cart`
-      })
-    )
+    store.dispatch(setOpenAddToCartToast({ ticket, quantity }))
   }
 
   return (

@@ -143,7 +143,11 @@ const SupporterTicketsClient = ({ data }) => {
                       Total Spent
                     </p>
                     <p className="text-2xl font-black dark:text-white text-neutral-900 tabular-nums">
-                      ${totalSpent.toFixed(2)}
+                      $
+                      {totalSpent?.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })}
                     </p>
                   </div>
                 </div>
@@ -226,7 +230,11 @@ const SupporterTicketsClient = ({ data }) => {
                         {group.totalTickets} ticket{group.totalTickets !== 1 ? 's' : ''}
                       </span>
                       <span className="text-xs font-semibold dark:text-neutral-400 text-neutral-600 dark:bg-neutral-800 bg-neutral-100 px-3 py-1.5 rounded-lg tabular-nums">
-                        ${group.totalSpent.toFixed(2)}
+                        $
+                        {group.totalSpent?.toLocaleString('en-US', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        })}
                       </span>
                     </div>
                   </div>
@@ -253,7 +261,11 @@ const SupporterTicketsClient = ({ data }) => {
                               </div>
                               <div>
                                 <p className="dark:text-white text-neutral-900 font-bold text-sm tabular-nums">
-                                  ${order.totalAmount.toFixed(2)}
+                                  $
+                                  {order.totalAmount?.toLocaleString('en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                  })}
                                 </p>
                                 <p className="text-xs dark:text-neutral-600 text-neutral-500">
                                   Order placed{' '}
@@ -307,10 +319,18 @@ const SupporterTicketsClient = ({ data }) => {
                                     className="text-xs dark:text-neutral-500 text-neutral-500"
                                     aria-label={`${item.quantity} ticket${item.quantity !== 1 ? 's' : ''} at $${item.pricePerUnit.toFixed(2)} each`}
                                   >
-                                    x{item.quantity} @ ${item.pricePerUnit.toFixed(2)}
+                                    x{item.quantity} @ $
+                                    {item.pricePerUnit?.toLocaleString('en-US', {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2
+                                    })}
                                   </span>
                                   <span className="text-sm font-bold dark:text-white text-neutral-900 tabular-nums min-w-15 text-right">
-                                    ${item.totalPrice.toFixed(2)}
+                                    $
+                                    {item.totalPrice?.toLocaleString('en-US', {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2
+                                    })}
                                   </span>
                                 </div>
                               </li>

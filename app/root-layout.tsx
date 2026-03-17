@@ -18,6 +18,7 @@ import { ThemeProvider } from './lib/providers/theme'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import WelcomeAnimation from './components/WelcomeAnimation'
+import AddToCartToast from './components/unique/AddToCartToast'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -38,6 +39,7 @@ export default function RootLayoutWrapper({ children, programs, pageContent, don
             <RegistrationModal modal={pageContent?.sections?.modal} />
             <MobileNavigationDrawer />
             <WelcomeAnimation />
+            <AddToCartToast />
             {show && <Header />}
             {children}
             {show && <Footer />}

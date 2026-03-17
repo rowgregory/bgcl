@@ -14,7 +14,7 @@ export const initialEventFormState = {
   maxAttendees: null,
   status: 'UPCOMING',
   featured: false,
-  host: '',
+  host: 'Boys & Girls Club of Lynn',
   requirements: '',
   materials: '',
   registrationUrl: '',

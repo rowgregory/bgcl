@@ -128,7 +128,6 @@ export const CapsuleTransactionsClient = ({ data }: { data: IOrder[] }) => {
 
   const totalRevenue = filtered.reduce((sum, o) => sum + o.totalAmount, 0)
   const totalTickets = filtered.reduce((sum, o) => sum + (o.orderItems?.reduce((s, i) => s + i.quantity, 0) ?? 0), 0)
-  const confirmedCount = filtered.filter((o) => o.status === 'CONFIRMED').length
 
   return (
     <div className="h-screen bg-white dark:bg-neutral-950 flex flex-col min-w-0">
@@ -142,8 +141,6 @@ export const CapsuleTransactionsClient = ({ data }: { data: IOrder[] }) => {
               <StatChip label="Revenue" value={formatCurrency(totalRevenue)} color="emerald" />
               <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700" aria-hidden="true" />
               <StatChip label="Tickets" value={totalTickets.toString()} color="sky" />
-              <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700" aria-hidden="true" />
-              <StatChip label="Confirmed" value={confirmedCount.toString()} color="indigo" />
             </div>
           </div>
 
@@ -193,7 +190,7 @@ export const CapsuleTransactionsClient = ({ data }: { data: IOrder[] }) => {
               <input
                 type="search"
                 aria-label="Search ticket orders by name, email, or ID"
-                placeholder="Search by name, email, ID..."
+                placeholder="Search by name, email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-3 py-1.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"

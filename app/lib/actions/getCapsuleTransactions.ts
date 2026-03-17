@@ -24,7 +24,16 @@ export async function getCapsuleTransactions() {
       }
     })
 
-    return orders
+    return orders.map((order) => ({
+      ...order,
+      totalAmount: Number(order.totalAmount),
+      feesCovered: Number(order.feesCovered),
+      orderItems: order.orderItems.map((item) => ({
+        ...item,
+        pricePerUnit: item.pricePerUnit ? Number(item.pricePerUnit) : null,
+        totalPrice: item.totalPrice ? Number(item.totalPrice) : null
+      }))
+    }))
   } catch (error) {
     await createLog('error', 'Error fetching capsule transactions', {
       error: error instanceof Error ? error.message : 'Unknown error'

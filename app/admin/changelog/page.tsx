@@ -21,6 +21,180 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.12.0',
+    date: '2026-03-17',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Ticket Purchase Checkout',
+        description:
+          'Built full checkout flow for ticket purchases — contact, billing, address fields, Stripe CardElement, saved card selection, cover fees toggle, save card toggle, and Pusher listener for order confirmation.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Saved Cards at Checkout',
+        description:
+          'Logged-in users with saved payment methods see their cards at checkout with a Use a Different Card option. Saved card purchases are confirmed server-side, new cards confirmed client-side.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Order Confirmation Page',
+        description:
+          'Built OrderConfirmationPage and OrderConfirmationClient showing receipt with ticket line items, subtotal, processing fees, total, confirmation email note, and Back to Home / Donate Again actions.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Ticket Purchase Webhook Handler',
+        description:
+          'Added TICKET_PURCHASE handling in payment_intent.succeeded webhook — creates Order, creates OrderItems, increments quantitySold, updates ticket availability, and adds user to event attendees with duplicate guard.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Add to Cart Toast',
+        description:
+          'Built AddToCartToast component powered by Redux — shows ticket name, event title, price, quantity, animated progress bar auto-dismiss, View Cart with live count badge, and Checkout shortcut.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Supporter Dashboard Ticket Orders',
+        description:
+          'Built ticket orders section in supporter dashboard grouping purchases by event server-side using deep copy reduce to prevent mutation of ticketOrders array.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Upcoming Events Section',
+        description:
+          'Added upcoming events section to supporter dashboard showing grouped ticket purchases per event with ticket types and quantities, filtered to future events only.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'getSupporterDashboard Server Action',
+        description:
+          'Built getSupporterDashboard returning donation orders, ticket orders, upcoming events, stats array, recent donations, monthly/yearly amounts, total spend, and join year.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Event Performance Dashboard Cards',
+        description:
+          'Added event performance card grid to events dashboard showing revenue, tickets sold vs capacity, attendee count, orders, animated capacity bar, and percentage of total revenue per event.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Ticket Type Breakdown Pie Chart',
+        description:
+          'Added donut pie chart to events dashboard showing ticket type breakdown by quantity sold and revenue, with inline breakdown list replacing labels to prevent clipping on resize.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Ticket Sales Scatter Chart',
+        description:
+          'Added scatter chart to events dashboard plotting tickets sold vs revenue per event, with bubble size scaled by revenue and custom tooltip showing event name, tickets, attendees, and revenue.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Checkout Page Redesign',
+        description:
+          'Redesigned checkout from split-screen to single-column header with two-column content matching the BGCL donate page aesthetic — order summary on left, payment form on right.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Checkout Form Reorganized',
+        description:
+          'Merged Contact and Billing into one fieldset, moved cover fees toggle inside Payment fieldset above submit, removed country field hardcoded to US, updated state input to STATES select dropdown.',
+        impact: 'low'
+      },
+      {
+        type: 'improvement',
+        title: 'Unique Attendee Count',
+        description:
+          'Fixed attendeeCount incrementing on every ticket purchase — now checks if user is already an attendee before incrementing, and totalAttendees stat uses unique email count.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Decimal Serialization Across BGCL Actions',
+        description:
+          'Fixed Decimal objects not serializable for client components across getCapsuleOverview, getCapsuleTransactions, getSupporterDashboard, getOrder, getDonations, and getMyDonations.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'createPaymentIntentForCheckout Refactored',
+        description:
+          'Extracted getOrCreateStripeCustomer and validateSavedCard into standalone utilities, reducing createPaymentIntentForCheckout to metadata assembly and intent creation only.',
+        impact: 'low'
+      },
+      {
+        type: 'improvement',
+        title: 'Cover Fees Calculation Fixed',
+        description:
+          'Switched from simple 2.9% + $0.30 formula to reverse formula (amount + 0.30) / (1 - 0.022) - amount ensuring the org nets the full donation amount after Stripe takes their cut.',
+        impact: 'medium'
+      },
+      {
+        type: 'fix',
+        title: 'Event Date/Time Timezone Fix',
+        description:
+          'Fixed date input using toISOString() which treated local time as UTC, shifting dates by timezone offset. Replaced with local time component extraction in formatDateForInput and formatTimeForInput.',
+        impact: 'high'
+      },
+      {
+        type: 'fix',
+        title: 'Ticket Order Grouping Mutation Bug',
+        description:
+          'Fixed upcomingEvents reduce mutating original ticketOrders array via shallow copy — switched to deep copy using map with object spread so ticket order quantities display correctly.',
+        impact: 'high'
+      },
+      {
+        type: 'fix',
+        title: 'Duplicate Attendee Grouping',
+        description:
+          'Fixed attendee list showing the same user multiple times — grouped by email in both the attendee tab reduce and the upcoming events useMemo.',
+        impact: 'medium'
+      },
+      {
+        type: 'fix',
+        title: 'feesCovered Decimal Truncation',
+        description:
+          'Fixed feesCovered saving as integer (e.g. 2 instead of 2.56) — changed Order model feesCovered from Int to Decimal and updated webhook to use parseFloat instead of parseInt.',
+        impact: 'medium'
+      },
+      {
+        type: 'ui',
+        title: 'Ticket Availability Card Redesign',
+        description:
+          'Updated unavailable ticket styling — removed opacity-60, added subtle background treatment, moved status badge inline with title, and added tickets sold count display.',
+        impact: 'low'
+      },
+      {
+        type: 'ui',
+        title: 'Event Status Badge in Drag List',
+        description:
+          'Replaced plain text event status with color-coded badge — UPCOMING sky, ONGOING green, COMPLETED neutral, CANCELLED red, POSTPONED amber, ARCHIVED purple.',
+        impact: 'low'
+      },
+      {
+        type: 'ui',
+        title: 'Session Indicator at Checkout',
+        description:
+          'Added signed-in user display at checkout header showing avatar icon and email, with Not you? sign out button with loading spinner.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.11.0',
     date: '2026-03-11',
     changes: [

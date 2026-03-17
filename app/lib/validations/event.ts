@@ -8,7 +8,6 @@ const validateEventForm = (
     category?: any
     type?: any
     date?: any
-    time?: any
     duration?: any
     location?: any
     maxAttendees?: any
@@ -35,10 +34,6 @@ const validateEventForm = (
 
   if (!inputs?.date) {
     newErrors.date = 'Please enter valid date'
-  }
-
-  if (!inputs?.time || typeof inputs.time !== 'string' || !inputs.time.trim()) {
-    newErrors.time = 'Please enter valid time'
   }
 
   if (!inputs?.duration || typeof inputs.duration !== 'string' || !inputs.duration.trim()) {

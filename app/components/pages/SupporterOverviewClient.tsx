@@ -341,72 +341,69 @@ const SupporterOverviewClient = ({ data }) => {
                   </div>
                 ) : (
                   <ul role="list" className="space-y-3 list-none p-0 m-0">
-                    {data.upcomingEvents.map((order) => {
-                      const event = order.event ?? order.orderItems[0]?.ticket?.event
-                      return (
-                        <li key={order.id}>
-                          <motion.div
-                            className="dark:bg-neutral-900/30 dark:border-neutral-800 dark:hover:border-neutral-700 bg-neutral-50 border-neutral-200 hover:border-neutral-300 backdrop-blur-sm border rounded-lg p-4 transition-all duration-300"
-                            variants={itemVariants}
-                            whileHover={{ y: -2 }}
-                          >
-                            {/* Event info */}
-                            <div className="flex items-start gap-3 mb-3">
-                              <div
-                                className="shrink-0 w-8 h-8 rounded-lg dark:bg-neutral-800 bg-neutral-200 flex items-center justify-center"
-                                aria-hidden="true"
-                              >
-                                <Calendar className="w-4 h-4 text-sky-400" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="dark:text-white text-neutral-900 font-semibold text-sm truncate">
-                                  {event?.title || 'Event'}
-                                </p>
-                                {event?.date ? (
-                                  <time
-                                    dateTime={new Date(event.date).toISOString()}
-                                    className="text-xs dark:text-neutral-500 text-neutral-500 mt-0.5 block"
-                                  >
-                                    {new Date(event.date).toLocaleDateString('en-US', {
-                                      weekday: 'short',
-                                      month: 'short',
-                                      day: 'numeric',
-                                      year: 'numeric'
-                                    })}
-                                  </time>
-                                ) : (
-                                  <p className="text-xs dark:text-neutral-500 text-neutral-500 mt-0.5">Date TBA</p>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Tickets */}
-                            <ul
-                              role="list"
-                              aria-label={`Tickets for ${event?.name || 'this event'}`}
-                              className="space-y-1.5 list-none p-0 m-0 border-t dark:border-neutral-800 border-neutral-200 pt-3"
+                    {data?.upcomingEvents?.map((group) => (
+                      <li key={group.eventId}>
+                        <motion.div
+                          className="dark:bg-neutral-900/30 dark:border-neutral-800 dark:hover:border-neutral-700 bg-neutral-50 border-neutral-200 hover:border-neutral-300 backdrop-blur-sm border rounded-lg p-4 transition-all duration-300"
+                          variants={itemVariants}
+                          whileHover={{ y: -2 }}
+                        >
+                          {/* Event info */}
+                          <div className="flex items-start gap-3 mb-3">
+                            <div
+                              className="shrink-0 w-8 h-8 rounded-lg dark:bg-neutral-800 bg-neutral-200 flex items-center justify-center"
+                              aria-hidden="true"
                             >
-                              {order.orderItems.map((item) => (
-                                <li key={item.id} className="flex items-center justify-between">
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-sky-400" aria-hidden="true" />
-                                    <p className="text-xs dark:text-neutral-400 text-neutral-600 truncate">
-                                      {item.ticketName}
-                                    </p>
-                                  </div>
-                                  <span
-                                    className="text-xs dark:text-neutral-500 text-neutral-500 shrink-0 ml-2"
-                                    aria-label={`${item.quantity} ticket${item.quantity !== 1 ? 's' : ''}`}
-                                  >
-                                    x{item.quantity}
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          </motion.div>
-                        </li>
-                      )
-                    })}
+                              <Calendar className="w-4 h-4 text-sky-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="dark:text-white text-neutral-900 font-semibold text-sm truncate">
+                                {group.event?.title || 'Event'}
+                              </p>
+                              {group.event?.date ? (
+                                <time
+                                  dateTime={new Date(group.event.date).toISOString()}
+                                  className="text-xs dark:text-neutral-500 text-neutral-500 mt-0.5 block"
+                                >
+                                  {new Date(group.event.date).toLocaleDateString('en-US', {
+                                    weekday: 'short',
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric'
+                                  })}
+                                </time>
+                              ) : (
+                                <p className="text-xs dark:text-neutral-500 text-neutral-500 mt-0.5">Date TBA</p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Tickets */}
+                          <ul
+                            role="list"
+                            aria-label={`Tickets for ${group.event?.title || 'this event'}`}
+                            className="space-y-1.5 list-none p-0 m-0 border-t dark:border-neutral-800 border-neutral-200 pt-3"
+                          >
+                            {group.orderItems.map((item) => (
+                              <li key={item.id} className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-sky-400" aria-hidden="true" />
+                                  <p className="text-xs dark:text-neutral-400 text-neutral-600 truncate">
+                                    {item.ticketName}
+                                  </p>
+                                </div>
+                                <span
+                                  className="text-xs dark:text-neutral-500 text-neutral-500 shrink-0 ml-2"
+                                  aria-label={`${item.quantity} ticket${item.quantity !== 1 ? 's' : ''}`}
+                                >
+                                  x{item.quantity}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </motion.div>
+                      </li>
+                    ))}
                   </ul>
                 )}
               </motion.div>

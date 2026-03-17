@@ -25,6 +25,8 @@ const validateTicketForm = (inputs: Partial<Ticket> | null, setErrors: (newError
     newErrors.totalQuantity = 'Quantity must be a whole number'
   } else if (Number(inputs.totalQuantity) <= 0) {
     newErrors.totalQuantity = 'Quantity must be greater than 0'
+  } else if (inputs?.totalQuantity < inputs?.quantitySold) {
+    newErrors.totalQuantity = `Total quantity cannot be less than ${inputs.quantitySold} tickets already sold`
   }
 
   // Sort order validation

@@ -185,16 +185,27 @@ export const CapsuleManifestClient = ({ data }: { data: IOrder[] }) => {
         map.set(eventId, { eventId, eventName, eventDate, attendees: [] })
       }
 
-      map.get(eventId)!.attendees.push({
-        orderId: order.id,
-        name: order.customerName,
-        email: order.customerEmail,
-        purchasedAt: order.createdAt,
-        totalTickets
-      })
+      const group = map.get(eventId)!
+      const existing = group.attendees.find((a) => a.email === order.customerEmail)
+
+      if (existing) {
+        // Same person bought more tickets — merge
+        existing.totalTickets += totalTickets
+        // Keep the earliest purchase date
+        if (new Date(order.createdAt) < new Date(existing.purchasedAt)) {
+          existing.purchasedAt = order.createdAt
+        }
+      } else {
+        group.attendees.push({
+          orderId: order.id,
+          name: order.customerName,
+          email: order.customerEmail,
+          purchasedAt: order.createdAt,
+          totalTickets
+        })
+      }
     })
 
-    // Sort groups by event date descending, attendees by purchase date descending
     return Array.from(map.values())
       .sort((a, b) => {
         if (!a.eventDate) return 1

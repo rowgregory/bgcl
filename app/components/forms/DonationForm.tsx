@@ -22,6 +22,7 @@ import SavedCardsSelection from '../donate-form/SavedCardsSelection'
 import ContactInformation from '../donate-form/ContactInformation'
 import SubmitButton from '../donate-form/SubmitButton'
 import { useApplicationSelector } from '@/app/lib/store/store'
+import { calculateStripeFees } from '@/app/lib/utils/calculateStripeFees'
 
 function DonationForm({ campaignName, campaigns }) {
   const stripe = useStripe()
@@ -76,15 +77,6 @@ function DonationForm({ campaignName, campaigns }) {
     }
   }, [session?.status])
 
-  // Calculate fees so you receive the exact donation amount
-  const calculateFees = (donationAmount: number) => {
-    const amount = parseFloat(donationAmount.toString()) || 0
-    // Formula: (amount + 0.30) / (1 - 0.022) - amount
-    // This ensures after Stripe takes fees, you get the original amount
-    const totalNeeded = (amount + 0.3) / (1 - 0.022)
-    return totalNeeded - amount
-  }
-
   const getAmount = () => {
     // If a preset plan is selected, get its amount
     if (selectedPlan && !selectedPlan.includes('custom')) {
@@ -100,7 +92,7 @@ function DonationForm({ campaignName, campaigns }) {
 
   // Get total amount including fees if opted in
   const getTotalAmount = () => {
-    return coverFees ? baseAmount + calculateFees(baseAmount) : baseAmount
+    return coverFees ? baseAmount + calculateStripeFees(baseAmount) : baseAmount
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -121,7 +113,7 @@ function DonationForm({ campaignName, campaigns }) {
 
     try {
       const finalAmount = Math.round((coverFees ? getTotalAmount() : baseAmount) * 100)
-      const feesCovered = coverFees ? Math.round(calculateFees(baseAmount) * 100) : 0
+      const feesCovered = coverFees ? calculateStripeFees(baseAmount) : 0
 
       if (donationType === 'once') {
         // One-time donation flow
@@ -367,7 +359,7 @@ function DonationForm({ campaignName, campaigns }) {
         checked={coverFees}
         onChange={setCoverFees}
         label="Cover processing fees"
-        description={`Add $${calculateFees(baseAmount).toFixed(2)} so 100% of your donation goes to the club`}
+        description={`Add $${calculateStripeFees(baseAmount).toFixed(2)} so 100% of your donation goes to the club`}
       />
 
       {donationType === 'once' && session?.status === 'unauthenticated' && (
@@ -453,7 +445,7 @@ function DonationForm({ campaignName, campaigns }) {
       {/* Submit Button */}
       <SubmitButton
         baseAmount={baseAmount}
-        calculateFees={calculateFees}
+        calculateFees={calculateStripeFees}
         coverFees={coverFees}
         donationType={donationType}
         email={email}

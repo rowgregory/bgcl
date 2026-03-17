@@ -140,12 +140,13 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         },
         notes: metadata.notes || null,
         coverFees: metadata.coverFees === 'true',
-        feesCovered: parseInt(metadata.feesCovered) || 0,
+        feesCovered: parseFloat(metadata?.feesCovered || '0'),
         isRecurring: metadata.donationType === 'monthly' || metadata.donationType === 'yearly',
         recurringFrequency:
           metadata.donationType === 'monthly' ? 'monthly' : metadata.donationType === 'yearly' ? 'yearly' : null,
         campaignId: metadata.campaignId || null,
-        paymentMethodId: (paymentIntent.payment_method as string) || null
+        paymentMethodId: (paymentIntent.payment_method as string) || null,
+        eventId: metadata.eventId || null
       }
     })
 
@@ -169,24 +170,26 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
           }
         })
 
-        const updatedTicket = await prisma.ticket.update({
-          where: { id: ticket.ticketId },
-          data: { quantitySold: { increment: ticket.quantity } }
-        })
-
         await prisma.ticket.update({
           where: { id: ticket.ticketId },
-          data: { isAvailable: updatedTicket.quantitySold < updatedTicket.totalQuantity }
+          data: { quantitySold: { increment: ticket.quantity } }
         })
       }
 
       // Add user to event attendees
       if (metadata?.eventId && order.userId) {
+        const event = await prisma.event.findUnique({
+          where: { id: metadata.eventId as string },
+          select: { attendees: { where: { id: order.userId }, select: { id: true } } }
+        })
+
+        const alreadyAttending = event?.attendees.length > 0
+
         await prisma.event.update({
           where: { id: metadata.eventId as string },
           data: {
             attendees: { connect: { id: order.userId } },
-            attendeeCount: { increment: 1 }
+            ...(!alreadyAttending && { attendeeCount: { increment: 1 } })
           }
         })
       }
@@ -508,7 +511,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     const frequency = subscription.metadata?.frequency || 'monthly'
     const amount = invoice.amount_paid / 100
     const coverFees = subscription.metadata?.coverFees === 'true'
-    const feesCovered = parseInt(subscription.metadata?.feesCovered || '0')
+    const feesCovered = parseFloat(subscription.metadata?.feesCovered || '0')
 
     const order = await prisma.order.create({
       data: {

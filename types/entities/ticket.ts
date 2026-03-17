@@ -40,5 +40,6 @@ export interface ITicket {
   // Relations
   eventId: string
   event?: IEvent
+  eventTitle?: string
   orderItems?: IOrderItem[]
 }

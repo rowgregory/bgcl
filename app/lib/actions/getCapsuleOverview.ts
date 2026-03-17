@@ -25,7 +25,10 @@ export async function getCapsuleOverview() {
 
     const totalRevenue = ticketOrders.reduce((sum, o) => sum + o.totalAmount, 0)
     const totalTicketsSold = ticketOrders.reduce((sum, o) => sum + o.orderItems.reduce((s, i) => s + i.quantity, 0), 0)
-    const totalAttendees = events.reduce((sum, e) => sum + e.attendeeCount, 0)
+    const totalAttendees = events.reduce((sum, e) => {
+      const uniqueEmails = new Set(e.orders.map((o) => o.customerEmail))
+      return sum + uniqueEmails.size
+    }, 0)
     const upcomingEvents = events.filter((e) => e.status === 'UPCOMING' && new Date(e.date) > now)
     const pastEvents = events.filter((e) => e.status === 'COMPLETED' || new Date(e.date) < now)
     const totalEvents = events.length
@@ -34,16 +37,57 @@ export async function getCapsuleOverview() {
 
     return {
       stats: {
-        totalRevenue,
+        totalRevenue: Number(totalRevenue),
         totalTicketsSold,
         totalAttendees,
         totalEvents,
         upcomingCount: upcomingEvents.length,
         pastCount: pastEvents.length
       },
-      upcomingEvents: upcomingEvents.slice(0, 5),
-      recentOrders,
-      allEvents: events
+      upcomingEvents: upcomingEvents.slice(0, 5).map((e) => ({
+        ...e,
+        tickets: e.tickets.map((t) => ({
+          ...t,
+          price: Number(t.price)
+        })),
+        orders: e.orders.map((o) => ({
+          ...o,
+          totalAmount: Number(o.totalAmount),
+          feesCovered: Number(o.feesCovered),
+          orderItems: o.orderItems.map((i) => ({
+            ...i,
+            pricePerUnit: i.pricePerUnit ? Number(i.pricePerUnit) : null,
+            totalPrice: i.totalPrice ? Number(i.totalPrice) : null
+          }))
+        }))
+      })),
+      recentOrders: recentOrders.map((o) => ({
+        ...o,
+        totalAmount: Number(o.totalAmount),
+        feesCovered: Number(o.feesCovered),
+        orderItems: o.orderItems.map((i) => ({
+          ...i,
+          pricePerUnit: i.pricePerUnit ? Number(i.pricePerUnit) : null,
+          totalPrice: i.totalPrice ? Number(i.totalPrice) : null
+        }))
+      })),
+      events: events.map((e) => ({
+        ...e,
+        tickets: e.tickets.map((t) => ({
+          ...t,
+          price: Number(t.price)
+        })),
+        orders: e.orders.map((o) => ({
+          ...o,
+          totalAmount: Number(o.totalAmount),
+          feesCovered: Number(o.feesCovered),
+          orderItems: o.orderItems.map((i) => ({
+            ...i,
+            pricePerUnit: i.pricePerUnit ? Number(i.pricePerUnit) : null,
+            totalPrice: i.totalPrice ? Number(i.totalPrice) : null
+          }))
+        }))
+      }))
     }
   } catch (error) {
     await createLog('error', 'Error fetching capsule overview data', {

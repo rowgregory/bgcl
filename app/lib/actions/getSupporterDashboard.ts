@@ -60,17 +60,63 @@ export async function getSupporterDashboard() {
     const ticketOrders = orders.filter((o) => o.type === 'TICKET_PURCHASE' && o.status === 'CONFIRMED')
     const totalTicketSpend = ticketOrders.reduce((sum, o) => sum + o.totalAmount, 0)
     const totalTicketCount = ticketOrders.reduce((sum, o) => sum + o.orderItems.reduce((s, i) => s + i.quantity, 0), 0)
-
-    const upcomingEvents = ticketOrders
-      .sort((a, b) => new Date(a.event!.date).getTime() - new Date(b.event!.date).getTime())
-      .slice(0, 3)
-
-    const totalTickets = ticketOrders.reduce(
-      (sum, o) => sum + o.orderItems.reduce((itemSum, item) => itemSum + item.quantity, 0),
-      0
-    )
+    const totalTickets = totalTicketCount
 
     const recentDonations = donationOrders.slice(0, 3)
+
+    // Build upcomingEvents from a deep copy so ticketOrders is never mutated
+    const upcomingEvents = ticketOrders
+      .filter((o) => {
+        const event = o.event ?? o.orderItems[0]?.ticket?.event
+        return event?.date && new Date(event.date) >= new Date()
+      })
+      .sort((a, b) => {
+        const aDate = a.event?.date ?? a.orderItems[0]?.ticket?.event?.date
+        const bDate = b.event?.date ?? b.orderItems[0]?.ticket?.event?.date
+        return new Date(aDate!).getTime() - new Date(bDate!).getTime()
+      })
+      .reduce<
+        {
+          eventId: string
+          event: (typeof ticketOrders)[0]['event']
+          orderItems: { id: string; ticketName: string; quantity: number; totalPrice: number; pricePerUnit: number }[]
+          totalAmount: number
+          createdAt: Date
+          id: string
+        }[]
+      >((acc, order) => {
+        const event = order.event ?? order.orderItems[0]?.ticket?.event
+        const eventId = order.eventId ?? event?.id ?? 'unknown'
+        const existing = acc.find((g) => g.eventId === eventId)
+
+        if (existing) {
+          order.orderItems.forEach((item) => {
+            const matchIdx = existing.orderItems.findIndex((i) => i.ticketName === item.ticketName)
+            if (matchIdx >= 0) {
+              existing.orderItems[matchIdx] = {
+                ...existing.orderItems[matchIdx],
+                quantity: existing.orderItems[matchIdx].quantity + (item.quantity ?? 1),
+                totalPrice: existing.orderItems[matchIdx].totalPrice + (item.totalPrice ?? 0)
+              }
+            } else {
+              existing.orderItems.push({ ...item })
+            }
+          })
+          existing.totalAmount += order.totalAmount
+        } else {
+          acc.push({
+            eventId,
+            event,
+            orderItems: order.orderItems.map((item) => ({ ...item })),
+            totalAmount: order.totalAmount,
+            createdAt: order.createdAt,
+            id: order.id
+          })
+        }
+
+        return acc
+      }, [])
+      .slice(0, 3)
 
     // Get user's join date
     const userCreatedAt = await prisma.user.findUnique({
@@ -90,16 +136,33 @@ export async function getSupporterDashboard() {
     const totalSpend = totalDonated + totalTicketSpend
 
     return {
-      donationOrders,
-      ticketOrders,
-      totalDonated,
+      donationOrders: donationOrders.map((o) => ({
+        ...o,
+        totalAmount: Number(o.totalAmount),
+        feesCovered: Number(o.feesCovered)
+      })),
+      ticketOrders: ticketOrders.slice(0, 3).map((o) => ({
+        ...o,
+        totalAmount: Number(o.totalAmount),
+        feesCovered: Number(o.feesCovered),
+        orderItems: o.orderItems.map((item) => ({
+          ...item,
+          pricePerUnit: item.pricePerUnit ? Number(item.pricePerUnit) : null,
+          totalPrice: item.totalPrice ? Number(item.totalPrice) : null
+        }))
+      })),
+      totalDonated: Number(totalDonated),
       monthlyCount,
       yearlyCount,
-      monthlyAmount,
-      yearlyAmount,
+      monthlyAmount: Number(monthlyAmount),
+      yearlyAmount: Number(yearlyAmount),
       upcomingEvents,
       totalTickets,
-      recentDonations,
+      recentDonations: recentDonations.map((o) => ({
+        ...o,
+        totalAmount: Number(o.totalAmount),
+        feesCovered: Number(o.feesCovered)
+      })),
       joinYear,
       stats: [
         {

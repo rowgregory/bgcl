@@ -12,28 +12,46 @@ export interface CartItem {
   maxAvailable: number
 }
 
+interface AddToCartToastProps {
+  ticket: {
+    id: string
+    name: string
+    eventId: string
+    eventTitle: string
+    price: number // in cents
+    totalQuantity: number
+    quantitySold: number
+    description?: string | null
+  } | null
+  quantity: number
+  visible: boolean
+  onClose: () => void
+  cartCount: number
+}
+
 interface CartState {
   items: CartItem[]
   isCheckingOut: boolean
   lastUpdated: string | null
+  addToCartToast: boolean
+  item: AddToCartToastProps | null
 }
 
 const initialState: CartState = {
   items: [],
   isCheckingOut: false,
-  lastUpdated: null
+  lastUpdated: null,
+  addToCartToast: false,
+  item: null
 }
 
 export const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addToCart: (
-      state,
-      action: PayloadAction<{ ticket: ITicket; quantity: number; eventId: string; eventTitle: string }>
-    ) => {
-      const { ticket, quantity, eventId, eventTitle } = action.payload
-      const existingItem = state.items.find((item) => item.ticketId === ticket.id && item.eventId === eventId)
+    addToCart: (state, action: PayloadAction<{ ticket: ITicket; quantity: number }>) => {
+      const { ticket, quantity } = action.payload
+      const existingItem = state.items.find((item) => item.ticketId === ticket.id && item.eventId === ticket.eventId)
 
       if (existingItem) {
         const newQuantity = existingItem.quantity + quantity
@@ -42,8 +60,8 @@ export const cartSlice = createSlice({
         state.items.push({
           ticketId: ticket.id,
           ticketName: ticket.name,
-          eventId,
-          eventTitle,
+          eventId: ticket.eventId,
+          eventTitle: ticket.eventTitle,
           price: ticket.price,
           quantity,
           maxAvailable: ticket.totalQuantity - ticket.quantitySold
@@ -81,12 +99,28 @@ export const cartSlice = createSlice({
 
     setIsNotCheckingOut: (state) => {
       state.isCheckingOut = false
+    },
+    setOpenAddToCartToast: (state, { payload }) => {
+      state.addToCartToast = true
+      state.item = payload
+    },
+    setCloseAddToCartToast: (state) => {
+      state.addToCartToast = true
+      state.item = null
     }
   }
 })
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart, setIsCheckingOut, setIsNotCheckingOut } =
-  cartSlice.actions
+export const {
+  addToCart,
+  removeFromCart,
+  updateQuantity,
+  clearCart,
+  setIsCheckingOut,
+  setIsNotCheckingOut,
+  setCloseAddToCartToast,
+  setOpenAddToCartToast
+} = cartSlice.actions
 
 // Selectors
 export const selectCartItems = (state: RootState) => state.cart.items

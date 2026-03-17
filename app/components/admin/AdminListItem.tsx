@@ -179,6 +179,30 @@ const AdminListItem = ({
         </div>
       </div>
 
+      {itemType === 'event' && (
+        <div className="shrink-0">
+          <span
+            className={`inline-flex items-center px-2 py-1 text-[10px] font-bold uppercase tracking-wide rounded ${
+              item.status === 'UPCOMING'
+                ? 'bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400'
+                : item.status === 'ONGOING'
+                  ? 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400'
+                  : item.status === 'COMPLETED'
+                    ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
+                    : item.status === 'CANCELLED'
+                      ? 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400'
+                      : item.status === 'POSTPONED'
+                        ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                        : item.status === 'ARCHIVED'
+                          ? 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400'
+                          : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
+            }`}
+          >
+            {item.status?.replace(/_/g, ' ')}
+          </span>
+        </div>
+      )}
+
       {/* Action Buttons */}
       <div className="shrink-0 flex items-center gap-2">
         {itemType === 'program' && (

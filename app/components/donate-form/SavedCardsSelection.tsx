@@ -18,7 +18,7 @@ const SavedCardsSelection = ({ savedCards, setSelectedCardId, selectedCardId, se
             className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
               selectedCardId === card.stripePaymentId
                 ? 'border-sky-500 bg-sky-500/10 dark:bg-sky-500/10'
-                : 'border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-neutral-300 dark:hover:border-neutral-700'
+                : 'border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 hover:border-neutral-300 dark:hover:border-neutral-700'
             }`}
           >
             <div className="flex items-center justify-between">

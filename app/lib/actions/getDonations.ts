@@ -17,7 +17,11 @@ export const getDonations = async () => {
       }
     })
 
-    return donations
+    return donations.map((donation) => ({
+      ...donation,
+      totalAmount: Number(donation.totalAmount),
+      feesCovered: Number(donation.feesCovered)
+    }))
   } catch (error) {
     await createLog('error', 'Failed to fetch donations', {
       error: error instanceof Error ? error.message : 'Unknown error'

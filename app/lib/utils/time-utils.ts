@@ -61,13 +61,7 @@ export const formatTimeForInput = (date: Date | string | null | undefined): stri
   if (!date) return ''
   const d = new Date(date)
   if (isNaN(d.getTime())) return ''
-  const timeStr = d.toLocaleTimeString('en-US', {
-    timeZone: 'America/New_York',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  })
-  // toLocaleTimeString can return "24:00" for midnight, normalize it
-  const [hours, minutes] = timeStr.split(':')
-  return `${hours === '24' ? '00' : hours}:${minutes}`
+  const hours = d.getHours().toString().padStart(2, '0')
+  const minutes = d.getMinutes().toString().padStart(2, '0')
+  return `${hours}:${minutes}`
 }

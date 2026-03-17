@@ -59,7 +59,11 @@ const CartItemRow = ({ item, index }: { item: CartItem; index: number }) => {
                 <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate mt-0.5">{item.eventTitle}</p>
               </div>
               <p className="text-sm sm:text-base font-bold text-neutral-900 dark:text-white shrink-0 tabular-nums">
-                ${(item.price * item.quantity).toFixed(2)}
+                $
+                {(item.price * item.quantity)?.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
               </p>
             </div>
 
@@ -122,7 +126,7 @@ const CartItemRow = ({ item, index }: { item: CartItem; index: number }) => {
 
 // ─── Order Summary ─────────────────────────────────────────────────────────────
 
-const InlineOrderSummary = ({ items }: { items: CartItem[] }) => {
+const CartOrderSummary = ({ items }: { items: CartItem[] }) => {
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0)
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0)
 
@@ -149,7 +153,11 @@ const InlineOrderSummary = ({ items }: { items: CartItem[] }) => {
                 <p className="text-neutral-400 dark:text-neutral-500 text-xs">× {item.quantity}</p>
               </div>
               <span className="font-semibold text-neutral-900 dark:text-white shrink-0 tabular-nums">
-                ${(item.price * item.quantity).toFixed(2)}
+                $
+                {(item.price * item.quantity)?.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
               </span>
             </li>
           ))}
@@ -159,7 +167,9 @@ const InlineOrderSummary = ({ items }: { items: CartItem[] }) => {
         <div className="px-5 sm:px-6 pb-5 pt-4 bg-neutral-50 dark:bg-neutral-800/50 border-t border-neutral-100 dark:border-neutral-800 space-y-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-neutral-500 dark:text-neutral-400">Subtotal</span>
-            <span className="font-medium text-neutral-900 dark:text-white tabular-nums">${subtotal.toFixed(2)}</span>
+            <span className="font-medium text-neutral-900 dark:text-white tabular-nums">
+              ${subtotal?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
           </div>
 
           <div className="flex items-center justify-between pt-3 border-t border-neutral-200 dark:border-neutral-700">
@@ -168,7 +178,7 @@ const InlineOrderSummary = ({ items }: { items: CartItem[] }) => {
               className="text-2xl font-bold text-neutral-900 dark:text-white tabular-nums"
               aria-label={`Total: $${subtotal.toFixed(2)}`}
             >
-              ${subtotal.toFixed(2)}
+              ${subtotal?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
 
@@ -337,7 +347,7 @@ export default function CartPage() {
             </div>
           </section>
 
-          <InlineOrderSummary items={items} />
+          <CartOrderSummary items={items} />
         </div>
       </main>
     </div>

@@ -2,9 +2,20 @@
 
 import { getCapsuleOverview } from '@/app/lib/actions/getCapsuleOverview'
 import { formatCurrency } from '@/app/lib/utils/currency.utils'
-import { formatDate } from '@/app/lib/utils/date-utils'
 import { motion } from 'framer-motion'
-import { Calendar, DollarSign, Ticket, Users, TrendingUp, Clock, MapPin, CheckCircle } from 'lucide-react'
+import { Calendar, DollarSign, Ticket, Users, Clock, CheckCircle } from 'lucide-react'
+import {
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
+  Cell,
+  PieChart,
+  Pie
+} from 'recharts'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -16,6 +27,8 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 }
 }
 
+const COLORS = ['#0EA5E9', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#6366F1']
+
 const colorMap: Record<string, string> = {
   emerald: 'text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/20',
   sky: 'text-sky-600 dark:text-sky-400 bg-sky-100 dark:bg-sky-900/20',
@@ -26,7 +39,7 @@ const colorMap: Record<string, string> = {
 }
 
 export function CapsuleOverviewClient({ data }: { data: Awaited<ReturnType<typeof getCapsuleOverview>> }) {
-  const { stats, upcomingEvents, recentOrders } = data
+  const { stats, events } = data
 
   const topStats = [
     {
@@ -83,7 +96,7 @@ export function CapsuleOverviewClient({ data }: { data: Awaited<ReturnType<typeo
     <div className="p-6 space-y-8">
       {/* Top Stats */}
       <motion.div
-        className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4"
+        className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -110,136 +123,328 @@ export function CapsuleOverviewClient({ data }: { data: Awaited<ReturnType<typeo
         })}
       </motion.div>
 
-      {/* Main Grid */}
+      {/* Charts Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/* Upcoming Events */}
+        {/* Scatter Chart - Ticket Sales by Event */}
         <motion.div
           variants={itemVariants}
-          initial="hidden"
-          animate="visible"
           className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-2xl border p-6"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-white">Upcoming Events</h3>
-            <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded-full">
-              {stats.upcomingCount} scheduled
-            </span>
-          </div>
-
-          {upcomingEvents.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-40 text-neutral-400 dark:text-neutral-600">
-              <Calendar className="w-10 h-10 mb-2 opacity-30" />
-              <p className="text-sm">No upcoming events</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {upcomingEvents.map((event, i) => {
-                const ticketsSold = event.tickets.reduce((sum, t) => sum + t.quantitySold, 0)
-                const totalTickets = event.tickets.reduce((sum, t) => sum + t.totalQuantity, 0)
-                const soldPct = totalTickets > 0 ? (ticketsSold / totalTickets) * 100 : 0
-                const revenue = event.orders.reduce((sum, o) => sum + o.totalAmount, 0)
-
-                return (
-                  <motion.div
-                    key={event.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="flex items-start gap-4 p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800 hover:border-neutral-200 dark:hover:border-neutral-700 transition-all"
-                  >
-                    {/* Date block */}
-                    <div className="shrink-0 w-12 h-12 rounded-lg bg-sky-100 dark:bg-sky-900/30 flex flex-col items-center justify-center">
-                      <span className="text-xs font-bold text-sky-600 dark:text-sky-400 uppercase">
-                        {new Date(event.date).toLocaleDateString('en-US', { month: 'short' })}
-                      </span>
-                      <span className="text-lg font-black text-sky-700 dark:text-sky-300 leading-none">
-                        {new Date(event.date).getDate()}
-                      </span>
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-neutral-900 dark:text-white truncate">{event.title}</p>
-                      <div className="flex items-center gap-1 mt-0.5 mb-2">
-                        <MapPin className="w-3 h-3 text-neutral-400 shrink-0" />
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">{event.location}</p>
-                      </div>
-
-                      {/* Ticket progress bar */}
-                      {totalTickets > 0 && (
-                        <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs text-neutral-500">
-                              {ticketsSold}/{totalTickets} tickets
-                            </span>
-                            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                              {formatCurrency(revenue)}
-                            </span>
-                          </div>
-                          <div className="h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-sky-500 rounded-full transition-all"
-                              style={{ width: `${Math.min(soldPct, 100)}%` }}
-                            />
-                          </div>
+          <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-6">Ticket Sales by Event</h3>
+          <motion.div
+            variants={itemVariants}
+            className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 h-125"
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <ScatterChart margin={{ top: 20, right: 30, bottom: 40, left: 40 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-neutral-700" />
+                <XAxis
+                  dataKey="ticketsSold"
+                  name="Tickets Sold"
+                  stroke="#9ca3af"
+                  tick={{ fontSize: 12, fill: '#9ca3af' }}
+                  label={{
+                    value: 'Tickets Sold',
+                    position: 'insideBottom',
+                    offset: -20,
+                    fill: '#9ca3af',
+                    fontSize: 12
+                  }}
+                  type="number"
+                />
+                <YAxis
+                  dataKey="revenue"
+                  name="Revenue"
+                  stroke="#9ca3af"
+                  tick={{ fontSize: 12, fill: '#9ca3af' }}
+                  tickFormatter={(v) => `$${v}`}
+                  label={{
+                    value: 'Revenue',
+                    angle: -90,
+                    position: 'insideLeft',
+                    offset: 10,
+                    fill: '#9ca3af',
+                    fontSize: 12
+                  }}
+                  type="number"
+                />
+                <Tooltip
+                  cursor={{ strokeDasharray: '3 3' }}
+                  content={({ payload }) => {
+                    if (!payload || !payload.length) return null
+                    const data = payload[0].payload
+                    return (
+                      <div className="p-3 bg-neutral-900 rounded-lg border border-neutral-700 shadow-xl">
+                        <p className="font-bold text-white text-sm mb-2">{data.title}</p>
+                        <div className="space-y-1">
+                          <p className="text-xs text-sky-400">
+                            Tickets Sold: <span className="text-white font-semibold">{data.ticketsSold}</span>
+                          </p>
+                          <p className="text-xs text-sky-400">
+                            Attendees: <span className="text-white font-semibold">{data.attendees}</span>
+                          </p>
+                          <p className="text-xs text-sky-400">
+                            Revenue: <span className="text-white font-semibold">{formatCurrency(data.revenue)}</span>
+                          </p>
                         </div>
-                      )}
-                    </div>
-                  </motion.div>
-                )
-              })}
-            </div>
-          )}
+                      </div>
+                    )
+                  }}
+                />
+                <Scatter
+                  name="Events"
+                  data={events.map((e) => ({
+                    title: e.title,
+                    ticketsSold: e.tickets.reduce((sum, t) => sum + (t.quantitySold ?? 0), 0),
+                    revenue: e.orders.reduce((sum, o) => sum + Number(o.totalAmount), 0),
+                    attendees: e.attendeeCount ?? 0
+                  }))}
+                >
+                  {events.map((e, i) => {
+                    const revenue = e.orders.reduce((sum, o) => sum + Number(o.totalAmount), 0)
+                    const maxRevenue = Math.max(
+                      ...events.map((x) => x.orders.reduce((s, o) => s + Number(o.totalAmount), 0)),
+                      1
+                    )
+                    const size = (revenue / maxRevenue) * 800 + 100
+                    return (
+                      <Cell
+                        key={i}
+                        fill="#0EA5E9"
+                        fillOpacity={0.8}
+                        stroke="#0284c7"
+                        strokeWidth={1}
+                        r={Math.sqrt(size / Math.PI)}
+                      />
+                    )
+                  })}
+                </Scatter>
+              </ScatterChart>
+            </ResponsiveContainer>
+          </motion.div>
         </motion.div>
 
-        {/* Recent Ticket Orders */}
         <motion.div
           variants={itemVariants}
-          initial="hidden"
-          animate="visible"
           className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-2xl border p-6"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-white">Recent Purchases</h3>
-            <TrendingUp className="w-4 h-4 text-neutral-400" />
-          </div>
-
-          {recentOrders.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-40 text-neutral-400 dark:text-neutral-600">
-              <Ticket className="w-10 h-10 mb-2 opacity-30" />
-              <p className="text-sm">No purchases yet</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {recentOrders.map((order, i) => (
-                <motion.div
-                  key={order.id}
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.04 }}
-                  className="flex items-center justify-between p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800"
+          <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-6">Ticket Type Breakdown</h3>
+          <motion.div
+            variants={itemVariants}
+            className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 h-125"
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={(() => {
+                    const ticketMap: Record<string, { name: string; sold: number; revenue: number }> = {}
+                    events.forEach((e) => {
+                      e.tickets.forEach((t) => {
+                        const key = t.name
+                        if (!ticketMap[key]) {
+                          ticketMap[key] = { name: t.name, sold: 0, revenue: 0 }
+                        }
+                        ticketMap[key].sold += t.quantitySold ?? 0
+                        ticketMap[key].revenue += (t.quantitySold ?? 0) * Number(t.price)
+                      })
+                    })
+                    return Object.values(ticketMap)
+                  })()}
+                  dataKey="sold"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius="70%"
+                  innerRadius="40%"
+                  paddingAngle={3}
+                  label={false}
+                  labelLine={false}
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
-                      <Users className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-neutral-900 dark:text-white truncate">
-                        {order?.customerName || 'Guest'}
-                      </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
-                        {order?.orderItems?.[0]?.ticket?.event?.title || '—'} · {formatDate(order.createdAt)}
-                      </p>
-                    </div>
+                  {events
+                    .flatMap((e) => e.tickets)
+                    .map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                </Pie>
+                <Tooltip
+                  content={({ payload }) => {
+                    if (!payload || !payload.length) return null
+                    const data = payload[0].payload
+                    return (
+                      <div className="p-3 bg-white border-neutral-200 dark:bg-neutral-900 rounded-lg border dark:border-neutral-700 shadow-xl">
+                        <p className="font-bold text-neutral-900 dark:text-white text-sm mb-2">{data.name}</p>
+                        <div className="space-y-1">
+                          <p className="text-xs text-sky-400">
+                            Tickets Sold:{' '}
+                            <span className="text-neutral-900 dark:text-white font-semibold">{data.sold}</span>
+                          </p>
+                          <p className="text-xs text-sky-400">
+                            Revenue:{' '}
+                            <span className="text-neutral-900 dark:text-white font-semibold">
+                              {formatCurrency(data.revenue)}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </motion.div>
+          {/* Breakdown list */}
+          <div className="mt-4 space-y-2">
+            {(() => {
+              const ticketMap: Record<string, { name: string; sold: number; revenue: number }> = {}
+              events.forEach((e) => {
+                e.tickets.forEach((t) => {
+                  const key = t.name
+                  if (!ticketMap[key]) ticketMap[key] = { name: t.name, sold: 0, revenue: 0 }
+                  ticketMap[key].sold += t.quantitySold ?? 0
+                  ticketMap[key].revenue += (t.quantitySold ?? 0) * Number(t.price)
+                })
+              })
+              return Object.values(ticketMap).map((item, i) => (
+                <div key={i} className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                    />
+                    <span className="text-xs text-neutral-600 dark:text-neutral-400 truncate">{item.name}</span>
                   </div>
-                  <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 shrink-0 ml-3">
-                    {formatCurrency(order?.totalAmount)}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-          )}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="text-xs font-semibold text-neutral-900 dark:text-white">{item.sold} sold</span>
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                      {formatCurrency(item.revenue)}
+                    </span>
+                  </div>
+                </div>
+              ))
+            })()}
+          </div>
         </motion.div>
       </div>
+      <motion.div
+        variants={itemVariants}
+        className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white rounded-2xl border border-neutral-200 p-6"
+      >
+        <motion.div variants={itemVariants} className="space-y-4">
+          <h3 className="text-lg font-bold text-neutral-900 dark:text-white">Event Performance</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {events.map((event, idx) => {
+              const ticketsSold = event.tickets.reduce((sum, t) => sum + (t.quantitySold ?? 0), 0)
+              const totalTickets = event.tickets.reduce((sum, t) => sum + (t.totalQuantity ?? 0), 0)
+              const revenue = event.orders.reduce((sum, o) => sum + Number(o.totalAmount), 0)
+              const totalRevenue = events.reduce(
+                (sum, e) => sum + e.orders.reduce((s, o) => s + Number(o.totalAmount), 0),
+                0
+              )
+              const soldOutPercentage = totalTickets > 0 ? (ticketsSold / totalTickets) * 100 : 0
+              const isPast = new Date(event.date) < new Date()
+
+              return (
+                <motion.div
+                  key={event.id}
+                  whileHover={{ y: -2 }}
+                  className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 hover:border-neutral-300 dark:hover:border-neutral-700 transition-all"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="min-w-0 flex-1 mr-3">
+                      <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-1">
+                        {new Date(event.date).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </p>
+                      <p className="text-base font-bold text-neutral-900 dark:text-white leading-snug truncate">
+                        {event.title}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1.5 shrink-0">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: COLORS[idx % COLORS.length] }}
+                        aria-hidden="true"
+                      />
+                      <span
+                        className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                          isPast
+                            ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
+                            : 'bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400'
+                        }`}
+                      >
+                        {isPast ? 'Past' : 'Upcoming'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {/* Revenue */}
+                    <div>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Revenue</p>
+                      <p className="text-2xl font-black text-sky-600 dark:text-sky-400">{formatCurrency(revenue)}</p>
+                    </div>
+
+                    {/* Stats grid */}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">Tickets Sold</p>
+                        <p className="text-lg font-bold text-neutral-900 dark:text-white">
+                          {ticketsSold}
+                          {totalTickets > 0 && (
+                            <span className="text-xs font-normal text-neutral-400 dark:text-neutral-500 ml-0.5">
+                              /{totalTickets}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">Attendees</p>
+                        <p className="text-lg font-bold text-neutral-900 dark:text-white">{event.attendeeCount ?? 0}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">Orders</p>
+                        <p className="text-lg font-bold text-neutral-900 dark:text-white">{event.orders.length}</p>
+                      </div>
+                    </div>
+
+                    {/* Capacity bar */}
+                    {totalTickets > 0 && (
+                      <div>
+                        <div className="flex justify-between items-center mb-1">
+                          <p className="text-xs text-neutral-500 dark:text-neutral-400">Capacity</p>
+                          <p className="text-xs font-semibold text-neutral-600 dark:text-neutral-300">
+                            {soldOutPercentage.toFixed(0)}%
+                          </p>
+                        </div>
+                        <div className="w-full h-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${soldOutPercentage}%` }}
+                            transition={{ duration: 0.8, ease: 'easeOut', delay: idx * 0.1 }}
+                            className="h-full rounded-full bg-sky-500"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* % of total revenue */}
+                    {totalRevenue > 0 && (
+                      <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                        <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                          {((revenue / totalRevenue) * 100).toFixed(1)}% of total revenue
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        </motion.div>
+      </motion.div>
     </div>
   )
 }

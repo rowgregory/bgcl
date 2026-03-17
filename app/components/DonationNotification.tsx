@@ -89,7 +89,7 @@ export default function DonationNotification({ donations }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [donations])
 
-  if (['/admin/', '/program/', '/supporter'].some((link) => pathname.includes(link))) return null
+  if (['/admin/', '/program/', '/supporter', '/cart'].some((link) => pathname.includes(link))) return null
 
   function getTimeAgo(timestamp: string | Date): string {
     const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp

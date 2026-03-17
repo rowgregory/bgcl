@@ -1,8 +1,8 @@
-import EventClient from '@/app/components/pages/EventClient'
+import { PublicEventDetailsClient } from '@/app/components/pages/PublicEventDetailsClient'
 import { getEventById } from '@/app/lib/actions/getEventById'
 
 export default async function EventPage({ params }: { params: Promise<{ eventId: string }> }) {
   const { eventId } = await params
   const data = await getEventById(eventId)
-  return <EventClient data={data} />
+  return <PublicEventDetailsClient data={data} />
 }

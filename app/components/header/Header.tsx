@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import { Menu, ShoppingBasket, X } from 'lucide-react'
+import { Menu, ShoppingCart, X } from 'lucide-react'
 import Picture from '../common/Picture'
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
-import { store, useApplicationSelector } from '@/app/lib/store/store'
+import { store, useApplicationSelector, useCartSelector } from '@/app/lib/store/store'
 import { setOpenMobileNavigation } from '@/app/lib/store/slices/appSlice'
 import { motion } from 'framer-motion'
 import { useIsAtTop } from '@/app/lib/hooks/useIsAtTop'
@@ -16,6 +16,7 @@ export default function Header() {
   const router = useRouter()
   const isAtTop = useIsAtTop()
   const { mobileNavigation, isSpanish } = useApplicationSelector()
+  const { items } = useCartSelector()
 
   const getLaunchPath = () => {
     if (status !== 'authenticated') return '/auth/login'
@@ -88,13 +89,18 @@ export default function Header() {
           <div className="flex items-center space-x-6">
             <Link
               href="/cart"
-              aria-label="View shopping cart"
-              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+              aria-label={`Open cart, ${items?.length} item${items?.length !== 1 ? 's' : ''}`}
+              className="relative p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 shrink-0"
             >
-              <ShoppingBasket
-                className="w-4 h-4 dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900"
-                aria-hidden="true"
-              />
+              <ShoppingCart className="w-5 h-5 dark:text-neutral-400 text-neutral-500" aria-hidden="true" />
+              {items?.length > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-sky-500 text-white text-[9px] font-bold rounded-full"
+                >
+                  {items?.length > 99 ? '99+' : items?.length}
+                </span>
+              )}
             </Link>
             <button
               onClick={handleLaunchApp}
