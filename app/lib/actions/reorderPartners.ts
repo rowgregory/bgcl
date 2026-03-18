@@ -24,7 +24,7 @@ export async function reorderPartners(tier: string, partners: IPartner[]) {
     // Recalculate display order for tier group starting from 1
     const updatedPartners = partners.map((member, index) => ({
       ...member,
-      displayOrder: index + 1
+      order: index + 1
     }))
 
     // Update database with recalculated orders

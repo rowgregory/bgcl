@@ -56,7 +56,7 @@ export default function usePartnerList(data: any, tier: string) {
     // Update display order
     const updatedList = newList.map((tier, index) => ({
       ...tier,
-      displayOrder: index + 1
+      order: index + 1
     }))
 
     // Save to backend
