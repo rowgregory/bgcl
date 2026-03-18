@@ -1,6 +1,5 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 
@@ -20,8 +19,6 @@ export async function updateJobApplicationStatus(id: string, status: JobApplicat
       where: { id },
       data: { status }
     })
-
-    revalidateTag('Job-Application', 'default')
 
     return { success: true, jobApplication: updatedJobApplication }
   } catch (error) {

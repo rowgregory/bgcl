@@ -4,43 +4,9 @@ import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { combineDateTimeToUTC } from '../utils/date-utils'
 import { EventType } from '@prisma/client'
+import { CreateEventInput } from '@/types/entities/event'
 
-interface CreateEventData {
-  title?: string
-  category?: string
-  type?: EventType
-  date?: string | Date
-  time?: string
-  duration?: string
-  location?: string
-
-  description?: string
-  capacity?: number
-  dresscode?: string | null
-  maxAttendees?: number | null
-  host?: string | null
-
-  featured?: boolean
-  isPublic?: boolean
-  requiresRSVP?: boolean
-  allowMultipleTickets?: boolean
-
-  requirements?: string | null
-  materials?: string | null
-  registrationUrl?: string | null
-  meetingUrl?: string | null
-  registrationDeadline?: string | null
-  rsvpDeadline?: string | null
-
-  salesStartDate?: string | null
-  salesEndDate?: string | null
-
-  order?: number | null
-
-  [key: string]: any
-}
-
-export async function createEvent(data: CreateEventData) {
+export async function createEvent(data: CreateEventInput) {
   try {
     const fullDateTime =
       data.date && data.time ? combineDateTimeToUTC(data.date as string, data.time as string) : undefined

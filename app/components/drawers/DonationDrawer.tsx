@@ -21,7 +21,7 @@ import {
   XCircle
 } from 'lucide-react'
 
-export default function DonationDrawer() {
+export function DonationDrawer() {
   const { donation, donationDrawer } = useDashboardSelector()
   const onClose = () => store.dispatch(setCloseDonationDrawer())
 

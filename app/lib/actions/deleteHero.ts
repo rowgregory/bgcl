@@ -1,6 +1,5 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 
@@ -26,8 +25,6 @@ export async function deleteHero(id: string) {
       heroId: hero.id,
       heroTitle: hero.title
     })
-
-    revalidateTag('Hero', 'default')
 
     return { success: true }
   } catch (error) {

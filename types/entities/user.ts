@@ -1,5 +1,3 @@
-import { Prisma } from '@prisma/client'
-
 // Enums
 export enum Role {
   STAFF = 'STAFF',
@@ -41,28 +39,21 @@ export interface IUser {
   updatedAt: Date
 }
 
-// Exact type that matches the getAllUsers select
-export type UserWithCounts = Prisma.UserGetPayload<{
-  select: {
-    id: true
-    email: true
-    role: true
-    createdAt: true
-    updatedAt: true
-    lastLoginAt: true
-    firstName: true
-    lastName: true
-    phone: true
-    position: true
-    department: true
-    hireDate: true
-    staffStatus: true
-    _count: {
-      select: {
-        events: true
-        accounts: true
-        sessions: true
-      }
-    }
-  }
-}>
+export interface CreateUserInputs {
+  email: string
+  firstName: string
+  lastName: string
+  role: Role
+  phone?: string
+  position?: string
+  department?: string
+}
+
+export interface UpdateUserInputs {
+  id: string
+  email?: string
+  firstName?: string
+  lastName?: string
+  role?: Role
+  phone?: string
+}

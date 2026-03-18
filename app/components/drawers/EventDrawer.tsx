@@ -13,8 +13,9 @@ import { useRouter } from 'next/navigation'
 import { updateEvent } from '@/app/lib/actions/updateEvent'
 import { createEvent } from '@/app/lib/actions/createEvent'
 import Drawer from '../common/Drawer'
+import { CreateEventInput, UpdateEventInput } from '@/types/entities/event'
 
-const EventDrawer = () => {
+export const EventDrawer = () => {
   const router = useRouter()
   const { eventDrawer } = useEventSelector()
   const { forms, isLoading } = useFormSelector()
@@ -37,9 +38,9 @@ const EventDrawer = () => {
       store.dispatch(setIsLoading(true))
 
       if (inputs?.isUpdating) {
-        await updateEvent(inputs.id, inputs)
+        await updateEvent(inputs as UpdateEventInput)
       } else {
-        await createEvent(inputs)
+        await createEvent(inputs as CreateEventInput)
       }
 
       router.refresh()
@@ -97,5 +98,3 @@ const EventDrawer = () => {
     </AnimatePresence>
   )
 }
-
-export default EventDrawer

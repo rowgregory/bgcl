@@ -1,21 +1,8 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
-
-export interface CreateNewsInput {
-  title: string
-  image?: string
-  paragraph1?: string
-  paragraph2?: string
-  paragraph3?: string
-  order?: number
-}
-
-export interface UpdateNewsInput extends CreateNewsInput {
-  id: string
-}
+import { CreateNewsInput } from '@/types/entities/news'
 
 export async function createNews(data: CreateNewsInput) {
   try {
@@ -29,8 +16,6 @@ export async function createNews(data: CreateNewsInput) {
         order: data.order ?? 0
       }
     })
-
-    revalidateTag('News', 'default')
 
     return {
       success: true,

@@ -1,5 +1,4 @@
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
 export async function reorderThemes(themes: Array<{ id: string; order: number }>) {
@@ -12,8 +11,6 @@ export async function reorderThemes(themes: Array<{ id: string; order: number }>
         })
       )
     )
-
-    revalidateTag('Theme', 'default')
 
     return { success: true }
   } catch (error) {

@@ -1,18 +1,10 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
+import { CreateUserInputs } from '@/types/entities/user'
 
-export async function createUser(data: {
-  email: string
-  firstName: string
-  lastName: string
-  role: 'VOLUNTEER' | 'ADMIN' | 'STAFF' | 'SUPPORTER' | 'SUPERUSER' | 'PROGRAM'
-  phone?: string
-  position?: string
-  department?: string
-}) {
+export async function createUser(data: CreateUserInputs) {
   try {
     const existingUser = await prisma.user.findUnique({
       where: { email: data.email }
@@ -42,8 +34,6 @@ export async function createUser(data: {
       firstName: newUser.firstName,
       lastName: newUser.lastName
     })
-
-    revalidateTag('User', 'default')
 
     return { success: true }
   } catch (error) {

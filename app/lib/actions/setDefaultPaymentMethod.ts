@@ -2,7 +2,6 @@
 
 import prisma from '@/prisma/client'
 import { auth } from '../auth'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
 export async function setDefaultPaymentMethod(paymentMethodId: string) {
@@ -40,9 +39,6 @@ export async function setDefaultPaymentMethod(paymentMethodId: string) {
       where: { id: paymentMethodId },
       data: { isDefault: true }
     })
-
-    // Revalidate cache
-    revalidateTag('Payment-Method', 'default')
 
     await createLog('info', 'Default payment method updated', {
       paymentMethodId,

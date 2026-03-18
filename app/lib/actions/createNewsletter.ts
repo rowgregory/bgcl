@@ -1,15 +1,8 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
-
-export interface CreateNewsletterInput {
-  month: string
-  year: number
-  pdfUrl: string
-  order: number
-}
+import { CreateNewsletterInput } from '@/types/entities/newsletter'
 
 export async function getNextNewsletterOrder(): Promise<number> {
   try {
@@ -53,8 +46,6 @@ export async function createNewsletter(data: CreateNewsletterInput) {
         order
       }
     })
-
-    revalidateTag('Newsletter', 'default')
 
     return { success: true }
   } catch (error) {

@@ -91,3 +91,53 @@ export interface IUpcomingEvent {
   event: EventWithTickets
   index: number
 }
+
+export interface CreateEventInput {
+  title?: string
+  category?: string
+  type?: EventType
+  date?: string | Date
+  time?: string
+  duration?: string
+  location?: string
+
+  description?: string
+  capacity?: number
+  dresscode?: string | null
+  maxAttendees?: number | null
+  host?: string | null
+
+  featured?: boolean
+  isPublic?: boolean
+  requiresRSVP?: boolean
+  allowMultipleTickets?: boolean
+
+  requirements?: string | null
+  materials?: string | null
+  registrationUrl?: string | null
+  meetingUrl?: string | null
+  registrationDeadline?: string | null
+  rsvpDeadline?: string | null
+
+  salesStartDate?: string | null
+  salesEndDate?: string | null
+
+  order?: number | null
+
+  [key: string]: any
+}
+
+export interface UpdateEventInput {
+  id: string
+  title?: string
+  description?: string
+  category?: string
+  type?: EventType
+  date?: string | Date
+  duration?: string
+  location?: string
+  featured?: boolean
+  isPublic?: boolean
+  requiresRSVP?: boolean
+  [key: string]: any // Catch everything else
+}

@@ -1,7 +1,6 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
 export async function reorderCampaigns(
@@ -16,8 +15,6 @@ export async function reorderCampaigns(
         })
       )
     )
-
-    revalidateTag('Campaign', 'default')
 
     return { success: true }
   } catch (error) {

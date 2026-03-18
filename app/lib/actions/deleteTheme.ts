@@ -2,7 +2,6 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
-import { revalidateTag } from 'next/cache'
 
 export async function deleteTheme(themeId: string) {
   try {
@@ -47,9 +46,6 @@ export async function deleteTheme(themeId: string) {
       title: theme.title,
       programsUpdated: programsWithTheme.length
     })
-
-    revalidateTag('Theme', 'default')
-    revalidateTag('Program', 'default')
 
     return { success: true }
   } catch (error) {

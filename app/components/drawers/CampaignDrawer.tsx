@@ -11,10 +11,11 @@ import Drawer from '../common/Drawer'
 import validateCampaignForm from '@/app/lib/validations/campaign'
 import { setCloseCampaignDrawer } from '@/app/lib/store/slices/campaignSlice'
 import { CampaignForm } from '../forms/CampaignForm'
-import { updateCampaign, UpdateCampaignInput } from '@/app/lib/actions/updateCampaign'
-import { createCampaign, CreateCampaignInput } from '@/app/lib/actions/createCampaign'
+import { updateCampaign } from '@/app/lib/actions/updateCampaign'
+import { createCampaign } from '@/app/lib/actions/createCampaign'
+import { CreateCampaignInput, UpdateCampaignInput } from '@/types/entities/campaign'
 
-const CampaignDrawer = () => {
+export const CampaignDrawer = () => {
   const router = useRouter()
   const { campaignDrawer } = useCampaignSelector()
   const { forms, isLoading } = useFormSelector()
@@ -94,5 +95,3 @@ const CampaignDrawer = () => {
     </AnimatePresence>
   )
 }
-
-export default CampaignDrawer

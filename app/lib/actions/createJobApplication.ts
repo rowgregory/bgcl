@@ -1,40 +1,9 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import sendAdminNotification from '../utils/sendAdminNotification'
 import { createLog } from './createLog'
-
-export interface CreateJobApplicationInput {
-  applicantName: string
-  email: string
-  employmentType: 'FULL_TIME' | 'PART_TIME' | 'SEASONAL'
-  hoursAvailable: string
-  languages: string
-  hasValidDriverLicense: boolean
-  licenseNumber?: string
-  licenseExpiration?: Date
-  noLicenseReason?: string
-  licenseSuspended?: boolean
-  suspensionExplanation?: string
-  trafficViolations?: string
-  resumeUrl?: string
-  resumeFileName?: string
-  resumeFileSize?: number
-  resumeUploadedAt?: Date
-  agreeToTerms: boolean
-  certifyInformation: boolean
-  authorizeBackground: boolean
-  understandActiveStatus: boolean
-  signature?: string
-  references: {
-    name: string
-    positionAndCompany: string
-    workRelationship: string
-    phone: string
-    email: string
-  }[]
-}
+import { CreateJobApplicationInput } from '@/types/entities/job-application'
 
 export const createJobApplication = async (data: CreateJobApplicationInput) => {
   try {
@@ -66,8 +35,6 @@ export const createJobApplication = async (data: CreateJobApplicationInput) => {
         error: emailError instanceof Error ? emailError.message : 'Unknown error'
       })
     }
-
-    revalidateTag('Job-Application', 'default')
 
     return {
       success: true,

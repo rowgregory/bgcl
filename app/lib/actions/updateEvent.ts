@@ -3,32 +3,17 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { convertDateToUTC } from '../utils/date-utils'
-import { EventType } from '@prisma/client'
+import { UpdateEventInput } from '@/types/entities/event'
 
-interface UpdateEventData {
-  id?: string
-  title?: string
-  description?: string
-  category?: string
-  type?: EventType
-  date?: string | Date
-  duration?: string
-  location?: string
-  featured?: boolean
-  isPublic?: boolean
-  requiresRSVP?: boolean
-  [key: string]: any // Catch everything else
-}
-
-export async function updateEvent(id: string, body: UpdateEventData) {
+export async function updateEvent(body: UpdateEventInput) {
   try {
     const existingEvent = await prisma.event.findUnique({
-      where: { id }
+      where: { id: body.id }
     })
 
     if (!existingEvent) {
       await createLog('warn', 'Event not found for update', {
-        eventId: id
+        eventId: body.id
       })
       return { success: false, error: 'Event not found', status: 404 }
     }
@@ -48,7 +33,7 @@ export async function updateEvent(id: string, body: UpdateEventData) {
     const rsvpDeadlineDate = rsvpDeadline ? convertDateToUTC(rsvpDeadline) : undefined
 
     const event = await prisma.event.update({
-      where: { id },
+      where: { id: body.id },
       data: {
         ...restBody,
         date: date ? new Date(date) : undefined,

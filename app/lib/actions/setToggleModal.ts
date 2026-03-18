@@ -1,6 +1,5 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 import prisma from '@/prisma/client'
 
@@ -35,8 +34,6 @@ export async function setToggleModal(slug: string) {
       pageId: page.id,
       modalEnabled: updatedContent.toggleModal
     })
-
-    revalidateTag('Page', 'default')
 
     return {
       success: true,

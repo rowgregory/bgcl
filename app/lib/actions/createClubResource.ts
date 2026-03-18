@@ -1,18 +1,9 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
+
 import { createLog } from './createLog'
-
-export interface CreateClubResourceInput {
-  title: string
-  url?: string
-  order?: number
-}
-
-export interface UpdateClubResourceInput extends CreateClubResourceInput {
-  id: string
-}
+import { CreateClubResourceInput } from '@/types/entities/club-resource'
 
 export async function createClubResource(data: CreateClubResourceInput) {
   try {
@@ -28,8 +19,6 @@ export async function createClubResource(data: CreateClubResourceInput) {
       resourceId: resource.id,
       title: resource.title
     })
-
-    revalidateTag('Club-Resource', 'default')
 
     return { success: true }
   } catch (error) {

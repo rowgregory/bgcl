@@ -1,7 +1,6 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
 export async function deleteJobApplication(id: string) {
@@ -27,8 +26,6 @@ export async function deleteJobApplication(id: string) {
       applicantName: application.applicantName,
       email: application.email
     })
-
-    revalidateTag('Job-Application', 'default')
 
     return { success: true }
   } catch (error) {

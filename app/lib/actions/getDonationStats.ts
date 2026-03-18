@@ -18,30 +18,36 @@ export interface DonationStats {
 
 export async function getDonationStats() {
   try {
-    const orders = await prisma.order.findMany({
-      where: {
-        type: { in: ['ONE_TIME_DONATION', 'RECURRING_DONATION'] }
-      },
-      select: {
-        totalAmount: true,
-        type: true,
-        recurringFrequency: true,
-        status: true,
-        createdAt: true,
-        customerEmail: true,
-        customerName: true,
-        paidAt: true,
-        notes: true,
-        id: true,
-        feesCovered: true,
-        billingAddress: true,
-        paymentIntentId: true,
-        paymentMethodId: true,
-        paymentMethod: true,
-        campaign: true,
-        stripeSubscriptionId: true
-      }
-    })
+    const orders = (
+      await prisma.order.findMany({
+        where: {
+          type: { in: ['ONE_TIME_DONATION', 'RECURRING_DONATION'] }
+        },
+        select: {
+          totalAmount: true,
+          type: true,
+          recurringFrequency: true,
+          status: true,
+          createdAt: true,
+          customerEmail: true,
+          customerName: true,
+          paidAt: true,
+          notes: true,
+          id: true,
+          feesCovered: true,
+          billingAddress: true,
+          paymentIntentId: true,
+          paymentMethodId: true,
+          paymentMethod: true,
+          campaign: true,
+          stripeSubscriptionId: true
+        }
+      })
+    ).map((o) => ({
+      ...o,
+      totalAmount: Number(o.totalAmount),
+      feesCovered: Number(o.feesCovered)
+    }))
 
     const stats = {
       total: orders.length,

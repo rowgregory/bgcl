@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, DollarSign, Tag } from 'lucide-react'
 import StatChip from '../common/StatChip'
-import TransactionOrderRow from '../admin/TransactionOrderRow'
+import FuelTankTransactionOrderRow from '../admin/FuelTankTransactionOrderRow'
 import { IOrder } from '@/types/entities/order'
 import { formatCurrency } from '@/app/lib/utils/currency.utils'
 
@@ -180,7 +180,7 @@ export default function FuelTankTransactionsClient({ data }: { data: IOrder[] })
                 <tbody>
                   <AnimatePresence initial={false}>
                     {filtered.map((order, i) => (
-                      <TransactionOrderRow key={order.id} order={order} index={i} />
+                      <FuelTankTransactionOrderRow key={order.id} order={order} index={i} />
                     ))}
                   </AnimatePresence>
                 </tbody>

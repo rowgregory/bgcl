@@ -11,10 +11,11 @@ import Drawer from '../common/Drawer'
 import validateNewsForm from '@/app/lib/validations/news'
 import { setCloseNewsDrawer } from '@/app/lib/store/slices/newsSlice'
 import { NewsForm } from '../forms/NewsForm'
-import { updateNews, UpdateNewsInput } from '@/app/lib/actions/updateNews'
-import { createNews, CreateNewsInput } from '@/app/lib/actions/createNews'
+import { updateNews } from '@/app/lib/actions/updateNews'
+import { createNews } from '@/app/lib/actions/createNews'
+import { CreateNewsInput, UpdateNewsInput } from '@/types/entities/news'
 
-const NewsDrawer = () => {
+export const NewsDrawer = () => {
   const router = useRouter()
   const { newsDrawer } = useNewsSelector()
   const { forms, isLoading } = useFormSelector()
@@ -96,5 +97,3 @@ const NewsDrawer = () => {
     </AnimatePresence>
   )
 }
-
-export default NewsDrawer

@@ -2,7 +2,6 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
-import { revalidateTag } from 'next/cache'
 
 export async function deleteNewsletter(id: string) {
   try {
@@ -27,8 +26,6 @@ export async function deleteNewsletter(id: string) {
       year: newsletter.year,
       month: newsletter.month
     })
-
-    revalidateTag('Newsletter', 'default')
 
     return { success: true }
   } catch (error) {

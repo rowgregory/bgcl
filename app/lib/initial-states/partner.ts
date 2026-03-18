@@ -1,4 +1,4 @@
-import { PartnerCategory, PartnerTier } from '@/types/entities/partner'
+import { PartnerCategory, PartnerTier } from '@prisma/client'
 
 export const initialPartnerFormState = {
   name: '',

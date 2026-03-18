@@ -1,7 +1,6 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
 export async function deleteTeamMember(id: string) {
@@ -27,8 +26,6 @@ export async function deleteTeamMember(id: string) {
       name: teamMember.name,
       email: teamMember.email
     })
-
-    revalidateTag('Team-Member', 'default')
 
     return { success: true }
   } catch (error) {

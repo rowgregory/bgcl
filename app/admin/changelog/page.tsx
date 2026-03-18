@@ -21,6 +21,53 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.13.0',
+    date: '2026-03-18',
+    changes: [
+      {
+        type: 'bug',
+        title: 'Date Object Crashing Events Admin List',
+        description:
+          'Fixed React error "Objects are not valid as a React child" on the events admin list — AdminListItem was rendering item.date directly as a fallback description. Wrapped in toLocaleDateString() to convert Date object to string.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Removed revalidateTag from Server Actions',
+        description:
+          'Removed all revalidateTag calls from server actions across the codebase — components use router.refresh() for revalidation, keeping cache invalidation consistent and avoiding tag mismatch issues.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Partners Section — Tier-Based Reordering',
+        description:
+          'Added createMultiRolePartnerPage component to the Partners admin section — each tier (Foundation, Corporate & Business, Government & Public, Community & Program) now has its own independently reorderable list, replacing the single flat partner list.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'The Library Subnav Horizontal Scroll',
+        description:
+          'Fixed The Library subnav links getting cut off on desktop — added explicit width calc(100vw - 400px) accounting for sidebar, ref-based wheel event handler for Magic Trackpad horizontal scroll support.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Decimal Serialization in getDonationStats',
+        description:
+          'Fixed feesCovered Decimal not serializable in getDonationStats — serialized at the source orders map so all derived calculations including stats, trendData, campaigns, and failedOrders automatically use serialized values.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'getEvents Serialization',
+        description: 'Added ticket price Decimal serialization to getEvents server action.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.12.0',
     date: '2026-03-17',
     changes: [

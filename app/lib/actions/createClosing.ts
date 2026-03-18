@@ -1,14 +1,8 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
-
-export interface CreateClosingInput {
-  title: string
-  date: string
-  order: number
-}
+import { CreateClosingInput } from '@/types/entities/closing'
 
 export async function createClosing(data: CreateClosingInput) {
   try {
@@ -25,8 +19,6 @@ export async function createClosing(data: CreateClosingInput) {
       title: closing.title,
       date: closing.date
     })
-
-    revalidateTag('Closing', 'default')
 
     return { success: true }
   } catch (error) {

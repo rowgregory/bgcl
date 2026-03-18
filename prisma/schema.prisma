@@ -659,10 +659,10 @@ model Partner {
 }
 
 enum PartnerTier {
-  GOLD
-  SILVER
-  BRONZE
-  COMMUNITY
+  FOUNDATION
+  CORPORATE_BUSINESS
+  GOVERNMENT_PUBLIC
+  COMMUNITY_PROGRAM
 }
 
 enum PartnerCategory {

@@ -23,7 +23,7 @@ interface FailedPayment {
   notes: string | null
 }
 
-export default function FailedPaymentsDrawer() {
+export function FailedPaymentsDrawer() {
   const { failedPaymentDrawer, failedPayments } = useDashboardSelector()
   const onClose = () => store.dispatch(setCloseFailedPaymentDrawer())
 

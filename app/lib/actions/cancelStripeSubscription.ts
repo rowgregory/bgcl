@@ -2,7 +2,6 @@
 
 import prisma from '@/prisma/client'
 import { stripe } from '../stripe/stripeClient'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
 /**
@@ -62,8 +61,6 @@ export async function cancelStripeSubscription(
       amount: order.totalAmount,
       frequency: order.recurringFrequency
     })
-
-    revalidateTag('Order', 'default')
 
     return {
       success: true,

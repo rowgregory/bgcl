@@ -1,36 +1,40 @@
 'use client'
 
 import { FC } from 'react'
-import { getCurrentPageId } from '../../lib/utils/getCurrentPageId'
 import { motion } from 'framer-motion'
-import HeroStudio from '../hero-studio/HeroStudio'
-import EventDrawer from '../drawers/EventDrawer'
-import TicketDrawer from '../drawers/TicketDrawer'
-import { store, useDashboardSelector } from '../../lib/store/store'
-import ProgramDrawer from '../drawers/ProgramDrawer'
+import { Menu } from 'lucide-react'
+import { useSession } from 'next-auth/react'
+import { usePathname } from 'next/navigation'
+
 import { ILayout } from '@/types/common'
-import UserDrawer from '../drawers/UserDrawer'
+
+import { store, useDashboardSelector } from '../../lib/store/store'
 import { setCloseAdminSidebar, setToggleAdminSidebar } from '../../lib/store/slices/dashboardSlice'
 import { adminNavigationLinkData } from '../../lib/constants/adminNavLinks'
-import { usePathname } from 'next/navigation'
-import AdminSidebar from '../../admin/sidebar'
-import { Menu } from 'lucide-react'
-import ActionMenuButton from '../ui/buttons/ActionMenuButton'
-import MobileMenuButton from '../ui/buttons/MobileMenuButton'
-import LogoutButton from '../ui/buttons/LogoutButton'
-import ActionMenuDropdown from '../navigation/ActionMenuDropdown'
 import dropdownActionItems from '../../lib/constants/dropdownActionItems'
-import TeamMemberDrawer from '../drawers/TeamMemberDrawer'
-import NewsDrawer from '../drawers/NewsDrawer'
-import NewsletterDrawer from '../drawers/NewsletterDrawer'
-import ClubResourceDrawer from '../drawers/ClubResourceDrawer'
-import CampaignDrawer from '../drawers/CampaignDrawer'
-import ClosingDrawer from '../drawers/ClosingDrawer'
-import FailedPaymentsDrawer from '../drawers/FailedPaymentDrawer'
-import DonationDrawer from '../drawers/DonationDrawer'
-import { useSession } from 'next-auth/react'
-import { TicketOrderDrawer } from '../drawers/AdminTicketOrderDrawer'
+import { getCurrentPageId } from '../../lib/utils/getCurrentPageId'
+
+import AdminSidebar from '../../admin/sidebar'
+import HeroStudio from '../hero-studio/HeroStudio'
+import ActionMenuButton from '../ui/buttons/ActionMenuButton'
+import ActionMenuDropdown from '../navigation/ActionMenuDropdown'
+import LogoutButton from '../ui/buttons/LogoutButton'
+import MobileMenuButton from '../ui/buttons/MobileMenuButton'
+
+import { CampaignDrawer } from '../drawers/CampaignDrawer'
+import { ClubResourceDrawer } from '../drawers/ClubResourceDrawer'
+import { ClosingDrawer } from '../drawers/ClosingDrawer'
+import { DonationDrawer } from '../drawers/DonationDrawer'
+import { EventDrawer } from '../drawers/EventDrawer'
+import { FailedPaymentsDrawer } from '../drawers/FailedPaymentDrawer'
+import { NewsDrawer } from '../drawers/NewsDrawer'
+import { NewsletterDrawer } from '../drawers/NewsletterDrawer'
 import { PartnerDrawer } from '../drawers/PartnerDrawer'
+import { ProgramDrawer } from '../drawers/ProgramDrawer'
+import { TeamMemberDrawer } from '../drawers/TeamMemberDrawer'
+import { TicketDrawer } from '../drawers/TicketDrawer'
+import { AdminTicketOrderDrawer } from '../drawers/AdminTicketOrderDrawer'
+import { UserDrawer } from '../drawers/UserDrawer'
 
 const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
   const pathname = usePathname()
@@ -56,7 +60,7 @@ const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
       <ActionMenuDropdown actionItems={dropdownActionItems(isModalEnabled)} isModalEnabled={isModalEnabled} />
       <FailedPaymentsDrawer />
       <DonationDrawer />
-      <TicketOrderDrawer />
+      <AdminTicketOrderDrawer />
       <PartnerDrawer />
 
       {/* Desktop Fixed Header */}

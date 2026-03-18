@@ -11,11 +11,11 @@ import validateProgramForm from '@/app/lib/validations/program'
 import { ProgramForm } from '../forms/ProgramForm'
 import { updateProgram } from '@/app/lib/actions/updateProgram'
 import { createProgram } from '@/app/lib/actions/createProgram'
-import { ICreateProgram, IUpdateProgram } from '@/types/entities/program'
+import { CreateProgramInputs, UpdateProgramInputs } from '@/types/entities/program'
 import Drawer from '../common/Drawer'
 import { useRouter } from 'next/navigation'
 
-const ProgramDrawer = ({ themes }) => {
+export const ProgramDrawer = ({ themes }) => {
   const { programDrawer } = useProgramSelector()
   const { forms, isLoading } = useFormSelector()
   const inputs = forms.programForm.inputs
@@ -39,9 +39,9 @@ const ProgramDrawer = ({ themes }) => {
     try {
       store.dispatch(setIsLoading(true))
       if (inputs?.isUpdating) {
-        await updateProgram(inputs?.id as string, inputs as IUpdateProgram)
+        await updateProgram(inputs as UpdateProgramInputs)
       } else {
-        await createProgram(inputs as ICreateProgram)
+        await createProgram(inputs as CreateProgramInputs)
       }
 
       router.refresh()
@@ -100,5 +100,3 @@ const ProgramDrawer = ({ themes }) => {
     </AnimatePresence>
   )
 }
-
-export default ProgramDrawer

@@ -1,9 +1,9 @@
 'use client'
 
 import { X } from 'lucide-react'
-import ImageUpload from '../common/ImageUpload'
 import { store } from '@/app/lib/store/store'
 import { setInputs } from '@/app/lib/store/slices/formSlice'
+import { PARTNER_TIERS } from '@/types/entities/partner'
 
 const inputClass =
   'w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all'
@@ -65,8 +65,39 @@ export default function PartnerForm({ inputs, errors, isUpdating, onClose, handl
                 )}
               </div>
 
-              {/* External Link */}
               <div>
+                <label htmlFor="partner-tier" className={labelClass}>
+                  Partner Tier <span aria-hidden="true">*</span>
+                  <span className="sr-only">(required)</span>
+                </label>
+                <select
+                  id="partner-tier"
+                  name="tier"
+                  value={(inputs.tier as string) || ''}
+                  onChange={handleInput}
+                  required
+                  aria-required="true"
+                  aria-describedby={errors?.tier ? 'tier-error' : undefined}
+                  className={inputClass}
+                >
+                  <option value="" disabled>
+                    Select tier
+                  </option>
+                  {PARTNER_TIERS.map((tier) => (
+                    <option key={tier.value} value={tier.value}>
+                      {tier.label}
+                    </option>
+                  ))}
+                </select>
+                {errors?.tier && (
+                  <p id="tier-error" role="alert" className="mt-2 text-sm text-red-500 dark:text-red-400">
+                    {errors.tier}
+                  </p>
+                )}
+              </div>
+
+              {/* External Link */}
+              {/* <div>
                 <label htmlFor="partner-link" className={labelClass}>
                   Website URL
                 </label>
@@ -85,10 +116,10 @@ export default function PartnerForm({ inputs, errors, isUpdating, onClose, handl
                     {errors.externalLink}
                   </p>
                 )}
-              </div>
+              </div> */}
 
               {/* Description */}
-              <div>
+              {/* <div>
                 <label htmlFor="partner-description" className={labelClass}>
                   Description
                 </label>
@@ -107,18 +138,15 @@ export default function PartnerForm({ inputs, errors, isUpdating, onClose, handl
                     {errors.description}
                   </p>
                 )}
-              </div>
+              </div> */}
             </div>
           </section>
 
           {/* Media & Display */}
-          <section>
-            {/* Images */}
+          {/* <section>
             <div className="mb-8">
               <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-4"> Media &amp; Display</h3>
-
               <div className="grid grid-cols-2 gap-6">
-                {/* Partner Image */}
                 <ImageUpload
                   errors={errors}
                   formName="partnerForm"
@@ -128,7 +156,7 @@ export default function PartnerForm({ inputs, errors, isUpdating, onClose, handl
                 />
               </div>
             </div>
-          </section>
+          </section> */}
 
           {/* Visibility */}
           <section>
@@ -166,7 +194,7 @@ export default function PartnerForm({ inputs, errors, isUpdating, onClose, handl
               </div>
 
               {/* isFeatured */}
-              <div className="flex items-center justify-between bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3">
+              {/* <div className="flex items-center justify-between bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3">
                 <div>
                   <p className="text-sm font-medium text-neutral-900 dark:text-white">Featured</p>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
@@ -194,7 +222,7 @@ export default function PartnerForm({ inputs, errors, isUpdating, onClose, handl
                     }`}
                   />
                 </button>
-              </div>
+              </div> */}
             </div>
           </section>
         </div>

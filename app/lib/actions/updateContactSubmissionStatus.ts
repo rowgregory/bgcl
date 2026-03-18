@@ -1,12 +1,10 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { ContactReadStatus } from '@prisma/client'
 
-type ContactSubmissionStatus = 'READ' | 'ARCHIVED'
-
-export async function updateContactSubmissionStatus(id: string, status: ContactSubmissionStatus) {
+export async function updateContactSubmissionStatus(id: string, status: ContactReadStatus) {
   try {
     const existingContactSubmission = await prisma.contactSubmission.findUnique({
       where: { id }
@@ -29,8 +27,6 @@ export async function updateContactSubmissionStatus(id: string, status: ContactS
       previousStatus: status,
       newStatus: contactSubmission.status
     })
-
-    revalidateTag('Contact-Submission', 'default')
 
     return { success: true }
   } catch (error) {

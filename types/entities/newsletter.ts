@@ -8,3 +8,18 @@ export interface INewsletter {
   createdAt: Date
   updatedAt: Date
 }
+
+export interface UpdateNewsletterInput {
+  id: string
+  month: string
+  year: number
+  pdfUrl: string
+  order: number
+}
+
+export interface CreateNewsletterInput {
+  month: string
+  year: number
+  pdfUrl: string
+  order: number
+}

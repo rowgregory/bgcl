@@ -1,24 +1,9 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { trimAndTransformData } from '../utils/trimAndTransformData'
 import { createLog } from './createLog'
-
-export interface UpdateCampaignInput {
-  id: string
-  name: string
-  description: string
-  image?: string
-  goalAmount: number
-  currentAmount: number
-  organizerName: string
-  startDate: Date
-  endDate?: Date
-  isActive?: boolean
-  isListed?: boolean
-  externalLink?: string
-}
+import { UpdateCampaignInput } from '@/types/entities/campaign'
 
 export async function updateCampaign(data: UpdateCampaignInput) {
   try {
@@ -55,8 +40,6 @@ export async function updateCampaign(data: UpdateCampaignInput) {
       where: { id: campaignId },
       data: cleanData
     })
-
-    revalidateTag('Campaign', 'default')
 
     return { success: true }
   } catch (error) {

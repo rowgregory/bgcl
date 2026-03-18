@@ -1,13 +1,8 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { CreateNewsletterInput } from './createNewsletter'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
-
-export interface UpdateNewsletterInput extends CreateNewsletterInput {
-  id: string
-}
+import { UpdateNewsletterInput } from '@/types/entities/newsletter'
 
 export async function updateNewsletter(data: UpdateNewsletterInput) {
   try {
@@ -20,8 +15,6 @@ export async function updateNewsletter(data: UpdateNewsletterInput) {
         order: data.order
       }
     })
-
-    revalidateTag('Newsletter', 'default')
 
     return { success: true }
   } catch (error) {

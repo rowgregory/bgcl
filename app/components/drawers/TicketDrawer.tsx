@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation'
 import { setCloseTicketDrawer } from '@/app/lib/store/slices/ticketSlice'
 import Drawer from '../common/Drawer'
 
-const TicketDrawer = () => {
+export const TicketDrawer = () => {
   const dispatch = useAppDispatch()
   const router = useRouter()
   const { ticketDrawer } = useTicketSelector()
@@ -106,5 +106,3 @@ const TicketDrawer = () => {
     </AnimatePresence>
   )
 }
-
-export default TicketDrawer

@@ -1,7 +1,6 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 import { ICreateHero } from '@/types/entities/hero'
 
@@ -68,8 +67,6 @@ export async function createHero(data: ICreateHero) {
       heroId: hero.id,
       name: hero.name
     })
-
-    revalidateTag('Hero', 'default')
 
     return { success: true }
   } catch (error) {

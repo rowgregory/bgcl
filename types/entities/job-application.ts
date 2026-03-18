@@ -37,3 +37,34 @@ export interface IJobApplication {
   createdAt: Date
   updatedAt: Date
 }
+
+export interface CreateJobApplicationInput {
+  applicantName: string
+  email: string
+  employmentType: 'FULL_TIME' | 'PART_TIME' | 'SEASONAL'
+  hoursAvailable: string
+  languages: string
+  hasValidDriverLicense: boolean
+  licenseNumber?: string
+  licenseExpiration?: Date
+  noLicenseReason?: string
+  licenseSuspended?: boolean
+  suspensionExplanation?: string
+  trafficViolations?: string
+  resumeUrl?: string
+  resumeFileName?: string
+  resumeFileSize?: number
+  resumeUploadedAt?: Date
+  agreeToTerms: boolean
+  certifyInformation: boolean
+  authorizeBackground: boolean
+  understandActiveStatus: boolean
+  signature?: string
+  references: {
+    name: string
+    positionAndCompany: string
+    workRelationship: string
+    phone: string
+    email: string
+  }[]
+}

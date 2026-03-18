@@ -2,7 +2,6 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
-import { revalidateTag } from 'next/cache'
 
 export async function deleteSubscriber(id: string) {
   try {
@@ -26,8 +25,6 @@ export async function deleteSubscriber(id: string) {
       subscriberId: id,
       email: subscriber.email
     })
-
-    revalidateTag('Subscriber', 'default')
 
     return { success: true }
   } catch (error) {

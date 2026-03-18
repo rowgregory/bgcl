@@ -12,10 +12,10 @@ import validateUserForm from '@/app/lib/validations/user'
 import { updateUser } from '@/app/lib/actions/updateUser'
 import Drawer from '../common/Drawer'
 import { useRouter } from 'next/navigation'
-import { IUser } from '@/types/entities/user'
+import { CreateUserInputs, UpdateUserInputs } from '@/types/entities/user'
 import { createUser } from '@/app/lib/actions/createUser'
 
-const UserDrawer = () => {
+export const UserDrawer = () => {
   const { userDrawer } = useUserSelector()
   const { forms, isLoading } = useFormSelector()
   const inputs = forms.userForm.inputs
@@ -35,16 +35,15 @@ const UserDrawer = () => {
 
     try {
       store.dispatch(setIsLoading(true))
+
       if (inputs?.isUpdating) {
-        await updateUser(inputs?.id, inputs)
+        await updateUser(inputs as UpdateUserInputs)
       } else {
-        await createUser(inputs as IUser)
+        await createUser(inputs as CreateUserInputs)
       }
 
       router.refresh()
-
       onClose()
-
       store.dispatch(
         showToast({
           type: 'success',
@@ -95,4 +94,3 @@ const UserDrawer = () => {
     </AnimatePresence>
   )
 }
-export default UserDrawer

@@ -1,7 +1,6 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
 export async function reorderNews(
@@ -16,8 +15,6 @@ export async function reorderNews(
         })
       )
     )
-
-    revalidateTag('News', 'default')
 
     return { success: true }
   } catch (error) {

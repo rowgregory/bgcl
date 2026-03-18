@@ -1,7 +1,6 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import sendAdminNotification from '../utils/sendAdminNotification'
 import { createLog } from './createLog'
 
@@ -90,8 +89,6 @@ export const createContactSubmission = async (data: Omit<IContactSubmission, 'id
         error: emailError instanceof Error ? emailError.message : 'Unknown error'
       })
     }
-
-    revalidateTag('Contact-Submission', 'default')
 
     return {
       success: true

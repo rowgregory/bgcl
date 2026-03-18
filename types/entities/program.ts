@@ -36,12 +36,11 @@ export interface IProgram {
   heroImage?: string
 }
 
-export interface ICreateProgram {
-  name: string
+export interface CreateProgramInputs {
   [key: string]: any
 }
 
-export interface IUpdateProgram {
+export interface UpdateProgramInputs {
   id: string
   [key: string]: any
 }

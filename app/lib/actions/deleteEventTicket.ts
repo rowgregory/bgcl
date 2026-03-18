@@ -1,6 +1,5 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 
@@ -25,9 +24,6 @@ export async function deleteTicket(id: string) {
       ticketId: ticket.id,
       ticketName: ticket.name
     })
-
-    revalidateTag('Event', 'default')
-    revalidateTag('Ticket', 'default')
 
     return { success: true }
   } catch (error) {

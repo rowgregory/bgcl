@@ -1,12 +1,11 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
 export async function reorderPrograms(programs: Array<{ id: string; order?: number }>) {
   try {
-    const programsArr = await Promise.all(
+    await Promise.all(
       programs.map((program, index) =>
         prisma.program.update({
           where: { id: program.id },
@@ -14,8 +13,6 @@ export async function reorderPrograms(programs: Array<{ id: string; order?: numb
         })
       )
     )
-
-    revalidateTag('Program', 'default')
 
     return { success: true }
   } catch (error) {

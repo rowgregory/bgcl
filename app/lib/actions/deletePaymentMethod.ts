@@ -1,7 +1,6 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 import { auth } from '../auth'
 import { stripe } from '../stripe/stripeClient'
@@ -93,8 +92,6 @@ export async function deletePaymentMethod(paymentMethodId: string) {
       cardBrand: paymentMethod.cardBrand,
       cardLast4: paymentMethod.cardLast4
     })
-
-    revalidateTag('Payment-Method', 'default')
 
     return { success: true }
   } catch (error) {

@@ -1,11 +1,10 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
-import { ICreateProgram } from '@/types/entities/program'
+import { CreateProgramInputs } from '@/types/entities/program'
 
-export async function createProgram(data: ICreateProgram) {
+export async function createProgram(data: CreateProgramInputs) {
   try {
     const createData: any = {
       name: data.name,
@@ -41,8 +40,6 @@ export async function createProgram(data: ICreateProgram) {
       programId: program.id,
       name: program.name
     })
-
-    revalidateTag('Program', 'default')
 
     return { success: true }
   } catch (error) {

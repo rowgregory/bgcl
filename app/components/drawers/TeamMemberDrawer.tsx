@@ -15,7 +15,7 @@ import validateTeamMemberForm from '@/app/lib/validations/team-member'
 import { TeamMemberForm } from '../forms/TeamMemberForm'
 import { useRouter } from 'next/navigation'
 
-const TeamMemberDrawer = () => {
+export const TeamMemberDrawer = () => {
   const router = useRouter()
   const { teamMemberDrawer } = useTeamMemberSelector()
   const { forms, isLoading } = useFormSelector()
@@ -96,4 +96,3 @@ const TeamMemberDrawer = () => {
     </AnimatePresence>
   )
 }
-export default TeamMemberDrawer

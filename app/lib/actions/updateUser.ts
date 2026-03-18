@@ -1,22 +1,14 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
+import { UpdateUserInputs } from '@/types/entities/user'
 
-export interface UpdateUserInput {
-  email?: string
-  firstName?: string
-  lastName?: string
-  role?: 'ADMIN' | 'STAFF' | 'SUPPORTER' | 'SUPERUSER' | 'VOLUNTEER' | 'PROGRAM'
-  phone?: string
-}
-
-export async function updateUser(userId: string, data: UpdateUserInput) {
+export async function updateUser(data: UpdateUserInputs) {
   try {
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: data?.id },
       select: { id: true, email: true }
     })
 
@@ -43,7 +35,7 @@ export async function updateUser(userId: string, data: UpdateUserInput) {
     }
     // Update the user
     await prisma.user.update({
-      where: { id: userId },
+      where: { id: data?.id },
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -53,12 +45,10 @@ export async function updateUser(userId: string, data: UpdateUserInput) {
       }
     })
 
-    revalidateTag('User', 'default')
-
     return { success: true }
   } catch (error) {
     await createLog('error', 'Failed to update user', {
-      userId,
+      userId: data?.id,
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 

@@ -1,12 +1,12 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { PartnerFormData } from '@/types/entities/partner'
 import { createLog } from './createLog'
 import { ActionResult } from '@/types/common'
 import { sanitizePartnerData } from '../utils/sanitizePartnerData'
+import { CreatePartnerInputs } from '@/types/entities/partner'
 
-export async function createPartner(data: PartnerFormData): Promise<ActionResult> {
+export async function createPartner(data: CreatePartnerInputs): Promise<ActionResult> {
   try {
     const sanitized = sanitizePartnerData(data)
 

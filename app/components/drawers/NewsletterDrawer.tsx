@@ -11,10 +11,11 @@ import Drawer from '../common/Drawer'
 import validateNewsletterForm from '@/app/lib/validations/newsletter'
 import { setCloseNewsletterDrawer } from '@/app/lib/store/slices/newsletterSlice'
 import { NewsletterForm } from '../forms/NewsletterForm'
-import { updateNewsletter, UpdateNewsletterInput } from '@/app/lib/actions/updateNewsletter'
-import { createNewsletter, CreateNewsletterInput } from '@/app/lib/actions/createNewsletter'
+import { updateNewsletter } from '@/app/lib/actions/updateNewsletter'
+import { createNewsletter } from '@/app/lib/actions/createNewsletter'
+import { CreateNewsletterInput, UpdateNewsletterInput } from '@/types/entities/newsletter'
 
-const NewsletterDrawer = () => {
+export const NewsletterDrawer = () => {
   const router = useRouter()
   const { newsletterDrawer } = useNewsletterSelector()
   const { forms, isLoading } = useFormSelector()
@@ -96,5 +97,3 @@ const NewsletterDrawer = () => {
     </AnimatePresence>
   )
 }
-
-export default NewsletterDrawer

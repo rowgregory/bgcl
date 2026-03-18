@@ -17,3 +17,5 @@ export interface ITeamMember {
   createdAt?: Date
   updatedAt?: Date
 }
+
+export type CreateTeamMemberInput = Omit<ITeamMember, 'id' | 'createdAt' | 'updatedAt'>

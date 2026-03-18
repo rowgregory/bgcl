@@ -1,6 +1,5 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import { auth } from '../auth'
 import { createLog } from './createLog'
 import prisma from '@/prisma/client'
@@ -87,9 +86,6 @@ export async function createPaymentMethod({
         userId: session.user.id
       }
     })
-
-    // 6️⃣ Revalidate cache
-    revalidateTag('Payment-Method', 'default')
 
     // 7️⃣ Log success
     await createLog('info', 'Payment method created', {

@@ -2,7 +2,6 @@
 
 import prisma from '@/prisma/client'
 import { ITeamMember } from '@/types/entities/team-member'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
 export async function updateTeamMember(id: string, data: Partial<Omit<ITeamMember, 'id' | 'createdAt' | 'updatedAt'>>) {
@@ -19,8 +18,6 @@ export async function updateTeamMember(id: string, data: Partial<Omit<ITeamMembe
       where: { id },
       data: cleanData
     })
-
-    revalidateTag('Team-Member', 'default')
 
     return { success: true }
   } catch (error) {

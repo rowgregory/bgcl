@@ -1,6 +1,5 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 
@@ -25,8 +24,6 @@ export async function deleteResource(id: string) {
       resourceId: resource.id,
       title: resource.title
     })
-
-    revalidateTag('Club-Resource', 'default')
 
     return { success: true }
   } catch (error) {

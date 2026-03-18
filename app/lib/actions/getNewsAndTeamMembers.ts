@@ -1,7 +1,6 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
 export const getNewsAndTeamMembers = async () => {
@@ -43,9 +42,4 @@ export const getNewsAndTeamMembers = async () => {
 
     throw error
   }
-}
-
-export async function invalidateNewsAndTeamMembers() {
-  revalidateTag('News', 'default')
-  revalidateTag('TeamMember', 'default')
 }

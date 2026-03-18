@@ -1,21 +1,20 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { IUpdateProgram } from '@/types/entities/program'
 import { createLog } from './createLog'
-import { revalidateTag } from 'next/cache'
+import { UpdateProgramInputs } from '@/types/entities/program'
 
-export async function updateProgram(programId: string, body: IUpdateProgram) {
+export async function updateProgram(data: UpdateProgramInputs) {
   try {
     const existingProgram = await prisma.program.findUnique({
-      where: { id: programId }
+      where: { id: data?.id }
     })
 
     if (!existingProgram) {
       return { success: false, error: 'Program not found', status: 404 }
     }
 
-    const { isUpdating, createdAt, updatedAt, id, ...rest } = body
+    const { isUpdating, createdAt, updatedAt, id, ...rest } = data
 
     // Filter out null/undefined values
     const cleanData = Object.entries(rest).reduce((acc, [key, value]) => {
@@ -26,24 +25,21 @@ export async function updateProgram(programId: string, body: IUpdateProgram) {
     }, {} as any)
 
     const program = await prisma.program.update({
-      where: { id: programId },
+      where: { id: data?.id },
       data: cleanData
     })
 
     await createLog('info', 'Program updated successfully', {
       programId: program.id,
       programName: program.name,
-      updatedFields: Object.keys(body)
+      updatedFields: Object.keys(data)
     })
-
-    revalidateTag('Program', 'default')
-    revalidateTag('Theme', 'default')
 
     return { success: true }
   } catch (error) {
     await createLog('error', 'Failed to update program', {
       error: error instanceof Error ? error.message : 'Unknown error',
-      programId
+      programId: data?.id
     })
 
     return {

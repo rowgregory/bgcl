@@ -1,19 +1,10 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { CreateTicketInput } from '@/types/entities/ticket'
 
-interface CreateTicketData {
-  name: string
-  description?: string
-  price: number
-  totalQuantity: number
-  isAvailable?: boolean
-  sortOrder?: number
-}
-
-export async function createTicket(eventId: string, data: CreateTicketData) {
+export async function createTicket(eventId: string, data: CreateTicketInput) {
   try {
     const event = await prisma.event.findUnique({
       where: { id: eventId }
@@ -44,8 +35,6 @@ export async function createTicket(eventId: string, data: CreateTicketData) {
       ticketId: ticket.id,
       ticketName: ticket.name
     })
-
-    revalidateTag('Event', 'default')
 
     return { success: true }
   } catch (error) {

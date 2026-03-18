@@ -1,6 +1,5 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 
@@ -35,8 +34,6 @@ export async function updateHeroStatus(id: string, status: HeroStatus) {
 
       return activatedHero
     })
-
-    revalidateTag('Hero', 'default')
 
     return { success: true }
   } catch (error) {

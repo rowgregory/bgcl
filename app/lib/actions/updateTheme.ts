@@ -1,7 +1,6 @@
 import prisma from '@/prisma/client'
 import { IUpdateTheme } from '@/types/entities/theme'
 import { createLog } from './createLog'
-import { revalidateTag } from 'next/cache'
 
 export async function updateTheme(data: IUpdateTheme) {
   try {
@@ -13,9 +12,6 @@ export async function updateTheme(data: IUpdateTheme) {
         ...(data.order !== undefined && { order: data.order })
       }
     })
-
-    revalidateTag('Program', 'default')
-    revalidateTag('Theme', 'default')
 
     return { success: true }
   } catch (error) {

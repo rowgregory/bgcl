@@ -1,7 +1,6 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
 interface TeamMember {
@@ -38,8 +37,6 @@ export async function reorderTeamMembers(role: string, teamMembers: TeamMember[]
 
     // Update database with recalculated orders
     const savedMembers = await updateOrderInDatabase(updatedMembers)
-
-    revalidateTag('Team-Member', 'default')
 
     return {
       success: true,

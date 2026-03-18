@@ -43,3 +43,22 @@ export interface ITicket {
   eventTitle?: string
   orderItems?: IOrderItem[]
 }
+
+export interface UpdateTicketData {
+  name?: string
+  description?: string
+  price?: number
+  totalQuantity?: number
+  isAvailable?: boolean
+  sortOrder?: number
+  [key: string]: any
+}
+
+export interface CreateTicketInput {
+  name: string
+  description?: string
+  price: number
+  totalQuantity: number
+  isAvailable?: boolean
+  sortOrder?: number
+}

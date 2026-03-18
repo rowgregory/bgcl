@@ -1,7 +1,6 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 import { ICreateTheme } from '@/types/entities/theme'
 
@@ -28,9 +27,6 @@ export async function createTheme(data: ICreateTheme) {
       title: theme.title,
       order: theme.order
     })
-
-    revalidateTag('Theme', 'default')
-    revalidateTag('Program', 'default')
 
     return { success: true }
   } catch (error) {

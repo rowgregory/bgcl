@@ -1,13 +1,8 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
-
-export interface CreateSubscriberInput {
-  email: string
-  type: 'member' | 'non-member' | 'donor'
-}
+import { CreateSubscriberInput } from '@/types/entities/subscriber'
 
 export async function createSubscriber(data: CreateSubscriberInput) {
   try {
@@ -28,8 +23,6 @@ export async function createSubscriber(data: CreateSubscriberInput) {
         type: data.type
       }
     })
-
-    revalidateTag('Subscriber', 'default')
 
     return {
       success: true,

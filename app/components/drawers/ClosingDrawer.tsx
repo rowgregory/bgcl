@@ -9,12 +9,13 @@ import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
 import { useRouter } from 'next/navigation'
 import Drawer from '../common/Drawer'
 import { setCloseClosingDrawer } from '@/app/lib/store/slices/closingSlice'
-import { updateClosing, UpdateClosingInput } from '@/app/lib/actions/updateClosing'
-import { createClosing, CreateClosingInput } from '@/app/lib/actions/createClosing'
+import { updateClosing } from '@/app/lib/actions/updateClosing'
+import { createClosing } from '@/app/lib/actions/createClosing'
 import validateClosingForm from '@/app/lib/validations/closing'
 import { ClosingForm } from '../forms/ClosingForm'
+import { CreateClosingInput, UpdateClosingInput } from '@/types/entities/closing'
 
-const ClosingDrawer = () => {
+export const ClosingDrawer = () => {
   const router = useRouter()
   const { closingDrawer } = useClosingSelector()
   const { forms, isLoading } = useFormSelector()
@@ -94,5 +95,3 @@ const ClosingDrawer = () => {
     </AnimatePresence>
   )
 }
-
-export default ClosingDrawer

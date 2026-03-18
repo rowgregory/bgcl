@@ -173,7 +173,10 @@ const AdminListItem = ({
               item.year ||
               item.url ||
               item.description ||
-              item.date ||
+              (item.date
+                ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                : null) ||
+              item.tier ||
               'No description'}
           </p>
         </div>

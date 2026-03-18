@@ -53,7 +53,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 // ── Drawer ────────────────────────────────────────────────────────────────────
 
-export const TicketOrderDrawer = () => {
+export const AdminTicketOrderDrawer = () => {
   const { order } = useAdminSelector()
   const event = order?.event ?? order?.orderItems?.[0]?.ticket?.event ?? null
   const totalQuantity = order?.orderItems?.reduce((sum, item) => sum + item.quantity, 0) ?? 0

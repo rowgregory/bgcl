@@ -2,17 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
-import { revalidateTag } from 'next/cache'
-
-interface UpdateTicketData {
-  name?: string
-  description?: string
-  price?: number
-  totalQuantity?: number
-  isAvailable?: boolean
-  sortOrder?: number
-  [key: string]: any
-}
+import { UpdateTicketData } from '@/types/entities/ticket'
 
 export async function updateTicket(id: string, body: UpdateTicketData) {
   try {
@@ -48,8 +38,6 @@ export async function updateTicket(id: string, body: UpdateTicketData) {
       ticketName: ticket.name,
       updatedFields: Object.keys(body)
     })
-
-    revalidateTag('Event', 'default')
 
     return { success: true }
   } catch (error) {

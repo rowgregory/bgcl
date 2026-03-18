@@ -1,10 +1,8 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
-
-type EventStatus = 'UPCOMING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED' | 'POSTPONED'
+import { EventStatus } from '@prisma/client'
 
 export async function updateEventStatus(id: string, status: EventStatus) {
   try {
@@ -30,8 +28,6 @@ export async function updateEventStatus(id: string, status: EventStatus) {
       previousStatus: event.status,
       newStatus: updatedEvent.status
     })
-
-    revalidateTag('Event', 'default')
 
     return { success: true, event: updatedEvent }
   } catch (error) {

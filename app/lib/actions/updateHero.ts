@@ -3,7 +3,6 @@
 import prisma from '@/prisma/client'
 import { IUpdateHero } from '@/types/entities/hero'
 import { createLog } from './createLog'
-import { revalidateTag } from 'next/cache'
 
 export async function updateHero(id: string, body: IUpdateHero) {
   try {
@@ -28,8 +27,6 @@ export async function updateHero(id: string, body: IUpdateHero) {
       heroName: hero.name,
       updatedFields: Object.keys(body)
     })
-
-    revalidateTag('Hero', 'default')
 
     return { success: true, hero }
   } catch (error) {

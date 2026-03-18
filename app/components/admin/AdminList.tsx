@@ -17,8 +17,6 @@ import { useState } from 'react'
 import AdminListItem from './AdminListItem'
 import { setOpenEventDrawer } from '@/app/lib/store/slices/eventSlice'
 import { initialEventFormState } from '@/app/lib/initial-states/event'
-import { initialPartnerFormState } from '@/app/lib/constants/partner'
-import { setOpenPartnerDrawer } from '@/app/lib/store/slices/uiSlice'
 
 interface AdminListItem {
   id: string
@@ -29,7 +27,7 @@ interface AdminListItem {
 interface AdminListPageProps<T extends AdminListItem> {
   data: T[] | any
   pageTitle: string
-  itemType: 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign' | 'closing' | 'event' | 'partner'
+  itemType: 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign' | 'closing' | 'event'
   emptyMessage?: string
 }
 
@@ -91,10 +89,10 @@ export function AdminListPage<T extends AdminListItem>({
         store.dispatch(setOpenEventDrawer())
         store.dispatch(setInputs({ formName: 'eventForm', data: initialEventFormState }))
         break
-      case 'partner':
-        store.dispatch(setOpenPartnerDrawer())
-        store.dispatch(setInputs({ formName: 'partnerForm', data: initialPartnerFormState }))
-        break
+      // case 'partner':
+      //   store.dispatch(setOpenPartnerDrawer())
+      //   store.dispatch(setInputs({ formName: 'partnerForm', data: initialPartnerFormState }))
+      //   break
     }
   }
 

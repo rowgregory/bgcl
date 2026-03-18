@@ -12,7 +12,7 @@ import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
 import validatePartnerForm from '@/app/lib/validations/partner'
 import PartnerForm from '../forms/PartnerForm'
 import { createPartner } from '@/app/lib/actions/createPartner'
-import { PartnerFormData } from '@/types/entities/partner'
+import { CreatePartnerInputs, UpdatePartnerInputs } from '@/types/entities/partner'
 import { updatePartner } from '@/app/lib/actions/updatePartner'
 
 export const PartnerDrawer = () => {
@@ -38,9 +38,9 @@ export const PartnerDrawer = () => {
       store.dispatch(setIsLoading(true))
 
       if (inputs?.isUpdating) {
-        await updatePartner(inputs.id as string, inputs as PartnerFormData)
+        await updatePartner(inputs as UpdatePartnerInputs)
       } else {
-        await createPartner(inputs as PartnerFormData)
+        await createPartner(inputs as CreatePartnerInputs)
       }
 
       onClose()

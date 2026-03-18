@@ -1,7 +1,6 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
 
 export async function createPage(slug: string, content: any) {
@@ -24,8 +23,6 @@ export async function createPage(slug: string, content: any) {
       slug: page.slug,
       pageId: page.id
     })
-
-    revalidateTag('Page', 'default')
 
     return { success: true, page }
   } catch (error) {

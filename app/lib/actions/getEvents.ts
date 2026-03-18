@@ -15,7 +15,13 @@ export async function getEvents() {
       }
     })
 
-    return events
+    return events.map((event) => ({
+      ...event,
+      tickets: event.tickets.map((ticket) => ({
+        ...ticket,
+        price: Number(ticket.price)
+      }))
+    }))
   } catch (error) {
     await createLog('error', 'Error fetching events', {
       error: error instanceof Error ? error.message : 'Unknown error'

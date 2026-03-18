@@ -1,15 +1,8 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { revalidateTag } from 'next/cache'
 import { createLog } from './createLog'
-
-export interface UpdateClosingInput {
-  id: string
-  title: string
-  date: string
-  order: number
-}
+import { UpdateClosingInput } from '@/types/entities/closing'
 
 export async function updateClosing(data: UpdateClosingInput) {
   try {
@@ -21,8 +14,6 @@ export async function updateClosing(data: UpdateClosingInput) {
         order: data.order ?? 0
       }
     })
-
-    revalidateTag('Closing', 'default')
 
     return { success: true }
   } catch (error) {

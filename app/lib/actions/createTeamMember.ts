@@ -1,13 +1,10 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { ITeamMember } from '@/types/entities/team-member'
-import { revalidateTag } from 'next/cache'
+import { CreateTeamMemberInput } from '@/types/entities/team-member'
 import { createLog } from './createLog'
 
-type TeamMemberInput = Omit<ITeamMember, 'id' | 'createdAt' | 'updatedAt'>
-
-export async function createTeamMember(data: TeamMemberInput) {
+export async function createTeamMember(data: CreateTeamMemberInput) {
   try {
     if (!data.name) {
       throw new Error('Missing required fields: name')
@@ -44,8 +41,6 @@ export async function createTeamMember(data: TeamMemberInput) {
       teamMemberId: newTeamMember.id,
       teamMemberName: newTeamMember.name
     })
-
-    revalidateTag('Team-Member', 'default')
 
     return { success: true }
   } catch (error) {

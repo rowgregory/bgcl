@@ -7,7 +7,7 @@ import { User, Mail, Calendar, CreditCard, RefreshCw, AlertCircle, Check, Tag } 
 import { formatDate } from '@/app/lib/utils/date-utils'
 import { IOrder } from '@/types/entities/order'
 
-export default function TransactionOrderRow({ order, index }: { order: IOrder; index: number }) {
+export default function FuelTankTransactionOrderRow({ order, index }: { order: IOrder; index: number }) {
   const isFailed = order?.status === 'FAILED'
   const isCancelled = order?.status === 'CANCELLED'
 

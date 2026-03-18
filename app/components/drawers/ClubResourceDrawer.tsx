@@ -11,10 +11,11 @@ import Drawer from '../common/Drawer'
 import { setCloseClubResourceDrawer } from '@/app/lib/store/slices/clubResourceSlice'
 import validateClubResourceForm from '@/app/lib/validations/club-resource'
 import { ClubResourceForm } from '../forms/ClubResourceForm'
-import { updateClubResource, UpdateClubResourceInput } from '@/app/lib/actions/updateClubResource'
-import { createClubResource, CreateClubResourceInput } from '@/app/lib/actions/createClubResource'
+import { updateClubResource } from '@/app/lib/actions/updateClubResource'
+import { createClubResource } from '@/app/lib/actions/createClubResource'
+import { CreateClubResourceInput, UpdateClubResourceInput } from '@/types/entities/club-resource'
 
-const ClubResourceDrawer = () => {
+export const ClubResourceDrawer = () => {
   const router = useRouter()
   const { clubResourceDrawer } = useClubResourceSelector()
   const { forms, isLoading } = useFormSelector()
@@ -97,5 +98,3 @@ const ClubResourceDrawer = () => {
     </AnimatePresence>
   )
 }
-
-export default ClubResourceDrawer

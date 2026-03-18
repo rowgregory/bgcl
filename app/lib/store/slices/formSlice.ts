@@ -10,6 +10,7 @@ import { initialNewsletterFormState } from '../../initial-states/newsletter'
 import { initialClubResourceFormState } from '../../initial-states/club-resource'
 import { initialCampaignFormState } from '../../initial-states/campaign'
 import { initialClosingFormState } from '../../initial-states/closing'
+import { initialPartnerFormState } from '../../initial-states/partner'
 
 export type Inputs = {
   [key: string]: any
@@ -62,7 +63,8 @@ const formInitialState: InitialFormState = {
     clubResourceForm: { inputs: initialClubResourceFormState, errors: {} },
     contactForm: { inputs: initialContactSubmissionFormState, errors: {} },
     campaignForm: { inputs: initialCampaignFormState, errors: {} },
-    closingForm: { inputs: initialClosingFormState, errors: {} }
+    closingForm: { inputs: initialClosingFormState, errors: {} },
+    partnerForm: { inputs: initialPartnerFormState, errors: {} }
   }
 }
 
