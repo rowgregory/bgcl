@@ -7,9 +7,10 @@ import { createLog } from './createLog'
 export async function updateTeamMember(id: string, data: Partial<Omit<ITeamMember, 'id' | 'createdAt' | 'updatedAt'>>) {
   try {
     // Omit null values and metadata fields
+    // Add a year coercion before passing to Prisma
     const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
       if (value !== null && !['isUpdating'].includes(key)) {
-        acc[key] = value
+        acc[key] = key === 'year' && value !== undefined ? parseInt(value as string) : value
       }
       return acc
     }, {} as any)
