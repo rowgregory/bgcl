@@ -24,7 +24,7 @@ export default function YouthOfTheYearSection({ youth }) {
         </div>
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 mb-4 sm:mb-6">
           Meet
-          <span className="font-light dark:text-neutral-400 text-neutral-600">Divine</span>
+          <span className="font-light dark:text-neutral-400 text-neutral-600">Danielys</span>
         </h2>
 
         <motion.div
@@ -69,7 +69,7 @@ export default function YouthOfTheYearSection({ youth }) {
             {/* Title */}
             <div className="space-y-2">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900">
-                {new Date().getFullYear() - 1} Youth of the Year
+                {new Date().getFullYear()} Youth of the Year
               </h2>
             </div>
 
