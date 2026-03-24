@@ -9,6 +9,10 @@ export interface IReference {
 
 export interface IJobApplication {
   id?: string
+  positionTypes: PositionType[]
+  youthOrgEmployment?: string
+  education?: string
+  extracurricularsSkills?: string
   applicantName: string
   email: string
   employmentType: 'FULL_TIME' | 'PART_TIME' | 'SEASONAL'
@@ -33,12 +37,17 @@ export interface IJobApplication {
   signature?: string
   status: 'PENDING' | 'REVIEW' | 'APPROVED' | 'REJECTED'
   submissionStatus: 'INCOMPLETE' | 'COMPLETE' | 'SUBMITTED'
-
   createdAt: Date
   updatedAt: Date
 }
 
+export type PositionType = 'SEASONAL_SUMMER' | 'CAMP_COUNSELOR' | 'LIFEGUARD'
+
 export interface CreateJobApplicationInput {
+  positionTypes: PositionType[]
+  youthOrgEmployment?: string
+  education?: string
+  extracurricularsSkills?: string
   applicantName: string
   email: string
   employmentType: 'FULL_TIME' | 'PART_TIME' | 'SEASONAL'
@@ -67,4 +76,10 @@ export interface CreateJobApplicationInput {
     phone: string
     email: string
   }[]
+}
+
+export interface Step5CertificationProps {
+  formData: any
+  setFormData: (data: any) => void
+  errors: any
 }

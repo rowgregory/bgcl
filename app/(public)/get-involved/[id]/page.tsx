@@ -1,39 +1,10 @@
 'use client'
 
+import { jobApplicationStatusConfig } from '@/app/lib/constants/job-application.constants'
+import { PositionType } from '@prisma/client'
 import { motion } from 'framer-motion'
-import { CheckCircle, Clock, AlertCircle, FileText, Download, XCircle, FileCheck, UsersIcon, Car } from 'lucide-react'
+import { CheckCircle, AlertCircle, FileText, Download, XCircle, FileCheck, UsersIcon, Car } from 'lucide-react'
 import Link from 'next/link'
-
-const statusConfig = {
-  PENDING: {
-    color: 'bg-yellow-500/10 border-yellow-500/30',
-    textColor: 'text-yellow-400',
-    icon: Clock,
-    label: 'Under Review',
-    description: 'Your application is being reviewed by our team.'
-  },
-  REVIEW: {
-    color: 'bg-blue-500/10 border-blue-500/30',
-    textColor: 'text-blue-400',
-    icon: Clock,
-    label: 'In Review',
-    description: 'Your application is actively being reviewed.'
-  },
-  APPROVED: {
-    color: 'bg-green-500/10 border-green-500/30',
-    textColor: 'text-green-400',
-    icon: CheckCircle,
-    label: 'Approved',
-    description: 'Congratulations! Your application has been approved.'
-  },
-  REJECTED: {
-    color: 'bg-red-500/10 border-red-500/30',
-    textColor: 'text-red-400',
-    icon: AlertCircle,
-    label: 'Not Selected',
-    description: 'Thank you for applying. We will keep your application on file.'
-  }
-}
 
 const JobApplicationPage = ({ application }) => {
   if (!application) {
@@ -53,7 +24,7 @@ const JobApplicationPage = ({ application }) => {
     )
   }
 
-  const statusInfo = statusConfig[application.status]
+  const statusInfo = jobApplicationStatusConfig[application.status]
   const StatusIcon = statusInfo.icon
 
   return (
@@ -131,6 +102,70 @@ const JobApplicationPage = ({ application }) => {
             transition={{ delay: 0.1 }}
             className="lg:col-span-2 space-y-8"
           >
+            {/* Position & Background */}
+            <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-8 space-y-6 shadow-sm">
+              <h3 className="text-2xl font-bold text-neutral-900 dark:text-white">Position & Background</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Positions Applied For */}
+                {application.positionTypes?.length > 0 && (
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
+                      Positions Applied For
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {application.positionTypes.map((position: PositionType) => (
+                        <span
+                          key={position}
+                          className="px-3 py-1 text-xs font-medium bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-full"
+                        >
+                          {position === 'SEASONAL_SUMMER'
+                            ? 'Seasonal Summer'
+                            : position === 'CAMP_COUNSELOR'
+                              ? 'Camp Counselor'
+                              : 'Life Guard'}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Youth Org Employment */}
+                {application.youthOrgEmployment && (
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
+                      Youth Organization Employment
+                    </h4>
+                    <p className="text-neutral-900 dark:text-white text-sm leading-relaxed">
+                      {application.youthOrgEmployment}
+                    </p>
+                  </div>
+                )}
+
+                {/* Education */}
+                {application.education && (
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
+                      Education
+                    </h4>
+                    <p className="text-neutral-900 dark:text-white text-sm leading-relaxed">{application.education}</p>
+                  </div>
+                )}
+
+                {/* Extracurricular Skills */}
+                {application.extracurricularsSkills && (
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
+                      Extracurricular Activities & Skills
+                    </h4>
+                    <p className="text-neutral-900 dark:text-white text-sm leading-relaxed">
+                      {application.extracurricularsSkills}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Personal & Position Information */}
             <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-8 space-y-6 shadow-sm">
               <h3 className="text-2xl font-bold text-neutral-900 dark:text-white">Application Details</h3>

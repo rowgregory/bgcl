@@ -21,6 +21,47 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.14.0',
+    date: '2026-03-24',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Job Application Position & Background Step',
+        description:
+          'Added a new first step to the job application form with four new fields: position types (Seasonal Summer, Camp Counselor, Life Guard), youth organization employment history, education, and extracurricular activities & skills. These fields are also persisted to the JobApplication model.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Job Application Admin Drawer',
+        description:
+          'Added a slide-in drawer on the admin job applications page displaying full applicant details. Admins can now review all submitted data and update application status directly from the drawer.',
+        impact: 'high'
+      },
+      {
+        type: 'ui',
+        title: 'Job Applications Table View',
+        description:
+          'Replaced the card grid layout on the admin job applications page with a compact table view showing applicant name, positions, employment type, submission date, and status.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Job Application Form Step Reordering',
+        description:
+          'Position & Background is now the first step of the job application form so applicants declare their intended role before filling out personal details.',
+        impact: 'low'
+      },
+      {
+        type: 'ui',
+        title: 'Job Application Detail Page Updated',
+        description:
+          'Updated the /get-involved/[jobApplicationId] page to display the four new Position & Background fields — position types, youth organization employment, education, and extracurricular skills — above the existing personal information section.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.13.0',
     date: '2026-03-18',
     changes: [

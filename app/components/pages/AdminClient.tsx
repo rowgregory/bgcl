@@ -35,6 +35,7 @@ import { TeamMemberDrawer } from '../drawers/TeamMemberDrawer'
 import { TicketDrawer } from '../drawers/TicketDrawer'
 import { AdminTicketOrderDrawer } from '../drawers/AdminTicketOrderDrawer'
 import { UserDrawer } from '../drawers/UserDrawer'
+import { JobApplicationDrawer } from '../drawers/JobApplicationDrawer'
 
 const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
   const pathname = usePathname()
@@ -62,6 +63,7 @@ const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
       <DonationDrawer />
       <AdminTicketOrderDrawer />
       <PartnerDrawer />
+      <JobApplicationDrawer />
 
       {/* Desktop Fixed Header */}
       <header className="hidden lg:block fixed top-0 left-64 right-0 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-b py-2.5 px-6 z-30 h-15.25">

@@ -6,7 +6,16 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Building2, ArrowRight, ChevronUp } from 'lucide-react'
 
-const CAPITAL_CAMPAIGN_LINKS = ['/admin/', '/program/', '/supporter', '/checkout', '/cart', '/events/']
+const CAPITAL_CAMPAIGN_LINKS = [
+  '/admin/',
+  '/program/',
+  '/supporter',
+  '/checkout',
+  '/cart',
+  '/events/',
+  '/auth',
+  '/get-involved'
+]
 
 export default function CapitalCampaignTab() {
   const pathname = usePathname()

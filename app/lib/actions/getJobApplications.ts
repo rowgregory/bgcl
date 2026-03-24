@@ -6,7 +6,8 @@ export const getJobApplications = async () => {
     const jobApplications = await prisma.jobApplication.findMany({
       include: {
         references: true
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     })
 
     return jobApplications

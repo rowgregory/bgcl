@@ -597,6 +597,11 @@ model JobApplication {
   status           ApplicationStatus @default(PENDING)
   submissionStatus SubmissionStatus  @default(INCOMPLETE)
 
+  youthOrgEmployment     String?
+  education              String?
+  extracurricularsSkills String?
+  positionTypes          PositionType[]
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -761,4 +766,10 @@ enum SubmissionStatus {
   INCOMPLETE
   COMPLETE
   SUBMITTED
+}
+
+enum PositionType {
+  SEASONAL_SUMMER
+  CAMP_COUNSELOR
+  LIFEGUARD
 }
