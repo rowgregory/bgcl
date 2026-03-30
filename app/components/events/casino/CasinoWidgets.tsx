@@ -1,13 +1,14 @@
 import { store, useCartSelector, useUiSelector } from '@/app/lib/store/store'
-import { useSession } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ShoppingCart, User, Volume2, VolumeX, X } from 'lucide-react'
+import { LayoutDashboard, LogIn, ShoppingCart, User, Volume2, VolumeX, X } from 'lucide-react'
 import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
 import { setSoundOn } from '@/app/lib/store/slices/uiSlice'
 import { CasinoCartDropdown } from './CasinoCartDropdown'
 import { TCasinoWidgets } from '@/types/casino.types'
+import { MotionLink } from '../../common/MotionLink'
 
 export function CasinoWidgets({ data }: TCasinoWidgets) {
   const [open, setOpen] = useState(false)
@@ -16,26 +17,62 @@ export function CasinoWidgets({ data }: TCasinoWidgets) {
   const session = useSession()
   const isAuthed = session.status === 'authenticated'
   const userEmail = session.data?.user?.email
-  const count = items.reduce((sum: number, i: any) => sum + i.quantity, 0)
+  const userRole = session.data?.user?.role
+  const isAdmin = userRole === 'ADMIN' || userRole === 'SUPERUSER'
+  const count = items?.reduce((sum: number, i: any) => sum + i.quantity, 0)
 
   const { play: openCartDropdown } = useSoundEffect('/sound-effects/casino-12.mp3', soundOn)
-
   const { play: volumeOn } = useSoundEffect('/sound-effects/casino-22.mp3', !soundOn)
   const { play: volumeOff } = useSoundEffect('/sound-effects/casino-20.mp3', soundOn)
   const { play: goToAccount } = useSoundEffect('/sound-effects/casual-click-pop-ui-2.mp3', soundOn)
+  const { play: google } = useSoundEffect('/sound-effects/casino-5.mp3', soundOn)
+
+  const handleMute = () => {
+    const next = !soundOn
+    store.dispatch(setSoundOn(next))
+    if (next) volumeOn()
+    else volumeOff()
+  }
+
+  const handleGoogle = () => {
+    google()
+    setTimeout(() => signIn('google', { redirect: true, callbackUrl: `/events/${data.id}` }), 1000)
+  }
 
   return (
     <div className="fixed top-4 right-4 z-50 flex items-center gap-1.5 sm:gap-2">
+      {/* Admin Dashboard */}
+      {isAdmin && (
+        <MotionLink
+          href="/admin/mission-control"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          aria-label={userRole}
+          className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 shrink-0"
+          style={{
+            background: 'linear-gradient(135deg, #1a1000, #2a1c00)',
+            border: '1px solid rgba(212,175,55,0.3)',
+            boxShadow: '0 0 20px rgba(212,175,55,0.08), 0 4px 20px rgba(0,0,0,0.6)'
+          }}
+        >
+          <span className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+            <span
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(110deg, transparent 30%, rgba(212,175,55,0.12) 50%, transparent 70%)',
+                animation: 'btnShine 4s infinite linear'
+              }}
+            />
+          </span>
+
+          <LayoutDashboard className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 relative z-10" aria-hidden="true" />
+        </MotionLink>
+      )}
       {/* Volume */}
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => {
-          const next = !soundOn
-          store.dispatch(setSoundOn(next))
-          if (next) volumeOn()
-          else volumeOff()
-        }}
+        onClick={handleMute}
         aria-label={soundOn ? 'Mute sounds' : 'Unmute sounds'}
         className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 shrink-0"
         style={{
@@ -61,7 +98,7 @@ export function CasinoWidgets({ data }: TCasinoWidgets) {
       </motion.button>
 
       {/* Signed in pill */}
-      {isAuthed && (
+      {isAuthed ? (
         <Link
           href="/supporter/overview"
           onClick={() => goToAccount()}
@@ -87,6 +124,31 @@ export function CasinoWidgets({ data }: TCasinoWidgets) {
             {userEmail}
           </span>
         </Link>
+      ) : (
+        <button
+          onClick={handleGoogle}
+          aria-label="Google - Sign in to your account"
+          className="relative flex items-center gap-2 px-2.5 sm:px-4 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 shrink-0"
+          style={{
+            background: 'linear-gradient(135deg, #1a1000, #2a1c00)',
+            border: '1px solid rgba(212,175,55,0.3)',
+            boxShadow: '0 0 20px rgba(212,175,55,0.08), 0 4px 20px rgba(0,0,0,0.6)'
+          }}
+        >
+          <span className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+            <span
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(110deg, transparent 30%, rgba(212,175,55,0.12) 50%, transparent 70%)',
+                animation: 'btnShine 4s infinite linear'
+              }}
+            />
+          </span>
+          <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 shrink-0 relative z-10" aria-hidden="true" />
+          <span className="oswald text-xs sm:text-sm font-black uppercase tracking-widest text-white/80 hidden sm:inline relative z-10">
+            Sign In
+          </span>
+        </button>
       )}
 
       {/* Cart */}

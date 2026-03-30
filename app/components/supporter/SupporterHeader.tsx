@@ -3,14 +3,17 @@ import { MotionLink } from '../common/MotionLink'
 import Picture from '../common/Picture'
 import { Rocket, ShoppingCart } from 'lucide-react'
 import LogoutButton from '../ui/buttons/LogoutButton'
-import { useCartSelector } from '@/app/lib/store/store'
+import { useCartSelector, useUiSelector } from '@/app/lib/store/store'
+import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
 
-export function SupporterHeader() {
+export function SupporterHeader({ event }) {
   const session = useSession()
   const role = session?.data?.user?.role
   const email = session.data?.user?.email
   const { items } = useCartSelector()
   const cartCount = items.reduce((sum, i) => sum + i.quantity, 0)
+  const { soundOn } = useUiSelector()
+  const { play } = useSoundEffect('/sound-effects/casino-24.mp3', soundOn)
 
   return (
     <header className="px-6 md:px-8 lg:px-12 pb-4 pt-6 md:pt-8 dark:border-neutral-800 border-neutral-200 border-b">
@@ -34,6 +37,26 @@ export function SupporterHeader() {
           />
         </MotionLink>
         <div className="flex items-center gap-x-3">
+          {event && (event.status === 'UPCOMING' || event.status === 'ONGOING') && (
+            <MotionLink
+              onClick={() => play()}
+              href={`/events/${event.id}`}
+              aria-label={`View ${event.title}`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative p-2 dark:bg-neutral-800 dark:border-neutral-700 dark:hover:bg-neutral-700 bg-neutral-100 border-neutral-200 hover:bg-neutral-200 border rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 h-9.5 flex items-center justify-center"
+            >
+              <span className="suit text-2xl" aria-hidden="true">
+                ♠
+              </span>
+              {event.status === 'ONGOING' && (
+                <span
+                  className="absolute -top-1.5 -right-1.5 w-2 h-2 bg-emerald-500 rounded-full animate-pulse"
+                  aria-hidden="true"
+                />
+              )}
+            </MotionLink>
+          )}
           {/* Profile */}
           <div className="flex items-center gap-2.5 px-3 py-1.5 dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-100 border-neutral-200 border rounded-lg">
             <div

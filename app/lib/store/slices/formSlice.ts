@@ -65,7 +65,7 @@ const formInitialState: InitialFormState = {
     campaignForm: { inputs: initialCampaignFormState, errors: {} },
     closingForm: { inputs: initialClosingFormState, errors: {} },
     partnerForm: { inputs: initialPartnerFormState, errors: {} },
-    ticketCheckoutForm: { inputs: {}, errors: {} },
+    ticketCheckoutForm: { inputs: { attendingEvent: true }, errors: {} },
     paymentMethodForm: { inputs: { isDefault: false }, errors: {} }
   }
 }

@@ -19,6 +19,7 @@ export interface TicketTemplate {
     isRaffleTicket: boolean
     sponsorImpact?: string | null
     sponsorPerks?: string[]
+    guestCount: number
   }
 }
 
@@ -56,6 +57,8 @@ export interface ITicket {
   event?: IEvent
   eventTitle?: string
   orderItems?: IOrderItem[]
+
+  guestCount: number
 }
 
 export interface UpdateTicketData {
@@ -69,6 +72,7 @@ export interface UpdateTicketData {
   isRaffleTicket?: boolean
   sponsorImpact?: string | null
   sponsorPerks?: string[]
+  guestCount: number
 }
 
 export interface CreateTicketInput {
@@ -82,4 +86,5 @@ export interface CreateTicketInput {
   isRaffleTicket?: boolean
   sponsorImpact?: string | null
   sponsorPerks?: string[]
+  guestCount: number
 }

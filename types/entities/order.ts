@@ -16,6 +16,7 @@ export type OrderStatus =
   | 'PENDING_CANCELLATION'
 
 export interface IOrder {
+  attendingEvent: boolean
   id: string
   createdAt: Date
   updatedAt: Date

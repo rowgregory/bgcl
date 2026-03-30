@@ -147,7 +147,8 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
           metadata.donationType === 'monthly' ? 'monthly' : metadata.donationType === 'yearly' ? 'yearly' : null,
         campaignId: metadata.campaignId || null,
         paymentMethodId: (paymentIntent.payment_method as string) || null,
-        eventId: metadata.eventId || null
+        eventId: metadata.eventId || null,
+        attendingEvent: metadata.attendingEvent !== 'false'
       },
       include: {
         orderItems: true,
@@ -261,6 +262,18 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
             ...(!alreadyAttending && { attendeeCount: { increment: 1 } })
           }
         })
+      }
+
+      // Increment headcount based on highest guest count ticket if attending
+      if (metadata?.eventId && order.attendingEvent !== false) {
+        const guestIncrement = Math.max(...tickets.map((t: any) => t.guestCount ?? 1))
+
+        if (guestIncrement > 0) {
+          await prisma.event.update({
+            where: { id: metadata.eventId as string },
+            data: { guestCount: { increment: guestIncrement } }
+          })
+        }
       }
 
       // Tournament participation

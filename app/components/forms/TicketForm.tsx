@@ -61,6 +61,15 @@ const TicketForm: FC<IForm> = ({ errors, handleInput, handleSubmit, inputs, isLo
                   of <span className="font-semibold dark:text-white text-neutral-900">{inputs?.tickets?.length}</span>{' '}
                   tickets live
                 </span>
+                <span className="text-neutral-300 dark:text-neutral-600">·</span>
+                <span className="text-sm dark:text-neutral-400 text-neutral-500">
+                  <span className="font-semibold dark:text-white text-neutral-900">
+                    {inputs?.tickets
+                      ?.reduce((sum, t) => sum + (t.guestCount ?? 1) * (t.totalQuantity ?? 0), 0)
+                      .toLocaleString()}
+                  </span>{' '}
+                  total guests
+                </span>
               </>
             )}
           </div>
@@ -254,6 +263,20 @@ const TicketForm: FC<IForm> = ({ errors, handleInput, handleSubmit, inputs, isLo
                       className={InputStyles}
                     />
                     {errors?.price && <p className="mt-2 text-sm text-red-400">{errors.price}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                      Guest Count
+                    </label>
+                    <input
+                      type="number"
+                      name="guestCount"
+                      value={(inputs?.guestCount as number) || ''}
+                      onChange={handleInput}
+                      min="1"
+                      placeholder="1"
+                      className={InputStyles}
+                    />
                   </div>
 
                   <div>

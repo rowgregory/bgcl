@@ -17,11 +17,12 @@ export async function updateTicket(id: string, body: UpdateTicketData) {
       return { success: false, error: 'Event ticket not found', status: 404 }
     }
 
-    const { totalQuantity, price, sortOrder, ...rest } = body
+    const { totalQuantity, price, sortOrder, guestCount, ...rest } = body
 
     const totalQuantityNumber = Number(body.totalQuantity)
     const priceNumber = Number(body.price)
     const sortOrderNumber = Number(body.sortOrder)
+    const guestCountNumer = Number(body.guestCount)
 
     const ticket = await prisma.ticket.update({
       where: { id },
@@ -29,6 +30,7 @@ export async function updateTicket(id: string, body: UpdateTicketData) {
         totalQuantity: totalQuantityNumber,
         price: priceNumber,
         sortOrder: sortOrderNumber,
+        guestCount: guestCountNumer,
         ...rest
       }
     })

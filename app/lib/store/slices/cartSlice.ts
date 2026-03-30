@@ -16,6 +16,7 @@ export interface CartItem {
   isRaffleTicket: boolean
   ticketSalesStartDate: Date
   ticketSalesEndDate: Date
+  guestCount: number
 }
 
 interface AddToCartToastProps {
@@ -77,7 +78,8 @@ export const cartSlice = createSlice({
           quantity,
           maxAvailable: ticket.totalQuantity - ticket.quantitySold,
           ticketSalesStartDate: ticket.ticketSalesStartDate,
-          ticketSalesEndDate: ticket.ticketSalesEndDate
+          ticketSalesEndDate: ticket.ticketSalesEndDate,
+          guestCount: ticket.guestCount
         })
       }
 

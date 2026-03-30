@@ -1,18 +1,7 @@
-'use client'
+import { getUpcomingOrOngoingEvent } from '@/app/lib/actions/getUpcomingOrOngoingEvent'
+import SupporterPage from './page'
 
-import { UpdateAddressModal } from '@/app/components/modals/UpdateAddressModal'
-import CancelSubscriptionDrawer from '../../components/drawers/CancelSubscriptionDrawer'
-import { PaymentMethodModal } from '../../components/modals/PaymentMethodModal'
-import { SupporterHeader } from '@/app/components/supporter/SupporterHeader'
-
-export default function SupporterLayout({ children }) {
-  return (
-    <>
-      <PaymentMethodModal />
-      <CancelSubscriptionDrawer />
-      <UpdateAddressModal />
-      <SupporterHeader />
-      {children}
-    </>
-  )
+export default async function SupporterLayout({ children }) {
+  const result = await getUpcomingOrOngoingEvent()
+  return <SupporterPage result={result}>{children}</SupporterPage>
 }

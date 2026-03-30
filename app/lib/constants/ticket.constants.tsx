@@ -17,7 +17,8 @@ export const ticketTemplates: TicketTemplate[] = [
       isAvailable: true,
       sortOrder: 0,
       ticketType: 'RAFFLE',
-      isRaffleTicket: true
+      isRaffleTicket: true,
+      guestCount: 1
     }
   },
   {
@@ -33,7 +34,8 @@ export const ticketTemplates: TicketTemplate[] = [
       isAvailable: true,
       sortOrder: 1,
       ticketType: 'TOURNAMENT',
-      isRaffleTicket: false
+      isRaffleTicket: false,
+      guestCount: 1
     }
   },
   {
@@ -59,7 +61,8 @@ export const ticketTemplates: TicketTemplate[] = [
         'Prime Sponsor Board placement in a high-traffic location',
         'Admission for up to 10 guests',
         'A representative helps pull the final 10 winners, including the $10k grand prize'
-      ]
+      ],
+      guestCount: 10
     }
   },
   {
@@ -82,7 +85,8 @@ export const ticketTemplates: TicketTemplate[] = [
         'Signage displayed around the dinner and bar area',
         'Social media recognition prior to the event',
         'Admission for up to 5 guests'
-      ]
+      ],
+      guestCount: 5
     }
   },
   {
@@ -105,7 +109,8 @@ export const ticketTemplates: TicketTemplate[] = [
         'Recognition during the casino game portion of the event',
         'Signage displayed around casino gaming area',
         'Admission for up to 3 guests'
-      ]
+      ],
+      guestCount: 3
     }
   },
   {
@@ -123,7 +128,8 @@ export const ticketTemplates: TicketTemplate[] = [
       ticketType: 'SPONSORSHIP',
       isRaffleTicket: false,
       sponsorImpact: 'Helps support 1 camper to enjoy a full week of swimming, basketball, fishing, and more.',
-      sponsorPerks: ['Social media recognition', 'Vocal recognition at event', 'Signage around cocktail area']
+      sponsorPerks: ['Social media recognition', 'Vocal recognition at event', 'Signage around cocktail area'],
+      guestCount: 1
     }
   },
 
@@ -142,7 +148,8 @@ export const ticketTemplates: TicketTemplate[] = [
       isAvailable: true,
       sortOrder: 0,
       ticketType: 'GENERAL',
-      isRaffleTicket: false
+      isRaffleTicket: false,
+      guestCount: 1
     }
   },
   {
@@ -158,7 +165,8 @@ export const ticketTemplates: TicketTemplate[] = [
       isAvailable: true,
       sortOrder: 1,
       ticketType: 'GENERAL',
-      isRaffleTicket: false
+      isRaffleTicket: false,
+      guestCount: 1
     }
   },
   {
@@ -174,7 +182,8 @@ export const ticketTemplates: TicketTemplate[] = [
       isAvailable: true,
       sortOrder: 2,
       ticketType: 'GENERAL',
-      isRaffleTicket: false
+      isRaffleTicket: false,
+      guestCount: 1
     }
   },
   {
@@ -190,7 +199,8 @@ export const ticketTemplates: TicketTemplate[] = [
       isAvailable: true,
       sortOrder: 3,
       ticketType: 'GENERAL',
-      isRaffleTicket: false
+      isRaffleTicket: false,
+      guestCount: 1
     }
   },
   {
@@ -206,7 +216,8 @@ export const ticketTemplates: TicketTemplate[] = [
       isAvailable: true,
       sortOrder: 4,
       ticketType: 'GENERAL',
-      isRaffleTicket: false
+      isRaffleTicket: false,
+      guestCount: 1
     }
   }
 ]

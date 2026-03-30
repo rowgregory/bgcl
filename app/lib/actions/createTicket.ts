@@ -28,6 +28,7 @@ export async function createTicket(eventId: string, data: CreateTicketInput) {
         ticketType: data.ticketType,
         sponsorImpact: data.sponsorImpact,
         sponsorPerks: data.sponsorPerks,
+        guestCount: data.guestCount,
         event: {
           connect: { id: eventId }
         }

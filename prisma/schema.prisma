@@ -190,6 +190,8 @@ model Event {
   dressCodeNote     String? // "(Per Venue: No jeans, t-shirts, or hats allowed.)"
   bestDressedPrizes String? // "Best Dressed Prizes will be awarded..."
 
+  guestCount Int @default(0)
+
   @@index([date])
   @@index([status])
   @@index([status, date])
@@ -231,6 +233,8 @@ model Ticket {
 
   sponsorImpact String? // "Covers 10 campers for the week..."
   sponsorPerks  String[] // ["Company logo on play money", "Admission for up to 10 guests"]
+
+  guestCount Int @default(1)
 
   @@index([eventId])
   @@index([eventId, isAvailable])
@@ -288,6 +292,8 @@ model Order {
   // Tournament
   participatingInTournament Boolean @default(false)
   tournamentFeePaid         Float?
+
+  attendingEvent Boolean @default(true)
 
   @@index([type])
   @@index([status])

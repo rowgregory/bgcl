@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Calendar, Users, ChevronDown, ChevronUp } from 'lucide-react'
+import { Search, Calendar, Users, ChevronDown, ChevronUp, Ticket, CheckCircle2, XCircle } from 'lucide-react'
 import { formatDate } from '@/app/lib/utils/date-utils'
 import { IOrder } from '@/types/entities/order'
 
@@ -17,6 +17,8 @@ type EventGroup = {
     email: string
     purchasedAt: Date
     totalTickets: number
+    attendingEvent: boolean
+    guestCount: number
   }[]
 }
 
@@ -29,6 +31,7 @@ const AttendeeRow = ({ attendee, index }: { attendee: EventGroup['attendees'][nu
     transition={{ duration: 0.15, delay: index * 0.02 }}
     className="border-b border-neutral-100 dark:border-neutral-800/50 hover:bg-neutral-50 dark:hover:bg-neutral-900/50 transition-colors"
   >
+    {/* Name */}
     <td className="px-4 py-3 whitespace-nowrap">
       <div className="flex items-center gap-2.5">
         <div className="shrink-0 w-7 h-7 rounded-full bg-sky-600 flex items-center justify-center" aria-hidden="true">
@@ -37,9 +40,13 @@ const AttendeeRow = ({ attendee, index }: { attendee: EventGroup['attendees'][nu
         <span className="text-sm font-semibold dark:text-neutral-200 text-neutral-800">{attendee.name}</span>
       </div>
     </td>
+
+    {/* Email */}
     <td className="px-4 py-3 whitespace-nowrap">
       <span className="text-xs font-mono dark:text-neutral-400 text-neutral-600">{attendee.email}</span>
     </td>
+
+    {/* Purchased */}
     <td className="px-4 py-3 whitespace-nowrap">
       <time
         dateTime={new Date(attendee.purchasedAt).toISOString()}
@@ -48,10 +55,35 @@ const AttendeeRow = ({ attendee, index }: { attendee: EventGroup['attendees'][nu
         {formatDate(attendee.purchasedAt)}
       </time>
     </td>
+
+    {/* Tickets */}
     <td className="px-4 py-3 whitespace-nowrap">
       <span className="inline-flex items-center gap-1 text-xs font-semibold dark:text-sky-400 text-sky-600 dark:bg-sky-500/10 bg-sky-50 px-2 py-0.5 rounded-full">
         {attendee.totalTickets} ticket{attendee.totalTickets !== 1 ? 's' : ''}
       </span>
+    </td>
+
+    {/* Guests */}
+    <td className="px-4 py-3 whitespace-nowrap">
+      <span className="inline-flex items-center gap-1 text-xs font-semibold dark:text-neutral-400 text-neutral-600 dark:bg-neutral-800 bg-neutral-100 px-2 py-0.5 rounded-full">
+        <Users className="w-3 h-3" aria-hidden="true" />
+        {attendee.guestCount ?? 0}
+      </span>
+    </td>
+
+    {/* Attending */}
+    <td className="px-4 py-3 whitespace-nowrap">
+      {attendee.attendingEvent ? (
+        <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 dark:bg-emerald-500/10 bg-emerald-50 px-2 py-0.5 rounded-full">
+          <CheckCircle2 className="w-3 h-3" aria-hidden="true" />
+          Attending
+        </span>
+      ) : (
+        <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-400 dark:bg-amber-500/10 bg-amber-50 px-2 py-0.5 rounded-full">
+          <XCircle className="w-3 h-3" aria-hidden="true" />
+          Not attending
+        </span>
+      )}
     </td>
   </motion.tr>
 )
@@ -67,6 +99,10 @@ const EventSection = ({ group, searchQuery }: { group: EventGroup; searchQuery: 
   }, [group.attendees, searchQuery])
 
   if (filteredAttendees.length === 0) return null
+
+  const totalGuests = filteredAttendees.reduce((sum, a) => sum + (a.guestCount ?? 0), 0)
+  const notAttending = filteredAttendees.filter((a) => !a.attendingEvent).length
+  const totalTickets = filteredAttendees.reduce((sum, a) => sum + a.totalTickets, 0)
 
   return (
     <motion.section
@@ -111,11 +147,39 @@ const EventSection = ({ group, searchQuery }: { group: EventGroup; searchQuery: 
             )}
           </div>
         </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <span className="flex items-center gap-1.5 text-xs font-semibold dark:text-neutral-400 text-neutral-600">
-            <Users className="w-3.5 h-3.5" aria-hidden="true" />
-            {filteredAttendees.length} attendee{filteredAttendees.length !== 1 ? 's' : ''}
-          </span>
+
+        <div className="flex items-center gap-4 shrink-0">
+          {/* Stats */}
+          <div className="hidden sm:flex items-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <Users className="w-3.5 h-3.5 dark:text-neutral-500 text-neutral-400" aria-hidden="true" />
+              <span className="text-xs font-semibold dark:text-neutral-400 text-neutral-600">
+                {filteredAttendees.length} buyer{filteredAttendees.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+            <div className="w-px h-3 dark:bg-neutral-700 bg-neutral-200" aria-hidden="true" />
+            <div className="flex items-center gap-1.5">
+              <Ticket className="w-3.5 h-3.5 dark:text-neutral-500 text-neutral-400" aria-hidden="true" />
+              <span className="text-xs font-semibold dark:text-neutral-400 text-neutral-600">
+                {totalTickets} ticket{totalTickets !== 1 ? 's' : ''}
+              </span>
+            </div>
+            <div className="w-px h-3 dark:bg-neutral-700 bg-neutral-200" aria-hidden="true" />
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-semibold text-sky-600 dark:text-sky-400">{totalGuests} guests</span>
+            </div>
+            {notAttending > 0 && (
+              <>
+                <div className="w-px h-3 dark:bg-neutral-700 bg-neutral-200" aria-hidden="true" />
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                    {notAttending} not attending
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+
           {collapsed ? (
             <ChevronDown className="w-4 h-4 dark:text-neutral-500 text-neutral-400" aria-hidden="true" />
           ) : (
@@ -139,7 +203,7 @@ const EventSection = ({ group, searchQuery }: { group: EventGroup; searchQuery: 
               <table className="w-full min-w-120 border-collapse" aria-label={`Attendees for ${group.eventName}`}>
                 <thead>
                   <tr className="border-b border-neutral-100 dark:border-neutral-800">
-                    {['Name', 'Email', 'Purchased', 'Tickets'].map((col) => (
+                    {['Name', 'Email', 'Purchased', 'Tickets', 'Guests', 'Attending'].map((col) => (
                       <th
                         key={col}
                         scope="col"
@@ -201,7 +265,12 @@ export const CapsuleManifestClient = ({ data }: { data: IOrder[] }) => {
           name: order.customerName,
           email: order.customerEmail,
           purchasedAt: order.createdAt,
-          totalTickets
+          totalTickets,
+          attendingEvent: order.attendingEvent !== false,
+          guestCount:
+            order.attendingEvent !== false
+              ? Math.max(...(order.orderItems?.map((i) => i.ticket?.guestCount ?? 1) ?? [1]))
+              : 0
         })
       }
     })
@@ -218,7 +287,6 @@ export const CapsuleManifestClient = ({ data }: { data: IOrder[] }) => {
       }))
   }, [data])
 
-  const totalAttendees = eventGroups.reduce((sum, g) => sum + g.attendees.length, 0)
   const totalEvents = eventGroups.length
 
   return (
@@ -233,13 +301,6 @@ export const CapsuleManifestClient = ({ data }: { data: IOrder[] }) => {
                   Events
                 </span>
                 <span className="text-sm font-black dark:text-white text-neutral-900">{totalEvents}</span>
-              </div>
-              <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700" aria-hidden="true" />
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                  Attendees
-                </span>
-                <span className="text-sm font-black text-sky-600 dark:text-sky-400">{totalAttendees}</span>
               </div>
             </div>
           </div>

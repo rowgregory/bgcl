@@ -25,6 +25,7 @@ interface TicketCheckoutParams {
   savedCardId?: string
   tickets: string
   eventId: string
+  attendingEvent?: boolean
 }
 
 export async function createPaymentIntentForTicketCheckout({
@@ -39,7 +40,8 @@ export async function createPaymentIntentForTicketCheckout({
   address,
   savedCardId,
   tickets,
-  eventId
+  eventId,
+  attendingEvent
 }: TicketCheckoutParams) {
   try {
     if (amount < 500) {
@@ -75,7 +77,8 @@ export async function createPaymentIntentForTicketCheckout({
         zipCode: address?.zipCode || '',
         country: 'US',
         tickets,
-        eventId
+        eventId,
+        attendingEvent: attendingEvent ? 'true' : 'false'
       }
     }
 

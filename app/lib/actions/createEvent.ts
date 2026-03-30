@@ -2,21 +2,13 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
-import { combineDateTimeToUTC } from '../utils/date-utils'
 import { EventType } from '@prisma/client'
 import { CreateEventInput } from '@/types/entities/event'
 
 export async function createEvent(data: CreateEventInput) {
   try {
-    // const fullDateTime =
-    //   data.date && data.time ? combineDateTimeToUTC(data.date as string, data.time as string) : undefined
-
     const eventType =
       data.type && Object.values(EventType).includes(data.type as EventType) ? (data.type as EventType) : 'IN_PERSON'
-
-    console.log('DATA:: ', data)
-    // console.log('fullDateTime:: ', fullDateTime)
-    console.log('eventType:: ', eventType)
 
     const event = await prisma.event.create({
       data: {
@@ -67,8 +59,6 @@ export async function createEvent(data: CreateEventInput) {
         dressCodeItems: data.dressCodeItems?.length ? data.dressCodeItems : undefined
       }
     })
-
-    console.log('EVENT: ', event)
 
     await createLog('info', 'Event created successfully', {
       eventId: event.id,

@@ -16,22 +16,24 @@ export function EventAnnouncementStrip({ event }: { event: IEvent }) {
   const { play: volumeOn } = useSoundEffect('/sound-effects/casino-22.mp3', !soundOn)
   const { play: volumeOff } = useSoundEffect('/sound-effects/casino-20.mp3', soundOn)
 
-  if (!event) return null
+  if (!event?.isPublic) return null
 
   const now = new Date()
-  const eventDate = new Date(event.date)
-  const isUpcoming = event.status === 'UPCOMING' && eventDate > now
-  const isActive = event.status === 'ONGOING' && eventDate >= now
+  const eventDate = new Date(event?.date)
+  const isUpcoming = event?.status === 'UPCOMING' && eventDate > now
+  const isOngoing = event?.status === 'ONGOING' && eventDate >= now
 
-  if (!isUpcoming && !isActive) return null
+  if (!isUpcoming && !isOngoing) return null
+
+  const salesStartDate = event?.ticketSalesStartDate ? new Date(event?.ticketSalesStartDate) : null
 
   return (
     <div className="max-w-400 mx-auto relative bg-black z-100">
       <Link
         onClick={() => play()}
-        href={`/events/${event.id}`}
+        href={`/events/${event?.id}`}
         className="block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 group"
-        aria-label={`${event.title} — ${formatDate(eventDate)}. Click to learn more.`}
+        aria-label={`${event?.title} — ${formatDate(eventDate)}. Click to learn more.`}
       >
         <style>{CasinoStyles}</style>
         <div className="relative overflow-hidden">
@@ -67,23 +69,41 @@ export function EventAnnouncementStrip({ event }: { event: IEvent }) {
 
           {/* Content */}
           <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 pr-12 sm:pr-14">
-            {/* Suits — hidden on smallest screens */}
+            {/* Status badge */}
+            <div
+              className="flex items-center gap-1.5 px-2 py-0.5 shrink-0"
+              style={{
+                background: isOngoing ? 'rgba(34,197,94,0.15)' : 'rgba(212,175,55,0.1)',
+                border: `1px solid ${isOngoing ? 'rgba(34,197,94,0.3)' : 'rgba(212,175,55,0.25)'}`
+              }}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full shrink-0 ${isOngoing ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'}`}
+                aria-hidden="true"
+              />
+              <span
+                className="oswald text-[8px] sm:text-[9px] font-black uppercase tracking-[0.15em] hidden xs:inline"
+                style={{ color: isOngoing ? 'rgb(134,239,172)' : '#d4af37' }}
+              >
+                {isOngoing ? 'On Sale' : salesStartDate ? `Sale ${formatDate(salesStartDate)}` : 'Upcoming'}
+              </span>
+            </div>
+
+            {/* Suits */}
             <span className="text-amber-400/50 text-xs font-black shrink-0 hidden md:block suit" aria-hidden="true">
               ♠ ♥ ♦ ♣
             </span>
 
-            {/* Event info — flex-1 so it fills available space */}
+            {/* Event info */}
             <div className="flex items-center justify-center gap-1.5 sm:gap-3 min-w-0 flex-1">
-              {/* Title */}
               <span className="oswald text-[11px] sm:text-xs md:text-sm font-black uppercase tracking-[0.08em] sm:tracking-[0.12em] text-white/90 truncate">
-                {event.title}
+                {event?.title}
               </span>
 
               <span className="text-amber-500/40 text-xs shrink-0" aria-hidden="true">
                 ·
               </span>
 
-              {/* Date */}
               <span
                 className="oswald text-[11px] sm:text-xs md:text-sm font-black uppercase tracking-[0.06em] sm:tracking-widest shrink-0"
                 style={{ color: '#d4af37' }}
@@ -91,14 +111,13 @@ export function EventAnnouncementStrip({ event }: { event: IEvent }) {
                 {formatDate(eventDate)}
               </span>
 
-              {/* Location — only md+ */}
-              {event.location && (
+              {event?.location && (
                 <>
                   <span className="text-amber-500/40 text-xs shrink-0 hidden md:inline" aria-hidden="true">
                     ·
                   </span>
                   <span className="oswald text-xs font-bold uppercase tracking-[0.08em] text-white/40 shrink-0 hidden md:inline truncate max-w-49">
-                    {event.location}
+                    {event?.location}
                   </span>
                 </>
               )}
@@ -107,20 +126,27 @@ export function EventAnnouncementStrip({ event }: { event: IEvent }) {
             {/* CTA */}
             <motion.div
               className="oswald relative flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 text-[9px] sm:text-[10px] md:text-xs font-black uppercase tracking-widest sm:tracking-[0.15em] text-black shrink-0 overflow-hidden"
-              style={{ background: 'linear-gradient(135deg, #d4af37, #f5e678, #d4af37)' }}
+              style={{
+                background: isOngoing
+                  ? 'linear-gradient(135deg, #7f0000, #c0392b, #e74c3c)'
+                  : 'linear-gradient(135deg, #d4af37, #f5e678, #d4af37)',
+                color: isOngoing ? '#fff' : '#000'
+              }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <span
                 className="absolute inset-0 pointer-events-none"
                 style={{
-                  background: 'linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.3) 50%, transparent 75%)',
+                  background: isOngoing
+                    ? 'linear-gradient(90deg, transparent 25%, rgba(255,120,120,0.25) 50%, transparent 75%)'
+                    : 'linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.3) 50%, transparent 75%)',
                   animation: 'btnShine 2s infinite linear'
                 }}
                 aria-hidden="true"
               />
-              <span className="relative z-10 hidden sm:inline">Get Tickets</span>
-              <span className="relative z-10 sm:hidden">Buy</span>
+              <span className="relative z-10 hidden sm:inline">{isOngoing ? 'Get Tickets' : 'Learn More'}</span>
+              <span className="relative z-10 sm:hidden">{isOngoing ? 'Buy' : 'View'}</span>
               <ChevronRight
                 className="relative z-10 w-2.5 h-2.5 sm:w-3 sm:h-3 transition-transform duration-200 group-hover:translate-x-0.5"
                 aria-hidden="true"

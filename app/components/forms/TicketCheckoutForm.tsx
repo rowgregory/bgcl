@@ -17,6 +17,8 @@ import { CheckoutStep3UserInfo } from '../common/CheckoutStep3UserInfo'
 import { useTicketCheckoutSubmit } from '@/app/lib/hooks/useTicketCheckoutSubmit'
 import { setHideConfetti, setShowConfetti } from '@/app/lib/store/slices/uiSlice'
 import { TicketCheckoutSalesWindowNotice } from '../ticket-checkout/TicketCheckoutSalesWindowNotice'
+import CustomSwitch from '../common/CustomSwitch'
+import { setInputs } from '@/app/lib/store/slices/formSlice'
 
 interface ICheckoutForm {
   savedCards: IPaymentMethod[]
@@ -92,6 +94,15 @@ export function TicketCheckoutForm({ savedCards, inputs, setStep }: ICheckoutFor
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-y-12">
           {/* ── Contact ── */}
           <CheckoutStep3UserInfo address={derivedAddress} name={fullName} setStep={setStep} />
+
+          <CustomSwitch
+            checked={inputs?.attendingEvent ?? true}
+            label="I will be attending the event"
+            description="Let us know if you plan to join us on the night — this helps us with seating and catering"
+            onChange={(val) =>
+              store.dispatch(setInputs({ formName: 'ticketCheckoutForm', data: { attendingEvent: val } }))
+            }
+          />
 
           {/* ── Payment ── */}
           {isValid && (

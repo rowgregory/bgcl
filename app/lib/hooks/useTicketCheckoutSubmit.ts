@@ -34,7 +34,8 @@ export function useTicketCheckoutSubmit({ inputs, amountInCents, processingFee, 
         ticketName: item.ticketName,
         ticketDescription: item.ticketDescription ?? null,
         ticketType: item.ticketType ?? 'GENERAL',
-        isRaffleTicket: item.isRaffleTicket ?? false
+        isRaffleTicket: item.isRaffleTicket ?? false,
+        guestCount: item.guestCount ?? 1
       }))
 
       const intentResult = await createPaymentIntentForTicketCheckout({
@@ -56,7 +57,8 @@ export function useTicketCheckoutSubmit({ inputs, amountInCents, processingFee, 
         },
         savedCardId: usingSavedCard ? inputs?.selectedCardId : undefined,
         tickets: JSON.stringify(ticketData.map(({ ticketDescription: _, ...rest }) => rest)),
-        eventId: items[0]?.eventId
+        eventId: items[0]?.eventId,
+        attendingEvent: inputs.attendingEvent
       })
 
       if (!intentResult.success) throw new Error(intentResult.error || 'Failed to create payment intent')

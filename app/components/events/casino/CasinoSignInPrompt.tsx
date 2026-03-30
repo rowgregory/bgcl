@@ -26,7 +26,6 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
   const [zipCode, setZipCode] = useState('')
   const [savingAddress, setSavingAddress] = useState(false)
   const [savingName, setSavingName] = useState(false)
-  const [nameSaved, setNameSaved] = useState(false)
   const session = useSession()
   const router = useRouter()
   const { items } = useCartSelector()
@@ -76,8 +75,8 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
   }
 
   const handleGoogle = () => {
-    signIn('google', { redirect: true, callbackUrl })
     googleOrMagicLink()
+    setTimeout(() => signIn('google', { redirect: true, callbackUrl }), 1000)
   }
 
   const handleSaveName = async () => {
@@ -87,7 +86,6 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
       await updateUserName({ firstName: firstName.trim(), lastName: lastName.trim() })
       saveAndContinue()
       router.refresh()
-      setNameSaved(true)
     } catch {}
     setSavingName(false)
   }
@@ -169,7 +167,7 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
                 <p className="text-[9px] oswald font-black uppercase tracking-[0.2em] text-white/25 mb-0.5">Address</p>
                 <p className="text-sm font-semibold text-white/70">
                   {address?.addressLine1}
-                  {address?.addressLine2 ? `, ${address.addressLine2}` : ''}, {address?.city}, {address?.state}{' '}
+                  {address?.addressLine2 ? `, ${address?.addressLine2}` : ''}, {address?.city}, {address?.state}{' '}
                   {address?.zipPostalCode}
                 </p>
               </div>
@@ -224,7 +222,7 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
                     <button
                       onClick={handleSaveCard}
                       disabled={savingCard}
-                      className="oswald relative flex-1 flex items-center justify-center gap-2 py-3 text-[12px] font-black uppercase tracking-[0.1em] text-white overflow-hidden focus:outline-none active:scale-[0.98] transition-transform disabled:opacity-40"
+                      className="oswald relative flex-1 flex items-center justify-center gap-2 py-3 text-[12px] font-black uppercase tracking-widest text-white overflow-hidden focus:outline-none active:scale-[0.98] transition-transform disabled:opacity-40"
                       style={{
                         background: 'linear-gradient(135deg, #7f0000 0%, #c0392b 45%, #e74c3c 65%, #922b21 100%)'
                       }}
@@ -365,10 +363,31 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
   // Already signed in and has name but no address
   if (isAuthed && hasName && !hasAddress) {
     return (
-      <>
+      <div className="max-w-xl mx-auto text-center">
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <div
+            className="h-px w-10"
+            style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.4))' }}
+            aria-hidden="true"
+          />
+          <span className="oswald text-[10px] font-black uppercase tracking-[0.25em] text-amber-600/50">
+            ✦ Almost Ready ✦
+          </span>
+          <div
+            className="h-px w-10"
+            style={{ background: 'linear-gradient(90deg, rgba(212,175,55,0.4), transparent)' }}
+            aria-hidden="true"
+          />
+        </div>
+        <h2
+          id="signin-prompt-heading"
+          className="oswald font-black uppercase text-white leading-none mb-3"
+          style={{ fontSize: 'clamp(28px, 6vw, 48px)' }}
+        >
+          One Last Thing
+        </h2>
         <p className="text-white/40 text-sm leading-relaxed max-w-sm mx-auto mb-4">
-          Last step — we need your mailing address so we can send you a personal thank you from Boys &amp; Girls Club of
-          Lynn.
+          We need your mailing address to complete your account and get you ready for checkout.
         </p>
 
         <div className="space-y-2 w-full max-w-sm mx-auto">
@@ -380,7 +399,7 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
             placeholder="Street address"
             autoComplete="address-line1"
             autoFocus
-            className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
+            className="w-full px-4 py-3 text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
           />
 
           {/* Apt / Unit */}
@@ -390,7 +409,7 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
             onChange={(e) => setAddressLine2(e.target.value)}
             placeholder="Apt, suite, unit (optional)"
             autoComplete="address-line2"
-            className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
+            className="w-full px-4 py-3 text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
           />
 
           {/* City / State / ZIP */}
@@ -401,13 +420,13 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
               onChange={(e) => setCity(e.target.value)}
               placeholder="City"
               autoComplete="address-level2"
-              className="col-span-2 px-4 py-3 rounded-xl text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
+              className="col-span-2 px-4 py-3 text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
             />
             <select
               value={state}
               onChange={(e) => setState(e.target.value)}
               autoComplete="address-level1"
-              className="col-span-1 px-2 py-3 rounded-xl text-sm text-white bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
+              className="col-span-1 px-2 py-3 text-sm text-white bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
             >
               <option value="" disabled>
                 State
@@ -426,7 +445,7 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
               autoComplete="postal-code"
               inputMode="numeric"
               maxLength={10}
-              className="col-span-2 px-4 py-3 rounded-xl text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
+              className="col-span-2 px-4 py-3 text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
             />
           </div>
 
@@ -434,7 +453,7 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
           <button
             onClick={handleSaveAddress}
             disabled={savingAddress || !addressLine1.trim() || !city.trim() || !state || !zipCode.trim()}
-            className="oswald relative w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-[13px] font-black uppercase tracking-widest text-white overflow-hidden focus:outline-none active:scale-[0.98] transition-transform disabled:opacity-40 disabled:cursor-not-allowed mt-1"
+            className="oswald relative w-full flex items-center justify-center gap-2 py-3.5 text-[13px] font-black uppercase tracking-widest text-white overflow-hidden focus:outline-none active:scale-[0.98] transition-transform disabled:opacity-40 disabled:cursor-not-allowed mt-1"
             style={{ background: 'linear-gradient(135deg, #7f0000 0%, #c0392b 45%, #e74c3c 65%, #922b21 100%)' }}
           >
             <span
@@ -460,7 +479,7 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
             </span>
           </button>
         </div>
-      </>
+      </div>
     )
   }
 
@@ -614,7 +633,7 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
                   {/* Google */}
                   <button
                     onClick={handleGoogle}
-                    className="oswald relative w-full flex items-center justify-center gap-3 py-3.5 rounded-xl text-[13px] font-black uppercase tracking-widest text-white overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 active:scale-[0.98] transition-transform"
+                    className="oswald relative w-full flex items-center justify-center gap-3 py-3.5 text-[13px] font-black uppercase tracking-widest text-white overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 active:scale-[0.98] transition-transform"
                     style={{
                       background: 'linear-gradient(135deg, #1a1000, #2a1c00)',
                       border: '1px solid rgba(212,175,55,0.3)',
@@ -668,12 +687,12 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
                       autoComplete="email"
                       required
                       disabled={loading}
-                      className="flex-1 min-w-0 px-4 py-3 rounded-xl text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors disabled:opacity-50"
+                      className="flex-1 min-w-0 px-4 py-3 text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors disabled:opacity-50"
                     />
                     <button
                       type="submit"
                       disabled={!email || loading}
-                      className="oswald relative px-5 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest text-white overflow-hidden focus:outline-none active:scale-[0.98] transition-transform disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                      className="oswald relative px-5 py-3 text-[12px] font-black uppercase tracking-widest text-white overflow-hidden focus:outline-none active:scale-[0.98] transition-transform disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
                       style={{
                         background: 'linear-gradient(135deg, #7f0000 0%, #c0392b 45%, #e74c3c 65%, #922b21 100%)'
                       }}

@@ -1,6 +1,6 @@
 import { calculateStripeFees } from '@/app/lib/utils/calculateStripeFees'
 import { motion } from 'framer-motion'
-import { Lock, ShieldCheck, Ticket } from 'lucide-react'
+import { Lock, ShieldCheck, Ticket, Users } from 'lucide-react'
 
 export function TicketCheckoutOrderSummary({ items, coverFees }) {
   const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
@@ -28,7 +28,16 @@ export function TicketCheckoutOrderSummary({ items, coverFees }) {
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-neutral-900 dark:text-white truncate">{item.ticketName}</p>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 truncate">{item.eventTitle}</p>
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">Qty: {item.quantity}</p>
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">
+                    Qty: {item.quantity}
+                    {(item.guestCount ?? 1) > 1 && (
+                      <>
+                        <span className="mx-1.5 text-neutral-300 dark:text-neutral-600">·</span>
+                        <Users className="w-3 h-3 inline mb-0.5" aria-hidden="true" />
+                        <span className="ml-1">{item.guestCount} guests</span>
+                      </>
+                    )}
+                  </p>
                 </div>
               </div>
               <p className="text-sm font-bold text-neutral-900 dark:text-white shrink-0 tabular-nums">

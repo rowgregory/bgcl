@@ -124,7 +124,7 @@ export function PublicEventDetailsClient({ data, name, address, savedCards }: TP
                       {formatDate(data.raffleDrawDate, { weekday: 'long' })}
                     </h2>
                     <p className="text-lg text-white/30 mb-8">
-                      {formatTime(data.raffleDrawDate)}&nbsp;EST &nbsp;·&nbsp; Must be present to win
+                      {formatTime(data.raffleDrawDate)}&nbsp;EST &nbsp;·&nbsp;
                     </p>
                   </section>
                   <GoldDivider />

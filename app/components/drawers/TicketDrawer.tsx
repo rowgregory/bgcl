@@ -43,7 +43,8 @@ export const TicketDrawer = () => {
       sortOrder: inputs.sortOrder,
       ticketType: inputs.ticketType,
       sponsorImpact: inputs.sponsorImpact,
-      sponsorPerks: inputs.sponsorPerks
+      sponsorPerks: inputs.sponsorPerks,
+      guestCount: inputs.guestCount
     }
 
     try {

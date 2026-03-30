@@ -43,7 +43,6 @@ export function EventForm({
 
   const [requirementTags, setRequirementTags] = useState<string[]>([])
 
-  console.log('inputs?.requirements: ', inputs?.requirements)
   useEffect(() => {
     const raw = inputs?.requirements as string | undefined
     if (!raw) {
@@ -71,8 +70,6 @@ export function EventForm({
         .filter(Boolean)
     )
   }, [inputs?.materials])
-
-  console.log('requirementTags: ', requirementTags)
 
   const [customRequirements, setCustomRequirements] = useState<string[]>(() => {
     const raw = inputs?.requirements as string | undefined
@@ -702,6 +699,20 @@ export function EventForm({
                 </div>
               </div>
 
+              {/* Additional Settings */}
+              <div className="mb-8">
+                <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-4">Other Settings</h3>
+
+                <div className="space-y-4">
+                  <CustomSwitch
+                    checked={(inputs?.isPublic as boolean) || false}
+                    onChange={(val) => store.dispatch(setInputs({ formName: 'eventForm', data: { isPublic: val } }))}
+                    label="Public Event"
+                    description="Show this event on the public events page and make it accessible to everyone"
+                  />
+                </div>
+              </div>
+
               {/* Raffle Settings */}
               <div className="mb-8">
                 <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-4">Raffle Settings</h3>
@@ -868,7 +879,7 @@ export function EventForm({
                               value={(inputs?.raffleTerms as string) || ''}
                               onChange={handleInput}
                               rows={3}
-                              placeholder="e.g. Must be present to win. Non-transferable. 21+ event."
+                              placeholder="e.g. Non-transferable. 21+ event."
                               className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all resize-none"
                             />
                           </div>
