@@ -75,14 +75,14 @@ export const adminNavigationLinkData = (
   const operationsGroup = [
     {
       icon: Satellite,
-      label: 'The Capsule',
+      label: 'Events & Raffles',
       path: '/admin/capsule/overview',
       description: 'Event Management',
       active: isStringInPath(path, 'capsule')
     },
     {
       icon: Fuel,
-      label: 'The Fuel Tank',
+      label: 'Donations',
       path: '/admin/fuel-tank/overview',
       description: 'Organize Assets',
       active: isStringInPath(path, 'fuel-tank')

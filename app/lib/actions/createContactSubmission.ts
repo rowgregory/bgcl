@@ -81,8 +81,6 @@ export const createContactSubmission = async (data: Omit<IContactSubmission, 'id
         email: data.email.trim()
       })
     } catch (emailError) {
-      // Log email error but don't fail the submission
-      console.error('Failed to send admin notification email:', emailError)
       await createLog('error', 'Failed to send admin notification', {
         type: data.type,
         email: data.email,

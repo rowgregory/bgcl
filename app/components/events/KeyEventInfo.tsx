@@ -1,67 +1,51 @@
 import { FC } from 'react'
-import { Calendar, Clock, MapPin, Users } from 'lucide-react'
-import { splitUTCToDateTime } from '@/app/lib/utils/date-utils'
-import { militaryToRegularTime } from '@/app/lib/utils/time-utils'
+import { Calendar, Clock, MapPin } from 'lucide-react'
+import { formatDate, splitUTCToDateTime } from '@/app/lib/utils/date-utils'
 import { IEvent } from '@/types/entities/event'
 
 export const KeyEventInfo: FC<{ event: IEvent }> = ({ event }) => {
   const { timeString } = splitUTCToDateTime(event?.date)
 
+  const items = [
+    {
+      icon: Calendar,
+      label: 'Date',
+      value: <time dateTime={new Date(event?.date).toISOString()}>{formatDate(event?.date)}</time>
+    },
+    {
+      icon: Clock,
+      label: 'Time',
+      value: <time dateTime={timeString}>{timeString}</time>
+    },
+    {
+      icon: MapPin,
+      label: 'Venue',
+      value: <span className="truncate">{event?.location}</span>
+    }
+  ]
+
   return (
-    <dl className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
-        <div className="p-2 bg-white/20 rounded-lg shrink-0" aria-hidden="true">
-          <Calendar className="w-5 h-5 text-white" />
+    <dl className="flex flex-wrap gap-6 sm:gap-10">
+      {items.map(({ icon: Icon, label, value }) => (
+        <div key={label} className="flex items-center gap-3 min-w-0">
+          <div
+            className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
+            style={{ background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.25)' }}
+            aria-hidden="true"
+          >
+            <Icon className="w-4 h-4" style={{ color: '#d4af37' }} />
+          </div>
+          <div className="min-w-0">
+            <dt
+              className="text-[10px] font-bold uppercase tracking-[0.2em]"
+              style={{ color: 'rgba(212,175,55,0.5)', fontFamily: 'Oswald, sans-serif' }}
+            >
+              {label}
+            </dt>
+            <dd className="font-semibold text-sm text-white/80 mt-0.5 truncate">{value}</dd>
+          </div>
         </div>
-        <div>
-          <dt className="text-xs text-white/70 font-medium">Date</dt>
-          <dd className="font-bold text-white">
-            <time dateTime={new Date(event?.date).toISOString()}>
-              {new Date(event?.date).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric'
-              })}
-            </time>
-          </dd>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
-        <div className="p-2 bg-white/20 rounded-lg shrink-0" aria-hidden="true">
-          <Clock className="w-5 h-5 text-white" />
-        </div>
-        <div>
-          <dt className="text-xs text-white/70 font-medium">Time</dt>
-          <dd className="font-bold text-white">
-            <time dateTime={timeString}>{militaryToRegularTime(timeString)}</time>
-          </dd>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
-        <div className="p-2 bg-white/20 rounded-lg shrink-0" aria-hidden="true">
-          <MapPin className="w-5 h-5 text-white" />
-        </div>
-        <div className="min-w-0">
-          <dt className="text-xs text-white/70 font-medium">Location</dt>
-          <dd className="font-bold text-white truncate">{event?.location}</dd>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
-        <div className="p-2 bg-white/20 rounded-lg shrink-0" aria-hidden="true">
-          <Users className="w-5 h-5 text-white" />
-        </div>
-        <div>
-          <dt className="text-xs text-white/70 font-medium">Capacity</dt>
-          <dd className="font-bold text-white">
-            <span aria-label={`${event?.attendeeCount} of ${event?.maxAttendees} spots filled`}>
-              {event?.attendeeCount} / {event?.maxAttendees}
-            </span>
-          </dd>
-        </div>
-      </div>
+      ))}
     </dl>
   )
 }

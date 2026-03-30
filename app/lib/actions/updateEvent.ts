@@ -2,7 +2,6 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
-import { convertDateToUTC } from '../utils/date-utils'
 import { UpdateEventInput } from '@/types/entities/event'
 
 export async function updateEvent(body: UpdateEventInput) {
@@ -12,25 +11,21 @@ export async function updateEvent(body: UpdateEventInput) {
     })
 
     if (!existingEvent) {
-      await createLog('warn', 'Event not found for update', {
-        eventId: body.id
-      })
+      await createLog('warn', 'Event not found for update', { eventId: body.id })
       return { success: false, error: 'Event not found', status: 404 }
     }
 
-    // Remove fields that shouldn't be updated
-    delete body.status
-    delete body.attendeeCount
-    delete body.attendees
-    delete body.isUpdating
-    delete body.createdAt
-    delete body.updatedAt
-    delete body.tickets
-
-    const { date, time, registrationDeadline, rsvpDeadline, ...restBody } = body
-
-    const registrationDeadlineDate = registrationDeadline ? convertDateToUTC(registrationDeadline) : undefined
-    const rsvpDeadlineDate = rsvpDeadline ? convertDateToUTC(rsvpDeadline) : undefined
+    const {
+      date,
+      time,
+      registrationDeadline,
+      rsvpDeadline,
+      ticketSalesStartDate,
+      ticketSalesEndDate,
+      isUpdating,
+      tickets,
+      ...restBody
+    } = body
 
     const event = await prisma.event.update({
       where: { id: body.id },
@@ -38,8 +33,9 @@ export async function updateEvent(body: UpdateEventInput) {
         ...restBody,
         date: date ? new Date(date) : undefined,
         maxAttendees: body.maxAttendees ? Number(body.maxAttendees) : undefined,
-        registrationDeadline: registrationDeadlineDate,
-        rsvpDeadline: rsvpDeadlineDate
+        registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : undefined,
+        ticketSalesStartDate: ticketSalesStartDate ? new Date(ticketSalesStartDate) : null,
+        ticketSalesEndDate: ticketSalesEndDate ? new Date(ticketSalesEndDate) : null
       },
       include: {
         tickets: true,
@@ -53,7 +49,7 @@ export async function updateEvent(body: UpdateEventInput) {
       updatedFields: Object.keys(body)
     })
 
-    return { success: true, event }
+    return { success: true }
   } catch (error) {
     await createLog('error', 'Failed to update event', {
       error: error instanceof Error ? error.message : 'Failed to update event',
@@ -65,9 +61,6 @@ export async function updateEvent(body: UpdateEventInput) {
       }
     })
 
-    return {
-      success: false,
-      error: 'Failed to update event. Please try again.'
-    }
+    return { success: false, error: 'Failed to update event. Please try again.' }
   }
 }

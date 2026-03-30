@@ -98,7 +98,6 @@ export async function generateDonationReport(filters: ReportFilters = {}) {
       pdf: pdf.output('dataurlstring')
     }
   } catch (error) {
-    console.error('Error generating donation report:', error)
     return {
       success: false,
       error: 'Failed to generate report'

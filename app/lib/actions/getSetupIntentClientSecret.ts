@@ -8,53 +8,21 @@ import { createLog } from './createLog'
 export async function getSetupIntentClientSecret() {
   try {
     const session = await auth()
-
-    if (!session?.user?.id) {
-      throw new Error('Unauthorized')
-    }
-
-    // Get or create Stripe customer
-    let customerId: string
+    if (!session?.user?.id) throw new Error('Unauthorized')
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { stripeCustomerId: true }
     })
 
-    if (user?.stripeCustomerId) {
-      customerId = user.stripeCustomerId
-    } else {
-      const email = session.user.email
+    if (!user?.stripeCustomerId) throw new Error('Stripe customer not found for this user')
 
-      // Check Stripe for existing customer first
-      const existing = email ? await stripe.customers.list({ email, limit: 1 }) : { data: [] }
-
-      if (existing.data.length > 0) {
-        customerId = existing.data[0].id
-      } else {
-        const customer = await stripe.customers.create({
-          email: email || undefined,
-          metadata: { userId: session.user.id }
-        })
-        customerId = customer.id
-      }
-
-      await prisma.user.update({
-        where: { id: session.user.id },
-        data: { stripeCustomerId: customerId }
-      })
-    }
-
-    // Create setup intent
     const setupIntent = await stripe.setupIntents.create({
-      customer: customerId,
+      customer: user.stripeCustomerId,
       payment_method_types: ['card']
     })
 
-    return {
-      success: true,
-      clientSecret: setupIntent.client_secret
-    }
+    return { success: true, clientSecret: setupIntent.client_secret }
   } catch (error) {
     await createLog('error', 'Failed to create setup intent', {
       error: error instanceof Error ? error.message : 'Unknown error'

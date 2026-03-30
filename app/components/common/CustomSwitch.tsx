@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { CreditCard, Eye, PersonStanding, Zap } from 'lucide-react'
+import { CreditCard, Eye, PersonStanding, Ticket, Zap } from 'lucide-react'
 
 interface CustomSwitchProps {
   checked: boolean
@@ -41,6 +41,12 @@ export default function CustomSwitch({ checked, onChange, label, description }: 
           <Eye
             className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-colors ${
               checked ? 'dark:text-purple-400 text-purple-600' : 'dark:text-zinc-500 text-neutral-600'
+            }`}
+          />
+        ) : label === 'Raffle Event' ? (
+          <Ticket
+            className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-colors ${
+              checked ? 'dark:text-sky-400 text-sky-600' : 'dark:text-zinc-500 text-neutral-600'
             }`}
           />
         ) : (

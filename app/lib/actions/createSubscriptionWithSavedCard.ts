@@ -7,15 +7,18 @@ interface CreateSubscriptionWithSavedCardParams {
   userId: string
   email: string
   name: string
-  amount: number // in cents
+  amount: number
   frequency: 'monthly' | 'yearly'
   coverFees?: boolean
   feesCovered?: number
-  address?: string
-  city?: string
-  state?: string
-  zipCode?: string
-  country?: string
+  address?: {
+    addressLine1?: string
+    addressLine2?: string
+    city?: string
+    state?: string
+    zipCode?: string
+    country?: string
+  }
   notes?: string
   savedCardId?: string
   campaignId?: string
@@ -30,82 +33,61 @@ export async function createSubscriptionWithSavedCard({
   coverFees,
   feesCovered,
   address,
-  city,
-  state,
-  zipCode,
-  country,
   notes,
   savedCardId,
   campaignId
 }: CreateSubscriptionWithSavedCardParams) {
   try {
-    // VALIDATE MINIMUM AMOUNT
-    if (amount < 500) {
-      // Stripe uses cents, so $5 = 500
-      throw new Error('Minimum donation is $5')
-    }
+    if (amount < 500) throw new Error('Minimum donation is $5')
 
-    // Get the payment method to find the customer
-    const paymentMethod = await stripe.paymentMethods.retrieve(savedCardId)
+    const interval = frequency === 'monthly' ? 'month' : 'year'
+
+    const [paymentMethod, product] = await Promise.all([
+      stripe.paymentMethods.retrieve(savedCardId),
+      stripe.products.create({
+        name: `${interval === 'month' ? 'Monthly' : 'Yearly'} Recurring Donation`,
+        metadata: { type: 'recurring_donation' }
+      })
+    ])
 
     if (!paymentMethod.customer) {
       throw new Error('Payment method is not attached to a customer')
     }
 
-    const customerId = paymentMethod.customer as string
-
-    // Create product for this recurring donation
-    const product = await stripe.products.create({
-      name: `${frequency === 'monthly' ? 'Monthly' : 'Yearly'} Donation`,
-      description: `Recurring donation of $${(amount / 100).toFixed(2)}/${frequency === 'monthly' ? 'month' : 'year'}`,
-      metadata: {
-        userId: userId || 'guest',
-        donorName: name || ''
-      }
-    })
-
-    // Create price for the subscription
     const price = await stripe.prices.create({
       product: product.id,
       unit_amount: amount,
       currency: 'usd',
-      recurring: {
-        interval: frequency === 'monthly' ? 'month' : 'year',
-        usage_type: 'licensed'
-      },
-      metadata: {
-        frequency
-      }
+      recurring: { interval, usage_type: 'licensed' },
+      metadata: { frequency }
     })
 
-    // Create subscription with the saved payment method
     const subscription = await stripe.subscriptions.create(
       {
-        customer: customerId,
+        customer: paymentMethod.customer as string,
         items: [{ price: price.id }],
         default_payment_method: savedCardId,
-        payment_settings: {
-          save_default_payment_method: 'on_subscription'
-        },
+        payment_settings: { save_default_payment_method: 'on_subscription' },
         metadata: {
-          userId: userId || 'guest',
+          userId,
           email: email || '',
           name: name || '',
           frequency,
           orderType: 'RECURRING_DONATION',
           coverFees: coverFees ? 'true' : 'false',
           feesCovered: feesCovered?.toString() || '0',
-          address: address || '',
-          city: city || '',
-          state: state || '',
-          zipCode: zipCode || '',
-          country: country || '',
+          addressLine1: address?.addressLine1 || '',
+          addressLine2: address?.addressLine2 || '',
+          city: address?.city || '',
+          state: address?.state || '',
+          zipCode: address?.zipCode || '',
+          country: 'US',
           notes: notes || '',
           campaignId: campaignId || ''
         }
       },
       {
-        idempotencyKey: `sub_${customerId}_${campaignId || 'general'}_${Date.now()}`
+        idempotencyKey: `sub_${paymentMethod.customer}_${amount}_${frequency}_${Date.now()}`
       }
     )
 

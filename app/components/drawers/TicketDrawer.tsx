@@ -40,7 +40,10 @@ export const TicketDrawer = () => {
       price: inputs.price,
       totalQuantity: inputs.totalQuantity,
       isAvailable: inputs.isAvailable,
-      sortOrder: inputs.sortOrder
+      sortOrder: inputs.sortOrder,
+      ticketType: inputs.ticketType,
+      sponsorImpact: inputs.sponsorImpact,
+      sponsorPerks: inputs.sponsorPerks
     }
 
     try {
@@ -60,8 +63,10 @@ export const TicketDrawer = () => {
         showToast({
           message: inputs?.isUpdating ? 'Ticket Updated!' : 'Ticket Created!',
           description: inputs?.isUpdating
-            ? 'Your ticket has been successfully updated.'
-            : 'Your ticket has been successfully created!'
+            ? `${inputs?.name} has been updated successfully.`
+            : inputs?.isAvailable
+              ? `${inputs?.name} is live and ready for purchase.`
+              : `${inputs?.name} has been created but is not yet available for purchase.`
         })
       )
     } catch (error) {
@@ -70,7 +75,7 @@ export const TicketDrawer = () => {
       dispatch(
         showToast({
           type: 'error',
-          message: `${inputs?.isUpdating ? 'Update' : 'Create'} Ticket Failed`,
+          message: inputs?.isUpdating ? 'Failed to Update Ticket' : 'Failed to Create Ticket',
           description: errorMessage
         })
       )
@@ -87,7 +92,7 @@ export const TicketDrawer = () => {
           <Backdrop onClose={onClose} />
 
           {/* Drawer */}
-          <Drawer className="max-w-5xl">
+          <Drawer className="max-w-7xl">
             {/* Form */}
             <TicketsForm
               errors={errors}

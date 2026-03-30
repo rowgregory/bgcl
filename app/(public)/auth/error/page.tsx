@@ -3,8 +3,7 @@
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { AlertTriangle, Clock, Shield, Mail, Lock, Compass, Rocket, Star } from 'lucide-react'
-import { FloatingStars } from '@/app/components/common/FloatingStars'
+import { AlertTriangle, Clock, Shield, Mail, Lock, Compass, ArrowLeft } from 'lucide-react'
 import { MotionLink } from '@/app/components/common/MotionLink'
 import Picture from '@/app/components/common/Picture'
 
@@ -13,58 +12,51 @@ const getAuthErrorMessage = (error: string | null) => {
     case 'AccessDenied':
       return {
         icon: Shield,
-        title: 'Access Denied, Astronaut!',
+        title: 'Access Denied',
         message:
-          "Your clearance code isn't in our system, explorer! Only registered members of the Boys & Girls Club can access Mission Control. Contact our crew if you need assistance."
+          'Your account does not have permission to access this area. Only authorized Boys & Girls Club staff can sign in here. Contact your administrator if you believe this is a mistake.'
       }
-
     case 'Verification':
       return {
         icon: Clock,
-        title: 'Launch Window Expired!',
+        title: 'Link Expired or Already Used',
         message:
-          'That magic link has drifted into deep space, astronaut! The verification has expired or already been used. Request a new transmission to continue your mission.'
+          'This sign-in link is no longer valid. If you are using a work, school, or organization email, their security software may have clicked the link before you. Try signing in with a personal email address instead.'
       }
-
     case 'EmailSignin':
       return {
         icon: Mail,
-        title: 'Transmission Failed!',
+        title: 'Email Failed to Send',
         message:
-          "Our signal couldn't reach your inbox, explorer! The email failed to send. Double-check your email address and request another transmission from ground control."
+          'We were unable to send the sign-in email. Please double-check your email address and try again. If the problem persists, contact support.'
       }
-
     case 'OAuthSignin':
     case 'OAuthCallback':
       return {
         icon: AlertTriangle,
-        title: 'Communication Array Offline!',
+        title: 'Google Sign-In Failed',
         message:
-          "We're experiencing interference with the signin satellite, astronaut! There was trouble connecting to the authentication provider. Stand by and try again shortly."
+          'There was a problem connecting to Google. This is usually temporary — please try again. If the issue continues, try signing in with a magic link instead.'
       }
-
     case 'SessionRequired':
       return {
         icon: Lock,
-        title: 'Crew Credentials Required!',
-        message:
-          'This sector is restricted to crew members only, explorer! You need to sign in before accessing this part of the station. Please authenticate to continue.'
+        title: 'Sign In Required',
+        message: 'You need to be signed in to access this page. Please sign in to continue.'
       }
-
     case 'Configuration':
       return {
         icon: Compass,
-        title: 'Navigation System Error!',
+        title: 'Configuration Error',
         message:
-          'Our navigation systems are experiencing a glitch, astronaut! The technical crew at Boys & Girls Club is working on repairs. Please try again later.'
+          'There is a technical issue with the authentication setup. Our team has been notified. Please try again later or contact support.'
       }
-
     default:
       return {
         icon: AlertTriangle,
-        title: 'Unknown Signal Detected!',
+        title: 'Something Went Wrong',
         message:
-          "We've encountered an unexpected anomaly, explorer! Something went wrong during your mission. Please retry or contact ground control for assistance."
+          'An unexpected error occurred during sign-in. Please try again. If the problem continues, contact support for help.'
       }
   }
 }
@@ -77,48 +69,35 @@ export default function AuthError() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side - Visual/Branding */}
+      {/* Left Side */}
       <div className="hidden lg:flex lg:w-1/2 dark:bg-neutral-950 bg-neutral-50 relative overflow-hidden items-center justify-center p-12">
-        {/* Animated linear orbs */}
         <motion.div
           className="absolute top-1/4 left-1/3 w-96 h-96 bg-red-600/20 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.2, 0.4, 0.2]
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity
-          }}
+          animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
+          transition={{ duration: 10, repeat: Infinity }}
         />
         <motion.div
           className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-neutral-500/20 rounded-full blur-3xl"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.4, 0.2, 0.4]
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity
-          }}
+          animate={{ scale: [1.2, 1, 1.2], opacity: [0.4, 0.2, 0.4] }}
+          transition={{ duration: 8, repeat: Infinity }}
         />
 
-        {/* Floating stars */}
-        <FloatingStars />
-
-        {/* Content */}
         <div className="relative z-10 text-center flex items-center justify-center flex-col">
-          <MotionLink href="/" className="flex space-x-3 w-44 h-auto mb-4">
+          <MotionLink
+            href="/"
+            aria-label="Boys & Girls Club of Lynn — go to home page"
+            className="flex space-x-3 w-44 h-auto mb-8"
+          >
             <Picture
               src="/images/vertical-logo-light.png"
-              alt="Boys & Girls Club"
-              className="dark:hidden block w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
+              alt="Boys & Girls Club of Lynn"
+              className="dark:hidden block w-full h-full hover:opacity-80 transition-opacity object-contain"
               priority
             />
             <Picture
               src="/images/vertical-logo-dark.png"
-              alt="Boys & Girls Club"
-              className="dark:block hidden w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
+              alt="Boys & Girls Club of Lynn"
+              className="dark:block hidden w-full h-full hover:opacity-80 transition-opacity object-contain"
               priority
             />
           </MotionLink>
@@ -129,7 +108,7 @@ export default function AuthError() {
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
             className="inline-flex items-center justify-center w-20 h-20 bg-red-500/10 dark:bg-red-500/20 rounded-full mb-6"
           >
-            <Icon className="w-10 h-10 text-red-500 dark:text-red-400" />
+            <Icon className="w-10 h-10 text-red-500 dark:text-red-400" aria-hidden="true" />
           </motion.div>
 
           <motion.h1
@@ -138,7 +117,7 @@ export default function AuthError() {
             transition={{ delay: 0.3 }}
             className="dark:text-white text-neutral-900 text-4xl font-bold mb-4 tracking-tight"
           >
-            HOUSTON, WE HAVE A PROBLEM
+            Sign-In Error
           </motion.h1>
 
           <motion.div
@@ -148,18 +127,18 @@ export default function AuthError() {
             className="dark:text-neutral-400 text-neutral-600 flex items-center justify-center gap-8"
           >
             <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 text-red-500" />
-              <span className="text-sm">Error Detected</span>
+              <AlertTriangle className="w-4 h-4 text-red-500" aria-hidden="true" />
+              <span className="text-sm">Authentication failed</span>
             </div>
             <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 text-red-500" />
-              <span className="text-sm">Standing By</span>
+              <Shield className="w-4 h-4 text-red-500" aria-hidden="true" />
+              <span className="text-sm">Secure portal</span>
             </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Right Side - Error Content */}
+      {/* Right Side */}
       <div className="w-full lg:w-1/2 dark:bg-neutral-900 bg-white flex items-center justify-center p-8">
         <motion.div
           initial={{ opacity: 0, x: 20 }}
@@ -175,9 +154,9 @@ export default function AuthError() {
               transition={{ type: 'spring', stiffness: 200 }}
               className="inline-flex items-center justify-center w-16 h-16 bg-red-500/10 dark:bg-red-500/20 rounded-full mb-4"
             >
-              <Icon className="w-8 h-8 text-red-500 dark:text-red-400" />
+              <Icon className="w-8 h-8 text-red-500 dark:text-red-400" aria-hidden="true" />
             </motion.div>
-            <h1 className="dark:text-white text-neutral-900 text-2xl font-bold">Mission Interrupted</h1>
+            <h1 className="dark:text-white text-neutral-900 text-2xl font-bold">Sign-In Error</h1>
           </div>
 
           {/* Error Card */}
@@ -185,12 +164,13 @@ export default function AuthError() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="p-6 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-2xl backdrop-blur-sm mb-8"
+            className="p-6 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-2xl mb-8"
+            role="alert"
           >
-            <div className="flex items-start space-x-4">
+            <div className="flex items-start gap-4">
               <div className="shrink-0 hidden lg:block">
                 <div className="w-12 h-12 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center">
-                  <Icon className="w-6 h-6 text-red-500 dark:text-red-400" />
+                  <Icon className="w-6 h-6 text-red-500 dark:text-red-400" aria-hidden="true" />
                 </div>
               </div>
               <div>
@@ -200,54 +180,50 @@ export default function AuthError() {
             </div>
           </motion.div>
 
-          {/* Action Buttons */}
-          <div className="space-y-4">
+          {/* Actions */}
+          <div className="space-y-3">
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/auth/login"
-                className="w-full dark:bg-linear-to-r dark:from-sky-600 dark:to-sky-700 dark:hover:from-sky-500 dark:hover:to-sky-600 bg-linear-to-r from-sky-600 to-sky-700 hover:from-sky-500 hover:to-sky-600 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all"
+                className="w-full bg-sky-600 hover:bg-sky-500 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-sky-600/20"
               >
-                <Rocket className="w-5 h-5" />
-                Return to Launch Pad
+                <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+                Back to Sign In
               </Link>
             </motion.div>
-
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/"
-                className="w-full dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                className="w-full dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors"
               >
-                Back to Home Base
+                Go to Home Page
               </Link>
             </motion.div>
           </div>
 
-          {/* Help Text */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="dark:text-neutral-500 text-neutral-600 text-center text-sm mt-8"
+            className="dark:text-neutral-500 text-neutral-500 text-center text-sm mt-8"
           >
-            Need assistance? Contact{' '}
+            Need help?{' '}
             <a
               href="mailto:support@bgcl.org"
               className="dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-500 transition-colors"
             >
-              ground control
-            </a>{' '}
-            for help.
+              Contact support
+            </a>
           </motion.p>
 
-          {/* Error Code */}
           {error && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="mt-6 text-center"
+              className="mt-4 text-center"
             >
-              <span className="dark:text-neutral-600 text-neutral-400 text-xs font-mono">Error Code: {error}</span>
+              <span className="dark:text-neutral-600 text-neutral-400 text-xs font-mono">Error code: {error}</span>
             </motion.div>
           )}
         </motion.div>

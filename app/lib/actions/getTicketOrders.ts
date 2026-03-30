@@ -35,7 +35,14 @@ export async function getTicketOrders() {
       }
     })
 
-    return orders
+    return {
+      success: true,
+      data: JSON.parse(
+        JSON.stringify(orders, (_, value) =>
+          typeof value === 'bigint' ? value.toString() : value?.constructor?.name === 'Decimal' ? Number(value) : value
+        )
+      )
+    }
   } catch (error) {
     await createLog('error', 'Failed to fetch ticket orders', {
       userId: session.user.id,

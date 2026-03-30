@@ -8,12 +8,15 @@ import { CreateEventInput } from '@/types/entities/event'
 
 export async function createEvent(data: CreateEventInput) {
   try {
-    const fullDateTime =
-      data.date && data.time ? combineDateTimeToUTC(data.date as string, data.time as string) : undefined
+    // const fullDateTime =
+    //   data.date && data.time ? combineDateTimeToUTC(data.date as string, data.time as string) : undefined
 
-    // Ensure type is a valid EventType enum
     const eventType =
       data.type && Object.values(EventType).includes(data.type as EventType) ? (data.type as EventType) : 'IN_PERSON'
+
+    console.log('DATA:: ', data)
+    // console.log('fullDateTime:: ', fullDateTime)
+    console.log('eventType:: ', eventType)
 
     const event = await prisma.event.create({
       data: {
@@ -22,7 +25,7 @@ export async function createEvent(data: CreateEventInput) {
         category: data.category || 'Other',
         type: eventType,
         dresscode: data.dresscode || null,
-        date: fullDateTime || new Date(),
+        date: data.date ? new Date(data.date) : new Date(),
         duration: data.duration || '',
         location: data.location || '',
         maxAttendees: data.maxAttendees ? Number(data.maxAttendees) : null,
@@ -38,9 +41,34 @@ export async function createEvent(data: CreateEventInput) {
         rsvpDeadline: data.rsvpDeadline ? new Date(data.rsvpDeadline) : new Date(),
         allowMultipleTickets: data.allowMultipleTickets ?? false,
         capacity: data.capacity ? Number(data.capacity) : 200,
-        order: data.order ?? 0
+        order: data.order ?? 0,
+
+        // Raffle
+        isRaffle: data.isRaffle ?? false,
+        raffleDrawDate: data.raffleDrawDate ? new Date(data.raffleDrawDate) : null,
+        raffleTerms: data.raffleTerms || null,
+        raffleTicketsPerOrder: data.raffleTicketsPerOrder ? Number(data.raffleTicketsPerOrder) : 1,
+        subtitle: data.subtitle || null,
+        tagline: data.tagline || null,
+        address: data.address || null,
+        website: data.website || null,
+        missionStatement: data.missionStatement || null,
+        raffleTicketPrice: data.raffleTicketPrice || null,
+        raffleGrandPrizeLabel: data.raffleGrandPrizeLabel || null,
+        raffleOddsLabel: data.raffleOddsLabel || null,
+        rafflePrizes: data.rafflePrizes ?? undefined,
+        raffleSchedule: data.raffleSchedule ?? undefined,
+
+        ticketSalesStartDate: data.ticketSalesStartDate ? new Date(data.ticketSalesStartDate) : null,
+        ticketSalesEndDate: data.ticketSalesEndDate ? new Date(data.ticketSalesEndDate) : null,
+        dressCodeHeadline: data.dressCodeHeadline || null,
+        dressCodeNote: data.dressCodeNote || null,
+        bestDressedPrizes: data.bestDressedPrizes || null,
+        dressCodeItems: data.dressCodeItems?.length ? data.dressCodeItems : undefined
       }
     })
+
+    console.log('EVENT: ', event)
 
     await createLog('info', 'Event created successfully', {
       eventId: event.id,

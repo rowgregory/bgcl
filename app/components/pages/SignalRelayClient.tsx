@@ -37,7 +37,6 @@ export default function SignalRelayClient({ subscribers }) {
   //       setCopied(true)
   //       setTimeout(() => setCopied(false), 2000)
   //     } catch (error) {
-  //       console.error('Failed to copy emails:', error)
   //     }
   //   }
 

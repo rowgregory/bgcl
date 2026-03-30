@@ -18,12 +18,12 @@ export async function getActiveEvents() {
       }
     })
 
-    return events
+    return { success: true, data: events, error: null }
   } catch (error) {
     await createLog('error', 'Error fetching active events', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    return { success: false, error: 'Failed to fetch active events' }
+    return { success: false, error: 'Failed to fetch active events', data: null }
   }
 }

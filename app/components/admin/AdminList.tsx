@@ -31,10 +31,6 @@ interface AdminListPageProps<T extends AdminListItem> {
   emptyMessage?: string
 }
 
-export function kebabToCamel(str: string): string {
-  return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
-}
-
 export function AdminListPage<T extends AdminListItem>({
   data,
   pageTitle,
@@ -89,10 +85,6 @@ export function AdminListPage<T extends AdminListItem>({
         store.dispatch(setOpenEventDrawer())
         store.dispatch(setInputs({ formName: 'eventForm', data: initialEventFormState }))
         break
-      // case 'partner':
-      //   store.dispatch(setOpenPartnerDrawer())
-      //   store.dispatch(setInputs({ formName: 'partnerForm', data: initialPartnerFormState }))
-      //   break
     }
   }
 
@@ -107,6 +99,7 @@ export function AdminListPage<T extends AdminListItem>({
                 Drag to reorder. Changes save automatically.
               </p>
             </div>
+
             <button
               onClick={handleCreate}
               className="p-1.5 dark:hover:bg-neutral-800 hover:bg-neutral-100 rounded transition-colors shrink-0"

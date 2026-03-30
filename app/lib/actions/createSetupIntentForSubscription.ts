@@ -24,72 +24,28 @@ export async function createSetupIntentForSubscription({
   feesCovered
 }: SetupIntentParams) {
   try {
-    // VALIDATE MINIMUM AMOUNT
-    if (amount < 500) {
-      // Stripe uses cents, so $5 = 500
-      throw new Error('Minimum donation is $5')
+    if (amount < 500) throw new Error('Minimum donation is $5')
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { stripeCustomerId: true }
+    })
+
+    if (!user?.stripeCustomerId) {
+      throw new Error('Stripe customer not found for this user')
     }
 
-    let customerId: string | undefined
-
-    if (userId) {
-      // Logged-in user - customer should already exist from signup
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { stripeCustomerId: true }
-      })
-
-      if (user?.stripeCustomerId) {
-        customerId = user.stripeCustomerId
-      }
-    }
-
-    // If no customer ID yet (logged in user without one, or guest), create customer
-    if (!customerId) {
-      // Check if customer exists in Stripe by email
-      const stripeCustomers = await stripe.customers.list({
-        email,
-        limit: 1
-      })
-
-      if (stripeCustomers.data.length > 0) {
-        // Found existing customer - use it
-        customerId = stripeCustomers.data[0].id
-      } else {
-        // No customer exists - create new one
-        const customer = await stripe.customers.create({
-          email,
-          name,
-          description: userId ? 'Platform user' : `Guest donor: ${name}`,
-          metadata: {
-            userId: userId || 'guest',
-            createdAt: new Date().toISOString()
-          }
-        })
-        customerId = customer.id
-
-        // If logged-in user, save the customer ID to database
-        if (userId) {
-          await prisma.user.update({
-            where: { id: userId },
-            data: { stripeCustomerId: customerId }
-          })
-        }
-      }
-    }
-
-    // Create SetupIntent - customer is guaranteed to exist now
     const setupIntent = await stripe.setupIntents.create({
-      customer: customerId, // ✅ Now guaranteed to be a valid customer ID
+      customer: user.stripeCustomerId,
       payment_method_types: ['card'],
       usage: 'off_session',
       metadata: {
-        userId: userId || 'guest',
+        userId,
         email,
         name,
         frequency,
         amount: amount.toString(),
-        type: 'recurring_donation',
+        type: 'RECURRING_DONATION',
         coverFees: coverFees ? 'true' : 'false',
         feesCovered: feesCovered?.toString() || '0'
       }
@@ -98,14 +54,13 @@ export async function createSetupIntentForSubscription({
     return {
       success: true,
       clientSecret: setupIntent.client_secret,
-      setupIntentId: setupIntent.id,
-      customerId
+      setupIntentId: setupIntent.id
     }
   } catch (error) {
     await createLog('error', 'SetupIntent creation error', {
       error: error instanceof Error ? error.message : 'Unknown error',
-      email,
-      name
+      userId,
+      email
     })
 
     return {

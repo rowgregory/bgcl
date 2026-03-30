@@ -1,487 +1,239 @@
 'use client'
 
-import { FC } from 'react'
+import { CasinoSignInPrompt } from '../events/casino/CasinoSignInPrompt'
+import { CasinoTicketMarquee } from '../events/casino/CasinoTicketMarquee'
+import { CasinoWidgets } from '../events/casino/CasinoWidgets'
+import { CasinoHero } from '../events/casino/CasinoHero'
+import { CasinoStyles, GoldDivider, MetaItem, SectionHeading } from '../events/casino/CasinoUiElements'
+import { CasinoSponsorTiers } from '../events/casino/CasinoSponsorTiers'
+import { CasinoPrizesAndSchedule } from '../events/casino/CasinoPrizesAndSchedule'
+import { CasinoRaffleStats } from '../events/casino/CasinoRaffleStats'
+import { CasinoTickets } from '../events/casino/CasinoTickets'
+import { CasinoDressCodeAndHighlights } from '../events/casino/CasinoDressCodeAndHighlights'
+import { CasinoIntro } from '../events/casino/CasinoIntro'
+import { useCallback, useState } from 'react'
 import { motion } from 'framer-motion'
-import Link from 'next/link'
-import Picture from '@/app/components/common/Picture'
-import { KeyEventInfo } from '@/app/components/events/KeyEventInfo'
-import { TicketCard } from '@/app/components/ticket/TicketCard'
-import { useCartSelector } from '@/app/lib/store/store'
-import { formatEnumLabel } from '@/app/lib/utils/formatEnumLabel'
-import { Clock, Users, Tag, Info, Shirt, Video, User, ChevronRight, ShoppingCart, ExternalLink } from 'lucide-react'
-import { IEvent } from '@/types/entities/event'
+import AddToCartToast from '../unique/AddToCartToast'
+import { VantaBackgroundCells } from '../unique/VantaBackground'
+import { formatDate } from '@/app/lib/utils/date-utils'
+import { formatTime } from '@/app/lib/utils/time-utils'
+import { TPublicEventDetailsClient } from '@/types/casino.types'
 
-const fadeUp = (delay = 0) => ({
-  initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.4, delay, easing: 'easeOut' }
-})
+export function PublicEventDetailsClient({ data, name, address, savedCards }: TPublicEventDetailsClient) {
+  const [introComplete, setIntroComplete] = useState(false)
 
-const fade = (delay = 0) => ({
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  transition: { duration: 0.4, delay, easing: 'easeOut' }
-})
+  const tickets = [
+    ...(data?.tickets?.filter((t: any) => t.ticketType === 'TOURNAMENT') ?? []),
+    ...(data?.tickets?.filter((t: any) => t.ticketType === 'RAFFLE') ?? []),
+    ...(data?.tickets?.filter((t: any) => !t.ticketType || t.ticketType === 'GENERAL') ?? []),
+    ...(data?.tickets?.filter((t: any) => t.ticketType === 'SPONSORSHIP').reverse() ?? [])
+  ]
 
-export const PublicEventDetailsClient: FC<{ data: IEvent }> = ({ data }) => {
-  const spotsRemaining = data?.capacity - data?.attendeeCount
-  const percentageFilled = (data?.attendeeCount / data?.capacity) * 100
-  const colorClass =
-    percentageFilled >= 90
-      ? 'bg-linear-to-r from-red-500 to-pink-500'
-      : percentageFilled >= 70
-        ? 'bg-linear-to-r from-yellow-500 to-orange-500'
-        : 'bg-linear-to-br from-sky-500 to-sky-600'
-  const { items } = useCartSelector()
+  const prizes = data?.rafflePrizes ?? []
+  const schedule = data?.raffleSchedule ?? []
+
+  const handleIntroComplete = useCallback(() => setIntroComplete(true), [])
 
   return (
-    <div className="dark:bg-neutral-950 bg-white min-h-screen">
-      <motion.nav
-        {...fade(0)}
-        aria-label="Breadcrumb"
-        className="sticky top-0 z-10 bg-white dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-800"
-      >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <ol className="flex items-center gap-2 text-sm min-w-0" role="list">
-            <li>
-              <Link
-                href="/"
-                className="dark:text-neutral-400 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
-              >
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">
-              <ChevronRight className="w-3.5 h-3.5 dark:text-neutral-600 text-neutral-400 shrink-0" />
-            </li>
-            <li>
-              <Link
-                href="/events"
-                className="dark:text-neutral-400 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
-              >
-                Events
-              </Link>
-            </li>
-            <li aria-hidden="true">
-              <ChevronRight className="w-3.5 h-3.5 dark:text-neutral-600 text-neutral-400 shrink-0" />
-            </li>
-            <li className="min-w-0">
-              <span
-                className="dark:text-white text-neutral-900 font-medium truncate max-w-32 sm:max-w-xs block"
-                aria-current="page"
-              >
-                {data?.title}
-              </span>
-            </li>
-          </ol>
+    <>
+      <CasinoIntro onComplete={handleIntroComplete} />
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: introComplete ? 1 : 0 }} transition={{ duration: 0.6 }}>
+        <VantaBackgroundCells>
+          <div className="casino-page text-white min-h-screen">
+            <style>{CasinoStyles}</style>
+            <AddToCartToast />
 
-          {/* Cart */}
-          <Link
-            href="/cart"
-            aria-label={`Open cart, ${items?.length} item${items?.length !== 1 ? 's' : ''}`}
-            className="relative p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 shrink-0"
-          >
-            <ShoppingCart className="w-5 h-5 dark:text-neutral-400 text-neutral-500" aria-hidden="true" />
-            {items?.length > 0 && (
-              <span
-                aria-hidden="true"
-                className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-sky-500 text-white text-[9px] font-bold rounded-full"
-              >
-                {items?.length > 99 ? '99+' : items?.length}
-              </span>
-            )}
-          </Link>
-        </div>
-      </motion.nav>
+            <div className="max-w-270 mx-auto px-5">
+              {/* ── Fixed Buttons ───────────────────────────────────────────────────── */}
+              <CasinoWidgets data={data} />
 
-      <motion.header {...fadeUp(0.1)} className="bg-linear-to-br from-sky-600 to-sky-700 relative overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.08]"
-          aria-hidden="true"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0 0v34M0 50l28 16 28-16' stroke='%23fff' stroke-width='1' fill='none'/%3E%3C/svg%3E")`
-          }}
-        />
-        <div className="dark:bg-black/20 bg-white/10 absolute inset-0" aria-hidden="true" />
+              {/* ── Hero ───────────────────────────────────────────────────── */}
+              <CasinoHero data={data} />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-          <div className="flex items-center gap-4">
-            {/* Logo */}
-            <div className="shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-white shadow-lg flex items-center justify-center p-1.5">
-              <Picture
-                src="/images/vertical-logo-light.png"
-                alt="Boys & Girls Club of Lynn"
-                className="w-full h-full object-contain"
-                priority
+              {/* ── MARQUEE ───────────────────────────────────────────────────── */}
+              <CasinoTicketMarquee
+                tickets={data.tickets}
+                eventId={data.id}
+                eventTitle={data.title}
+                ticketSalesStartDate={data.ticketSalesStartDate}
+                ticketSalesEndDate={data.ticketSalesEndDate}
               />
-            </div>
 
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              {/* Badges */}
-              <div className="flex flex-wrap items-center gap-1.5 mb-2" role="list" aria-label="Event tags">
-                <span
-                  role="listitem"
-                  className="bg-white/20 border-white/30 px-2 py-0.5 backdrop-blur-md rounded-full text-xs font-semibold text-white border"
-                >
-                  {data?.category}
-                </span>
-                <span
-                  role="listitem"
-                  aria-label={`Status: ${data?.status}`}
-                  className={`px-2 py-0.5 backdrop-blur-md rounded-full text-xs font-semibold border ${
-                    data?.status === 'ONGOING'
-                      ? 'bg-emerald-500/30 border-emerald-400/60 text-white'
-                      : data?.status === 'UPCOMING'
-                        ? 'bg-yellow-500/30 border-yellow-400/60 text-white'
-                        : 'bg-white/30 border-white/40 text-white'
-                  }`}
-                >
-                  {data?.status}
-                </span>
-                {data?.featured && (
-                  <span
-                    role="listitem"
-                    className="bg-yellow-500/30 border-yellow-400/60 text-white px-2 py-0.5 backdrop-blur-md rounded-full text-xs font-semibold border"
-                  >
-                    <span aria-hidden="true">⭐ </span>Featured
-                  </span>
-                )}
-              </div>
+              <GoldDivider />
 
-              <h1 className="text-xl sm:text-3xl lg:text-4xl font-bold text-white drop-shadow-2xl leading-tight truncate">
-                {data?.title}
-              </h1>
+              {/* ── SIGN IN PROMPT ───────────────────────────────────────────────────── */}
+              <CasinoSignInPrompt eventSlug={data.id} name={name} address={address} savedCards={savedCards} />
 
-              {data?.description && (
-                <p className="text-xs sm:text-sm text-white/80 mt-1 max-w-2xl leading-relaxed line-clamp-2">
-                  {data?.description}
-                </p>
-              )}
-            </div>
-          </div>
+              <GoldDivider />
 
-          <div className="mt-4">
-            <KeyEventInfo event={data} />
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Event Details Card */}
-            <motion.section
-              {...fadeUp(0.15)}
-              aria-labelledby="event-details-heading"
-              className="dark:bg-neutral-800/50 dark:border-neutral-700/50 bg-white border-neutral-200 rounded-2xl shadow-lg sm:shadow-2xl p-5 sm:p-8 border"
-            >
-              <h2
-                id="event-details-heading"
-                className="text-2xl sm:text-3xl font-bold dark:text-white text-neutral-900 mb-6 sm:mb-8 flex items-center gap-3"
-              >
-                <div
-                  className="w-1.5 h-7 sm:h-8 bg-linear-to-br from-sky-500 to-sky-600 rounded-full shrink-0"
-                  aria-hidden="true"
-                />
-                Event Details
-              </h2>
-
-              {data?.description && (
-                <p className="dark:text-neutral-400 text-neutral-600 text-sm sm:text-base leading-relaxed mb-6 sm:mb-8">
-                  {data.description}
-                </p>
+              {/* ── TICKETS ───────────────────────────────────────────────────── */}
+              {tickets.length > 0 && (
+                <>
+                  <CasinoTickets data={data} tickets={tickets} />
+                  <GoldDivider />
+                </>
               )}
 
-              <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-4 sm:gap-6">
-                {/* Type */}
-                <div className="dark:bg-neutral-700/30 dark:border-neutral-600/30 bg-neutral-50 border-neutral-200 flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border">
-                  <div className="bg-sky-500/10 dark:bg-sky-500/20 p-2 rounded-lg shrink-0" aria-hidden="true">
-                    <Tag className="w-4 h-4 sm:w-5 sm:h-5 dark:text-sky-400 text-sky-600" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm font-medium">Event Type</p>
-                    <p className="font-semibold dark:text-white text-neutral-900 mt-1 text-sm sm:text-base truncate">
-                      {formatEnumLabel(data?.type)}
+              {/* ── PRIZES + SCHEDULE ─────────────────────────────────────────── */}
+              {(prizes.length > 0 || schedule.length > 0) && (
+                <>
+                  <CasinoPrizesAndSchedule prizes={prizes} schedule={schedule} />
+                  <GoldDivider />
+                </>
+              )}
+
+              {/* ── SPONSOR TIERS ─────────────────────────────────────────────── */}
+              {data?.tickets?.some((t: any) => t.ticketType === 'SPONSORSHIP') && (
+                <>
+                  <CasinoSponsorTiers data={data} />
+                  <GoldDivider />
+                </>
+              )}
+
+              {/* ── RAFFLE STATS ──────────────────────────────────────────────── */}
+              {data?.isRaffle && (data?.raffleGrandPrizeLabel || data?.raffleTicketPrice || data?.raffleOddsLabel) && (
+                <>
+                  <CasinoRaffleStats data={data} />
+                  <GoldDivider />
+                </>
+              )}
+
+              {/* ── DRESS CODE & HIGHLIGHTS ──────────────────────────────────── */}
+              {(data?.dressCodeHeadline ||
+                data?.dressCodeItems?.length > 0 ||
+                data?.dressCodeNote ||
+                data?.bestDressedPrizes) && (
+                <>
+                  <CasinoDressCodeAndHighlights data={data} />
+                  <GoldDivider />
+                </>
+              )}
+
+              {/* ── DRAW DATE ─────────────────────────────────────────────────── */}
+              {data?.raffleDrawDate && (
+                <>
+                  <section aria-labelledby="draw-heading" className="text-center pb-4">
+                    <p className="oswald text-[10px] font-bold uppercase tracking-[0.3em] text-amber-600/55 mb-4">
+                      ✦ Raffle Draw ✦
                     </p>
-                  </div>
-                </div>
-
-                {/* Duration */}
-                {data?.duration && (
-                  <div className="dark:bg-neutral-700/30 dark:border-neutral-600/30 bg-neutral-50 border-neutral-200 flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border">
-                    <div className="bg-blue-100 dark:bg-blue-500/20 p-2 rounded-lg shrink-0" aria-hidden="true">
-                      <Clock className="dark:text-blue-400 text-blue-600 w-4 h-4 sm:w-5 sm:h-5" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm font-medium">Duration</p>
-                      <p className="font-semibold dark:text-white text-neutral-900 mt-1 text-sm sm:text-base">
-                        {data?.duration} hours
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Dress Code */}
-                {data?.dresscode && (
-                  <div className="dark:bg-neutral-700/30 dark:border-neutral-600/30 bg-neutral-50 border-neutral-200 flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border">
-                    <div className="bg-sky-500/10 dark:bg-sky-500/20 p-2 rounded-lg shrink-0" aria-hidden="true">
-                      <Shirt className="w-4 h-4 sm:w-5 sm:h-5 dark:text-sky-400 text-sky-600" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm font-medium">
-                        Dress Code
-                      </p>
-                      <p className="font-semibold dark:text-white text-neutral-900 mt-1 text-sm sm:text-base">
-                        {data?.dresscode}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Host */}
-                {data?.host && (
-                  <div className="dark:bg-neutral-700/30 dark:border-neutral-600/30 bg-neutral-50 border-neutral-200 flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border">
-                    <div className="bg-blue-100 dark:bg-blue-500/20 p-2 rounded-lg shrink-0" aria-hidden="true">
-                      <User className="dark:text-blue-400 text-blue-600 w-4 h-4 sm:w-5 sm:h-5" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm font-medium">Hosted By</p>
-                      <p className="font-semibold dark:text-white text-neutral-900 mt-1 text-sm sm:text-base truncate">
-                        {data?.host}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Requirements & Materials */}
-              {(data?.requirements || data?.materials) && (
-                <div className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
-                  {data?.requirements && (
-                    <div className="dark:bg-neutral-700/30 dark:border-neutral-600/30 bg-neutral-50 border-neutral-200 p-3 sm:p-4 rounded-xl border">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Info className="w-4 h-4 dark:text-sky-400 text-sky-600 shrink-0" aria-hidden="true" />
-                        <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm font-semibold">
-                          Requirements
-                        </p>
-                      </div>
-                      <p className="dark:text-white text-neutral-900 leading-relaxed text-sm sm:text-base">
-                        {data?.requirements}
-                      </p>
-                    </div>
-                  )}
-                  {data?.materials && (
-                    <div className="dark:bg-neutral-700/30 dark:border-neutral-600/30 bg-neutral-50 border-neutral-200 p-3 sm:p-4 rounded-xl border">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Info className="w-4 h-4 dark:text-sky-400 text-sky-600 shrink-0" aria-hidden="true" />
-                        <p className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm font-semibold">
-                          Materials Needed
-                        </p>
-                      </div>
-                      <p className="dark:text-white text-neutral-900 leading-relaxed text-sm sm:text-base">
-                        {data?.materials}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </motion.section>
-
-            {/* Links Section */}
-            {(data?.registrationUrl || data?.meetingUrl) && (
-              <motion.section
-                {...fadeUp(0.2)}
-                aria-labelledby="quick-links-heading"
-                className="dark:bg-neutral-800/50 dark:border-neutral-700/50 bg-white border-neutral-200 rounded-2xl shadow-lg sm:shadow-2xl p-5 sm:p-8 border"
-              >
-                <h3
-                  id="quick-links-heading"
-                  className="text-xl sm:text-2xl font-bold dark:text-white text-neutral-900 mb-4 sm:mb-6 flex items-center gap-3"
-                >
-                  <div
-                    className="w-1.5 h-5 sm:h-6 bg-linear-to-br from-sky-500 to-sky-600 rounded-full shrink-0"
-                    aria-hidden="true"
-                  />
-                  Quick Links
-                </h3>
-                <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-3">
-                  {data?.meetingUrl && (
-                    <a
-                      href={data.meetingUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Virtual Meeting Link — opens in new tab"
-                      className="group flex items-center justify-between gap-3 p-4 sm:p-5 border dark:border-neutral-700/50 border-neutral-200 dark:bg-neutral-700/20 bg-neutral-50 rounded-xl hover:border-sky-500/50 dark:hover:border-sky-500/50 hover:bg-sky-500/5 dark:hover:bg-sky-500/10 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                    <h2
+                      id="draw-heading"
+                      className="oswald font-black uppercase text-white leading-none mb-2"
+                      style={{ fontSize: 'clamp(28px, 6vw, 52px)' }}
                     >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="bg-sky-500/10 dark:bg-sky-500/20 p-2 rounded-lg shrink-0">
-                          <Video className="w-4 h-4 sm:w-5 sm:h-5 text-sky-500 dark:text-sky-400" aria-hidden="true" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-semibold dark:text-white text-neutral-900 text-sm sm:text-base truncate">
-                            Virtual Meeting
-                          </p>
-                          <p className="text-xs dark:text-neutral-500 text-neutral-400 truncate">{data.meetingUrl}</p>
-                        </div>
-                      </div>
-                      <ExternalLink
-                        className="w-4 h-4 shrink-0 dark:text-neutral-500 text-neutral-400 group-hover:text-sky-500 dark:group-hover:text-sky-400 transition-colors"
-                        aria-hidden="true"
-                      />
-                      <span className="sr-only">(opens in new tab)</span>
-                    </a>
-                  )}
-                </div>
-              </motion.section>
-            )}
-
-            {/* Tickets Section */}
-            <motion.section
-              {...fadeUp(0.25)}
-              aria-labelledby="tickets-heading"
-              className="dark:bg-neutral-800/50 dark:border-neutral-700/50 bg-white border-neutral-200 rounded-2xl shadow-lg sm:shadow-2xl p-5 sm:p-8 border"
-            >
-              <h2
-                id="tickets-heading"
-                className="text-2xl sm:text-3xl font-bold dark:text-white text-neutral-900 mb-6 sm:mb-8 flex items-center gap-3"
-              >
-                <div
-                  className="w-1.5 h-7 sm:h-8 bg-linear-to-br from-sky-500 to-sky-600 rounded-full shrink-0"
-                  aria-hidden="true"
-                />
-                Tickets
-              </h2>
-
-              {data?.tickets.length === 0 ? (
-                <div className="text-center py-10 sm:py-16" role="status">
-                  <div
-                    className="dark:bg-neutral-700/50 bg-neutral-200 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-                    aria-hidden="true"
-                  >
-                    <Tag className="dark:text-neutral-500 text-neutral-400 w-6 h-6 sm:w-8 sm:h-8" />
-                  </div>
-                  <p className="dark:text-neutral-400 text-neutral-600 text-base sm:text-lg">
-                    No tickets available yet.
-                  </p>
-                  {data?.requiresRSVP && (
-                    <p className="dark:text-neutral-500 text-neutral-500 text-xs sm:text-sm mt-2">
-                      RSVP required for this event
+                      {formatDate(data.raffleDrawDate, { weekday: 'long' })}
+                    </h2>
+                    <p className="text-lg text-white/30 mb-8">
+                      {formatTime(data.raffleDrawDate)}&nbsp;EST &nbsp;·&nbsp; Must be present to win
                     </p>
-                  )}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-4 sm:gap-6">
-                  {data?.tickets.map((ticket) => (
-                    <TicketCard key={ticket.id} ticket={{ ...ticket, eventId: data?.id, eventTitle: data?.title }} />
+                  </section>
+                  <GoldDivider />
+                </>
+              )}
+
+              {/* ── ABOUT ─────────────────────────────────────────────────────── */}
+              {data?.description && (
+                <>
+                  <section
+                    aria-labelledby="about-heading"
+                    className="max-w-180 mx-auto text-center pb-4 flex flex-col items-center"
+                  >
+                    <SectionHeading suit="♣" id="about-heading">
+                      About the Event
+                    </SectionHeading>
+                    <p className="text-base text-white/40 leading-[1.8]">{data.description}</p>
+                  </section>
+                  <GoldDivider />
+                </>
+              )}
+
+              <CasinoTicketMarquee
+                tickets={data.tickets}
+                eventId={data.id}
+                eventTitle={data.title}
+                ticketSalesStartDate={data.ticketSalesStartDate}
+                ticketSalesEndDate={data.ticketSalesEndDate}
+              />
+
+              <GoldDivider />
+
+              {/* ── MISSION / DRESS / REQUIREMENTS / ADDRESS ──────────────────── */}
+              {(data?.missionStatement || data?.dresscode || data?.requirements || data?.address) && (
+                <>
+                  <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 pb-4">
+                    {data?.missionStatement && (
+                      <MetaItem label="Mission">
+                        <span className="italic text-white/35">&ldquo;{data.missionStatement}&rdquo;</span>
+                      </MetaItem>
+                    )}
+                    {data?.dresscode && (
+                      <MetaItem label="Dress Code">
+                        <span className="text-white/45">{data.dresscode}</span>
+                      </MetaItem>
+                    )}
+                    {data?.requirements && (
+                      <MetaItem label="Requirements">
+                        <span className="text-white/45">{data.requirements}</span>
+                      </MetaItem>
+                    )}
+                    {data?.address && (
+                      <MetaItem label="Venue Address">
+                        <span className="text-white/45">{data.address}</span>
+                      </MetaItem>
+                    )}
+                  </section>
+                  <GoldDivider />
+                </>
+              )}
+
+              {/* ── TERMS ─────────────────────────────────────────────────────── */}
+              {data?.raffleTerms && (
+                <p className="text-[11px] text-white/30 leading-[1.7] text-center pb-12">* {data.raffleTerms}</p>
+              )}
+
+              {/* ── FOOTER ────────────────────────────────────────────────────── */}
+              <div className="border-t border-amber-500/20 py-6 pb-12 flex flex-col items-center gap-3">
+                <div className="flex gap-4 text-base font-black" aria-hidden="true">
+                  {['♠', '♥', '♦', '♣'].map((s) => (
+                    <span key={s} className="text-amber-500/30 suit">
+                      {s}
+                    </span>
                   ))}
                 </div>
-              )}
-            </motion.section>
-          </div>
-
-          {/* Right Column - Sidebar */}
-          <motion.aside {...fadeUp(0.3)} className="space-y-6" aria-label="Event sidebar">
-            {/* Registration Deadline */}
-            {data?.registrationDeadline && (
-              <div className="dark:bg-linear-to-br dark:from-cyan-500/20 dark:to-blue-500/20 bg-linear-to-br from-cyan-50 to-blue-50 dark:border-sky-500/30 border-cyan-200 rounded-2xl p-5 sm:p-6 border shadow-lg">
-                <div className="flex items-center gap-2 mb-3">
-                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 dark:text-sky-400 text-sky-600 shrink-0" aria-hidden="true" />
-                  <h3 className="text-base sm:text-lg font-bold dark:text-white text-neutral-900">
-                    Registration Deadline
-                  </h3>
-                </div>
-                <p className="dark:text-cyan-100 text-cyan-700 font-medium text-sm sm:text-base">
-                  <time dateTime={new Date(data?.registrationDeadline).toISOString()}>
-                    {new Date(data?.registrationDeadline).toLocaleDateString()}
-                  </time>
+                <p className="text-[11px] text-white/30 text-center">
+                  © {new Date().getFullYear()} Boys &amp; Girls Club of Lynn &nbsp;·&nbsp; 25 North Common Street, Lynn,
+                  MA 01902 &nbsp;·&nbsp; (781) 593-1772
                 </p>
-              </div>
-            )}
 
-            {/* Capacity Progress */}
-            <div className="dark:bg-neutral-800/50 dark:border-neutral-700/50 bg-white border-neutral-200 rounded-2xl shadow-lg sm:shadow-2xl p-5 sm:p-6 border">
-              <h3 className="text-lg sm:text-xl font-bold dark:text-white text-neutral-900 mb-4 sm:mb-6 flex items-center gap-2">
-                <Users className="w-4 h-4 sm:w-5 sm:h-5 dark:text-sky-400 text-sky-600 shrink-0" aria-hidden="true" />
-                Attendance
-              </h3>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-[10px] text-white/30 tracking-[0.08em]">powered by</p>
 
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex justify-between text-sm">
-                  <span className="dark:text-neutral-400 text-neutral-600 font-medium">Registered</span>
-                  <span className="font-bold dark:text-white text-neutral-900 text-base sm:text-lg">
-                    {data?.attendeeCount} / {data?.capacity}
-                  </span>
-                </div>
-
-                <motion.div
-                  className={`h-full rounded-full shadow-lg ${colorClass}`}
-                  initial={{ width: '0%' }}
-                  animate={{ width: `${Math.min(percentageFilled, 100)}%` }}
-                  transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
-                />
-
-                <div
-                  className="dark:bg-neutral-700/30 dark:border-neutral-600/30 bg-neutral-50 border-neutral-200 text-center p-2.5 sm:p-3 rounded-xl border"
-                  role="status"
-                >
-                  {spotsRemaining > 0 ? (
-                    <span className="dark:text-sky-400 text-sky-600 font-bold text-base sm:text-lg">
-                      {spotsRemaining} spots remaining
-                    </span>
-                  ) : (
-                    <span className="dark:text-red-400 text-red-600 font-bold text-base sm:text-lg">Event is full</span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Event Stats */}
-            <div className="dark:bg-neutral-800/50 dark:border-neutral-700/50 bg-white border-neutral-200 rounded-2xl shadow-lg sm:shadow-2xl p-5 sm:p-6 border">
-              <h3 className="text-lg sm:text-xl font-bold dark:text-white text-neutral-900 mb-4 sm:mb-6">Event Info</h3>
-
-              <div className="space-y-3 sm:space-y-4">
-                <div className="dark:bg-neutral-700/30 dark:border-neutral-600/30 bg-neutral-50 border-neutral-200 flex justify-between items-center p-2.5 sm:p-3 rounded-xl border">
-                  <span className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm font-medium">
-                    Visibility
-                  </span>
-                  <span
-                    className={`px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold border ${
-                      data?.isPublic
-                        ? 'dark:bg-sky-500/20 dark:text-sky-400 dark:border-sky-500/30 bg-sky-50 text-sky-600 border-sky-200'
-                        : 'dark:bg-neutral-500/20 dark:text-neutral-400 dark:border-neutral-500/30 bg-neutral-100 text-neutral-600 border-neutral-300'
-                    }`}
+                  <a
+                    href="https://sqysh.io?lead_source=bgcl-casino-madness"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Powered by Sqysh"
+                    className="group focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-400/30 rounded"
                   >
-                    {data?.isPublic ? 'Public' : 'Private'}
-                  </span>
+                    <span
+                      className="oswald text-sm font-black uppercase tracking-[0.2em] group-hover:opacity-100 transition-opacity duration-300"
+                      style={{
+                        background: 'linear-gradient(135deg, #6b4e00, #d4af37, #f5e678, #d4af37, #6b4e00)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                        opacity: 0.6
+                      }}
+                    >
+                      Sqysh
+                    </span>
+                  </a>
                 </div>
-
-                {data?.requiresRSVP && (
-                  <div className="dark:bg-neutral-700/30 dark:border-neutral-600/30 bg-neutral-50 border-neutral-200 flex justify-between items-center p-2.5 sm:p-3 rounded-xl border">
-                    <span className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm font-medium">RSVP</span>
-                    <span className="px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold border dark:bg-sky-500/20 dark:text-sky-400 dark:border-sky-500/30 bg-sky-50 text-sky-600 border-sky-200">
-                      Required
-                    </span>
-                  </div>
-                )}
-
-                {data?.allowMultipleTickets && (
-                  <div className="dark:bg-neutral-700/30 dark:border-neutral-600/30 bg-neutral-50 border-neutral-200 flex justify-between items-center p-2.5 sm:p-3 rounded-xl border">
-                    <span className="dark:text-neutral-400 text-neutral-600 text-xs sm:text-sm font-medium">
-                      Multiple Tickets
-                    </span>
-                    <span className="px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold border dark:bg-sky-500/20 dark:text-sky-400 dark:border-sky-500/30 bg-sky-50 text-sky-600 border-sky-200">
-                      Allowed
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
-          </motion.aside>
-        </div>
-      </main>
-    </div>
+          </div>
+        </VantaBackgroundCells>
+      </motion.div>
+    </>
   )
 }

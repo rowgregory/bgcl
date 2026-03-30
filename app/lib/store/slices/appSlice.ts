@@ -7,7 +7,6 @@ export interface AppStatePayload {
   languageDropdown: boolean
   selectedLanguage: string
   volunteerDrawer: boolean
-  paymentMethodDrawer: boolean
   isDark: boolean
   cancelSubscriptionDrawer: boolean
   cancelSubscriptionDetails: any | null
@@ -21,7 +20,6 @@ const initialAppState: AppStatePayload = {
   languageDropdown: false,
   selectedLanguage: 'English',
   volunteerDrawer: false,
-  paymentMethodDrawer: false,
   isDark: false,
   cancelSubscriptionDrawer: false,
   cancelSubscriptionDetails: null,
@@ -65,12 +63,7 @@ export const appSlice = createSlice({
     setCloseVolunteerDrawer: (state) => {
       state.volunteerDrawer = false
     },
-    setOpenPaymentMethodDrawer: (state) => {
-      state.paymentMethodDrawer = true
-    },
-    setClosePaymentMethodDrawer: (state) => {
-      state.paymentMethodDrawer = false
-    },
+
     setOpenCancelSubscriptionDrawer: (state, { payload }) => {
       state.cancelSubscriptionDrawer = true
       state.cancelSubscriptionDetails = payload
@@ -104,8 +97,6 @@ export const {
   setSelectedLanguage,
   setCloseVolunteerDrawer,
   setOpenVolunteerDrawer,
-  setOpenPaymentMethodDrawer,
-  setClosePaymentMethodDrawer,
   setIsDark,
   setCloseCancelSubscriptionDrawer,
   setOpenCancelSubscriptionDrawer,

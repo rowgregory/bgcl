@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import { ITicket } from '@/types/entities/ticket'
+import { TicketType } from '@prisma/client'
 
 export interface CartItem {
   ticketId: string
@@ -10,6 +11,11 @@ export interface CartItem {
   price: number
   quantity: number
   maxAvailable: number
+  ticketDescription: string
+  ticketType: TicketType
+  isRaffleTicket: boolean
+  ticketSalesStartDate: Date
+  ticketSalesEndDate: Date
 }
 
 interface AddToCartToastProps {
@@ -18,10 +24,12 @@ interface AddToCartToastProps {
     name: string
     eventId: string
     eventTitle: string
-    price: number // in cents
+    price: number
     totalQuantity: number
     quantitySold: number
     description?: string | null
+    ticketType?: 'GENERAL' | 'RAFFLE' | 'TOURNAMENT' | 'SPONSORSHIP' | null
+    isRaffleTicket?: boolean
   } | null
   quantity: number
   visible: boolean
@@ -30,7 +38,7 @@ interface AddToCartToastProps {
 }
 
 interface CartState {
-  items: CartItem[]
+  items: CartItem[] | null
   isCheckingOut: boolean
   lastUpdated: string | null
   addToCartToast: boolean
@@ -38,7 +46,7 @@ interface CartState {
 }
 
 const initialState: CartState = {
-  items: [],
+  items: null,
   isCheckingOut: false,
   lastUpdated: null,
   addToCartToast: false,
@@ -60,11 +68,16 @@ export const cartSlice = createSlice({
         state.items.push({
           ticketId: ticket.id,
           ticketName: ticket.name,
+          ticketDescription: ticket.description ?? null,
+          ticketType: ticket.ticketType ?? 'GENERAL',
+          isRaffleTicket: ticket.isRaffleTicket ?? false,
           eventId: ticket.eventId,
           eventTitle: ticket.eventTitle,
           price: ticket.price,
           quantity,
-          maxAvailable: ticket.totalQuantity - ticket.quantitySold
+          maxAvailable: ticket.totalQuantity - ticket.quantitySold,
+          ticketSalesStartDate: ticket.ticketSalesStartDate,
+          ticketSalesEndDate: ticket.ticketSalesEndDate
         })
       }
 

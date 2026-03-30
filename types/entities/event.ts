@@ -51,17 +51,38 @@ export interface IEvent {
   salesStartDate?: Date | null
   salesEndDate?: Date | null
 
+  // Raffle
+  isRaffle: boolean
+  raffleDrawDate?: Date | null
+  raffleTerms?: string | null
+  raffleTicketsPerOrder: number
+  subtitle?: string | null
+  tagline?: string | null
+  address?: string | null
+  website?: string | null
+  missionStatement?: string | null
+  raffleTicketPrice?: string | null
+  raffleGrandPrizeLabel?: string | null
+  raffleOddsLabel?: string | null
+  rafflePrizes?: { place: string; amount: string }[] | null
+  raffleSchedule?: { time: string; label: string }[] | null
+
   // Relations
   tickets?: ITicket[]
   orders?: IOrder[]
   attendees?: IUser[]
+
+  // Add to interface
+  ticketSalesStartDate?: Date | string | null
+  ticketSalesEndDate?: Date | string | null
+  dressCodeHeadline?: string | null
+  dressCodeNote?: string | null
+  bestDressedPrizes?: string | null
+  dressCodeItems?: { label: string; description: string }[] | null
 }
 
-export type EventWithTickets = Event & {
+export type EventWithTickets = IEvent & {
   tickets: ITicket[]
-  _count?: {
-    rsvps: number
-  }
 }
 
 export interface EventTemplate {
@@ -75,6 +96,7 @@ export interface EventTemplate {
     category: string
     type: EventType
     dresscode: string
+    date: string
     time: string
     duration: string
     location: string
@@ -84,6 +106,31 @@ export interface EventTemplate {
     isPublic: boolean
     requiresRSVP: boolean
     allowMultipleTickets: boolean
+
+    // Raffle
+    isRaffle: boolean
+    raffleDrawDate: string | null
+    raffleTerms: string | null
+    raffleTicketsPerOrder: number
+    subtitle: string | null
+    tagline: string | null
+    address: string | null
+    website: string | null
+    missionStatement: string | null
+    registrationDeadline?: string
+    raffleTicketPrice: string | null
+    raffleGrandPrizeLabel: string | null
+    raffleOddsLabel: string | null
+    rafflePrizes: { place: string; amount: string }[] | null
+    raffleSchedule: { time: string; label: string }[] | null
+
+    // Add to interface
+    ticketSalesStartDate?: Date | string | null
+    ticketSalesEndDate?: Date | string | null
+    dressCodeHeadline?: string | null
+    dressCodeNote?: string | null
+    bestDressedPrizes?: string | null
+    dressCodeItems?: { label: string; description: string }[] | null
   }
 }
 
@@ -100,44 +147,52 @@ export interface CreateEventInput {
   time?: string
   duration?: string
   location?: string
-
   description?: string
   capacity?: number
   dresscode?: string | null
   maxAttendees?: number | null
   host?: string | null
-
   featured?: boolean
   isPublic?: boolean
   requiresRSVP?: boolean
   allowMultipleTickets?: boolean
-
   requirements?: string | null
   materials?: string | null
   registrationUrl?: string | null
   meetingUrl?: string | null
   registrationDeadline?: string | null
   rsvpDeadline?: string | null
-
   salesStartDate?: string | null
   salesEndDate?: string | null
-
   order?: number | null
 
-  [key: string]: any
+  // Raffle
+  isRaffle?: boolean
+  raffleDrawDate?: string | null
+  raffleTerms?: string | null
+  raffleTicketsPerOrder?: number | null
+  subtitle?: string | null
+  tagline?: string | null
+  address?: string | null
+  website?: string | null
+  missionStatement?: string | null
+  raffleTicketPrice?: string | null
+  raffleGrandPrizeLabel?: string | null
+  raffleOddsLabel?: string | null
+  rafflePrizes?: { place: string; amount: string }[] | null
+  raffleSchedule?: { time: string; label: string }[] | null
+
+  // Add to interface
+  ticketSalesStartDate?: Date | string | null
+  ticketSalesEndDate?: Date | string | null
+  dressCodeHeadline?: string | null
+  dressCodeNote?: string | null
+  bestDressedPrizes?: string | null
+  dressCodeItems?: { label: string; description: string }[] | null
 }
 
-export interface UpdateEventInput {
+export interface UpdateEventInput extends Partial<CreateEventInput> {
   id: string
-  title?: string
-  description?: string
-  category?: string
-  type?: EventType
-  date?: string | Date
-  duration?: string
-  location?: string
-  featured?: boolean
-  isPublic?: boolean
-  requiresRSVP?: boolean
-  [key: string]: any // Catch everything else
+  isUpdating: boolean
+  tickets: ITicket[]
 }

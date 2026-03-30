@@ -118,7 +118,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
     const orderType =
       (metadata?.orderType as 'ONE_TIME_DONATION' | 'RECURRING_DONATION' | 'TICKET_PURCHASE') || 'ONE_TIME_DONATION'
 
-    const userId = metadata?.userId && metadata.userId !== 'guest' ? metadata.userId : null
+    const userId = metadata.userId || null
 
     const order = await prisma.order.create({
       data: {
@@ -132,7 +132,8 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         userId,
         paidAt: new Date(),
         billingAddress: {
-          address: metadata.address,
+          addressLine1: metadata.addressLine1,
+          addressLine2: metadata.addressLine2,
           city: metadata.city,
           state: metadata.state,
           zipCode: metadata.zipCode,
@@ -147,6 +148,19 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         campaignId: metadata.campaignId || null,
         paymentMethodId: (paymentIntent.payment_method as string) || null,
         eventId: metadata.eventId || null
+      },
+      include: {
+        orderItems: true,
+        event: {
+          select: {
+            title: true,
+            date: true,
+            location: true,
+            address: true,
+            raffleDrawDate: true,
+            raffleTerms: true
+          }
+        }
       }
     })
 
@@ -156,24 +170,79 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         quantity: number
         pricePerUnit: number
         ticketName: string
+        ticketDescription?: string
+        ticketType: string
       }>
 
-      for (const ticket of tickets) {
-        await prisma.orderItem.create({
-          data: {
-            orderId: order.id,
-            ticketId: ticket.ticketId,
-            quantity: ticket.quantity,
-            pricePerUnit: ticket.pricePerUnit,
-            totalPrice: ticket.pricePerUnit * ticket.quantity,
-            ticketName: ticket.ticketName
-          }
-        })
+      // Check once whether this is a raffle event so we know whether to
+      // assign ticket numbers. A single query covers all tickets in the order
+      // since they all belong to the same event.
+      const isRaffle = metadata.eventId
+        ? ((
+            await prisma.event.findUnique({
+              where: { id: metadata.eventId },
+              select: { isRaffle: true }
+            })
+          )?.isRaffle ?? false)
+        : false
 
-        await prisma.ticket.update({
-          where: { id: ticket.ticketId },
-          data: { quantitySold: { increment: ticket.quantity } }
-        })
+      for (const ticket of tickets) {
+        if (isRaffle && ticket.ticketType === 'RAFFLE') {
+          await prisma.$transaction(async (tx) => {
+            // Use advisory lock keyed to the ticketId to prevent concurrent access
+            // Advisory locks are session-level and don't require locking specific rows
+            await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${ticket.ticketId}))`
+
+            // Now safely get the current max without FOR UPDATE
+            const result = await tx.$queryRaw<{ next_number: number }[]>`
+              SELECT COALESCE(MAX("raffleTicketNumber"), 0) + 1 AS next_number
+              FROM "OrderItem"
+              WHERE "ticketId" = ${ticket.ticketId}`
+
+            const firstNumber = Number(result[0].next_number)
+
+            // Sequential — not Promise.all — so each insert is visible to the next
+            for (let i = 0; i < ticket.quantity; i++) {
+              const num = firstNumber + i
+              await tx.orderItem.create({
+                data: {
+                  orderId: order.id,
+                  ticketId: ticket.ticketId,
+                  quantity: 1,
+                  pricePerUnit: ticket.pricePerUnit,
+                  totalPrice: ticket.pricePerUnit,
+                  ticketName: ticket.ticketName,
+                  ticketDescription: ticket.ticketDescription ?? null,
+                  raffleTicketNumber: num,
+                  raffleTicketCode: `RAFF-${String(num).padStart(4, '0')}`
+                }
+              })
+            }
+
+            await tx.ticket.update({
+              where: { id: ticket.ticketId },
+              data: { quantitySold: { increment: ticket.quantity } }
+            })
+          })
+        } else {
+          // Standard (non-raffle) ticket — single OrderItem with full quantity
+          await prisma.orderItem.create({
+            data: {
+              orderId: order.id,
+              ticketId: ticket.ticketId,
+              quantity: ticket.quantity,
+              pricePerUnit: ticket.pricePerUnit,
+              totalPrice: ticket.pricePerUnit * ticket.quantity,
+              ticketName: ticket.ticketName,
+              ticketDescription: ticket.ticketDescription ?? null
+            }
+          })
+
+          await prisma.ticket.update({
+            where: { id: ticket.ticketId },
+            data: { quantitySold: { increment: ticket.quantity } }
+          })
+        }
       }
 
       // Add user to event attendees
@@ -183,7 +252,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
           select: { attendees: { where: { id: order.userId }, select: { id: true } } }
         })
 
-        const alreadyAttending = event?.attendees.length > 0
+        const alreadyAttending = (event?.attendees.length ?? 0) > 0
 
         await prisma.event.update({
           where: { id: metadata.eventId as string },
@@ -193,10 +262,40 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
           }
         })
       }
+
+      // Tournament participation
+      const hasTournamentTicket = tickets.some((t) => t.ticketType === 'TOURNAMENT')
+
+      if (hasTournamentTicket) {
+        const tournamentFeePaid = tickets
+          .filter((t) => t.ticketType === 'TOURNAMENT')
+          .reduce((sum, t) => sum + t.pricePerUnit * t.quantity, 0)
+
+        await prisma.order.update({
+          where: { id: order.id },
+          data: {
+            participatingInTournament: true,
+            tournamentFeePaid
+          }
+        })
+      }
     }
 
+    // Now fetch the complete order with items before emailing
+    const completeOrder = await prisma.order.findUnique({
+      where: { id: order.id },
+      include: {
+        orderItems: {
+          include: {
+            ticket: true
+          }
+        },
+        event: true
+      }
+    })
+
     // Send confirmation email
-    await sendConfirmationEmail(order, orderType, amount, metadata)
+    await sendConfirmationEmail(completeOrder, orderType, amount)
 
     // Push to Pusher
     const channelId = userId || `guest-${paymentIntent.id}`
@@ -275,35 +374,32 @@ async function handlePaymentMethodAttached(paymentMethod: Stripe.PaymentMethod) 
   try {
     const customerId = typeof paymentMethod.customer === 'string' ? paymentMethod.customer : paymentMethod.customer?.id
 
-    if (!customerId) {
-      return
-    }
+    if (!customerId) return
 
     const user = await prisma.user.findFirst({
       where: { stripeCustomerId: customerId }
     })
 
-    if (!user) {
-      return
-    }
+    if (!user) return
 
-    const existing = await prisma.paymentMethod.findUnique({
-      where: { stripePaymentId: paymentMethod.id }
+    // Set all existing cards to non-default
+    await prisma.paymentMethod.updateMany({
+      where: { userId: user.id },
+      data: { isDefault: false }
     })
 
-    if (existing) {
-      return
-    }
-
-    await prisma.paymentMethod.create({
-      data: {
+    // Upsert — create if new, update if already exists
+    await prisma.paymentMethod.upsert({
+      where: { stripePaymentId: paymentMethod.id },
+      update: { isDefault: true },
+      create: {
         stripePaymentId: paymentMethod.id,
         cardholderName: paymentMethod.billing_details?.name || 'Unknown',
         cardBrand: paymentMethod.card?.brand || 'unknown',
         cardLast4: paymentMethod.card?.last4 || '0000',
         cardExpMonth: paymentMethod.card?.exp_month || 0,
         cardExpYear: paymentMethod.card?.exp_year || 0,
-        isDefault: false,
+        isDefault: true,
         userId: user.id
       }
     })
@@ -377,7 +473,6 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       createdAt: new Date(subscription.created * 1000)
     })
   } catch (error) {
-    console.error('Error handling subscription created:', error)
     await createLog('error', 'Failed to log subscription creation', {
       subscriptionId: subscription.id,
       error: error instanceof Error ? error.message : 'Unknown error'
@@ -513,6 +608,17 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     const coverFees = subscription.metadata?.coverFees === 'true'
     const feesCovered = parseFloat(subscription.metadata?.feesCovered || '0')
 
+    function getNextBillingDate(subscription: any): Date {
+      const frequency = subscription.metadata?.frequency || 'monthly'
+      const anchor = new Date(subscription.billing_cycle_anchor * 1000)
+
+      if (frequency === 'yearly') {
+        return new Date(anchor.setFullYear(anchor.getFullYear() + 1))
+      }
+
+      return new Date(anchor.setMonth(anchor.getMonth() + 1))
+    }
+
     const order = await prisma.order.create({
       data: {
         type: 'RECURRING_DONATION',
@@ -533,9 +639,10 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
         coverFees: coverFees,
         feesCovered: feesCovered,
         paidAt: invoice.status_transitions?.paid_at ? new Date(invoice.status_transitions.paid_at * 1000) : new Date(),
-        nextBillingDate: invoice.period_end ? new Date(invoice.period_end * 1000) : null,
+        nextBillingDate: getNextBillingDate(subscription),
         billingAddress: {
-          address: subscription.metadata?.address || '',
+          addressLine1: subscription.metadata?.addressLine1 || '',
+          addressLine2: subscription.metadata?.addressLine2 || '',
           city: subscription.metadata?.city || '',
           state: subscription.metadata?.state || '',
           zipCode: subscription.metadata?.zipCode || '',
@@ -555,7 +662,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 
     // Only send confirmation email on first payment
     if (isFirstPayment) {
-      await sendConfirmationEmail(order, 'RECURRING_DONATION', amount * 100, subscription.metadata)
+      await sendConfirmationEmail(order, 'RECURRING_DONATION', amount * 100)
     }
 
     const channelId = `payment-${subscriptionId}`

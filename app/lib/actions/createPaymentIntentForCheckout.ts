@@ -6,26 +6,27 @@ import Stripe from 'stripe'
 import { createLog } from './createLog'
 import { OrderType } from '@prisma/client'
 
-interface CheckoutParams {
+interface DonateCheckoutParams {
   userId?: string
   email: string
   name: string
-  amount: number // in cents
+  amount: number
   orderType: OrderType
   description: string
   saveCard?: boolean
   coverFees?: boolean
   feesCovered?: number
-  address?: string
-  city?: string
-  state?: string
-  zipCode?: string
-  country?: string
-  notes?: string
-  campaignId?: string
+  address?: {
+    addressLine1?: string
+    addressLine2?: string
+    city?: string
+    state?: string
+    zipCode?: string
+    country?: string
+  }
   savedCardId?: string
-  tickets?: string
-  eventId?: string
+  campaignId?: string
+  notes?: string
 }
 
 export async function createPaymentIntentForCheckout({
@@ -39,68 +40,21 @@ export async function createPaymentIntentForCheckout({
   coverFees = false,
   feesCovered = 0,
   address,
-  city,
-  state,
-  zipCode,
-  country,
   notes,
   campaignId,
-  savedCardId,
-  tickets,
-  eventId
-}: CheckoutParams) {
+  savedCardId
+}: DonateCheckoutParams) {
   try {
-    // VALIDATE MINIMUM AMOUNT
     if (amount < 500) {
-      // Remember: Stripe uses cents, so $5 = 500
-      throw new Error('Minimum donation is $5')
+      throw new Error('Minimum purchase amount is $5')
     }
 
-    let customerId: string | undefined
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { stripeCustomerId: true }
+    })
 
-    if (userId) {
-      // Logged-in user - use their customer
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { stripeCustomerId: true }
-      })
-
-      if (user?.stripeCustomerId) {
-        customerId = user.stripeCustomerId
-      }
-    } else {
-      // Not logged in - check if user exists by email
-      const existingUser = await prisma.user.findUnique({
-        where: { email },
-        select: { stripeCustomerId: true }
-      })
-
-      if (existingUser?.stripeCustomerId) {
-        // User has account and Stripe customer, use it
-        customerId = existingUser.stripeCustomerId
-      } else {
-        // No user record - check Stripe for existing customer by email
-        const stripeCustomers = await stripe.customers.search({
-          query: `email:"${email}"`,
-          limit: 1
-        })
-
-        if (stripeCustomers.data.length > 0) {
-          // Reuse existing Stripe customer (from previous guest donation)
-          customerId = stripeCustomers.data[0].id
-        } else {
-          // No Stripe customer - create guest customer
-          const customer = await stripe.customers.create({
-            email,
-            metadata: {
-              userId: 'guest',
-              createdAt: new Date().toISOString()
-            }
-          })
-          customerId = customer.id
-        }
-      }
-    }
+    const customerId = user?.stripeCustomerId ?? undefined
 
     // Create payment intent
     const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
@@ -111,22 +65,21 @@ export async function createPaymentIntentForCheckout({
       description,
       setup_future_usage: saveCard ? 'on_session' : undefined,
       metadata: {
-        userId: userId || 'guest',
+        userId,
         orderType,
         name,
         email,
         saveCard: saveCard ? 'true' : 'false',
         coverFees: coverFees ? 'true' : 'false',
         feesCovered: feesCovered.toString(),
-        address: address || '',
-        city: city || '',
-        state: state || '',
-        zipCode: zipCode || '',
-        country: country || '',
+        addressLine1: address?.addressLine1 || '',
+        addressLine2: address?.addressLine2 || '',
+        city: address?.city || '',
+        state: address?.state || '',
+        zipCode: address?.zipCode || '',
+        country: 'US',
         notes: notes || '',
-        campaignId: campaignId || '',
-        tickets,
-        eventId
+        campaignId: campaignId || ''
       }
     }
 
@@ -160,8 +113,6 @@ export async function createPaymentIntentForCheckout({
       paymentIntentId: paymentIntent.id
     }
   } catch (error) {
-    console.error('Payment intent error details:', error)
-
     await createLog('error', 'Payment intent creation error', {
       error: error instanceof Error ? error.message : 'Unknown error',
       stripeError: error instanceof Error ? (error as any).code : undefined,

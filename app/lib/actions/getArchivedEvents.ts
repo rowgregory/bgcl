@@ -1,5 +1,6 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { ArchivedEvent } from '@/app/components/pages/CapsuleArchiveClient'
 
 export async function getArchivedEvents() {
   try {
@@ -18,7 +19,12 @@ export async function getArchivedEvents() {
       orderBy: { date: 'desc' }
     })
 
-    return events
+    return events.map((event) => ({
+      ...event,
+      rafflePrizes: (event.rafflePrizes as { place: string; amount: string }[] | null) ?? [],
+      raffleSchedule: (event.raffleSchedule as { time: string; label: string }[] | null) ?? [],
+      dressCodeItems: (event.dressCodeItems as { label: string; description: string }[] | null) ?? []
+    })) as ArchivedEvent[]
   } catch (error) {
     await createLog('error', 'Error fetching archived events', {
       error: error instanceof Error ? error.message : 'Unknown error'

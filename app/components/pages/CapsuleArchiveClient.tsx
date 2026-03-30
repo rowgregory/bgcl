@@ -12,7 +12,7 @@ type ArchivedEventOrder = {
   orderItems: { quantity: number }[]
 }
 
-type ArchivedEvent = Omit<IEvent, 'orders'> & {
+export type ArchivedEvent = Omit<IEvent, 'orders'> & {
   orders: ArchivedEventOrder[]
   _count: { attendees: number }
 }

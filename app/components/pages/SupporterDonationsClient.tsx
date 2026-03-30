@@ -2,11 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { useSession } from 'next-auth/react'
-import { ArrowLeft, ArrowRight, Heart, Rocket } from 'lucide-react'
-import { MotionLink } from '../common/MotionLink'
-import LogoutButton from '../ui/buttons/LogoutButton'
-import Picture from '../common/Picture'
+import { ArrowLeft, ArrowRight, Heart } from 'lucide-react'
 import { SupporterDonationRow } from '../supporter/SupporterDonationRow'
 
 const containerVariants = {
@@ -15,63 +11,8 @@ const containerVariants = {
 }
 
 export default function SupporterDonationsClient({ donations }) {
-  const session = useSession()
-  const role = session?.data?.user?.role
-
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-950">
-      {/* Header */}
-      <header className="px-6 md:px-8 lg:px-12 pb-4 pt-6 md:pt-8 dark:border-neutral-800 border-neutral-200 border-b">
-        <div className="max-w-334 mx-auto flex items-center justify-between">
-          <MotionLink
-            href="/"
-            aria-label="Boys & Girls Club of Lynn — home"
-            className="flex space-x-3 w-28 h-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
-          >
-            <Picture
-              src="/images/vertical-logo-light.png"
-              alt="Boys & Girls Club of Lynn"
-              className="dark:hidden block w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
-              priority={true}
-            />
-            <Picture
-              src="/images/vertical-logo-dark.png"
-              alt="Boys & Girls Club of Lynn"
-              className="dark:block hidden w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
-              priority={true}
-            />
-          </MotionLink>
-          <div className="flex items-center gap-x-3">
-            {/* Profile email */}
-            <div className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-100 border-neutral-200 border rounded-lg">
-              <div
-                className="shrink-0 w-6 h-6 rounded-full bg-sky-600 flex items-center justify-center"
-                aria-hidden="true"
-              >
-                <span className="text-white text-xs font-bold leading-none">
-                  {(session.data?.user?.email?.[0] ?? '?').toUpperCase()}
-                </span>
-              </div>
-              <p className="text-xs font-medium dark:text-neutral-400 text-neutral-600 max-w-40 truncate">
-                {session.data?.user?.email}
-              </p>
-            </div>
-            {(role === 'ADMIN' || role === 'PROGRAM' || role === 'SUPERUSER') && (
-              <MotionLink
-                href="/auth/login"
-                aria-label="Go to admin dashboard"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-zinc-700 bg-neutral-200 border-neutral-300 hover:bg-neutral-300 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-              >
-                <Rocket className="w-5 h-5 dark:text-zinc-400 text-neutral-700" aria-hidden="true" />
-              </MotionLink>
-            )}
-            <LogoutButton />
-          </div>
-        </div>
-      </header>
-
       <main className="p-6 md:p-8 lg:p-12 space-y-10">
         <div className="max-w-334 mx-auto space-y-10">
           {/* Page header */}
@@ -89,10 +30,10 @@ export default function SupporterDonationsClient({ donations }) {
                 Supporter Portal
               </p>
               <h1 className="text-3xl md:text-4xl font-black dark:text-white text-neutral-900 leading-tight">
-                My Donations
+                Donations
               </h1>
               <p className="dark:text-neutral-500 text-neutral-600 text-base mt-2">
-                View all your contributions to Boys & Girls Club of Lynn
+                View your contribution history and manage recurring donations
               </p>
             </div>
           </motion.div>
@@ -100,36 +41,6 @@ export default function SupporterDonationsClient({ donations }) {
           {/* Donations list */}
           {donations.length > 0 ? (
             <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-1">
-              {/* Table header */}
-              <div className="hidden md:flex items-center gap-4 px-4 pb-2" aria-hidden="true">
-                <div className="w-9 shrink-0" />
-                <div className="w-28 shrink-0">
-                  <p className="text-xs font-semibold dark:text-neutral-600 text-neutral-400 uppercase tracking-wider">
-                    Amount
-                  </p>
-                </div>
-                <div className="hidden sm:block w-24 shrink-0">
-                  <p className="text-xs font-semibold dark:text-neutral-600 text-neutral-400 uppercase tracking-wider">
-                    Type
-                  </p>
-                </div>
-                <div className="w-32 shrink-0">
-                  <p className="text-xs font-semibold dark:text-neutral-600 text-neutral-400 uppercase tracking-wider">
-                    Date
-                  </p>
-                </div>
-                <div className="flex-1 min-w-0 hidden lg:block">
-                  <p className="text-xs font-semibold dark:text-neutral-600 text-neutral-400 uppercase tracking-wider">
-                    Campaign
-                  </p>
-                </div>
-                <div className="shrink-0 w-20">
-                  <p className="text-xs font-semibold dark:text-neutral-600 text-neutral-400 uppercase tracking-wider">
-                    Status
-                  </p>
-                </div>
-              </div>
-
               <ul role="list" className="space-y-2 list-none p-0 m-0">
                 {donations.map((donation) => (
                   <SupporterDonationRow key={donation.id} donation={donation} />

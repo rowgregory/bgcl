@@ -89,7 +89,11 @@ export default function DonationNotification({ donations }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [donations])
 
-  if (['/admin/', '/program/', '/supporter', '/cart', '/auth', '/get-involved'].some((link) => pathname.includes(link)))
+  if (
+    ['/admin/', '/program/', '/supporter', '/cart', '/auth', '/get-involved', '/donate', '/events/', '/checkout'].some(
+      (link) => pathname.includes(link)
+    )
+  )
     return null
 
   function getTimeAgo(timestamp: string | Date): string {

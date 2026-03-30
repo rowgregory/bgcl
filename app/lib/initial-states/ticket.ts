@@ -7,5 +7,7 @@ export const initialTicketFormState = {
   quantitySold: 0,
   quantityReserved: 0,
   isAvailable: true,
-  sortOrder: 0
+  sortOrder: 0,
+  ticketType: 'GENERAL',
+  isUpdating: false
 }

@@ -109,3 +109,8 @@ html {
 .group:hover .sqysh-gradient {
   animation-duration: 1.5s;
 }
+
+.suit,
+.oswald {
+  font-family: "Georgia", serif !important;
+}

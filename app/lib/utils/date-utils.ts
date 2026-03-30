@@ -101,10 +101,30 @@ export function convertDateToUTC(dateInput: string | Date): Date {
   }
 }
 
-export const formatDate = (date: Date) => {
+export const formatDate = (date: Date, options?: any) => {
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
+    ...options
   })
+}
+
+export function formatDatetimeLocalForInput(value: Date | string | null | undefined): string {
+  if (!value) return ''
+  const date = new Date(value)
+  if (isNaN(date.getTime())) return ''
+
+  // Convert to EST (America/New_York handles EST/EDT automatically)
+  const estString = date.toLocaleString('en-US', { timeZone: 'America/New_York' })
+  const estDate = new Date(estString)
+
+  const year = estDate.getFullYear()
+  const month = String(estDate.getMonth() + 1).padStart(2, '0')
+  const day = String(estDate.getDate()).padStart(2, '0')
+  const hours = String(estDate.getHours()).padStart(2, '0')
+  const minutes = String(estDate.getMinutes()).padStart(2, '0')
+
+  // datetime-local expects "YYYY-MM-DDTHH:mm"
+  return `${year}-${month}-${day}T${hours}:${minutes}`
 }

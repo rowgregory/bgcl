@@ -66,7 +66,6 @@ export default function FuelTankOverviewClient({ stats }: { stats: any }) {
         link.click()
       }
     } catch (error) {
-      console.error('Error generating report:', error)
     } finally {
       setLoading(false)
     }

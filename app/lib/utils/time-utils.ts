@@ -61,7 +61,21 @@ export const formatTimeForInput = (date: Date | string | null | undefined): stri
   if (!date) return ''
   const d = new Date(date)
   if (isNaN(d.getTime())) return ''
-  const hours = d.getHours().toString().padStart(2, '0')
-  const minutes = d.getMinutes().toString().padStart(2, '0')
-  return `${hours}:${minutes}`
+  return d.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  })
+}
+
+export const formatTime = (date) => {
+  if (!date) return ''
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return ''
+  return d.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'America/New_York'
+  })
 }

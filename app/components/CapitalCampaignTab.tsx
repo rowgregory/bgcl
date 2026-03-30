@@ -14,7 +14,8 @@ const CAPITAL_CAMPAIGN_LINKS = [
   '/cart',
   '/events/',
   '/auth',
-  '/get-involved'
+  '/get-involved',
+  '/donate'
 ]
 
 export default function CapitalCampaignTab() {

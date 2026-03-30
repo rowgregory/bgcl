@@ -31,7 +31,18 @@ export async function getCapsuleTransactions() {
       orderItems: order.orderItems.map((item) => ({
         ...item,
         pricePerUnit: item.pricePerUnit ? Number(item.pricePerUnit) : null,
-        totalPrice: item.totalPrice ? Number(item.totalPrice) : null
+        totalPrice: item.totalPrice ? Number(item.totalPrice) : null,
+        ticket: {
+          ...item.ticket,
+          ticketSalesStartDate: item.ticket.event?.ticketSalesStartDate ?? null,
+          ticketSalesEndDate: item.ticket.event?.ticketSalesEndDate ?? null,
+          event: {
+            ...item.ticket.event,
+            rafflePrizes: (item.ticket.event?.rafflePrizes as { place: string; amount: string }[] | null) ?? [],
+            raffleSchedule: (item.ticket.event?.raffleSchedule as { time: string; label: string }[] | null) ?? [],
+            dressCodeItems: (item.ticket.event?.dressCodeItems as { label: string; description: string }[] | null) ?? []
+          }
+        }
       }))
     }))
   } catch (error) {

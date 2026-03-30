@@ -15,10 +15,16 @@ export interface TicketTemplate {
     quantityReserved?: number
     isAvailable: boolean
     sortOrder: number
+    ticketType: 'GENERAL' | 'RAFFLE' | 'TOURNAMENT' | 'SPONSORSHIP'
+    isRaffleTicket: boolean
+    sponsorImpact?: string | null
+    sponsorPerks?: string[]
   }
 }
 
 export interface ITicket {
+  ticketSalesEndDate: Date
+  ticketSalesStartDate: Date
   id: string
   createdAt: Date
   updatedAt: Date
@@ -37,6 +43,14 @@ export interface ITicket {
   isAvailable: boolean
   sortOrder: number
 
+  // Ticketing
+  ticketType: 'GENERAL' | 'RAFFLE' | 'TOURNAMENT' | 'SPONSORSHIP'
+  isRaffleTicket: boolean
+
+  // Sponsorship
+  sponsorImpact?: string | null
+  sponsorPerks?: string[]
+
   // Relations
   eventId: string
   event?: IEvent
@@ -46,19 +60,26 @@ export interface ITicket {
 
 export interface UpdateTicketData {
   name?: string
-  description?: string
+  description?: string | null
   price?: number
   totalQuantity?: number
   isAvailable?: boolean
   sortOrder?: number
-  [key: string]: any
+  ticketType?: 'GENERAL' | 'RAFFLE' | 'TOURNAMENT' | 'SPONSORSHIP'
+  isRaffleTicket?: boolean
+  sponsorImpact?: string | null
+  sponsorPerks?: string[]
 }
 
 export interface CreateTicketInput {
   name: string
-  description?: string
+  description?: string | null
   price: number
   totalQuantity: number
   isAvailable?: boolean
   sortOrder?: number
+  ticketType?: 'GENERAL' | 'RAFFLE' | 'TOURNAMENT' | 'SPONSORSHIP'
+  isRaffleTicket?: boolean
+  sponsorImpact?: string | null
+  sponsorPerks?: string[]
 }

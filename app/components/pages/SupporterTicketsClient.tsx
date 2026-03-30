@@ -1,26 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, ChevronRight, Rocket, Ticket } from 'lucide-react'
+import { ArrowLeft, Calendar, ChevronRight, Ticket } from 'lucide-react'
 import { MotionLink } from '../common/MotionLink'
-import Picture from '../common/Picture'
-import LogoutButton from '../ui/buttons/LogoutButton'
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.08 } }
-}
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0 }
-}
+import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
 
 const SupporterTicketsClient = ({ data }) => {
-  const session = useSession()
-
   // Group orders by event
   const grouped = Object.values(
     data.reduce((acc, order) => {
@@ -49,60 +35,6 @@ const SupporterTicketsClient = ({ data }) => {
 
   return (
     <div className="min-h-screen dark:bg-neutral-950 bg-white">
-      {/* Header */}
-      <header className="px-6 md:px-8 lg:px-12 pb-4 pt-6 md:pt-8 dark:border-neutral-800 border-neutral-200 border-b">
-        <div className="max-w-334 mx-auto flex items-center justify-between">
-          <MotionLink
-            href="/"
-            aria-label="Boys & Girls Club of Lynn — home"
-            className="flex space-x-3 w-28 h-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
-          >
-            <Picture
-              src="/images/vertical-logo-light.png"
-              alt="Boys & Girls Club of Lynn"
-              className="dark:hidden block w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
-              priority
-            />
-            <Picture
-              src="/images/vertical-logo-dark.png"
-              alt="Boys & Girls Club of Lynn"
-              className="dark:block hidden w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
-              priority
-            />
-          </MotionLink>
-          <div className="flex items-center gap-x-3">
-            {/* Profile email */}
-            <div className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-100 border-neutral-200 border rounded-lg">
-              <div
-                className="shrink-0 w-6 h-6 rounded-full bg-sky-600 flex items-center justify-center"
-                aria-hidden="true"
-              >
-                <span className="text-white text-xs font-bold leading-none">
-                  {(session.data?.user?.email?.[0] ?? '?').toUpperCase()}
-                </span>
-              </div>
-              <p className="text-xs font-medium dark:text-neutral-400 text-neutral-600 max-w-40 truncate">
-                {session.data?.user?.email}
-              </p>
-            </div>
-            {(session?.data?.user?.role === 'ADMIN' ||
-              session?.data?.user?.role === 'PROGRAM' ||
-              session?.data?.user?.role === 'SUPERUSER') && (
-              <MotionLink
-                href="/auth/login"
-                aria-label="Go to admin dashboard"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-zinc-700 bg-neutral-200 border-neutral-300 hover:bg-neutral-300 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-              >
-                <Rocket className="w-5 h-5 dark:text-zinc-400 text-neutral-700" aria-hidden="true" />
-              </MotionLink>
-            )}
-            <LogoutButton />
-          </div>
-        </div>
-      </header>
-
       <main className="p-6 md:p-8 lg:p-12 space-y-10">
         <div className="max-w-334 mx-auto space-y-10">
           {/* Page header */}

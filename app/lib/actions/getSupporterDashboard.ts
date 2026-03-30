@@ -79,38 +79,68 @@ export async function getSupporterDashboard() {
         {
           eventId: string
           event: (typeof ticketOrders)[0]['event']
-          orderItems: { id: string; ticketName: string; quantity: number; totalPrice: number; pricePerUnit: number }[]
+          orderIds: string[]
+          orderItems: {
+            ticketName: string
+            quantity: number
+            pricePerUnit: number
+            totalPrice: number
+            raffleTickets: { number: number; code: string }[]
+          }[]
           totalAmount: number
-          createdAt: Date
-          id: string
+          createdAt: string
         }[]
       >((acc, order) => {
         const event = order.event ?? order.orderItems[0]?.ticket?.event
         const eventId = order.eventId ?? event?.id ?? 'unknown'
         const existing = acc.find((g) => g.eventId === eventId)
 
+        const mappedItems = order.orderItems.map((item) => ({
+          ticketName: item.ticketName,
+          quantity: item.quantity ?? 1,
+          pricePerUnit: item.pricePerUnit,
+          totalPrice: item.totalPrice ?? 0,
+          raffleTickets:
+            item.raffleTicketNumber && item.raffleTicketCode
+              ? [{ number: item.raffleTicketNumber, code: item.raffleTicketCode }]
+              : []
+        }))
+
         if (existing) {
-          order.orderItems.forEach((item) => {
-            const matchIdx = existing.orderItems.findIndex((i) => i.ticketName === item.ticketName)
-            if (matchIdx >= 0) {
-              existing.orderItems[matchIdx] = {
-                ...existing.orderItems[matchIdx],
-                quantity: existing.orderItems[matchIdx].quantity + (item.quantity ?? 1),
-                totalPrice: existing.orderItems[matchIdx].totalPrice + (item.totalPrice ?? 0)
-              }
+          mappedItems.forEach((incoming) => {
+            const match = existing.orderItems.find((i) => i.ticketName === incoming.ticketName)
+            if (match) {
+              match.quantity += incoming.quantity
+              match.totalPrice += incoming.totalPrice
+              match.raffleTickets.push(...incoming.raffleTickets)
             } else {
-              existing.orderItems.push({ ...item })
+              existing.orderItems.push({ ...incoming })
             }
           })
           existing.totalAmount += order.totalAmount
+          existing.orderIds.push(order.id)
         } else {
+          // When first creating the group, also merge duplicate ticketNames
+          // within the same order (raffle tickets are 1 row each)
+          const mergedItems: typeof mappedItems = []
+          mappedItems.forEach((item) => {
+            const match = mergedItems.find((i) => i.ticketName === item.ticketName)
+            if (match) {
+              match.quantity += item.quantity
+              match.totalPrice += item.totalPrice
+              match.raffleTickets.push(...item.raffleTickets)
+            } else {
+              mergedItems.push({ ...item })
+            }
+          })
+
           acc.push({
             eventId,
             event,
-            orderItems: order.orderItems.map((item) => ({ ...item })),
+            orderIds: [order.id],
+            orderItems: mergedItems,
             totalAmount: order.totalAmount,
-            createdAt: order.createdAt,
-            id: order.id
+            createdAt: order.createdAt.toString()
           })
         }
 

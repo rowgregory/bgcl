@@ -18,13 +18,15 @@ import { ThemeProvider } from './lib/providers/theme'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import WelcomeAnimation from './components/WelcomeAnimation'
-import AddToCartToast from './components/unique/AddToCartToast'
+import { Confetti3D } from './components/unique/Confetti3D'
+import { EventAnnouncementStrip } from './components/events/EventAnnouncementStrip'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
-export default function RootLayoutWrapper({ children, programs, pageContent, donations }) {
+export default function RootLayoutWrapper({ children, programs, pageContent, donations, event }) {
   const pathname = usePathname()
   const show = !HIDDEN_PATHS.some((path) => pathname.startsWith(path))
+  const showEventAnnouncementStripe = !['/events/', '/admin'].some((path) => pathname.startsWith(path))
 
   return (
     <Provider store={store}>
@@ -39,8 +41,10 @@ export default function RootLayoutWrapper({ children, programs, pageContent, don
             <RegistrationModal modal={pageContent?.sections?.modal} />
             <MobileNavigationDrawer />
             <WelcomeAnimation />
-            <AddToCartToast />
+            <Confetti3D />
+
             {show && <Header />}
+            {showEventAnnouncementStripe && <EventAnnouncementStrip event={event} />}
             {children}
             {show && <Footer />}
           </ThemeProvider>

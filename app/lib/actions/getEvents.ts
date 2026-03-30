@@ -7,21 +7,16 @@ export async function getEvents() {
   try {
     const events = await prisma.event.findMany({
       where: { NOT: { status: 'ARCHIVED' } },
-      include: {
-        tickets: true
-      },
-      orderBy: {
-        order: 'asc'
-      }
+      include: { tickets: true },
+      orderBy: { order: 'asc' }
     })
 
-    return events.map((event) => ({
-      ...event,
-      tickets: event.tickets.map((ticket) => ({
-        ...ticket,
-        price: Number(ticket.price)
-      }))
-    }))
+    return {
+      success: true,
+      data: JSON.parse(
+        JSON.stringify(events, (_, value) => (value?.constructor?.name === 'Decimal' ? Number(value) : value))
+      )
+    }
   } catch (error) {
     await createLog('error', 'Error fetching events', {
       error: error instanceof Error ? error.message : 'Unknown error'

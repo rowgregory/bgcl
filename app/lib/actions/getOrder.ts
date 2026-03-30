@@ -16,7 +16,8 @@ export const getOrder = async (id: string) => {
         event: {
           select: {
             title: true,
-            date: true
+            date: true,
+            location: true
           }
         },
         orderItems: {
@@ -24,7 +25,10 @@ export const getOrder = async (id: string) => {
             ticketName: true,
             quantity: true,
             pricePerUnit: true,
-            totalPrice: true
+            totalPrice: true,
+            raffleTicketCode: true,
+            raffleTicketNumber: true,
+            ticketDescription: true
           }
         }
       }

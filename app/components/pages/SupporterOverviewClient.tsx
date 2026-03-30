@@ -1,117 +1,229 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { ArrowRight, Calendar, ChevronRight, CreditCard, Heart, Rocket, Ticket, TrendingUp } from 'lucide-react'
+import {
+  ArrowRight,
+  Calendar,
+  Check,
+  ChevronRight,
+  CreditCard,
+  Heart,
+  Loader2,
+  MapPin,
+  Pencil,
+  Plus,
+  Ticket,
+  Trash2,
+  TrendingUp,
+  User,
+  X
+} from 'lucide-react'
 import { MotionLink } from '../common/MotionLink'
-import Picture from '../common/Picture'
-import LogoutButton from '../ui/buttons/LogoutButton'
+import { useState } from 'react'
+import { updateUserName } from '@/app/lib/actions/updateUserName'
+import { useRouter } from 'next/navigation'
+import { store } from '@/app/lib/store/store'
+import { showToast } from '@/app/lib/store/slices/toastSlice'
+import { setOpenPaymentMethodModal, setOpenUpdateAddressModal } from '@/app/lib/store/slices/uiSlice'
+import { deleteAddress } from '@/app/lib/actions/deleteAddress'
+import { setDefaultPaymentMethod } from '@/app/lib/actions/setDefaultPaymentMethod'
+import { deletePaymentMethod } from '@/app/lib/actions/deletePaymentMethod'
+import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
+import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.08 } }
+function SupporterOverviewFooter() {
+  return (
+    <footer className="px-6 md:px-8 lg:px-12 py-6 border-t dark:border-neutral-800 border-neutral-200 mt-16">
+      <div className="max-w-334 mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p className="text-xs dark:text-neutral-600 text-neutral-400">
+          © {new Date().getFullYear()}&nbsp; Boys &amp; Girls Club of Lynn. All rights reserved.
+        </p>
+        <div className="flex items-center gap-4">
+          <a
+            href="mailto:info@bgcl.org"
+            className="text-xs dark:text-neutral-600 text-neutral-400 hover:dark:text-neutral-400 hover:text-neutral-600 transition-colors"
+          >
+            info@bgcl.org
+          </a>
+          <span className="dark:text-neutral-800 text-neutral-300" aria-hidden="true">
+            ·
+          </span>
+
+          <a
+            href="tel:781-593-1772"
+            className="text-xs dark:text-neutral-600 text-neutral-400 hover:dark:text-neutral-400 hover:text-neutral-600 transition-colors"
+          >
+            (781) 593-1772
+          </a>
+        </div>
+      </div>
+    </footer>
+  )
 }
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0 }
-}
-
-const SupporterOverviewClient = ({ data }) => {
-  const hasActivity = data.recentDonations.length > 0 || data.upcomingEvents.length > 0
+const SupporterOverviewClient = ({ dashboard, address, name, savedCards }) => {
+  const hasActivity = dashboard?.recentDonations.length > 0 || dashboard?.upcomingEvents.length > 0
   const session = useSession()
+  const router = useRouter()
+
+  const [editingName, setEditingName] = useState(false)
+  const [firstName, setFirstName] = useState(name?.firstName ?? '')
+  const [lastName, setLastName] = useState(name?.lastName ?? '')
+  const [savingName, setSavingName] = useState(false)
+  const [deletingAddress, setDeletingAddress] = useState(false)
+  const displayName =
+    [firstName, lastName].filter(Boolean).join(' ') || session.data?.user?.name || session.data?.user?.email
+
+  const [deletingPaymentMethod, setDeletingPaymentMethod] = useState<string | null>(null)
+  const [settingDefault, setSettingDefault] = useState<string | null>(null)
+
+  async function handleSaveName() {
+    if (!firstName.trim() && !lastName.trim()) return
+    setSavingName(true)
+
+    try {
+      await updateUserName({ firstName: firstName.trim(), lastName: lastName.trim() })
+      setEditingName(false)
+      router.refresh()
+      store.dispatch(
+        showToast({
+          type: 'success',
+          message: 'Name Updated!',
+          description: `Your name has been updated to ${[firstName.trim(), lastName.trim()].filter(Boolean).join(' ')}.`
+        })
+      )
+    } catch (error) {
+      store.dispatch(
+        showToast({
+          type: 'error',
+          message: 'Failed to Update Name',
+          description: error instanceof Error ? error.message : 'Something went wrong. Please try again.'
+        })
+      )
+    } finally {
+      setSavingName(false)
+    }
+  }
+
+  async function handleDeleteAddress() {
+    setDeletingAddress(true)
+
+    try {
+      await deleteAddress()
+      store.dispatch(
+        showToast({
+          type: 'success',
+          message: 'Address Removed',
+          description: 'Your billing address has been cleared.'
+        })
+      )
+      router.refresh()
+    } catch (error) {
+      store.dispatch(
+        showToast({
+          type: 'error',
+          message: 'Failed to Remove Address',
+          description: error instanceof Error ? error.message : 'Something went wrong.'
+        })
+      )
+    } finally {
+      setDeletingAddress(false)
+    }
+  }
+
+  const handleSetDefault = async (cardId: string) => {
+    setSettingDefault(cardId)
+    try {
+      const result = await setDefaultPaymentMethod(cardId)
+
+      if (result.success) {
+        store.dispatch(
+          showToast({
+            type: 'success',
+            message: 'Default payment method updated',
+            description: 'Your default card has been changed successfully.'
+          })
+        )
+        router.refresh()
+      } else {
+        throw new Error(result.error)
+      }
+    } catch (error) {
+      store.dispatch(
+        showToast({
+          type: 'error',
+          message: 'Failed to update default',
+          description: extractErrorMessage(error)
+        })
+      )
+    } finally {
+      setSettingDefault(null)
+    }
+  }
+
+  async function handleDeletePaymentMethod(stripePaymentId: string) {
+    setDeletingPaymentMethod(stripePaymentId)
+    try {
+      const res = await deletePaymentMethod(stripePaymentId)
+      store.dispatch(
+        showToast(
+          res.error
+            ? { type: 'error', message: 'Failed to Remove Card', description: res.error }
+            : { type: 'success', message: 'Card Removed', description: 'Your saved card has been permanently removed.' }
+        )
+      )
+      if (!res.error) router.refresh()
+    } catch {
+      store.dispatch(
+        showToast({
+          type: 'error',
+          message: 'Failed to Remove Card',
+          description: 'Something went wrong. Please try again.'
+        })
+      )
+    } finally {
+      setDeletingPaymentMethod(null)
+    }
+  }
 
   return (
     <div className="min-h-screen dark:bg-neutral-950 bg-white">
-      {/* Header */}
-      <header className="px-6 md:px-8 lg:px-12 pb-4 pt-6 md:pt-8 dark:border-neutral-800 border-neutral-200 border-b">
-        <div className="max-w-334 mx-auto flex items-center justify-between">
-          <MotionLink
-            href="/"
-            aria-label="Boys & Girls Club of Lynn — home"
-            className="flex space-x-3 w-28 h-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
-          >
-            <Picture
-              src="/images/vertical-logo-light.png"
-              alt="Boys & Girls Club of Lynn"
-              className="dark:hidden block w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
-              priority
-            />
-            <Picture
-              src="/images/vertical-logo-dark.png"
-              alt="Boys & Girls Club of Lynn"
-              className="dark:block hidden w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
-              priority
-            />
-          </MotionLink>
-          <div className="flex items-center gap-x-3">
-            {/* Profile */}
-            <div className="flex items-center gap-2.5 px-3 py-1.5 dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-100 border-neutral-200 border rounded-lg">
-              <div
-                className="shrink-0 w-6 h-6 rounded-full bg-sky-600 flex items-center justify-center"
-                aria-hidden="true"
-              >
-                <span className="text-white text-xs font-bold leading-none">
-                  {(session.data?.user?.email?.[0] ?? '?').toUpperCase()}
-                </span>
-              </div>
-              <p className="text-xs font-medium dark:text-neutral-400 text-neutral-600 max-w-40 truncate">
-                {session.data?.user?.email}
-              </p>
-            </div>
-            {(session?.data?.user?.role === 'ADMIN' ||
-              session?.data?.user?.role === 'PROGRAM' ||
-              session?.data?.user?.role === 'SUPERUSER') && (
-              <MotionLink
-                href="/auth/login"
-                aria-label="Go to admin dashboard"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-zinc-700 bg-neutral-200 border-neutral-300 hover:bg-neutral-300 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-              >
-                <Rocket className="w-5 h-5 dark:text-zinc-400 text-neutral-700" aria-hidden="true" />
-              </MotionLink>
-            )}
-            <LogoutButton />
-          </div>
-        </div>
-      </header>
-
       <main className="p-6 md:p-8 lg:p-12 space-y-10">
         <div className="max-w-334 mx-auto space-y-10">
           {/* Page header */}
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            custom={0.5}
+          >
             <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 relative">
                 <p className="text-xs font-semibold dark:text-neutral-600 text-neutral-500 uppercase tracking-widest mb-2">
                   Your Impact
                 </p>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black dark:text-white text-neutral-900 leading-tight">
-                  Welcome, {session.data?.user?.name ?? session.data?.user?.email}
-                </h1>
+
+                <div className="flex items-center gap-3 mb-1">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-black dark:text-white text-neutral-900 leading-tight">
+                    Welcome, {displayName}
+                  </h1>
+                </div>
+
                 <p className="dark:text-neutral-500 text-neutral-600 text-base mt-2">
                   {hasActivity
                     ? `Here's what you've accomplished with Boys & Girls Club of Lynn`
                     : 'Start making a difference with a donation or event registration'}
                 </p>
               </div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="shrink-0">
-                <Link
-                  href="/supporter/saved-cards"
-                  className="dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-300 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-                >
-                  <CreditCard className="w-4 h-4" aria-hidden="true" />
-                  Saved Cards
-                </Link>
-              </motion.div>
             </div>
           </motion.div>
 
           {/* Stats */}
-          <motion.div variants={containerVariants} initial="hidden" animate="visible">
+          <motion.div variants={containerVariants} initial="hidden" animate="visible" custom={1}>
             <dl className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-              {data.stats.map((stat, index) => (
+              {dashboard?.stats.map((stat, index) => (
                 <motion.div
                   key={index}
                   className="group relative dark:bg-neutral-900/50 dark:border-neutral-800 bg-neutral-50 border-neutral-200 backdrop-blur-sm border rounded-xl p-4 overflow-hidden dark:hover:border-neutral-700 hover:border-neutral-300 transition-all duration-300"
@@ -146,12 +258,105 @@ const SupporterOverviewClient = ({ data }) => {
             </dl>
           </motion.div>
 
+          {/* Name */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <div>
+                <h2 className="text-lg font-bold dark:text-white text-neutral-900">Your Name</h2>
+                <p className="text-xs dark:text-neutral-500 text-neutral-500 mt-0.5">
+                  Used on your tickets and confirmations
+                </p>
+              </div>
+            </div>
+
+            <div className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-xl p-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="shrink-0 w-8 h-8 rounded-lg dark:bg-neutral-800 bg-neutral-200 flex items-center justify-center">
+                  <User className="w-3.5 h-3.5 dark:text-sky-400 text-sky-600" aria-hidden="true" />
+                </div>
+                <div className="min-w-0">
+                  {editingName ? (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <input
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        placeholder="First"
+                        autoFocus
+                        onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
+                        className="w-28 px-3 py-1.5 text-sm dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-white border-neutral-200 text-neutral-900 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+                      />
+                      <input
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        placeholder="Last"
+                        onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
+                        className="w-28 px-3 py-1.5 text-sm dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-white border-neutral-200 text-neutral-900 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm font-medium dark:text-white text-neutral-900">
+                        {[firstName, lastName].filter(Boolean).join(' ') || (
+                          <span className="dark:text-neutral-500 text-neutral-400 italic">No name set</span>
+                        )}
+                      </p>
+                      <p className="text-xs dark:text-neutral-500 text-neutral-400 mt-0.5">
+                        {session.data?.user?.email}
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 shrink-0">
+                {editingName ? (
+                  <>
+                    <button
+                      onClick={handleSaveName}
+                      disabled={savingName}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition-all disabled:opacity-50 active:scale-95"
+                    >
+                      {savingName ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <Check className="w-3.5 h-3.5" aria-hidden="true" />
+                      )}
+                      {savingName ? 'Saving...' : 'Save'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingName(false)
+                        setFirstName(name?.firstName ?? '')
+                        setLastName(name?.lastName ?? '')
+                      }}
+                      className="text-xs font-medium dark:text-neutral-400 text-neutral-500 hover:dark:text-white hover:text-neutral-900 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setEditingName(true)}
+                    className="flex items-center gap-1.5 text-xs font-medium dark:text-neutral-500 text-neutral-400 dark:hover:text-neutral-300 hover:text-neutral-600 transition-colors"
+                    aria-label="Edit your name"
+                  >
+                    <Pencil className="w-3 h-3" aria-hidden="true" />
+                    Edit
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+
           {/* Compact CTAs */}
           <motion.div
             className="flex flex-col sm:flex-row gap-3"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
+            custom={1.5}
           >
             <Link
               href="/donate"
@@ -215,16 +420,18 @@ const SupporterOverviewClient = ({ data }) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 id="donations-heading" className="text-xl font-black dark:text-white text-neutral-900">
-                      Donation History
+                      Donations
                     </h2>
-                    <p className="text-xs dark:text-neutral-600 text-neutral-500 mt-0.5">Your contributions</p>
+                    <p className="text-xs dark:text-neutral-600 text-neutral-500 mt-0.5">
+                      View history and manage recurring donations
+                    </p>
                   </div>
-                  {data.recentDonations.length > 0 && (
+                  {dashboard?.recentDonations.length > 0 && (
                     <Link
                       href="/supporter/donations"
                       className="inline-flex items-center gap-1.5 dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-500 font-semibold text-sm transition-colors group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
                     >
-                      View All
+                      Manage
                       <ChevronRight
                         className="w-4 h-4 group-hover:translate-x-0.5 transition-transform"
                         aria-hidden="true"
@@ -233,7 +440,7 @@ const SupporterOverviewClient = ({ data }) => {
                   )}
                 </div>
 
-                {data.recentDonations.length === 0 ? (
+                {dashboard?.recentDonations.length === 0 ? (
                   <div className="dark:bg-neutral-900/30 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-xl p-8 text-center">
                     <div
                       className="w-10 h-10 rounded-full dark:bg-neutral-800 bg-neutral-200 flex items-center justify-center mx-auto mb-3"
@@ -255,7 +462,7 @@ const SupporterOverviewClient = ({ data }) => {
                   </div>
                 ) : (
                   <ul role="list" className="space-y-2 list-none p-0 m-0">
-                    {data.recentDonations.map((donation) => (
+                    {dashboard?.recentDonations.map((donation) => (
                       <li key={donation.id}>
                         <MotionLink
                           href={`/order-confirmation/${donation.id}`}
@@ -319,7 +526,7 @@ const SupporterOverviewClient = ({ data }) => {
                   <p className="text-xs dark:text-neutral-600 text-neutral-500 mt-0.5">Your registrations</p>
                 </div>
 
-                {data.upcomingEvents.length === 0 ? (
+                {dashboard?.upcomingEvents.length === 0 ? (
                   <div className="dark:bg-neutral-900/30 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-xl p-8 text-center">
                     <div
                       className="w-10 h-10 rounded-full dark:bg-neutral-800 bg-neutral-200 flex items-center justify-center mx-auto mb-3"
@@ -341,7 +548,7 @@ const SupporterOverviewClient = ({ data }) => {
                   </div>
                 ) : (
                   <ul role="list" className="space-y-3 list-none p-0 m-0">
-                    {data?.upcomingEvents?.map((group) => (
+                    {dashboard?.upcomingEvents?.map((group) => (
                       <li key={group.eventId}>
                         <motion.div
                           className="dark:bg-neutral-900/30 dark:border-neutral-800 dark:hover:border-neutral-700 bg-neutral-50 border-neutral-200 hover:border-neutral-300 backdrop-blur-sm border rounded-lg p-4 transition-all duration-300"
@@ -384,20 +591,38 @@ const SupporterOverviewClient = ({ data }) => {
                             aria-label={`Tickets for ${group.event?.title || 'this event'}`}
                             className="space-y-1.5 list-none p-0 m-0 border-t dark:border-neutral-800 border-neutral-200 pt-3"
                           >
-                            {group.orderItems.map((item) => (
-                              <li key={item.id} className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-sky-400" aria-hidden="true" />
-                                  <p className="text-xs dark:text-neutral-400 text-neutral-600 truncate">
-                                    {item.ticketName}
-                                  </p>
+                            {group.orderItems.map((item, i) => (
+                              <li key={i} className="flex flex-col gap-1">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-sky-400" aria-hidden="true" />
+                                    <p className="text-xs dark:text-neutral-400 text-neutral-600 truncate">
+                                      {item.ticketName}
+                                    </p>
+                                  </div>
+                                  <span
+                                    className="text-xs dark:text-neutral-500 text-neutral-500 shrink-0 ml-2"
+                                    aria-label={`${item.quantity} ticket${item.quantity !== 1 ? 's' : ''}`}
+                                  >
+                                    x{item.quantity}
+                                  </span>
                                 </div>
-                                <span
-                                  className="text-xs dark:text-neutral-500 text-neutral-500 shrink-0 ml-2"
-                                  aria-label={`${item.quantity} ticket${item.quantity !== 1 ? 's' : ''}`}
-                                >
-                                  x{item.quantity}
-                                </span>
+
+                                {item.raffleTickets && item.raffleTickets.length > 0 && (
+                                  <div className="flex flex-wrap gap-1.5 pl-3.5">
+                                    {item.raffleTickets
+                                      .slice()
+                                      .sort((a, b) => a.number - b.number)
+                                      .map((rt) => (
+                                        <span
+                                          key={rt.code}
+                                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold dark:bg-sky-500/10 dark:border-sky-500/20 dark:text-sky-400 bg-sky-50 border-sky-200 text-sky-700 border"
+                                        >
+                                          #{String(rt.number).padStart(4, '0')}
+                                        </span>
+                                      ))}
+                                  </div>
+                                )}
                               </li>
                             ))}
                           </ul>
@@ -411,7 +636,7 @@ const SupporterOverviewClient = ({ data }) => {
           </div>
 
           {/* Ticket Orders */}
-          {data.ticketOrders?.length > 0 && (
+          {dashboard?.ticketOrders?.length > 0 && (
             <motion.section
               aria-labelledby="tickets-heading"
               variants={containerVariants}
@@ -440,7 +665,7 @@ const SupporterOverviewClient = ({ data }) => {
                 </div>
 
                 <ul role="list" className="space-y-4 list-none p-0 m-0">
-                  {data.ticketOrders.map((order) => {
+                  {dashboard?.ticketOrders.map((order) => {
                     // Fall back to ticket's event if order.event is null
                     const event = order.event ?? order.orderItems[0]?.ticket?.event ?? null
                     return (
@@ -504,7 +729,9 @@ const SupporterOverviewClient = ({ data }) => {
                                     {new Date(order.createdAt).toLocaleDateString('en-US', {
                                       month: 'short',
                                       day: 'numeric',
-                                      year: 'numeric'
+                                      year: 'numeric',
+                                      hour: 'numeric',
+                                      minute: 'numeric'
                                     })}
                                   </time>
                                 </p>
@@ -526,23 +753,32 @@ const SupporterOverviewClient = ({ data }) => {
                             className="space-y-2 list-none p-0 m-0 border-t dark:border-neutral-800 border-neutral-200 pt-3"
                           >
                             {order.orderItems.map((item) => (
-                              <li key={item.id} className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-sky-400" aria-hidden="true" />
-                                  <p className="text-sm dark:text-neutral-300 text-neutral-700 truncate">
-                                    {item.ticketName}
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-3 shrink-0 ml-3">
-                                  <span
-                                    className="text-xs dark:text-neutral-500 text-neutral-500"
-                                    aria-label={`Quantity: ${item.quantity}`}
-                                  >
-                                    x{item.quantity}
-                                  </span>
-                                  <span className="text-sm font-semibold dark:text-white text-neutral-900 tabular-nums">
-                                    ${item.totalPrice.toFixed(2)}
-                                  </span>
+                              <li key={item.id} className="flex flex-col gap-1.5">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-sky-400" aria-hidden="true" />
+                                    <p className="text-sm dark:text-neutral-300 text-neutral-700 truncate">
+                                      {item.ticketName}
+                                    </p>
+                                    {item.raffleTicketNumber && item.raffleTicketCode && (
+                                      <div className="pl-3.5">
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold dark:bg-sky-500/10 dark:border-sky-500/20 dark:text-sky-400 bg-sky-50 border-sky-200 text-sky-700 border">
+                                          #{String(item.raffleTicketNumber).padStart(4, '0')}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-3 shrink-0 ml-3">
+                                    <span
+                                      className="text-xs dark:text-neutral-500 text-neutral-500"
+                                      aria-label={`Quantity: ${item.quantity}`}
+                                    >
+                                      x{item.quantity}
+                                    </span>
+                                    <span className="text-sm font-semibold dark:text-white text-neutral-900 tabular-nums">
+                                      ${item.totalPrice.toFixed(2)}
+                                    </span>
+                                  </div>
                                 </div>
                               </li>
                             ))}
@@ -555,8 +791,216 @@ const SupporterOverviewClient = ({ data }) => {
               </motion.div>
             </motion.section>
           )}
+
+          {/* Payment Methods */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <div>
+                <h2 className="text-lg font-bold dark:text-white text-neutral-900">Payment Methods</h2>
+                <p className="text-xs dark:text-neutral-500 text-neutral-500 mt-0.5">
+                  Saved cards for one-click checkout
+                </p>
+              </div>
+              <button
+                onClick={() => store.dispatch(setOpenPaymentMethodModal())}
+                className="flex items-center gap-1.5 text-xs font-medium dark:text-sky-400 text-sky-600 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:rounded"
+                aria-label="Add new payment method"
+              >
+                <Plus className="w-3.5 h-3.5" aria-hidden="true" />
+                Add Card
+              </button>
+            </div>
+
+            {savedCards && savedCards.length > 0 ? (
+              <ul role="list" aria-label="Saved payment methods" className="space-y-2">
+                {savedCards.map((card) => (
+                  <li
+                    key={card.id}
+                    className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-xl px-4 py-3 flex items-center justify-between gap-4"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div
+                        className="shrink-0 w-9 h-6 rounded dark:bg-neutral-800 bg-white border dark:border-neutral-700 border-neutral-200 flex items-center justify-center"
+                        aria-hidden="true"
+                      >
+                        <CreditCard className="w-4 h-4 dark:text-neutral-400 text-neutral-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium dark:text-white text-neutral-900 capitalize">
+                          {card.cardBrand}&nbsp;
+                          <span className="font-mono tracking-widest">••••&nbsp;{card.cardLast4}</span>
+                        </p>
+                        <p className="text-xs dark:text-neutral-500 text-neutral-400 mt-0.5">
+                          Expires {String(card.cardExpMonth).padStart(2, '0')}/{card.cardExpYear}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 shrink-0">
+                      {card.isDefault ? (
+                        <span
+                          className="text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full dark:bg-sky-500/10 dark:text-sky-400 dark:border-sky-500/20 bg-sky-50 text-sky-700 border-sky-200 border"
+                          aria-label="Default payment method"
+                        >
+                          Default
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => handleSetDefault(card.id)}
+                          disabled={settingDefault === card.id}
+                          className="text-[10px] font-medium dark:text-neutral-500 text-neutral-400 dark:hover:text-neutral-300 hover:text-neutral-600 transition-colors disabled:opacity-50"
+                          aria-label={`Set ${card.cardBrand} ending in ${card.cardLast4} as default`}
+                        >
+                          {settingDefault === card.id ? (
+                            <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />
+                          ) : (
+                            'Set default'
+                          )}
+                        </button>
+                      )}
+
+                      <div className="w-px h-3 dark:bg-neutral-700 bg-neutral-300" aria-hidden="true" />
+
+                      <button
+                        onClick={() => handleDeletePaymentMethod(card.id)}
+                        disabled={deletingPaymentMethod === card.id}
+                        className="flex items-center gap-1 text-xs font-medium text-red-400 dark:text-red-500 hover:text-red-600 dark:hover:text-red-400 transition-colors disabled:opacity-50"
+                        aria-label={`Remove ${card.cardBrand} ending in ${card.cardLast4}`}
+                      >
+                        {deletingPaymentMethod === card.id ? (
+                          <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />
+                        ) : (
+                          <Trash2 className="w-3 h-3" aria-hidden="true" />
+                        )}
+                        Remove
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div
+                className="dark:bg-neutral-900/50 dark:border-neutral-800 dark:border-dashed bg-neutral-50 border-neutral-200 border border-dashed rounded-xl px-4 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                role="status"
+                aria-label="No saved payment methods"
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="shrink-0 w-8 h-8 rounded-lg dark:bg-neutral-800 bg-neutral-200 flex items-center justify-center"
+                    aria-hidden="true"
+                  >
+                    <CreditCard className="w-3.5 h-3.5 dark:text-neutral-500 text-neutral-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold dark:text-neutral-300 text-neutral-700">No saved cards</p>
+                    <p className="text-xs dark:text-neutral-500 text-neutral-400 mt-0.5">
+                      Save a card at checkout for faster payments
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => store.dispatch(setOpenPaymentMethodModal())}
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-950"
+                >
+                  <Plus className="w-3.5 h-3.5" aria-hidden="true" />
+                  Add Card
+                </button>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Address */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <div className="mb-4">
+              <h2 className="text-lg font-bold dark:text-white text-neutral-900">Mailing Address</h2>
+              <p className="text-xs dark:text-neutral-500 text-neutral-500 mt-0.5">
+                So we can send you a personal thank you
+              </p>
+            </div>
+            {address?.addressLine1 ? (
+              <div className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-xl p-4 flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="shrink-0 w-8 h-8 rounded-lg dark:bg-neutral-800 bg-neutral-200 flex items-center justify-center mt-0.5">
+                    <MapPin className="w-3.5 h-3.5 dark:text-sky-400 text-sky-600" aria-hidden="true" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-wider">
+                      Billing Address
+                    </p>
+                    <p className="text-sm font-medium dark:text-white text-neutral-900">{address.addressLine1}</p>
+                    {address.addressLine2 && (
+                      <p className="text-sm dark:text-neutral-400 text-neutral-600">{address.addressLine2}</p>
+                    )}
+                    <p className="text-sm dark:text-neutral-400 text-neutral-600">
+                      {[address.city, address.state, address.zipPostalCode].filter(Boolean).join(', ')}
+                    </p>
+                    {address.country && (
+                      <p className="text-sm dark:text-neutral-400 text-neutral-600">{address.country}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 shrink-0">
+                  <button
+                    onClick={() => store.dispatch(setOpenUpdateAddressModal(address))}
+                    className="flex items-center gap-1.5 text-xs font-medium dark:text-neutral-500 text-neutral-400 dark:hover:text-neutral-300 hover:text-neutral-600 transition-colors"
+                  >
+                    <Pencil className="w-3 h-3" aria-hidden="true" />
+                    Edit
+                  </button>
+                  <div className="flex flex-col items-end gap-0.5">
+                    <button
+                      onClick={handleDeleteAddress}
+                      disabled={deletingAddress}
+                      className="flex items-center gap-1.5 text-xs font-medium text-red-400 dark:text-red-500 hover:text-red-600 dark:hover:text-red-400 transition-colors disabled:opacity-50"
+                    >
+                      {deletingAddress ? (
+                        <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <Trash2 className="w-3 h-3" aria-hidden="true" />
+                      )}
+                      {deletingAddress ? 'Removing...' : 'Remove'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="dark:bg-neutral-900/50 dark:border-neutral-800 dark:border-dashed bg-neutral-50 border-neutral-200 border border-dashed rounded-xl p-5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="shrink-0 w-8 h-8 rounded-lg dark:bg-neutral-800 bg-neutral-200 flex items-center justify-center">
+                    <MapPin className="w-3.5 h-3.5 dark:text-neutral-500 text-neutral-400" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold dark:text-neutral-300 text-neutral-700">
+                      No billing address on file
+                    </p>
+                    <p className="text-xs dark:text-neutral-500 text-neutral-400 mt-0.5">
+                      Adding your address speeds up future checkouts
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => store.dispatch(setOpenUpdateAddressModal({}))}
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition-all active:scale-95"
+                >
+                  <Plus className="w-3.5 h-3.5" aria-hidden="true" />
+                  Add Address
+                </button>
+              </div>
+            )}
+          </motion.div>
         </div>
       </main>
+
+      <SupporterOverviewFooter />
     </div>
   )
 }

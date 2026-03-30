@@ -3,11 +3,11 @@
 import { AnimatePresence } from 'framer-motion'
 import validateEventForm from '@/app/lib/validations/event'
 import { setCloseEventDrawer } from '@/app/lib/store/slices/eventSlice'
-import { createFormActions, resetForm, setIsLoading } from '@/app/lib/store/slices/formSlice'
+import { createFormActions, resetForm, setInputs, setIsLoading } from '@/app/lib/store/slices/formSlice'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { store, useEventSelector, useFormSelector } from '@/app/lib/store/store'
 import Backdrop from '../common/Backdrop'
-import EventForm from '../forms/EventForm'
+import { EventForm } from '../forms/EventForm'
 import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
 import { useRouter } from 'next/navigation'
 import { updateEvent } from '@/app/lib/actions/updateEvent'
@@ -22,7 +22,7 @@ export const EventDrawer = () => {
   const inputs = forms.eventForm.inputs
   const errors = forms.eventForm.errors
   const isUpdating = !!inputs?.isUpdating
-  const { handleInput, setErrors, handleToggle, handleSelect } = createFormActions('eventForm', store.dispatch)
+  const { handleInput, setErrors, handleSelect } = createFormActions('eventForm', store.dispatch)
 
   const onClose = () => {
     store.dispatch(resetForm('eventForm'))
@@ -50,10 +50,12 @@ export const EventDrawer = () => {
       store.dispatch(
         showToast({
           type: 'success',
-          message: `${inputs?.isUpdating ? 'Event Updated!' : 'Event Created!'}`,
+          message: inputs?.isUpdating ? 'Event Updated!' : 'Event Created!',
           description: inputs?.isUpdating
-            ? 'Your event has been successfully updated.'
-            : 'Your event has been successfully created!'
+            ? `${inputs?.title} has been updated successfully.`
+            : inputs?.isPublic
+              ? `${inputs?.title} is now live and visible to the public.`
+              : `${inputs?.title} has been created but is not yet public.`
         })
       )
     } catch (error: unknown) {
@@ -62,7 +64,7 @@ export const EventDrawer = () => {
       store.dispatch(
         showToast({
           type: 'error',
-          message: `${inputs?.isUpdating ? 'Update' : 'Create'} Event Failed`,
+          message: inputs?.isUpdating ? 'Failed to Update Event' : 'Failed to Create Event',
           description: errorMessage
         })
       )
@@ -85,7 +87,6 @@ export const EventDrawer = () => {
               errors={errors}
               handleInput={handleInput}
               handleSubmit={handleSubmit}
-              handleToggle={handleToggle}
               handleSelect={handleSelect}
               inputs={inputs}
               isLoading={isLoading}

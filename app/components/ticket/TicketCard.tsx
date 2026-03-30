@@ -3,33 +3,30 @@
 import { hydrateTicket, setOpenTicketSelectionDrawer } from '@/app/lib/store/slices/ticketSlice'
 import { store } from '@/app/lib/store/store'
 import { setSelectedEvent } from '@/app/lib/store/slices/eventSlice'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { setRedirectCookie } from '@/app/lib/actions/setRedirectCookie'
 import { ITicket } from '@/types/entities/ticket'
 import { FC } from 'react'
-
-function getTicketStatus(ticket: ITicket): {
-  available: boolean
-  message: string
-} {
-  if (!ticket.isAvailable) {
-    return { available: false, message: 'Not available' }
-  }
-
-  if (ticket.quantitySold >= ticket.totalQuantity) {
-    return { available: false, message: 'Sold out' }
-  }
-
-  return { available: true, message: 'Available' }
-}
+import { AlertCircle, CheckCircle2, Dice5 } from 'lucide-react'
+import { getTicketStatus } from '@/app/lib/utils/getTicketStatus'
 
 export const TicketCard: FC<{ ticket: ITicket }> = ({ ticket }) => {
-  const { data: session } = useSession()
-  const router = useRouter()
   const { available, message } = getTicketStatus(ticket)
 
-  const handleTicketSelect = (ticket) => {
+  const isSponsorship = ticket.ticketType === 'SPONSORSHIP'
+  const isRaffle = ticket.ticketType === 'RAFFLE'
+  const isTournament = ticket.ticketType === 'TOURNAMENT'
+
+  const scheme = {
+    accent: '#0ea5e9',
+    suit: isSponsorship ? '♦' : isRaffle ? '♠' : isTournament ? '♣' : '♥',
+    bar: 'from-sky-500 to-blue-400',
+    badge: 'bg-sky-500/10 text-sky-400 border-sky-500/30'
+  }
+
+  const remaining = ticket.totalQuantity - ticket.quantitySold - ticket.quantityReserved
+  const almostGone = available && remaining <= 10
+  const soldPercent = Math.min((ticket.quantitySold / ticket.totalQuantity) * 100, 100)
+
+  const handleTicketSelect = (ticket: ITicket) => {
     store.dispatch(hydrateTicket(ticket))
     store.dispatch(setSelectedEvent(ticket.eventId))
     store.dispatch(setOpenTicketSelectionDrawer())
@@ -37,98 +34,200 @@ export const TicketCard: FC<{ ticket: ITicket }> = ({ ticket }) => {
 
   return (
     <div
-      className={`p-5 sm:p-6 rounded-xl border transition-all flex flex-col justify-between ${
+      className={`rounded-xl border overflow-hidden transition-all flex flex-col ${
         available
-          ? 'dark:bg-neutral-800/50 dark:border-neutral-700 dark:hover:border-sky-500 dark:hover:shadow-sky-500/20 bg-white border-neutral-200 hover:border-sky-400 hover:shadow-lg hover:shadow-sky-500/10'
-          : 'dark:bg-neutral-900/30 dark:border-neutral-800/50 bg-neutral-50/80 border-neutral-100 cursor-not-allowed'
+          ? 'bg-neutral-800/50 border-neutral-700 hover:border-neutral-500 hover:shadow-lg hover:shadow-black/20'
+          : 'bg-neutral-900/30 border-neutral-800/50'
       }`}
       aria-label={`${ticket.name} — ${available ? `$${ticket.price}` : message}`}
     >
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="text-base sm:text-lg font-semibold dark:text-white text-neutral-900 truncate">
-            {ticket.name}
-          </h3>
-          {!available && (
+      {/* Top band */}
+      <div
+        className="h-1.5"
+        style={{
+          background: available
+            ? `linear-gradient(90deg, ${scheme.accent}99, ${scheme.accent}, ${scheme.accent}99)`
+            : undefined
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Body */}
+      <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          {/* Title row */}
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                {ticket.ticketType && ticket.ticketType !== 'GENERAL' && (
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${scheme.badge}`}
+                  >
+                    {ticket.ticketType}
+                  </span>
+                )}
+                {isRaffle && (
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border flex items-center gap-1 ${scheme.badge}`}
+                  >
+                    <Dice5 className="w-3 h-3" aria-hidden="true" />
+                    Numbered
+                  </span>
+                )}
+              </div>
+              <h3
+                className={`text-base sm:text-lg font-bold leading-tight ${available ? 'text-white' : 'text-neutral-500'}`}
+              >
+                {ticket.name}
+              </h3>
+            </div>
             <span
-              className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${
-                message === 'Sold out'
-                  ? 'bg-red-50 dark:bg-red-500/10 text-red-500 dark:text-red-400'
-                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500'
-              }`}
+              className="text-3xl font-black shrink-0 leading-none"
+              style={{ color: available ? `${scheme.accent}25` : undefined }}
+              aria-hidden="true"
             >
-              {message}
+              {scheme.suit}
             </span>
+          </div>
+
+          {/* Description */}
+          {ticket.description && (
+            <p className={`text-xs sm:text-sm leading-relaxed ${available ? 'text-neutral-400' : 'text-neutral-600'}`}>
+              {ticket.description}
+            </p>
+          )}
+
+          {/* Sponsor impact */}
+          {isSponsorship && ticket.sponsorImpact && (
+            <div className="mt-3 p-3 rounded-lg border border-neutral-600/30 bg-neutral-700/20">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-1">Your Impact</p>
+              <p className="text-xs text-neutral-200/80 leading-relaxed">{ticket.sponsorImpact}</p>
+            </div>
+          )}
+
+          {/* Sponsor perks */}
+          {isSponsorship && ticket.sponsorPerks && ticket.sponsorPerks.length > 0 && (
+            <ul className="mt-3 space-y-1.5" aria-label="Included perks">
+              {ticket.sponsorPerks.map((perk, i) => (
+                <li key={i} className="flex items-start gap-2 text-xs text-neutral-300">
+                  <CheckCircle2
+                    className="w-3.5 h-3.5 shrink-0 mt-0.5"
+                    style={{ color: scheme.accent }}
+                    aria-hidden="true"
+                  />
+                  {perk}
+                </li>
+              ))}
+            </ul>
           )}
         </div>
-        {ticket.description && (
+
+        {/* Bottom */}
+        <div className="space-y-3">
+          {/* Price */}
           <p
-            className={`text-xs sm:text-sm mt-1 leading-relaxed ${available ? 'dark:text-neutral-400 text-neutral-500' : 'dark:text-neutral-600 text-neutral-400'}`}
+            className={`text-2xl sm:text-3xl font-black tabular-nums ${available ? 'text-white' : 'text-neutral-600'}`}
           >
-            {ticket.description}
+            <span className="text-base font-semibold mr-0.5" style={{ color: available ? scheme.accent : undefined }}>
+              $
+            </span>
+            {ticket.price.toLocaleString()}
           </p>
-        )}
+
+          {/* Availability bar */}
+          <div aria-label={`${ticket.quantitySold} of ${ticket.totalQuantity} sold`}>
+            <div className="flex items-center justify-between mb-1.5">
+              {available ? (
+                almostGone ? (
+                  <span className="text-[11px] font-bold text-amber-500 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" aria-hidden="true" />
+                    Only {remaining} left
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" aria-hidden="true" />
+                    Available
+                  </span>
+                )
+              ) : (
+                <span
+                  className={`text-[11px] font-bold uppercase tracking-wide ${message === 'Sold out' ? 'text-red-400' : 'text-neutral-500'}`}
+                >
+                  {message}
+                </span>
+              )}
+              <span className="text-[11px] text-neutral-500 tabular-nums">
+                {ticket.quantitySold} / {ticket.totalQuantity} sold
+              </span>
+            </div>
+            <div
+              className="h-1.5 rounded-full bg-neutral-700 overflow-hidden"
+              role="progressbar"
+              aria-valuenow={ticket.quantitySold}
+              aria-valuemin={0}
+              aria-valuemax={ticket.totalQuantity}
+            >
+              <div
+                className={`h-full rounded-full bg-linear-to-r ${available ? scheme.bar : 'from-neutral-600 to-neutral-500'}`}
+                style={{ width: `${soldPercent}%` }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div>
-        <p
-          className={`text-xl sm:text-2xl font-bold mt-3 ${available ? 'dark:text-sky-400 text-sky-600' : 'dark:text-neutral-600 text-neutral-400'}`}
-        >
-          ${ticket.price}
-        </p>
+      {/* Tear line */}
+      <div className="relative flex items-center bg-neutral-800/50" aria-hidden="true">
+        <div className="absolute -left-2.5 w-5 h-5 rounded-full bg-neutral-950 border border-neutral-700 z-10" />
+        <div className="flex-1 border-t-2 border-dashed border-neutral-700 mx-4" />
+        <span className="text-[10px] text-neutral-600 px-1 select-none rotate-90">✂</span>
+        <div className="flex-1 border-t-2 border-dashed border-neutral-700 mx-4" />
+        <div className="absolute -right-2.5 w-5 h-5 rounded-full bg-neutral-950 border border-neutral-700 z-10" />
+      </div>
 
-        {/* Availability + sold count */}
-        <div className="mt-2 flex items-center justify-between">
-          {available ? (
-            <p
-              className="dark:text-emerald-400 text-emerald-600 font-medium flex items-center gap-1 text-sm"
-              role="status"
-            >
-              <span aria-hidden="true">✓</span> Available
-            </p>
-          ) : (
-            <p className="text-xs dark:text-neutral-600 text-neutral-400" role="status">
-              {message}
-            </p>
-          )}
-          <p className="text-xs dark:text-neutral-500 text-neutral-400 tabular-nums">
-            {ticket.quantitySold} / {ticket.totalQuantity} sold
-          </p>
-        </div>
-
-        {available && (
-          <p className="dark:text-neutral-500 text-neutral-400 text-xs mt-0.5">
-            {ticket.totalQuantity - ticket.quantitySold} remaining
-          </p>
-        )}
-
-        {/* Purchase button */}
+      {/* Stub */}
+      <div className="bg-neutral-900/50 px-5 sm:px-6 py-4">
         <button
-          disabled={!available && !!session}
-          onClick={async () => {
-            if (!session) {
-              await setRedirectCookie(`/events/${ticket.eventId}`)
-              router.push('/auth/login')
-            } else if (available) {
-              handleTicketSelect(ticket)
-            }
+          disabled={!available}
+          onClick={() => {
+            if (available) handleTicketSelect(ticket)
           }}
-          aria-label={
-            !session
-              ? `Sign in to purchase: ${ticket.name}`
-              : available
-                ? `Select ticket: ${ticket.name}`
-                : `${ticket.name} — ${message}`
-          }
-          className={`w-full mt-4 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-            !session
-              ? 'bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white focus-visible:ring-sky-500 dark:focus-visible:ring-offset-neutral-900 focus-visible:ring-offset-white'
-              : available
-                ? 'bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white focus-visible:ring-sky-500 dark:focus-visible:ring-offset-neutral-900 focus-visible:ring-offset-white cursor-pointer'
-                : 'dark:bg-neutral-800/50 dark:text-neutral-600 bg-neutral-100 text-neutral-400 cursor-not-allowed'
+          aria-label={available ? `Select ticket: ${ticket.name}` : `${ticket.name} — ${message}`}
+          className={`relative w-full py-2.5 sm:py-3 rounded-lg text-sm font-bold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 overflow-hidden ${
+            available
+              ? 'active:scale-[0.98] text-white focus-visible:ring-sky-500'
+              : 'bg-neutral-800 text-neutral-600 cursor-not-allowed'
           }`}
+          style={
+            available ? { background: `linear-gradient(135deg, ${scheme.accent}, ${scheme.accent}cc)` } : undefined
+          }
         >
-          {!session ? 'Sign In to Purchase' : available ? 'Select Ticket' : message}
+          {available && (
+            <span className="absolute inset-0 pointer-events-none rounded-lg overflow-hidden" aria-hidden="true">
+              <span
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '200%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.25) 50%, transparent 75%)',
+                  animation: 'btnShine 2.5s infinite linear'
+                }}
+              />
+            </span>
+          )}
+          <span className="relative z-10">
+            {available
+              ? isSponsorship
+                ? 'Become a Sponsor'
+                : isRaffle
+                  ? 'Get Raffle Ticket'
+                  : isTournament
+                    ? 'Register for Tournament'
+                    : 'Select Ticket'
+              : message}
+          </span>
         </button>
       </div>
     </div>

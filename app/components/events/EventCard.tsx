@@ -108,7 +108,7 @@ export function EventCard({ event }: EventCardProps) {
           href={`/events/${event.id}`}
           className="block w-full px-4 py-2 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg transition-colors text-center"
         >
-          View Details & Register
+          Buy Tickets
         </Link>
       </div>
     </motion.div>

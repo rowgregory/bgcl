@@ -22,10 +22,7 @@ import { useRouter } from 'next/navigation'
 import { unarchiveEvent } from '@/app/lib/actions/unarchiveEvent'
 import { deletePartner } from '@/app/lib/actions/deletePartner'
 import { setOpenPartnerDrawer } from '@/app/lib/store/slices/uiSlice'
-
-export function kebabToCamel(str: string): string {
-  return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
-}
+import { kebabToCamel } from '@/app/lib/utils/kebabToCamel'
 
 const AdminListItem = ({
   item,
@@ -208,21 +205,22 @@ const AdminListItem = ({
 
       {/* Action Buttons */}
       <div className="shrink-0 flex items-center gap-2">
-        {itemType === 'program' && (
-          <div className="relative group/view">
-            <a
-              href={`/programs/${item.id}`}
-              target="blank"
-              className="block p-2 dark:text-neutral-600 dark:hover:text-sky-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-sky-600 hover:bg-neutral-200 rounded-lg transition-colors"
-              title="View program"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </a>
-            <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-1 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 text-[10px] font-medium rounded whitespace-nowrap opacity-0 group-hover/view:opacity-100 transition-opacity pointer-events-none z-50 shadow-sm">
-              View
+        {itemType === 'program' ||
+          (itemType === 'event' && (
+            <div className="relative group/view">
+              <a
+                href={`/${itemType === 'program' ? 'programs' : 'events'}/${item.id}`}
+                target="_blank"
+                className="block p-2 dark:text-neutral-600 dark:hover:text-sky-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-sky-600 hover:bg-neutral-200 rounded-lg transition-colors"
+                title="View program"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </a>
+              <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-1 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 text-[10px] font-medium rounded whitespace-nowrap opacity-0 group-hover/view:opacity-100 transition-opacity pointer-events-none z-50 shadow-sm">
+                View
+              </div>
             </div>
-          </div>
-        )}
+          ))}
         {itemType === 'event' && (
           <div className="relative group/ticket">
             <button

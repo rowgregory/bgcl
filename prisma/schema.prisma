@@ -68,6 +68,7 @@ model User {
   accounts         Account[]
   sessions         Session[]
   orders           Order[]
+  address          Address?
 
   eventsAttended Event[] @relation("EventAttendees")
 
@@ -164,6 +165,31 @@ model Event {
   orders    Order[]
   attendees User[]   @relation("EventAttendees")
 
+  // Raffle
+  isRaffle              Boolean   @default(false)
+  raffleDrawDate        DateTime?
+  raffleTerms           String?
+  raffleTicketsPerOrder Int       @default(1)
+  subtitle              String? // "Viva Las Vegas"
+  tagline               String? // "Join Us For Our Send a Kid to Camp"
+  address               String? // full street address
+  website               String? // "www.bgcl.org"
+  missionStatement      String?
+  raffleTicketPrice     String? // "$100 Value" — display label
+  raffleGrandPrizeLabel String? // "$10,000"
+  raffleOddsLabel       String? // "1:50 chance"
+  rafflePrizes          Json? // RafflePrize[]
+  raffleSchedule        Json? // RaffleScheduleItem[]
+
+  // ── Ticket sales window ────────────────────────────────────────
+  ticketSalesStartDate DateTime?
+  ticketSalesEndDate   DateTime?
+
+  dressCodeHeadline String? // "Dress to Impress — or Just Have Fun!"
+  dressCodeItems    Json? // Array of { label, description } for the bullet list
+  dressCodeNote     String? // "(Per Venue: No jeans, t-shirts, or hats allowed.)"
+  bestDressedPrizes String? // "Best Dressed Prizes will be awarded..."
+
   @@index([date])
   @@index([status])
   @@index([status, date])
@@ -199,6 +225,12 @@ model Ticket {
   eventId    String
   event      Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
   orderItems OrderItem[]
+
+  ticketType     TicketType @default(GENERAL)
+  isRaffleTicket Boolean    @default(false) // can derive from ticketType but keep for webhook convenience
+
+  sponsorImpact String? // "Covers 10 campers for the week..."
+  sponsorPerks  String[] // ["Company logo on play money", "Admission for up to 10 guests"]
 
   @@index([eventId])
   @@index([eventId, isAvailable])
@@ -253,6 +285,10 @@ model Order {
 
   orderItems OrderItem[]
 
+  // Tournament
+  participatingInTournament Boolean @default(false)
+  tournamentFeePaid         Float?
+
   @@index([type])
   @@index([status])
   @@index([userId])
@@ -281,6 +317,10 @@ model OrderItem {
   ticketId String
   ticket   Ticket @relation(fields: [ticketId], references: [id])
 
+  raffleTicketNumber Int? // e.g. 247
+  raffleTicketCode   String? @unique
+
+  @@index([raffleTicketCode])
   @@index([orderId])
   @@index([ticketId])
 }
@@ -663,6 +703,29 @@ model Partner {
   updatedAt DateTime? @updatedAt
 }
 
+// ─── Address ───────────────────────────────────────────────────
+model Address {
+  id String @id @default(cuid())
+
+  addressLine1  String
+  addressLine2  String?
+  city          String
+  state         String
+  zipPostalCode String
+  country       String  @default("US")
+
+  isDefault Boolean     @default(false)
+  type      AddressType @default(SHIPPING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId, isDefault])
+}
+
 enum PartnerTier {
   FOUNDATION
   CORPORATE_BUSINESS
@@ -772,4 +835,16 @@ enum PositionType {
   SEASONAL_SUMMER
   CAMP_COUNSELOR
   LIFEGUARD
+}
+
+enum TicketType {
+  GENERAL
+  RAFFLE
+  TOURNAMENT
+  SPONSORSHIP
+}
+
+enum AddressType {
+  SHIPPING
+  BILLING
 }

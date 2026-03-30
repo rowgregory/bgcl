@@ -186,9 +186,12 @@ export const AdminTicketOrderDrawer = () => {
               {/* Financials */}
               <Section title="Financials" icon={DollarSign}>
                 <Field label="Order total" value={formatCurrency(order.totalAmount)} />
-                {order.coverFees && <Field label="Fees covered" value={formatCurrency(order.feesCovered / 100)} />}
+                {order.coverFees && <Field label="Fees covered" value={formatCurrency(order.feesCovered)} />}
                 <Field label="Payment method" value={order.paymentMethod ?? '—'} />
-                <Field label="Paid at" value={order.paidAt ? formatDate(order.paidAt) : '—'} />
+                <Field
+                  label="Paid at"
+                  value={order.paidAt ? formatDate(order.paidAt, { hour: '2-digit', minute: '2-digit' }) : '—'}
+                />
               </Section>
 
               {/* Customer */}
@@ -201,7 +204,8 @@ export const AdminTicketOrderDrawer = () => {
               {/* Billing address */}
               {billingAddress && (
                 <Section title="Billing Address" icon={MapPin}>
-                  {billingAddress.address && <Field label="Street" value={billingAddress.address} />}
+                  {billingAddress.addressLine1 && <Field label="Street" value={billingAddress.addressLine1} />}
+                  {billingAddress.addressLine2 && <Field label="Unit/Apt" value={billingAddress.addressLine2} />}
                   {billingAddress.city && <Field label="City" value={billingAddress.city} />}
                   {billingAddress.state && <Field label="State" value={billingAddress.state} />}
                   {billingAddress.zipCode && <Field label="ZIP" value={billingAddress.zipCode} />}

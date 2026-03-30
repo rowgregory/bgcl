@@ -72,7 +72,7 @@ export const CommandPodClient = ({ users }) => {
   }
 
   return (
-    <div className="h-screen bg-white dark:bg-neutral-950 flex flex-col">
+    <div className="h-dvh bg-white dark:bg-neutral-950 flex flex-col">
       <div className="fixed w-full border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-8 pb-3 lg:pb-0">
         <div className="flex flex-col lg:flex-row lg:items-center gap-y-3 lg:gap-x-8">
           <div className="flex gap-8">

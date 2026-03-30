@@ -39,7 +39,6 @@ export default async function sendAdminNotification(notificationType: Notificati
       replyTo: data.email // Allow quick reply to the submitter
     })
   } catch (emailError) {
-    console.error('Error sending admin notification email:', emailError)
     throw emailError // Re-throw so calling code can handle
   }
 }

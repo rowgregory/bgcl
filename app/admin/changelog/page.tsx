@@ -21,6 +21,82 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.15.0',
+    date: '2026-03-30',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Casino Night Public Event Page',
+        description:
+          'Built a fully casino-themed public event details page for BGCL Cash Madness Casino Night featuring Vanta.js wave background, gold typography, per-ticket-type gradient cards, prize ladder, schedule, sponsor tiers, and dress code section.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Ticket Sales Window',
+        description:
+          'Added ticketSalesStartDate and ticketSalesEndDate to the Event model. Tickets are always addable to cart but payment is gated until sales open. Checkout form shows a live countdown and unlocks automatically at midnight on May 13th.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Casino Ticket Cards with Per-Type Gradients',
+        description:
+          'Redesigned ticket cards with rich saturated gradients per ticket type — red for Raffle, purple for Tournament, gold for Sponsorship, blue for General. Each card features noise overlay, shine sweep animation, suit watermark, and BGCL logo watermark.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Casino Cart Widget',
+        description:
+          'Added a fixed top-right cart widget with gold border, shine animation, per-item gradient suit thumbnails, quantity controls, and checkout button. Shows quick-add ticket buttons when cart is empty.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Casino Ticket Marquee',
+        description:
+          'Built a scrolling marquee of quick-add ticket pills that pause on hover and touch. Each pill shows the ticket name, price, and cart quantity badge. Fades on left and right edges.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Casino Sign In Prompt with Multi-Step Flow',
+        description:
+          'Added a contextual sign-in section that progresses through: unauthenticated → sign in with Google or magic link → enter first and last name → enter mailing address → ready to play summary with cart and checkout buttons.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Casino Intro Animation',
+        description:
+          'Added a full-screen intro animation that plays on page load — four suit cards fly in from the corners, then burst outward revealing the gold shimmering title with a loading bar before fading into the page.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Raffle Ticket Number Assignment in Webhook',
+        description:
+          'Webhook now assigns sequential raffle ticket numbers using pg_advisory_xact_lock to prevent duplicates under concurrent purchases. Each raffle OrderItem gets a unique raffleTicketNumber and raffleTicketCode in RAFF-XXXX format.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Sponsorship Tier Deadline Gating',
+        description:
+          'Sponsorship tickets become unavailable after the registrationDeadline on the Event model. Cards and sponsor tier section display the deadline date and show a closed state with grayscale filter after expiry.',
+        impact: 'medium'
+      },
+      {
+        type: 'ui',
+        title: 'Add to Cart Toast with Quantity Controls',
+        description:
+          'Redesigned the add-to-cart toast notification with casino theming — gold border, gradient progress bar, per-ticket-type suit thumbnail, and inline quantity increment and decrement controls that reset the auto-dismiss timer on change.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.14.0',
     date: '2026-03-24',
     changes: [

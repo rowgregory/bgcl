@@ -9,10 +9,10 @@ import { signIn } from 'next-auth/react'
 import { store } from '@/app/lib/store/store'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { useSearchParams } from 'next/navigation'
-import { MotionLink } from '@/app/components/common/MotionLink'
 import Picture from '@/app/components/common/Picture'
 import getAuthErrorMessage from '@/app/lib/auth/getAuthErrorMessage'
 import { logAuthError } from '@/app/lib/actions/logAuthError'
+import { MotionLink } from '@/app/components/common/MotionLink'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -133,10 +133,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Visual/Branding (decorative, hidden from AT) */}
-      <div
-        aria-hidden="true"
-        className="hidden lg:flex lg:w-1/2 dark:bg-neutral-950 bg-neutral-50 relative overflow-hidden items-center justify-center p-12"
-      >
+      <div className="hidden lg:flex lg:w-1/2 dark:bg-neutral-950 bg-neutral-50 relative overflow-hidden items-center justify-center p-12">
         {/* Animated orbs */}
         <motion.div
           className="absolute top-1/4 left-1/3 w-96 h-96 bg-sky-600/30 rounded-full blur-3xl"
@@ -153,16 +150,20 @@ const Login = () => {
 
         {/* Content */}
         <div className="relative z-10 text-center flex items-center justify-center flex-col">
-          <MotionLink href="/" tabIndex={-1} className="flex space-x-3 w-44 h-auto mb-4">
+          <MotionLink
+            href="/"
+            aria-label="Boys & Girls Club of Lynn — go to home page"
+            className="flex space-x-3 w-44 h-auto mb-4"
+          >
             <Picture
               src="/images/vertical-logo-light.png"
-              alt=""
+              alt="Boys & Girls Club of Lynn"
               className="dark:hidden block w-full h-full hover:opacity-80 transition-opacity object-contain"
               priority
             />
             <Picture
               src="/images/vertical-logo-dark.png"
-              alt=""
+              alt="Boys & Girls Club of Lynn"
               className="dark:block hidden w-full h-full hover:opacity-80 transition-opacity object-contain"
               priority
             />

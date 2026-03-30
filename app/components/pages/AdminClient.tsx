@@ -40,13 +40,15 @@ import { JobApplicationDrawer } from '../drawers/JobApplicationDrawer'
 const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
   const pathname = usePathname()
   const session = useSession()
-  const navigationGroups = adminNavigationLinkData(pathname, session?.data?.user?.role === 'SUPERUSER')
+  const isSuperUser = session?.data?.user?.role === 'SUPERUSER'
+  const navigationGroups = adminNavigationLinkData(pathname, isSuperUser)
   const selectedPage = getCurrentPageId(pathname, navigationGroups)
   const { adminSidebar } = useDashboardSelector()
   const onClose = () => store.dispatch(setCloseAdminSidebar())
 
   return (
     <>
+      {/* ── Drawers & overlays ── */}
       <HeroStudio />
       <EventDrawer />
       <TicketDrawer />
@@ -65,20 +67,18 @@ const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
       <PartnerDrawer />
       <JobApplicationDrawer />
 
-      {/* Desktop Fixed Header */}
-      <header className="hidden lg:block fixed top-0 left-64 right-0 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-b py-2.5 px-6 z-30 h-15.25">
-        <div className="flex items-center justify-between">
-          <h1 className="text-lg font-bold dark:text-neutral-100 text-neutral-900 capitalize">{selectedPage}</h1>
-          <div className="flex items-center space-x-2 md:space-x-4 h-full">
-            <ActionMenuButton />
-            <MobileMenuButton />
-            <LogoutButton />
-          </div>
+      {/* ── Desktop header ── */}
+      <header className="hidden lg:flex fixed top-0 left-64 right-0 items-center justify-between dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-b py-2.5 px-6 z-30 h-15.25">
+        <h1 className="text-lg font-bold dark:text-neutral-100 text-neutral-900 capitalize">{selectedPage}</h1>
+        <div className="flex items-center gap-2 md:gap-4">
+          <ActionMenuButton />
+          <MobileMenuButton />
+          <LogoutButton />
         </div>
       </header>
 
       <div className="min-h-screen dark:bg-neutral-950 bg-white flex">
-        {/* Mobile Sidebar Overlay */}
+        {/* ── Mobile sidebar backdrop ── */}
         {adminSidebar && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -88,12 +88,13 @@ const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
             className="fixed inset-0 dark:bg-black/50 bg-black/30 z-40 lg:hidden"
           />
         )}
-        {/* Sidebar - Hidden on mobile, visible on desktop */}
+
+        {/* ── Desktop sidebar ── */}
         <div className="hidden lg:block fixed left-0 top-0 h-screen w-64 z-20">
           <AdminSidebar />
         </div>
 
-        {/* Mobile Sidebar */}
+        {/* ── Mobile sidebar ── */}
         <motion.div
           initial={false}
           animate={{ x: adminSidebar ? 0 : '-100%' }}
@@ -103,23 +104,23 @@ const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
           <AdminSidebar />
         </motion.div>
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto flex flex-col lg:ml-64 lg:mt-15">
-          {/* Mobile Header */}
+        {/* ── Main content ── */}
+        <main className="flex-1 flex flex-col lg:ml-64 overflow-y-auto mt-15">
+          {/* Mobile header */}
           <div className="lg:hidden flex items-center justify-between dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border-b px-4 py-4">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => store.dispatch(setToggleAdminSidebar(adminSidebar))}
               className="p-2 dark:hover:bg-neutral-950 hover:bg-neutral-100 rounded-lg transition-colors"
+              aria-label="Toggle sidebar"
             >
-              <Menu className="w-6 h-6 dark:text-white text-neutral-900" />
+              <Menu className="w-6 h-6 dark:text-white text-neutral-900" aria-hidden="true" />
             </motion.button>
             <h1 className="text-lg font-bold dark:text-white text-neutral-900 capitalize">{selectedPage}</h1>
-            <div className="w-10" />
+            <div className="w-10" aria-hidden="true" />
           </div>
 
-          {/* Content */}
           {children}
         </main>
       </div>

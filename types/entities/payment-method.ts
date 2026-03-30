@@ -1,4 +1,5 @@
 export interface IPaymentMethod {
+  cardholderName: string
   id: string
   stripePaymentId: string
 

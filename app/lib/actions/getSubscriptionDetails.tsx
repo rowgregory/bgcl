@@ -148,7 +148,6 @@ export async function getSubscriptionDetails(subscriptionId: string) {
       isUnpaid: subscription.status === 'unpaid'
     }
   } catch (error) {
-    console.error('Error getting subscription details:', error)
     throw error
   }
 }
