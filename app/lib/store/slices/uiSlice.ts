@@ -21,7 +21,7 @@ const initialUiState: UiStatePayload = {
   address: null,
   confetti: false,
   paymentMethodModal: false,
-  soundOn: false
+  soundOn: true
 }
 
 export const uiSlice = createSlice({

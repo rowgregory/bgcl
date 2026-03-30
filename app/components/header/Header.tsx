@@ -9,14 +9,16 @@ import { motion } from 'framer-motion'
 import { useIsAtTop } from '@/app/lib/hooks/useIsAtTop'
 import GoogleTranslate from '../GoogleTranslate'
 import { mainNavigationLinks } from '@/app/lib/constants/navigation'
+import { EventAnnouncementStrip } from '../events/EventAnnouncementStrip'
 
-export default function Header() {
+export default function Header({ event }) {
   const { data, status } = useSession()
   const pathname = usePathname()
   const router = useRouter()
   const isAtTop = useIsAtTop()
   const { mobileNavigation, isSpanish } = useApplicationSelector()
   const { items } = useCartSelector()
+  const showEventAnnouncementStripe = !['/events/', '/admin'].some((path) => pathname.startsWith(path))
 
   const getLaunchPath = () => {
     if (status !== 'authenticated') return '/auth/login'
@@ -115,7 +117,7 @@ export default function Header() {
 
       {/* Bottom Bar */}
       <motion.nav
-        className={`${pathname === '/' ? 'max-w-400' : ''} w-full mx-auto sticky top-0 dark:border-neutral-700 dark:bg-neutral-950 border-neutral-200 bg-white z-50 px-4 sm:px-6 lg:px-8 1xl:rounded-br-xl 1xl:rounded-bl-xl`}
+        className={`${pathname === '/' ? 'max-w-400' : ''} w-full mx-auto sticky top-0 dark:border-neutral-700 dark:bg-neutral-950 border-neutral-200 bg-white z-50 px-4 sm:px-6 lg:px-8`}
         animate={{
           paddingTop: isAtTop ? '18px' : '10px',
           paddingBottom: isAtTop ? '10px' : '10px'
@@ -221,6 +223,7 @@ export default function Header() {
           </motion.div>
         </div>
       </motion.nav>
+      {showEventAnnouncementStripe && <EventAnnouncementStrip event={event} />}
     </>
   )
 }

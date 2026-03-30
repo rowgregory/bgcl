@@ -26,11 +26,11 @@ export function EventAnnouncementStrip({ event }: { event: IEvent }) {
   if (!isUpcoming && !isActive) return null
 
   return (
-    <div className="relative">
+    <div className="max-w-400 mx-auto relative bg-black z-100">
       <Link
         onClick={() => play()}
         href={`/events/${event.id}`}
-        className="bg-black block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 group"
+        className="block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 group"
         aria-label={`${event.title} — ${formatDate(eventDate)}. Click to learn more.`}
       >
         <style>{CasinoStyles}</style>
