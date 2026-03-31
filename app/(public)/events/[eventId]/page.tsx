@@ -6,13 +6,20 @@ import { getUserName } from '@/app/lib/actions/getUserName'
 
 export default async function EventPage({ params }: { params: Promise<{ eventId: string }> }) {
   const { eventId } = await params
+
   const [data, name, paymentMethods, address] = await Promise.all([
     getEventById(eventId),
-    getUserName(),
-    getSavedPaymentMethods(),
-    getUserAddress()
+    getUserName().catch(() => null),
+    getSavedPaymentMethods().catch(() => ({ data: [] })),
+    getUserAddress().catch(() => null)
   ])
+
   return (
-    <PublicEventDetailsClient data={data} name={name?.data} savedCards={paymentMethods?.data} address={address?.data} />
+    <PublicEventDetailsClient
+      data={data}
+      name={name?.data}
+      savedCards={paymentMethods?.data ?? []}
+      address={address?.data}
+    />
   )
 }

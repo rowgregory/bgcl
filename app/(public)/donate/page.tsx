@@ -6,10 +6,10 @@ import { getUserName } from '@/app/lib/actions/getUserName'
 
 export default async function DonatePage() {
   const [campaigns, name, address, paymentMethods] = await Promise.all([
-    getCampaigns(),
-    getUserName(),
-    getUserAddress(),
-    getSavedPaymentMethods()
+    getCampaigns().catch(() => null),
+    getUserName().catch(() => null),
+    getUserAddress().catch(() => null),
+    getSavedPaymentMethods().catch(() => ({ data: [] }))
   ])
 
   return (
@@ -17,7 +17,7 @@ export default async function DonatePage() {
       campaigns={campaigns}
       name={name?.data}
       address={address?.data}
-      savedCards={paymentMethods?.data}
+      savedCards={paymentMethods?.data ?? []}
     />
   )
 }
