@@ -19,7 +19,7 @@ export default function AddToCartToast() {
   }, [])
   const ticket = item?.ticket
   const quantity = item?.quantity ?? 1
-  const cartCount = items.reduce((sum, i) => sum + i.quantity, 0)
+  const cartCount = items?.reduce((sum, i) => sum + i.quantity, 0)
 
   useEffect(() => {
     if (addToCartToast) {

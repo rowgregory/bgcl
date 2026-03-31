@@ -15,7 +15,7 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
   const { play: proceed } = useSoundEffect('/sound-effects/casino-17.mp3', soundOn)
   const { play: close } = useSoundEffect('/sound-effects/casual-click-pop-ui.mp3', soundOn)
   const { play: remove } = useSoundEffect('/sound-effects/casino-7.wav', soundOn)
-  const total = items.reduce((sum: number, i: any) => sum + i.price * i.quantity, 0)
+  const total = items?.reduce((sum: number, i: any) => sum + i.price * i.quantity, 0)
 
   return (
     <AnimatePresence>

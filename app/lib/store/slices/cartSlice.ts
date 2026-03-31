@@ -47,7 +47,7 @@ interface CartState {
 }
 
 const initialState: CartState = {
-  items: null,
+  items: [],
   isCheckingOut: false,
   lastUpdated: null,
   addToCartToast: false,
@@ -60,6 +60,7 @@ export const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action: PayloadAction<{ ticket: ITicket; quantity: number }>) => {
       const { ticket, quantity } = action.payload
+      if (!state.items) state.items = []
       const existingItem = state.items.find((item) => item.ticketId === ticket.id && item.eventId === ticket.eventId)
 
       if (existingItem) {

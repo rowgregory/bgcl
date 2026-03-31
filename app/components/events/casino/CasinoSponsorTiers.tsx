@@ -72,7 +72,7 @@ export function CasinoSponsorTiers({ data }: TCasinoSponsorTiers) {
             const soldOut = t.totalQuantity - t.quantitySold - t.quantityReserved <= 0
             const available = !soldOut && !sponsorExpired
             const message = soldOut ? 'Sold out' : sponsorExpired ? 'Applications closed' : 'Sales closed'
-            const cartItem = items.find((item: any) => item.ticketId === t.id)
+            const cartItem = items?.find((item: any) => item.ticketId === t.id)
             const cartQty = cartItem?.quantity ?? 0
             const grad = GRADIENTS.SPONSORSHIP
 
