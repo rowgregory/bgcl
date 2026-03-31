@@ -202,7 +202,8 @@ export function PublicEventDetailsClient({ data, name, savedCards, address }: TP
                               Physical raffle tickets will be mailed to you prior to the event. We&apos;ll send them to{' '}
                               <span className="text-white/60 font-medium">
                                 {address.addressLine1}
-                                {address.addressLine2 && `${address.addressLine2}`}, {address.city}, {address.state}
+                                {address.addressLine2 ? `, ${address.addressLine2}` : ''}, {address.city},{' '}
+                                {address.state}
                               </span>
                               .
                             </p>
