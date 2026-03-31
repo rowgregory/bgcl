@@ -7,9 +7,7 @@ import { auth } from '../auth'
 export async function getSavedPaymentMethods() {
   try {
     const session = await auth()
-    if (!session?.user?.id) {
-      throw new Error('Unauthorized')
-    }
+    if (!session?.user?.id) return { success: false, data: [] }
 
     const paymentMethods = await prisma.paymentMethod.findMany({
       where: { userId: session.user.id },
