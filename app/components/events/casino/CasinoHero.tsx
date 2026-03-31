@@ -59,10 +59,9 @@ export function CasinoHero({ data }: { data: TCasinoHero }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15, duration: 0.7 }}
-        className="oswald font-black uppercase mb-3 leading-28"
+        className="oswald font-black uppercase mb-3 leading-none tracking-tight"
         style={{
           fontSize: 'clamp(56px, 12vw, 120px)',
-          letterSpacing: '-0.01em',
           background: 'linear-gradient(180deg, #fff 0%, #f5e678 30%, #d4af37 55%, #8b6914 80%, #d4af37 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',

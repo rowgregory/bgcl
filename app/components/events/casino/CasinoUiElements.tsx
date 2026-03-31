@@ -27,7 +27,7 @@ export const SUITS: Record<string, string> = { RAFFLE: '♠', TOURNAMENT: '♣',
 export function GoldDivider() {
   return (
     <div
-      className="w-full h-px my-12 sm:my-16"
+      className="w-full h-px my-24"
       style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.35), transparent)' }}
       aria-hidden="true"
     />
