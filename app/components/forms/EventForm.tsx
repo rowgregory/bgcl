@@ -38,9 +38,7 @@ export function EventForm({
   onClose
 }: IForm) {
   const [materialTags, setMaterialTags] = useState<string[]>([])
-
   const [customMaterials, setCustomMaterials] = useState<string[]>([])
-
   const [requirementTags, setRequirementTags] = useState<string[]>([])
 
   useEffect(() => {
@@ -183,6 +181,86 @@ export function EventForm({
                       placeholder="Describe your event"
                       className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all resize-none"
                     />
+                  </div>
+
+                  {/* Identity */}
+                  <div>
+                    <h4 className="text-sm font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-3">
+                      Identity
+                    </h4>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                            Subtitle
+                          </label>
+                          <input
+                            type="text"
+                            name="subtitle"
+                            value={(inputs?.subtitle as string) || ''}
+                            onChange={handleInput}
+                            placeholder='e.g. "Viva Las Vegas"'
+                            className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                            Tagline
+                          </label>
+                          <input
+                            type="text"
+                            name="tagline"
+                            value={(inputs?.tagline as string) || ''}
+                            onChange={handleInput}
+                            placeholder='e.g. "Join Us For Our Send a Kid to Camp"'
+                            className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                            Website
+                          </label>
+                          <input
+                            type="text"
+                            name="website"
+                            value={(inputs?.website as string) || ''}
+                            onChange={handleInput}
+                            placeholder="e.g. www.bgcl.org"
+                            className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                            Full Address
+                          </label>
+                          <input
+                            type="text"
+                            name="address"
+                            value={(inputs?.address as string) || ''}
+                            onChange={handleInput}
+                            placeholder="e.g. 154 Tedesco St, Marblehead, MA 01945"
+                            className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                          Mission Statement
+                        </label>
+                        <textarea
+                          name="missionStatement"
+                          value={(inputs?.missionStatement as string) || ''}
+                          onChange={handleInput}
+                          rows={2}
+                          placeholder="e.g. To inspire and enable all young people..."
+                          className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all resize-none"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -375,6 +453,69 @@ export function EventForm({
                     placeholder="Host name or organization"
                     className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
                   />
+                </div>
+              </div>
+
+              {/* Schedule */}
+              <div className="mb-8">
+                <div>
+                  <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-4">Event Schedule</h3>
+                  <div className="space-y-2">
+                    {((inputs?.raffleSchedule as { time: string; label: string }[]) || []).map((item, index) => (
+                      <div key={index} className="flex gap-3 items-center">
+                        <input
+                          type="text"
+                          value={item.time}
+                          onChange={(e) => {
+                            const updated = [...((inputs?.raffleSchedule as { time: string; label: string }[]) || [])]
+                            updated[index] = { ...updated[index], time: e.target.value }
+                            store.dispatch(setInputs({ formName: 'eventForm', data: { raffleSchedule: updated } }))
+                          }}
+                          placeholder="e.g. 6:30 PM – 7:00 PM"
+                          className="w-48 px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors text-sm"
+                        />
+                        <input
+                          type="text"
+                          value={item.label}
+                          onChange={(e) => {
+                            const updated = [...((inputs?.raffleSchedule as { time: string; label: string }[]) || [])]
+                            updated[index] = { ...updated[index], label: e.target.value }
+                            store.dispatch(setInputs({ formName: 'eventForm', data: { raffleSchedule: updated } }))
+                          }}
+                          placeholder="e.g. $10K Raffle Drawing"
+                          className="flex-1 px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors text-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = (
+                              (inputs?.raffleSchedule as { time: string; label: string }[]) || []
+                            ).filter((_, i) => i !== index)
+                            store.dispatch(setInputs({ formName: 'eventForm', data: { raffleSchedule: updated } }))
+                          }}
+                          className="text-neutral-400 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const current = (inputs?.raffleSchedule as { time: string; label: string }[]) || []
+                        store.dispatch(
+                          setInputs({
+                            formName: 'eventForm',
+                            data: { raffleSchedule: [...current, { time: '', label: '' }] }
+                          })
+                        )
+                      }}
+                      className="flex items-center gap-2 text-sm text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors pt-1"
+                    >
+                      <Plus size={14} />
+                      Add schedule item
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -712,15 +853,6 @@ export function EventForm({
                   />
 
                   <CustomSwitch
-                    checked={(inputs?.showRaffleTicketNumbers as boolean) ?? false}
-                    onChange={(val) =>
-                      store.dispatch(setInputs({ formName: 'eventForm', data: { showRaffleTicketNumbers: val } }))
-                    }
-                    label="Show Raffle Ticket Numbers"
-                    description="Display assigned raffle ticket numbers to supporters in their order confirmation and supporter overview"
-                  />
-
-                  <CustomSwitch
                     checked={(inputs?.showTicketMarquee as boolean) ?? true}
                     onChange={(val) =>
                       store.dispatch(setInputs({ formName: 'eventForm', data: { showTicketMarquee: val } }))
@@ -733,98 +865,51 @@ export function EventForm({
 
               {/* Raffle Settings */}
               <div className="mb-8">
-                <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-4">Raffle Settings</h3>
-
                 <div className="space-y-4">
-                  <CustomSwitch
-                    checked={(inputs?.isRaffle as boolean) || false}
-                    onChange={(val) => store.dispatch(setInputs({ formName: 'eventForm', data: { isRaffle: val } }))}
-                    label="Raffle Event"
-                    description="Enables raffle ticket assignment and digital ticket generation"
-                  />
+                  {/* Raffle Settings */}
+                  <div className="mb-8">
+                    <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-4">Raffle Settings</h3>
+                    <p className="text-xs dark:text-neutral-500 text-neutral-500 mb-4">
+                      Keep <span className="font-semibold dark:text-neutral-300 text-neutral-700">Raffle Event</span> on
+                      if this event includes a raffle — this enables raffle-specific features like prize ladder, draw
+                      date, and odds display on the public page.
+                    </p>
+
+                    <div className="space-y-4">
+                      <CustomSwitch
+                        checked={(inputs?.isRaffle as boolean) || false}
+                        onChange={(val) =>
+                          store.dispatch(setInputs({ formName: 'eventForm', data: { isRaffle: val } }))
+                        }
+                        label="Raffle Event"
+                        description="Enables raffle features on the public event page — prize ladder, draw date, terms, and odds"
+                      />
+
+                      {inputs?.isRaffle && (
+                        <div className="ml-4 pl-4 border-l-2 dark:border-neutral-700 border-neutral-200">
+                          <p className="text-xs dark:text-neutral-500 text-neutral-500 mb-3">
+                            Raffle ticket numbers are assigned sequentially when someone purchases a raffle ticket. Turn
+                            this on to display those numbers to the buyer in their confirmation email and supporter
+                            overview. If you are managing ticket numbers manually or mailing physical tickets, leave
+                            this off.
+                          </p>
+                          <CustomSwitch
+                            checked={(inputs?.showRaffleTicketNumbers as boolean) || false}
+                            onChange={(val) =>
+                              store.dispatch(
+                                setInputs({ formName: 'eventForm', data: { showRaffleTicketNumbers: val } })
+                              )
+                            }
+                            label="Show Raffle Ticket Numbers"
+                            description="Display assigned ticket numbers to buyers — leave off if mailing physical tickets or managing numbers manually"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
                   {inputs?.isRaffle && (
                     <div className="space-y-6 pl-1">
-                      {/* Identity */}
-                      <div>
-                        <h4 className="text-sm font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-3">
-                          Identity
-                        </h4>
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
-                                Subtitle
-                              </label>
-                              <input
-                                type="text"
-                                name="subtitle"
-                                value={(inputs?.subtitle as string) || ''}
-                                onChange={handleInput}
-                                placeholder='e.g. "Viva Las Vegas"'
-                                className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
-                                Tagline
-                              </label>
-                              <input
-                                type="text"
-                                name="tagline"
-                                value={(inputs?.tagline as string) || ''}
-                                onChange={handleInput}
-                                placeholder='e.g. "Join Us For Our Send a Kid to Camp"'
-                                className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
-                                Website
-                              </label>
-                              <input
-                                type="text"
-                                name="website"
-                                value={(inputs?.website as string) || ''}
-                                onChange={handleInput}
-                                placeholder="e.g. www.bgcl.org"
-                                className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
-                                Full Address
-                              </label>
-                              <input
-                                type="text"
-                                name="address"
-                                value={(inputs?.address as string) || ''}
-                                onChange={handleInput}
-                                placeholder="e.g. 154 Tedesco St, Marblehead, MA 01945"
-                                className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
-                              />
-                            </div>
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
-                              Mission Statement
-                            </label>
-                            <textarea
-                              name="missionStatement"
-                              value={(inputs?.missionStatement as string) || ''}
-                              onChange={handleInput}
-                              rows={2}
-                              placeholder="e.g. To inspire and enable all young people..."
-                              className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all resize-none"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
                       {/* Ticket Details */}
                       <div>
                         <h4 className="text-sm font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-3">
@@ -967,79 +1052,6 @@ export function EventForm({
                           >
                             <Plus size={14} />
                             Add prize
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Schedule */}
-                      <div>
-                        <h4 className="text-sm font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-3">
-                          Event Schedule
-                        </h4>
-                        <div className="space-y-2">
-                          {((inputs?.raffleSchedule as { time: string; label: string }[]) || []).map((item, index) => (
-                            <div key={index} className="flex gap-3 items-center">
-                              <input
-                                type="text"
-                                value={item.time}
-                                onChange={(e) => {
-                                  const updated = [
-                                    ...((inputs?.raffleSchedule as { time: string; label: string }[]) || [])
-                                  ]
-                                  updated[index] = { ...updated[index], time: e.target.value }
-                                  store.dispatch(
-                                    setInputs({ formName: 'eventForm', data: { raffleSchedule: updated } })
-                                  )
-                                }}
-                                placeholder="e.g. 6:30 PM – 7:00 PM"
-                                className="w-48 px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors text-sm"
-                              />
-                              <input
-                                type="text"
-                                value={item.label}
-                                onChange={(e) => {
-                                  const updated = [
-                                    ...((inputs?.raffleSchedule as { time: string; label: string }[]) || [])
-                                  ]
-                                  updated[index] = { ...updated[index], label: e.target.value }
-                                  store.dispatch(
-                                    setInputs({ formName: 'eventForm', data: { raffleSchedule: updated } })
-                                  )
-                                }}
-                                placeholder="e.g. $10K Raffle Drawing"
-                                className="flex-1 px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors text-sm"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const updated = (
-                                    (inputs?.raffleSchedule as { time: string; label: string }[]) || []
-                                  ).filter((_, i) => i !== index)
-                                  store.dispatch(
-                                    setInputs({ formName: 'eventForm', data: { raffleSchedule: updated } })
-                                  )
-                                }}
-                                className="text-neutral-400 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0"
-                              >
-                                <X size={16} />
-                              </button>
-                            </div>
-                          ))}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const current = (inputs?.raffleSchedule as { time: string; label: string }[]) || []
-                              store.dispatch(
-                                setInputs({
-                                  formName: 'eventForm',
-                                  data: { raffleSchedule: [...current, { time: '', label: '' }] }
-                                })
-                              )
-                            }}
-                            className="flex items-center gap-2 text-sm text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors pt-1"
-                          >
-                            <Plus size={14} />
-                            Add schedule item
                           </button>
                         </div>
                       </div>

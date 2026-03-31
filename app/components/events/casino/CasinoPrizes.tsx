@@ -1,9 +1,10 @@
+import { Fragment } from 'react/jsx-runtime'
 import { SectionHeading } from './CasinoUiElements'
 import { motion } from 'framer-motion'
 
-export function CasinoPrizesAndSchedule({ prizes, schedule }) {
+export function CasinoPrizes({ prizes }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 sm:gap-16">
+    <Fragment>
       {prizes.length > 0 && (
         <section aria-labelledby="prizes-heading">
           <SectionHeading suit="♦" id="prizes-heading">
@@ -43,30 +44,6 @@ export function CasinoPrizesAndSchedule({ prizes, schedule }) {
           </div>
         </section>
       )}
-
-      {schedule.length > 0 && (
-        <section aria-labelledby="schedule-heading">
-          <SectionHeading suit="♥" id="schedule-heading">
-            Schedule
-          </SectionHeading>
-          <div>
-            {schedule.map((item: any, i: number) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className={`flex items-center gap-4 py-4 ${i < schedule.length - 1 ? 'border-b border-white/5' : ''}`}
-              >
-                <span className="oswald text-lg font-black text-amber-400 shrink-0 w-18 text-right">{item.time}</span>
-                <div className="w-px h-5 bg-amber-500/25 shrink-0" aria-hidden="true" />
-                <span className="text-[15px] text-white/45">{item.label}</span>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
+    </Fragment>
   )
 }

@@ -21,13 +21,9 @@ async function findOrCreateUser(user: User) {
   })
 
   if (!dbUser) {
-    // Extract first name from email (before @)
-    const emailName = user.email!.split('@')[0]
-
     dbUser = await prisma.user.create({
       data: {
         email: user.email!,
-        firstName: emailName.charAt(0).toUpperCase() + emailName.slice(1), // Capitalize first letter
         role: 'SUPPORTER'
       },
       include: { accounts: true }

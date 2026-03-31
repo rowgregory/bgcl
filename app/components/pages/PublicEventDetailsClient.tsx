@@ -6,7 +6,7 @@ import { CasinoWidgets } from '../events/casino/CasinoWidgets'
 import { CasinoHero } from '../events/casino/CasinoHero'
 import { CasinoStyles, GoldDivider, MetaItem, SectionHeading } from '../events/casino/CasinoUiElements'
 import { CasinoSponsorTiers } from '../events/casino/CasinoSponsorTiers'
-import { CasinoPrizesAndSchedule } from '../events/casino/CasinoPrizesAndSchedule'
+import { CasinoPrizes } from '../events/casino/CasinoPrizes'
 import { CasinoRaffleStats } from '../events/casino/CasinoRaffleStats'
 import { CasinoDressCodeAndHighlights } from '../events/casino/CasinoDressCodeAndHighlights'
 import { CasinoIntro } from '../events/casino/CasinoIntro'
@@ -19,8 +19,9 @@ import { formatTime } from '@/app/lib/utils/time-utils'
 import { TPublicEventDetailsClient } from '@/types/casino.types'
 import { CasinoIndividualTicket } from '../events/casino/CasinoIndividualTicket'
 import { CasinoBlackjackTicket } from '../events/casino/CasinoBlackjackTicket'
+import { CheckCircle2 } from 'lucide-react'
 
-export function PublicEventDetailsClient({ data, name, savedCards }: TPublicEventDetailsClient) {
+export function PublicEventDetailsClient({ data, name, savedCards, address }: TPublicEventDetailsClient) {
   const [introComplete, setIntroComplete] = useState(false)
 
   const prizes = data?.rafflePrizes ?? []
@@ -85,13 +86,39 @@ export function PublicEventDetailsClient({ data, name, savedCards }: TPublicEven
                 </>
               )}
 
-              {/* ── PRIZES + SCHEDULE ─────────────────────────────────────────── */}
-              {(prizes.length > 0 || schedule.length > 0) && (
-                <>
-                  <CasinoPrizesAndSchedule prizes={prizes} schedule={schedule} />
-                  <GoldDivider />
-                </>
-              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 sm:gap-16">
+                {/* ── PRIZES  ─────────────────────────────────────────── */}
+                {data?.isRaffle && (prizes.length > 0 || schedule.length > 0) && <CasinoPrizes prizes={prizes} />}
+
+                {/* ── SCHEDULE ─────────────────────────────────────────── */}
+                {schedule.length > 0 && (
+                  <section aria-labelledby="schedule-heading">
+                    <SectionHeading suit="♥" id="schedule-heading">
+                      Schedule
+                    </SectionHeading>
+                    <div>
+                      {schedule.map((item: any, i: number) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: 20 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.08 }}
+                          className={`flex items-center gap-4 py-4 ${i < schedule.length - 1 ? 'border-b border-white/5' : ''}`}
+                        >
+                          <span className="oswald text-lg font-black text-amber-400 shrink-0 w-18 text-right">
+                            {item.time}
+                          </span>
+                          <div className="w-px h-5 bg-amber-500/25 shrink-0" aria-hidden="true" />
+                          <span className="text-[15px] text-white/45">{item.label}</span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </section>
+                )}
+              </div>
+
+              <GoldDivider />
 
               {/* ── RAFFLE STATS ──────────────────────────────────────────────── */}
               {data?.isRaffle && (data?.raffleGrandPrizeLabel || data?.raffleTicketPrice || data?.raffleOddsLabel) && (
@@ -113,7 +140,7 @@ export function PublicEventDetailsClient({ data, name, savedCards }: TPublicEven
               )}
 
               {/* ── DRAW DATE ─────────────────────────────────────────────────── */}
-              {data?.raffleDrawDate && (
+              {data?.isRaffle && data?.raffleDrawDate && (
                 <>
                   <section aria-labelledby="draw-heading" className="text-center pb-4">
                     <p className="oswald text-[10px] font-bold uppercase tracking-[0.3em] text-amber-600/55 mb-4">
@@ -126,29 +153,78 @@ export function PublicEventDetailsClient({ data, name, savedCards }: TPublicEven
                     >
                       {formatDate(data.raffleDrawDate, { weekday: 'long' })}
                     </h2>
-                    <p className="text-lg text-white/30 mb-8">
-                      {formatTime(data.raffleDrawDate)}&nbsp;EST &nbsp;·&nbsp;
-                    </p>
+                    <p className="text-lg text-white/30 mb-8">{formatTime(data.raffleDrawDate)}&nbsp;EST</p>
                   </section>
                   <GoldDivider />
                 </>
               )}
 
               {/* ── ABOUT ─────────────────────────────────────────────────────── */}
-              {data?.description && (
-                <>
-                  <section
-                    aria-labelledby="about-heading"
-                    className="max-w-180 mx-auto text-center pb-4 flex flex-col items-center"
-                  >
-                    <SectionHeading suit="♣" id="about-heading">
-                      About the Event
-                    </SectionHeading>
-                    <p className="text-base text-white/40 leading-[1.8]">{data.description}</p>
-                  </section>
-                  <GoldDivider />
-                </>
-              )}
+              <>
+                <section
+                  aria-labelledby="about-heading"
+                  className="max-w-180 mx-auto text-center pb-4 flex flex-col items-center"
+                >
+                  <SectionHeading suit="♣" id="about-heading">
+                    About the Event
+                  </SectionHeading>
+                  <p className="text-base text-white/40 leading-[1.8]">{data.description}</p>
+
+                  {!data?.showRaffleTicketNumbers && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      className="mt-8 w-full max-w-sm"
+                      style={{ border: '1px solid rgba(212,175,55,0.2)' }}
+                    >
+                      <div
+                        className="h-px w-full"
+                        style={{
+                          background: 'linear-gradient(90deg, transparent, #d4af37, #f5e678, #d4af37, transparent)'
+                        }}
+                        aria-hidden="true"
+                      />
+
+                      <div className="p-5 text-left">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-amber-400/60 text-sm suit" aria-hidden="true">
+                            ♠
+                          </span>
+                          <p className="oswald text-[10px] font-black uppercase tracking-[0.2em] text-amber-600/60">
+                            Physical Raffle Tickets
+                          </p>
+                        </div>
+
+                        {address ? (
+                          <>
+                            <p className="text-sm text-white/40 leading-relaxed mb-3">
+                              Physical raffle tickets will be mailed to you prior to the event. We&apos;ll send them to{' '}
+                              <span className="text-white/60 font-medium">
+                                {address.addressLine1}
+                                {address.addressLine2 && `${address.addressLine2}`}, {address.city}, {address.state}
+                              </span>
+                              .
+                            </p>
+                            <div className="flex items-center gap-2 text-xs text-emerald-400/70">
+                              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                              Address saved — you&apos;re all set
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-sm text-white/40 leading-relaxed mb-4">
+                              Physical raffle tickets will be mailed to you prior to the event.
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </section>
+                <GoldDivider />
+              </>
+
               {data?.showTicketMarquee && (
                 <>
                   <CasinoTicketMarquee
@@ -192,7 +268,7 @@ export function PublicEventDetailsClient({ data, name, savedCards }: TPublicEven
               )}
 
               {/* ── TERMS ─────────────────────────────────────────────────────── */}
-              {data?.raffleTerms && (
+              {data?.isRaffle && data?.raffleTerms && (
                 <p className="text-[11px] text-white/30 leading-[1.7] text-center pb-12">* {data.raffleTerms}</p>
               )}
 
