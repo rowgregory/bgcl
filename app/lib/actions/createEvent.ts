@@ -56,7 +56,10 @@ export async function createEvent(data: CreateEventInput) {
         dressCodeHeadline: data.dressCodeHeadline || null,
         dressCodeNote: data.dressCodeNote || null,
         bestDressedPrizes: data.bestDressedPrizes || null,
-        dressCodeItems: data.dressCodeItems?.length ? data.dressCodeItems : undefined
+        dressCodeItems: data.dressCodeItems?.length ? data.dressCodeItems : undefined,
+
+        showTicketMarquee: data.showTicketMarquee,
+        showRaffleTicketNumbers: data.showRaffleTicketNumbers
       }
     })
 

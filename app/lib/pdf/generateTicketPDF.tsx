@@ -90,18 +90,16 @@ function drawTicket(doc: jsPDF, item: TicketItem, data: TicketPDFData, startY: n
   const pageWidth = doc.internal.pageSize.getWidth()
   const margin = 14
   const ticketW = pageWidth - margin * 2
-  const stubW = 52
-  const mainW = ticketW - stubW
-  const headerH = 24
-  const stripeH = 2
-  const bodyH = 56
-  const footerH = 14
+  const headerH = 18
+  const stripeH = 1.5
+  const bodyH = 36
+  const footerH = 10
   const ticketH = headerH + stripeH + bodyH + footerH
   const x = margin
   const y = startY
   const isRaffle = !!item.raffleTicketNumber
 
-  // ── Shadow / depth ────────────────────────────────────────────────────────
+  // ── Shadow ────────────────────────────────────────────────────────────────
   doc.setFillColor(200, 210, 220)
   doc.roundedRect(x + 1, y + 1.5, ticketW, ticketH, 3, 3, 'F')
 
@@ -114,225 +112,99 @@ function drawTicket(doc: jsPDF, item: TicketItem, data: TicketPDFData, startY: n
   // ── Header ────────────────────────────────────────────────────────────────
   doc.setFillColor(...BGCL_BLUE)
   doc.roundedRect(x, y, ticketW, headerH, 3, 3, 'F')
-  doc.rect(x, y + headerH - 4, ticketW, 4, 'F') // flush bottom
+  doc.rect(x, y + headerH - 4, ticketW, 4, 'F')
 
-  // Org label
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(6.5)
+  doc.setFontSize(5.5)
   doc.setTextColor(200, 225, 255)
-  doc.text('BOYS & GIRLS CLUB OF LYNN', x + 8, y + 7)
+  doc.text('BOYS & GIRLS CLUB OF LYNN', x + 6, y + 5.5)
 
-  // Event title
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(12)
+  doc.setFontSize(9)
   doc.setTextColor(...WHITE)
-  const titleText = data.event.title.toUpperCase()
-  doc.text(titleText, x + 8, y + 18, { maxWidth: mainW - 12 })
+  doc.text(data.event.title.toUpperCase(), x + 6, y + 14, { maxWidth: ticketW - 60 })
 
-  // Subtitle in header (italic, gold)
-  if (data.event.subtitle) {
-    doc.setFont('helvetica', 'bolditalic')
-    doc.setFontSize(8)
-    doc.setTextColor(...GOLD_LIGHT)
-    // Put subtitle after title if it fits, otherwise skip (header is compact)
-  }
+  // Date + location inline in header
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6)
+  doc.setTextColor(200, 225, 255)
+  const metaText = `${formatDate(data.event.date)}  ·  ${formatTime(data.event.date)}${data.event.location ? `  ·  ${data.event.location}` : ''}`
+  doc.text(metaText, x + ticketW - 6, y + 14, { align: 'right', maxWidth: ticketW * 0.5 })
 
-  // Raffle badge
-  if (isRaffle) {
-    const badgeLabel = 'RAFFLE'
-    const badgePad = 5
-    const badgeH = 8
-    const badgeW = doc.getTextWidth(badgeLabel) + badgePad * 2
-    const badgeX = x + mainW + (stubW - badgeW) / 2
-    const badgeY = y + (headerH - badgeH) / 2
-    doc.setFillColor(...GOLD)
-    doc.roundedRect(badgeX, badgeY, badgeW, badgeH, 2, 2, 'F')
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(7)
-    doc.setTextColor(...WHITE)
-    doc.text(badgeLabel, badgeX + badgePad, badgeY + 5.5)
-  }
-
-  // ── Gold accent stripe ─────────────────────────────────────────────────────
+  // ── Gold stripe ───────────────────────────────────────────────────────────
   const stripeY = y + headerH
-  // Gradient-like: 3 rects transitioning gold
   doc.setFillColor(...GOLD)
   doc.rect(x, stripeY, ticketW * 0.5, stripeH, 'F')
   doc.setFillColor(...GOLD_LIGHT)
-  doc.rect(x + ticketW * 0.5, stripeY, ticketW * 0.3, stripeH, 'F')
-  doc.setFillColor(253, 230, 138)
-  doc.rect(x + ticketW * 0.8, stripeY, ticketW * 0.2, stripeH, 'F')
+  doc.rect(x + ticketW * 0.5, stripeY, ticketW * 0.5, stripeH, 'F')
 
-  // ── Body background ───────────────────────────────────────────────────────
+  // ── Body ──────────────────────────────────────────────────────────────────
   const bodyY = stripeY + stripeH
   doc.setFillColor(...WHITE)
-  doc.rect(x, bodyY, mainW, bodyH, 'F')
+  doc.rect(x, bodyY, ticketW, bodyH, 'F')
 
-  // Stub background
-  doc.setFillColor(...STUB_BG)
-  doc.rect(x + mainW, bodyY, stubW, bodyH, 'F')
+  const bp = 6
 
-  // ── Body content ──────────────────────────────────────────────────────────
-  const bp = 8 // body padding
-
-  // Ticket name
+  // Ticket name + price on same line
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(10)
+  doc.setFontSize(9)
   doc.setTextColor(...DARK_GRAY)
-  doc.text(item.ticketName, x + bp, bodyY + 10)
+  doc.text(item.ticketName, x + bp, bodyY + 9)
 
-  // Description
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(9)
+  doc.setTextColor(...BGCL_BLUE)
+  doc.text(`$${item.totalPrice.toFixed(2)}`, x + ticketW - bp, bodyY + 9, { align: 'right' })
+
+  // Description — single line
   if (item.ticketDescription) {
     doc.setFont('helvetica', 'normal')
-    doc.setFontSize(7)
+    doc.setFontSize(6.5)
     doc.setTextColor(...MID_GRAY)
-    const lines = doc.splitTextToSize(item.ticketDescription, mainW - bp * 2)
-    doc.text(lines.slice(0, 2), x + bp, bodyY + 17)
+    const lines = doc.splitTextToSize(item.ticketDescription, ticketW - bp * 2)
+    doc.text(lines[0], x + bp, bodyY + 16)
   }
 
   // Divider
   doc.setDrawColor(...BORDER)
   doc.setLineWidth(0.2)
-  doc.line(x + bp, bodyY + 24, x + mainW - bp, bodyY + 24)
+  doc.line(x + bp, bodyY + 20, x + ticketW - bp, bodyY + 20)
 
-  // Date row — icon + text
-  const iconSize = 4
-  const iconY = bodyY + 27
-  const textY = bodyY + 31
-
-  // Calendar icon (simple rect with lines)
-  doc.setFillColor(...BGCL_BLUE)
-  doc.setDrawColor(...BGCL_BLUE)
-  doc.setLineWidth(0.3)
-  doc.roundedRect(x + bp, iconY, iconSize, iconSize, 0.5, 0.5, 'FD')
-  doc.setFillColor(...WHITE)
-  doc.rect(x + bp + 0.5, iconY + 1.5, iconSize - 1, iconSize - 2, 'F')
-  doc.setFillColor(...BGCL_BLUE)
-  doc.rect(x + bp, iconY, iconSize, 1.5, 'F')
-
+  // Holder + raffle info on same row
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(8)
-  doc.setTextColor(...DARK_GRAY)
-  doc.text(`${formatDate(data.event.date)}  ·  ${formatTime(data.event.date)}`, x + bp + iconSize + 2, textY)
-
-  // Location row — pin icon
-  const locIconY = bodyY + 36
-  const locTextY = bodyY + 40
-
-  doc.setFillColor(...BGCL_BLUE)
-  doc.setDrawColor(...BGCL_BLUE)
-  doc.circle(x + bp + iconSize / 2, locIconY + 1.5, 1.5, 'F')
-  doc.triangle(
-    x + bp + 0.5,
-    locIconY + 2,
-    x + bp + iconSize - 0.5,
-    locIconY + 2,
-    x + bp + iconSize / 2,
-    locIconY + iconSize,
-    'F'
-  )
-  doc.setFillColor(...WHITE)
-  doc.circle(x + bp + iconSize / 2, locIconY + 1.5, 0.6, 'F')
-
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(8)
-  doc.setTextColor(...DARK_GRAY)
-  const locationText = data.event.address ? `${data.event.location}  —  ${data.event.address}` : data.event.location
-  doc.text(locationText, x + bp + iconSize + 2, locTextY, { maxWidth: mainW - bp * 2 - iconSize - 2 })
-
-  // Price
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(13)
-  doc.setTextColor(...BGCL_BLUE)
-  doc.text(`$${item.totalPrice.toFixed(2)}`, x + bp, bodyY + bodyH - 5)
-
-  // ── Stub content ──────────────────────────────────────────────────────────
-  const stubX = x + mainW
-  const stubCX = stubX + stubW / 2
+  doc.setFontSize(6.5)
+  doc.setTextColor(...MID_GRAY)
+  doc.text(`Holder: ${data.order.customerName}`, x + bp, bodyY + 27)
 
   if (isRaffle) {
-    // Label
+    // Raffle ticket number right-aligned
     doc.setFont('helvetica', 'bold')
-    doc.setFontSize(6)
-    doc.setTextColor(...MID_GRAY)
-    doc.text('TICKET NO.', stubCX, bodyY + 10, { align: 'center' })
-
-    // Big number
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(26)
+    doc.setFontSize(6.5)
     doc.setTextColor(...BGCL_BLUE)
-    doc.text(padTicketNumber(item.raffleTicketNumber!), stubCX, bodyY + 26, { align: 'center' })
+    doc.text(`Ticket No. ${padTicketNumber(item.raffleTicketNumber!)}`, x + ticketW - bp, bodyY + 27, {
+      align: 'right'
+    })
 
-    // Horizontal divider in stub
-    doc.setDrawColor(...BORDER)
-    doc.setLineWidth(0.3)
-    doc.line(stubX + 5, bodyY + 30, stubX + stubW - 5, bodyY + 30)
-
-    // Code
     if (item.raffleTicketCode) {
       doc.setFont('helvetica', 'normal')
-      doc.setFontSize(7)
+      doc.setFontSize(6)
       doc.setTextColor(...MID_GRAY)
-      doc.text(item.raffleTicketCode, stubCX, bodyY + 36, { align: 'center' })
+      doc.text(item.raffleTicketCode, x + ticketW - bp, bodyY + 33, { align: 'right' })
     }
-
-    // "of X total" if we have total quantity
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(6)
-    doc.setTextColor(...MID_GRAY)
-    doc.text('ADMIT ONE', stubCX, bodyY + 44, { align: 'center' })
-  } else {
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(7)
-    doc.setTextColor(...MID_GRAY)
-    doc.text('ADMIT', stubCX, bodyY + 18, { align: 'center' })
-
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(28)
-    doc.setTextColor(...BGCL_BLUE)
-    doc.text('1', stubCX, bodyY + 32, { align: 'center' })
-
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(6.5)
-    doc.setTextColor(...MID_GRAY)
-    doc.text('GUEST', stubCX, bodyY + 38, { align: 'center' })
   }
-
-  // ── Dashed tear line ──────────────────────────────────────────────────────
-  doc.setDrawColor(...BORDER)
-  doc.setLineWidth(0.4)
-  doc.setLineDashPattern([1.5, 1.5], 0)
-  doc.line(stubX, bodyY, stubX, bodyY + bodyH)
-  doc.setLineDashPattern([], 0)
-
-  // Notch circles
-  doc.setFillColor(...NEAR_WHITE)
-  doc.setDrawColor(...BORDER)
-  doc.setLineWidth(0.3)
-  doc.circle(stubX, bodyY, 3, 'FD')
-  doc.circle(stubX, bodyY + bodyH, 3, 'FD')
 
   // ── Footer ────────────────────────────────────────────────────────────────
   const footerY = bodyY + bodyH
   doc.setFillColor(...LIGHT_GRAY)
   doc.rect(x, footerY, ticketW, footerH, 'F')
-  // Round bottom corners
-  doc.setFillColor(...LIGHT_GRAY)
-  doc.roundedRect(x, footerY + footerH - 3, ticketW, 3, 0, 0, 'F')
   doc.roundedRect(x, footerY + footerH - 3, ticketW, 3 + 0.5, 3, 3, 'F')
 
   const terms =
     data.event.raffleTerms ?? 'Must be present at time of draw to claim prize. Non-transferable. No cash value.'
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(5.5)
+  doc.setFontSize(5)
   doc.setTextColor(...MID_GRAY)
-  doc.text(`* ${terms}`, x + bp, footerY + 5.5, { maxWidth: ticketW - bp * 2 })
-
-  // Holder name in footer
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(6)
-  doc.setTextColor(...MID_GRAY)
-  doc.text(`Holder: ${data.order.customerName}`, x + ticketW - bp, footerY + 5.5, { align: 'right' })
+  doc.text(`* ${terms}`, x + bp, footerY + 6, { maxWidth: ticketW - bp * 2 })
 
   return y + ticketH
 }

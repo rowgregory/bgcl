@@ -98,9 +98,9 @@ export const hourOptions = [
 ]
 
 export const POSITION_OPTIONS: { value: PositionType; label: string }[] = [
-  { value: 'SEASONAL_SUMMER', label: 'Seasonal Summer' },
-  { value: 'CAMP_COUNSELOR', label: 'Camp Counselor' },
-  { value: 'LIFEGUARD', label: 'Life Guard' }
+  { value: 'CAMP_COUNSELOR', label: 'Camp Counselor (seasonal)' },
+  { value: 'LIFEGUARD', label: 'Life Guard (afterschool)' },
+  { value: 'SEASONAL_SUMMER', label: 'Youth Development Worker/Group Leader (afterschool)' }
 ]
 
 export const jobApplicationStatusConfig = {

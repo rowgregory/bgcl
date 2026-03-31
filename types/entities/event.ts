@@ -79,6 +79,9 @@ export interface IEvent {
   dressCodeNote?: string | null
   bestDressedPrizes?: string | null
   dressCodeItems?: { label: string; description: string }[] | null
+
+  showTicketMarquee?: boolean
+  showRaffleTicketNumbers?: boolean
 }
 
 export type EventWithTickets = IEvent & {
@@ -131,6 +134,9 @@ export interface EventTemplate {
     dressCodeNote?: string | null
     bestDressedPrizes?: string | null
     dressCodeItems?: { label: string; description: string }[] | null
+
+    showTicketMarquee?: boolean
+    showRaffleTicketNumbers?: boolean
   }
 }
 
@@ -189,6 +195,9 @@ export interface CreateEventInput {
   dressCodeNote?: string | null
   bestDressedPrizes?: string | null
   dressCodeItems?: { label: string; description: string }[] | null
+
+  showTicketMarquee?: boolean
+  showRaffleTicketNumbers?: boolean
 }
 
 export interface UpdateEventInput extends Partial<CreateEventInput> {

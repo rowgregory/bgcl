@@ -1,7 +1,5 @@
 import { createPaymentMethod } from '@/app/lib/actions/createPaymentMethod'
-import { updateAddress } from '@/app/lib/actions/updateAddress'
 import { updateUserName } from '@/app/lib/actions/updateUserName'
-import { US_STATES } from '@/app/lib/constants/states'
 import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
 import { useCartSelector, useUiSelector } from '@/app/lib/store/store'
 import { TCasinoSignInPrompt } from '@/types/casino.types'
@@ -13,18 +11,12 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCasinoSignInPrompt) {
+export function CasinoSignInPrompt({ eventSlug, name, savedCards }: TCasinoSignInPrompt) {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [firstName, setFirstName] = useState(name?.firstName ?? '')
-  const [lastName, setLastName] = useState(name?.lastName ?? '')
-  const [addressLine1, setAddressLine1] = useState('')
-  const [addressLine2, setAddressLine2] = useState('')
-  const [city, setCity] = useState('')
-  const [state, setState] = useState('')
-  const [zipCode, setZipCode] = useState('')
-  const [savingAddress, setSavingAddress] = useState(false)
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [savingName, setSavingName] = useState(false)
   const session = useSession()
   const router = useRouter()
@@ -34,13 +26,11 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
 
   const isAuthed = session.status === 'authenticated'
   const hasName = !!(name?.firstName?.trim() && name?.lastName?.trim())
-  const hasAddress = !!address?.addressLine1?.trim()
   const callbackUrl = `/events/${eventSlug}`
   const { play } = useSoundEffect('/sound-effects/casino-1.mp3', soundOn)
   const { play: proceed } = useSoundEffect('/sound-effects/casino-17.mp3', soundOn)
   const { play: viewCart } = useSoundEffect('/sound-effects/casino-15.wav', soundOn)
   const { play: googleOrMagicLink } = useSoundEffect('/sound-effects/casino-5.mp3', soundOn)
-  const { play: saveAndContinue } = useSoundEffect('/sound-effects/fantasy_ui_button.mp3', soundOn)
   const { play: manage } = useSoundEffect('/sound-effects/casino-23.mp3', soundOn)
 
   const [addingCard, setAddingCard] = useState(false)
@@ -84,32 +74,14 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
     setSavingName(true)
     try {
       await updateUserName({ firstName: firstName.trim(), lastName: lastName.trim() })
-      saveAndContinue()
+      play()
       router.refresh()
     } catch {}
     setSavingName(false)
   }
 
-  const handleSaveAddress = async () => {
-    if (!addressLine1.trim() || !city.trim() || !state || !zipCode.trim()) return
-    setSavingAddress(true)
-    try {
-      await updateAddress({
-        addressLine1: addressLine1.trim(),
-        addressLine2: addressLine2.trim() || undefined,
-        city: city.trim(),
-        state,
-        zipPostalCode: zipCode.trim(),
-        country: 'US'
-      })
-      play()
-      router.refresh()
-    } catch {}
-    setSavingAddress(false)
-  }
-
-  // Already signed in with name and address complete — ready to purchase
-  if (isAuthed && hasName && hasAddress) {
+  // Already signed in with name complete — ready to purchase
+  if (isAuthed && hasName) {
     return (
       <section aria-labelledby="ready-heading">
         <div className="max-w-xl mx-auto text-center">
@@ -156,19 +128,6 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
                 <p className="text-[9px] oswald font-black uppercase tracking-[0.2em] text-white/25 mb-0.5">Name</p>
                 <p className="text-sm font-semibold text-white/70">
                   {name?.firstName} {name?.lastName}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-amber-400/50 text-xs shrink-0 suit" aria-hidden="true">
-                ♥
-              </span>
-              <div>
-                <p className="text-[9px] oswald font-black uppercase tracking-[0.2em] text-white/25 mb-0.5">Address</p>
-                <p className="text-sm font-semibold text-white/70">
-                  {address?.addressLine1}
-                  {address?.addressLine2 ? `, ${address?.addressLine2}` : ''}, {address?.city}, {address?.state}{' '}
-                  {address?.zipPostalCode}
                 </p>
               </div>
             </div>
@@ -360,129 +319,6 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
     )
   }
 
-  // Already signed in and has name but no address
-  if (isAuthed && hasName && !hasAddress) {
-    return (
-      <div className="max-w-xl mx-auto text-center">
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <div
-            className="h-px w-10"
-            style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.4))' }}
-            aria-hidden="true"
-          />
-          <span className="oswald text-[10px] font-black uppercase tracking-[0.25em] text-amber-600/50">
-            ✦ Almost Ready ✦
-          </span>
-          <div
-            className="h-px w-10"
-            style={{ background: 'linear-gradient(90deg, rgba(212,175,55,0.4), transparent)' }}
-            aria-hidden="true"
-          />
-        </div>
-        <h2
-          id="signin-prompt-heading"
-          className="oswald font-black uppercase text-white leading-none mb-3"
-          style={{ fontSize: 'clamp(28px, 6vw, 48px)' }}
-        >
-          One Last Thing
-        </h2>
-        <p className="text-white/40 text-sm leading-relaxed max-w-sm mx-auto mb-4">
-          We need your mailing address to complete your account and get you ready for checkout.
-        </p>
-
-        <div className="space-y-2 w-full max-w-sm mx-auto">
-          {/* Street */}
-          <input
-            type="text"
-            value={addressLine1}
-            onChange={(e) => setAddressLine1(e.target.value)}
-            placeholder="Street address"
-            autoComplete="address-line1"
-            autoFocus
-            className="w-full px-4 py-3 text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
-          />
-
-          {/* Apt / Unit */}
-          <input
-            type="text"
-            value={addressLine2}
-            onChange={(e) => setAddressLine2(e.target.value)}
-            placeholder="Apt, suite, unit (optional)"
-            autoComplete="address-line2"
-            className="w-full px-4 py-3 text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
-          />
-
-          {/* City / State / ZIP */}
-          <div className="grid grid-cols-5 gap-2">
-            <input
-              type="text"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              placeholder="City"
-              autoComplete="address-level2"
-              className="col-span-2 px-4 py-3 text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
-            />
-            <select
-              value={state}
-              onChange={(e) => setState(e.target.value)}
-              autoComplete="address-level1"
-              className="col-span-1 px-2 py-3 text-sm text-white bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
-            >
-              <option value="" disabled>
-                State
-              </option>
-              {US_STATES.map((s) => (
-                <option key={s} value={s} className="bg-neutral-900">
-                  {s}
-                </option>
-              ))}
-            </select>
-            <input
-              type="text"
-              value={zipCode}
-              onChange={(e) => setZipCode(e.target.value)}
-              placeholder="ZIP"
-              autoComplete="postal-code"
-              inputMode="numeric"
-              maxLength={10}
-              className="col-span-2 px-4 py-3 text-sm text-white placeholder-white/20 bg-white/4 border border-white/8 focus:border-amber-400/40 focus:outline-none transition-colors"
-            />
-          </div>
-
-          {/* Save button */}
-          <button
-            onClick={handleSaveAddress}
-            disabled={savingAddress || !addressLine1.trim() || !city.trim() || !state || !zipCode.trim()}
-            className="oswald relative w-full flex items-center justify-center gap-2 py-3.5 text-[13px] font-black uppercase tracking-widest text-white overflow-hidden focus:outline-none active:scale-[0.98] transition-transform disabled:opacity-40 disabled:cursor-not-allowed mt-1"
-            style={{ background: 'linear-gradient(135deg, #7f0000 0%, #c0392b 45%, #e74c3c 65%, #922b21 100%)' }}
-          >
-            <span
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background: 'linear-gradient(90deg, transparent 25%, rgba(255,120,120,0.25) 50%, transparent 75%)',
-                animation: 'btnShine 2.5s infinite linear'
-              }}
-              aria-hidden="true"
-            />
-            <span className="relative z-10 flex items-center gap-2">
-              {savingAddress ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
-                  aria-hidden="true"
-                />
-              ) : (
-                <span className="suit">♠</span>
-              )}
-              {savingAddress ? 'Saving...' : 'Save & Continue'}
-            </span>
-          </button>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <section aria-labelledby="signin-prompt-heading">
       <div className="max-w-xl mx-auto text-center">
@@ -522,7 +358,7 @@ export function CasinoSignInPrompt({ eventSlug, name, address, savedCards }: TCa
               </h2>
 
               <p className="text-white/40 text-sm leading-relaxed max-w-sm mx-auto mb-4">
-                We just need your name to get started — you'll set up your address in the next step.
+                We just need your name to get started.
               </p>
 
               <div className="flex gap-2">

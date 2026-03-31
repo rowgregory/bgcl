@@ -1,6 +1,6 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import {
@@ -608,21 +608,23 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards }) => {
                                   </span>
                                 </div>
 
-                                {item.raffleTickets && item.raffleTickets.length > 0 && (
-                                  <div className="flex flex-wrap gap-1.5 pl-3.5">
-                                    {item.raffleTickets
-                                      .slice()
-                                      .sort((a, b) => a.number - b.number)
-                                      .map((rt) => (
-                                        <span
-                                          key={rt.code}
-                                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold dark:bg-sky-500/10 dark:border-sky-500/20 dark:text-sky-400 bg-sky-50 border-sky-200 text-sky-700 border"
-                                        >
-                                          #{String(rt.number).padStart(4, '0')}
-                                        </span>
-                                      ))}
-                                  </div>
-                                )}
+                                {group.event.showRaffleTicketNumbers &&
+                                  item.raffleTickets &&
+                                  item.raffleTickets.length > 0 && (
+                                    <div className="flex flex-wrap gap-1.5 pl-3.5">
+                                      {item.raffleTickets
+                                        .slice()
+                                        .sort((a, b) => a.number - b.number)
+                                        .map((rt) => (
+                                          <span
+                                            key={rt.code}
+                                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold dark:bg-sky-500/10 dark:border-sky-500/20 dark:text-sky-400 bg-sky-50 border-sky-200 text-sky-700 border"
+                                          >
+                                            #{String(rt.number).padStart(4, '0')}
+                                          </span>
+                                        ))}
+                                    </div>
+                                  )}
                               </li>
                             ))}
                           </ul>
@@ -752,7 +754,7 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards }) => {
                             aria-label="Tickets in this order"
                             className="space-y-2 list-none p-0 m-0 border-t dark:border-neutral-800 border-neutral-200 pt-3"
                           >
-                            {order.orderItems.map((item) => (
+                            {order?.orderItems.map((item) => (
                               <li key={item.id} className="flex flex-col gap-1.5">
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-2 min-w-0">
@@ -760,13 +762,15 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards }) => {
                                     <p className="text-sm dark:text-neutral-300 text-neutral-700 truncate">
                                       {item.ticketName}
                                     </p>
-                                    {item.raffleTicketNumber && item.raffleTicketCode && (
-                                      <div className="pl-3.5">
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold dark:bg-sky-500/10 dark:border-sky-500/20 dark:text-sky-400 bg-sky-50 border-sky-200 text-sky-700 border">
-                                          #{String(item.raffleTicketNumber).padStart(4, '0')}
-                                        </span>
-                                      </div>
-                                    )}
+                                    {order?.event?.showRaffleTicketNumbers &&
+                                      item.raffleTicketNumber &&
+                                      item.raffleTicketCode && (
+                                        <div className="pl-3.5">
+                                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold dark:bg-sky-500/10 dark:border-sky-500/20 dark:text-sky-400 bg-sky-50 border-sky-200 text-sky-700 border">
+                                            #{String(item.raffleTicketNumber).padStart(4, '0')}
+                                          </span>
+                                        </div>
+                                      )}
                                   </div>
                                   <div className="flex items-center gap-3 shrink-0 ml-3">
                                     <span

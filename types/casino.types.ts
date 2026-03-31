@@ -1,12 +1,10 @@
 import { CartItem } from '@/app/lib/store/slices/cartSlice'
-import { IAddress } from './entities/address.types'
 import { IPaymentMethod } from './entities/payment-method'
 import { ITicket } from './entities/ticket'
 
 export type TPublicEventDetailsClient = {
   data: any
   name: { firstName: string; lastName: string }
-  address: IAddress
   savedCards: IPaymentMethod[]
 }
 
@@ -52,7 +50,6 @@ export type TCasinoTicketMarquee = {
 export type TCasinoSignInPrompt = {
   eventSlug: string
   name: { firstName: string; lastName: string } | null
-  address: IAddress
   savedCards: IPaymentMethod[]
 }
 

@@ -50,7 +50,10 @@ export const initialEventFormState = {
   dressCodeHeadline: '',
   dressCodeNote: '',
   bestDressedPrizes: '',
-  dressCodeItems: []
+  dressCodeItems: [],
+
+  showTicketMarquee: true,
+  showRaffleTicketNumbers: false
 }
 
 export const cashMadnessMockEvent = {

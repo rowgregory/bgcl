@@ -32,7 +32,7 @@ export function SubmitButton({ formName, isValid, label }: Props) {
           <motion.span
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className="block w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+            className="block w-4 h-4 border-2 dark:border-white/30 border-neutral-300 dark:border-t-white border-t-neutral-600 rounded-full"
             aria-hidden="true"
           />
           Processing...

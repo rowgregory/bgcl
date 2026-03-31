@@ -710,6 +710,24 @@ export function EventForm({
                     label="Public Event"
                     description="Show this event on the public events page and make it accessible to everyone"
                   />
+
+                  <CustomSwitch
+                    checked={(inputs?.showRaffleTicketNumbers as boolean) ?? false}
+                    onChange={(val) =>
+                      store.dispatch(setInputs({ formName: 'eventForm', data: { showRaffleTicketNumbers: val } }))
+                    }
+                    label="Show Raffle Ticket Numbers"
+                    description="Display assigned raffle ticket numbers to supporters in their order confirmation and supporter overview"
+                  />
+
+                  <CustomSwitch
+                    checked={(inputs?.showTicketMarquee as boolean) ?? true}
+                    onChange={(val) =>
+                      store.dispatch(setInputs({ formName: 'eventForm', data: { showTicketMarquee: val } }))
+                    }
+                    label="Show Ticket Marquee"
+                    description="Display the scrolling quick-add ticket strip on the public event page"
+                  />
                 </div>
               </div>
 

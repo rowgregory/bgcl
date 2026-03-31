@@ -2,14 +2,21 @@ import { resend } from '@/app/lib/resend'
 import volunteerFormNotification from '../email-templates/volunteer'
 import contactFormNotification from '../email-templates/contact'
 import jobApplicationNotification from '../email-templates/job'
+import { ticketPurchaseAdminNotification } from '../email-templates/admin-ticket-purchase'
 
-type NotificationType = 'VOLUNTEER_FORM' | 'CONTACT_FORM' | 'JOB_APPLICATION'
+type NotificationType = 'VOLUNTEER_FORM' | 'CONTACT_FORM' | 'JOB_APPLICATION' | 'TICKET_PURCHASE'
 
 interface NotificationData {
   firstName?: string
   lastName?: string
   applicantName?: string
-  email: string
+  email?: string
+  customerName?: string
+  customerEmail?: string
+  eventTitle?: string
+  tickets?: { name: string; quantity: number; price: number }[]
+  totalAmount?: number
+  orderId?: string
 }
 
 // Helper function for sending admin notification emails
@@ -26,6 +33,15 @@ export default async function sendAdminNotification(notificationType: Notificati
     } else if (notificationType === 'CONTACT_FORM') {
       emailHtml = contactFormNotification(data.firstName || '', data.lastName || '', data.email)
       subject = `New Contact Form Submission from ${data.firstName} ${data.lastName}`
+    } else if (notificationType === 'TICKET_PURCHASE') {
+      emailHtml = ticketPurchaseAdminNotification(
+        data.customerName || '',
+        data.customerEmail || '',
+        data.eventTitle || '',
+        data.totalAmount || 0,
+        data.orderId || ''
+      )
+      subject = `New Ticket Purchase — ${data.customerName} · ${data.eventTitle}`
     } else {
       emailHtml = jobApplicationNotification(data.applicantName || `${data.firstName} ${data.lastName}`, data.email)
       subject = `New Job Application from ${data.applicantName || `${data.firstName} ${data.lastName}`}`
@@ -36,9 +52,9 @@ export default async function sendAdminNotification(notificationType: Notificati
       to: recipientEmail,
       subject,
       html: emailHtml,
-      replyTo: data.email // Allow quick reply to the submitter
+      ...(data.email && { replyTo: data.email })
     })
   } catch (emailError) {
-    throw emailError // Re-throw so calling code can handle
+    throw emailError
   }
 }

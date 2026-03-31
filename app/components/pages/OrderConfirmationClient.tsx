@@ -53,8 +53,8 @@ export default function OrderConfirmationClient({ order }) {
         pricePerUnit: i.pricePerUnit,
         totalPrice: i.totalPrice,
         quantity: i.quantity,
-        raffleTicketNumber: i.raffleTicketNumber,
-        raffleTicketCode: i.raffleTicketCode
+        raffleTicketNumber: order.event.showRaffleTicketNumbers ? i.raffleTicketNumber : null,
+        raffleTicketCode: order.event.showRaffleTicketNumbers ? i.raffleTicketCode : null
       }))
     })
   }
@@ -542,37 +542,39 @@ export default function OrderConfirmationClient({ order }) {
                     </div>
 
                     {/* Stub */}
-                    <div className="px-4 py-3 dark:bg-neutral-800/60 bg-neutral-50 flex items-center justify-between gap-3">
-                      {isRaffle ? (
-                        <>
-                          <div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest dark:text-neutral-500 text-neutral-400">
-                              Ticket No.
+                    {order?.event?.showRaffleTicketNumbers && (
+                      <div className="px-4 py-3 dark:bg-neutral-800/60 bg-neutral-50 flex items-center justify-between gap-3">
+                        {isRaffle ? (
+                          <>
+                            <div>
+                              <p className="text-[10px] font-bold uppercase tracking-widest dark:text-neutral-500 text-neutral-400">
+                                Ticket No.
+                              </p>
+                              <p className="text-2xl font-black tabular-nums dark:text-sky-400 text-sky-600 leading-none mt-0.5">
+                                {String(item.raffleTicketNumber).padStart(4, '0')}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-[10px] font-bold uppercase tracking-widest dark:text-neutral-500 text-neutral-400">
+                                Code
+                              </p>
+                              <p className="font-mono text-xs dark:text-neutral-300 text-neutral-600 mt-0.5">
+                                {item.raffleTicketCode}
+                              </p>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="flex items-center justify-between w-full">
+                            <p className="text-xs dark:text-neutral-400 text-neutral-500">
+                              {item.quantity} × ${item.pricePerUnit.toFixed(2)}
                             </p>
-                            <p className="text-2xl font-black tabular-nums dark:text-sky-400 text-sky-600 leading-none mt-0.5">
-                              {String(item.raffleTicketNumber).padStart(4, '0')}
+                            <p className="text-xs font-mono dark:text-neutral-400 text-neutral-500">
+                              {order.id.slice(-8).toUpperCase()}
                             </p>
                           </div>
-                          <div className="text-right">
-                            <p className="text-[10px] font-bold uppercase tracking-widest dark:text-neutral-500 text-neutral-400">
-                              Code
-                            </p>
-                            <p className="font-mono text-xs dark:text-neutral-300 text-neutral-600 mt-0.5">
-                              {item.raffleTicketCode}
-                            </p>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="flex items-center justify-between w-full">
-                          <p className="text-xs dark:text-neutral-400 text-neutral-500">
-                            {item.quantity} × ${item.pricePerUnit.toFixed(2)}
-                          </p>
-                          <p className="text-xs font-mono dark:text-neutral-400 text-neutral-500">
-                            {order.id.slice(-8).toUpperCase()}
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )
               })}

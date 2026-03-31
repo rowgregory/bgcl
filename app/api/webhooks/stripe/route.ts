@@ -5,6 +5,7 @@ import { createLog } from '@/app/lib/actions/createLog'
 import { stripe } from '@/app/lib/stripe/stripeClient'
 import { pusher } from '@/app/lib/pusher'
 import sendConfirmationEmail from '@/app/lib/utils/sendConfirmationEmail'
+import sendAdminNotification from '@/app/lib/utils/sendAdminNotification'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
@@ -307,8 +308,17 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       }
     })
 
-    // Send confirmation email
+    // Send confirmation email to user
     await sendConfirmationEmail(completeOrder, orderType, amount)
+
+    // Send confirmation to admin
+    await sendAdminNotification('TICKET_PURCHASE', {
+      customerName: order.customerName,
+      customerEmail: order.customerEmail,
+      eventTitle: order.event?.title ?? '',
+      totalAmount: amount,
+      orderId: order.id
+    })
 
     // Push to Pusher
     const channelId = userId || `guest-${paymentIntent.id}`

@@ -192,6 +192,9 @@ model Event {
 
   guestCount Int @default(0)
 
+  showTicketMarquee       Boolean @default(true)
+  showRaffleTicketNumbers Boolean @default(false)
+
   @@index([date])
   @@index([status])
   @@index([status, date])

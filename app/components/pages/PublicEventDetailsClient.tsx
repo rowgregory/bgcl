@@ -8,7 +8,6 @@ import { CasinoStyles, GoldDivider, MetaItem, SectionHeading } from '../events/c
 import { CasinoSponsorTiers } from '../events/casino/CasinoSponsorTiers'
 import { CasinoPrizesAndSchedule } from '../events/casino/CasinoPrizesAndSchedule'
 import { CasinoRaffleStats } from '../events/casino/CasinoRaffleStats'
-import { CasinoTickets } from '../events/casino/CasinoTickets'
 import { CasinoDressCodeAndHighlights } from '../events/casino/CasinoDressCodeAndHighlights'
 import { CasinoIntro } from '../events/casino/CasinoIntro'
 import { useCallback, useState } from 'react'
@@ -18,16 +17,11 @@ import { VantaBackgroundCells } from '../unique/VantaBackground'
 import { formatDate } from '@/app/lib/utils/date-utils'
 import { formatTime } from '@/app/lib/utils/time-utils'
 import { TPublicEventDetailsClient } from '@/types/casino.types'
+import { CasinoIndividualTicket } from '../events/casino/CasinoIndividualTicket'
+import { CasinoBlackjackTicket } from '../events/casino/CasinoBlackjackTicket'
 
-export function PublicEventDetailsClient({ data, name, address, savedCards }: TPublicEventDetailsClient) {
+export function PublicEventDetailsClient({ data, name, savedCards }: TPublicEventDetailsClient) {
   const [introComplete, setIntroComplete] = useState(false)
-
-  const tickets = [
-    ...(data?.tickets?.filter((t: any) => t.ticketType === 'TOURNAMENT') ?? []),
-    ...(data?.tickets?.filter((t: any) => t.ticketType === 'RAFFLE') ?? []),
-    ...(data?.tickets?.filter((t: any) => !t.ticketType || t.ticketType === 'GENERAL') ?? []),
-    ...(data?.tickets?.filter((t: any) => t.ticketType === 'SPONSORSHIP').reverse() ?? [])
-  ]
 
   const prizes = data?.rafflePrizes ?? []
   const schedule = data?.raffleSchedule ?? []
@@ -51,33 +45,34 @@ export function PublicEventDetailsClient({ data, name, address, savedCards }: TP
               <CasinoHero data={data} />
 
               {/* ── MARQUEE ───────────────────────────────────────────────────── */}
-              <CasinoTicketMarquee
-                tickets={data.tickets}
-                eventId={data.id}
-                eventTitle={data.title}
-                ticketSalesStartDate={data.ticketSalesStartDate}
-                ticketSalesEndDate={data.ticketSalesEndDate}
-              />
-
+              {data?.showTicketMarquee && (
+                <CasinoTicketMarquee
+                  tickets={data.tickets}
+                  eventId={data.id}
+                  eventTitle={data.title}
+                  ticketSalesStartDate={data.ticketSalesStartDate}
+                  ticketSalesEndDate={data.ticketSalesEndDate}
+                />
+              )}
               <GoldDivider />
 
               {/* ── SIGN IN PROMPT ───────────────────────────────────────────────────── */}
-              <CasinoSignInPrompt eventSlug={data.id} name={name} address={address} savedCards={savedCards} />
+              <CasinoSignInPrompt eventSlug={data.id} name={name} savedCards={savedCards} />
 
               <GoldDivider />
 
-              {/* ── TICKETS ───────────────────────────────────────────────────── */}
-              {tickets.length > 0 && (
+              {/* ── RAFFLE TICKET TIER ─────────────────────────────────────────────── */}
+              {data?.tickets?.some((t: any) => t.ticketType === 'RAFFLE') && (
                 <>
-                  <CasinoTickets data={data} tickets={tickets} />
+                  <CasinoIndividualTicket data={data} />
                   <GoldDivider />
                 </>
               )}
 
-              {/* ── PRIZES + SCHEDULE ─────────────────────────────────────────── */}
-              {(prizes.length > 0 || schedule.length > 0) && (
+              {/* ── BLACKJACK TOURNAMENT TIER ─────────────────────────────────────────────── */}
+              {data?.tickets?.some((t: any) => t.ticketType === 'TOURNAMENT') && (
                 <>
-                  <CasinoPrizesAndSchedule prizes={prizes} schedule={schedule} />
+                  <CasinoBlackjackTicket data={data} />
                   <GoldDivider />
                 </>
               )}
@@ -86,6 +81,14 @@ export function PublicEventDetailsClient({ data, name, address, savedCards }: TP
               {data?.tickets?.some((t: any) => t.ticketType === 'SPONSORSHIP') && (
                 <>
                   <CasinoSponsorTiers data={data} />
+                  <GoldDivider />
+                </>
+              )}
+
+              {/* ── PRIZES + SCHEDULE ─────────────────────────────────────────── */}
+              {(prizes.length > 0 || schedule.length > 0) && (
+                <>
+                  <CasinoPrizesAndSchedule prizes={prizes} schedule={schedule} />
                   <GoldDivider />
                 </>
               )}
@@ -146,16 +149,18 @@ export function PublicEventDetailsClient({ data, name, address, savedCards }: TP
                   <GoldDivider />
                 </>
               )}
-
-              <CasinoTicketMarquee
-                tickets={data.tickets}
-                eventId={data.id}
-                eventTitle={data.title}
-                ticketSalesStartDate={data.ticketSalesStartDate}
-                ticketSalesEndDate={data.ticketSalesEndDate}
-              />
-
-              <GoldDivider />
+              {data?.showTicketMarquee && (
+                <>
+                  <CasinoTicketMarquee
+                    tickets={data.tickets}
+                    eventId={data.id}
+                    eventTitle={data.title}
+                    ticketSalesStartDate={data.ticketSalesStartDate}
+                    ticketSalesEndDate={data.ticketSalesEndDate}
+                  />
+                  <GoldDivider />
+                </>
+              )}
 
               {/* ── MISSION / DRESS / REQUIREMENTS / ADDRESS ──────────────────── */}
               {(data?.missionStatement || data?.dresscode || data?.requirements || data?.address) && (
@@ -201,8 +206,8 @@ export function PublicEventDetailsClient({ data, name, address, savedCards }: TP
                   ))}
                 </div>
                 <p className="text-[11px] text-white/30 text-center">
-                  © {new Date().getFullYear()} Boys &amp; Girls Club of Lynn &nbsp;·&nbsp; 25 North Common Street, Lynn,
-                  MA 01902 &nbsp;·&nbsp; (781) 593-1772
+                  © {new Date().getFullYear()} &nbsp; Boys &amp; Girls Club of Lynn &nbsp;·&nbsp; 25 North Common
+                  Street, Lynn, MA 01902 &nbsp;·&nbsp; (781) 593-1772
                 </p>
 
                 <div className="flex items-center gap-2 mt-1">

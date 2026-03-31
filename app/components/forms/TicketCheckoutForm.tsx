@@ -98,7 +98,7 @@ export function TicketCheckoutForm({ savedCards, inputs, setStep }: ICheckoutFor
           <CustomSwitch
             checked={inputs?.attendingEvent ?? true}
             label="I will be attending the event"
-            description="Let us know if you plan to join us on the night — this helps us with seating and catering"
+            description="Let us know if you plan to join us on the night"
             onChange={(val) =>
               store.dispatch(setInputs({ formName: 'ticketCheckoutForm', data: { attendingEvent: val } }))
             }
