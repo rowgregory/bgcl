@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { PublicDonateClient } from '@/app/components/pages/PublicDonateClient'
 import { getCampaigns } from '@/app/lib/actions/getCampaigns'
 import { getSavedPaymentMethods } from '@/app/lib/actions/getSavedPaymentMethods'
