@@ -99,7 +99,7 @@ export const hourOptions = [
 
 export const POSITION_OPTIONS: { value: PositionType; label: string }[] = [
   { value: 'CAMP_COUNSELOR', label: 'Camp Counselor (seasonal)' },
-  { value: 'LIFEGUARD', label: 'Life Guard (afterschool)' },
+  { value: 'LIFEGUARD', label: 'Life Guard (seasonal)' },
   { value: 'SEASONAL_SUMMER', label: 'Youth Development Worker/Group Leader (afterschool)' }
 ]
 
