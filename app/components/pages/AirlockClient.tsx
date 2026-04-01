@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { Search, Briefcase } from 'lucide-react'
 import { IJobApplication } from '@/types/entities/job-application'
 import { PositionType } from '@prisma/client'
-import { TAB_TO_STATUS, TABS } from '@/app/lib/constants/job-application.constants'
+import { POSITION_LABELS, TAB_TO_STATUS, TABS } from '@/app/lib/constants/job-application.constants'
 import { getJobApplicationStatusBadge } from '@/app/lib/utils/getJobApplicationStatusBadge'
 import { store } from '@/app/lib/store/store'
 import { setOpenJobApplicationDrawer } from '@/app/lib/store/slices/uiSlice'
@@ -160,11 +160,7 @@ export default function AirlockClient({ jobApplications }: { jobApplications: IJ
                               key={position}
                               className="px-2 py-0.5 text-xs font-medium bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-full"
                             >
-                              {position === 'SEASONAL_SUMMER'
-                                ? 'Seasonal'
-                                : position === 'CAMP_COUNSELOR'
-                                  ? 'Counselor'
-                                  : 'Lifeguard'}
+                              {POSITION_LABELS[position] ?? position}
                             </span>
                           ))}
                         </div>

@@ -41,7 +41,7 @@ export interface IJobApplication {
   updatedAt: Date
 }
 
-export type PositionType = 'SEASONAL_SUMMER' | 'CAMP_COUNSELOR' | 'LIFEGUARD'
+export type PositionType = 'SEASONAL_SUMMER' | 'CAMP_COUNSELOR' | 'LIFEGUARD' | 'YOUTH_DEVELOPMENT_WORKER'
 
 export interface CreateJobApplicationInput {
   positionTypes: PositionType[]

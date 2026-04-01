@@ -97,12 +97,6 @@ export const hourOptions = [
   'Custom schedule'
 ]
 
-export const POSITION_OPTIONS: { value: PositionType; label: string }[] = [
-  { value: 'CAMP_COUNSELOR', label: 'Camp Counselor (seasonal)' },
-  { value: 'LIFEGUARD', label: 'Life Guard (seasonal)' },
-  { value: 'SEASONAL_SUMMER', label: 'Youth Development Worker/Group Leader (afterschool)' }
-]
-
 export const jobApplicationStatusConfig = {
   PENDING: {
     color: 'bg-yellow-500/10 border-yellow-500/30',
@@ -145,10 +139,15 @@ export const TAB_TO_STATUS: Record<string, string> = {
 }
 
 export const POSITION_LABELS: Record<PositionType, string> = {
-  SEASONAL_SUMMER: 'Seasonal Summer',
-  CAMP_COUNSELOR: 'Camp Counselor',
-  LIFEGUARD: 'Life Guard'
+  CAMP_COUNSELOR: 'Camp Counselor (seasonal)',
+  LIFEGUARD: 'Life Guard (seasonal)',
+  YOUTH_DEVELOPMENT_WORKER: 'Youth Development Worker/Group Leader (afterschool)',
+  SEASONAL_SUMMER: 'Seasonal Summer'
 }
+
+export const POSITION_OPTIONS = Object.entries(POSITION_LABELS)
+  .filter(([key]) => key !== 'SEASONAL_SUMMER')
+  .map(([value, label]) => ({ value, label }))
 
 export const STATUS_OPTIONS = ['PENDING', 'REVIEW', 'APPROVED', 'REJECTED'] as const
 

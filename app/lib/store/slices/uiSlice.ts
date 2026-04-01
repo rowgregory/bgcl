@@ -12,6 +12,8 @@ export interface UiStatePayload {
   paymentMethodModal: boolean
   soundOn: boolean
   cartDropdown: boolean
+  contactSubmissionDrawer: boolean
+  contactSubmission: any | null
 }
 
 const initialUiState: UiStatePayload = {
@@ -23,7 +25,9 @@ const initialUiState: UiStatePayload = {
   confetti: false,
   paymentMethodModal: false,
   soundOn: true,
-  cartDropdown: false
+  cartDropdown: false,
+  contactSubmissionDrawer: false,
+  contactSubmission: null
 }
 
 export const uiSlice = createSlice({
@@ -72,6 +76,14 @@ export const uiSlice = createSlice({
     },
     setCloseCartDropdown: (state) => {
       state.cartDropdown = false
+    },
+    setOpenContactSubmissionDrawer: (state, { payload }) => {
+      state.contactSubmissionDrawer = true
+      state.contactSubmission = payload
+    },
+    setCloseContactSubmissionDrawer: (state) => {
+      state.contactSubmissionDrawer = false
+      state.contactSubmission = null
     }
   }
 })
@@ -91,5 +103,7 @@ export const {
   setOpenPaymentMethodModal,
   setSoundOn,
   setCloseCartDropdown,
-  setOpenCartDropdown
+  setOpenCartDropdown,
+  setCloseContactSubmissionDrawer,
+  setOpenContactSubmissionDrawer
 } = uiSlice.actions

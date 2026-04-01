@@ -21,6 +21,32 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.15.1',
+    date: '2026-03-31',
+    changes: [
+      {
+        type: 'improvement',
+        title: 'Added Seasonal Summer Position Type',
+        description: 'Added YOUTH_DEVELOPMENT_WORKER to the PositionType enum for job applications.',
+        impact: 'low'
+      },
+      {
+        type: 'ui',
+        title: 'Job Applications Table Redesign',
+        description:
+          'Rebuilt the Signal Relay transmissions view from a card grid to a compact table format. All submission details moved into a slide-in drawer on row click. Includes tabs for filtering by status and type, inline status actions, and a search bar.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Position Labels Centralized',
+        description:
+          'Replaced hardcoded position label strings throughout the admin UI with a shared POSITION_LABELS record keyed by PositionType enum. Ensures consistent display names across the application drawer and transmissions table.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.15.0',
     date: '2026-03-30',
     changes: [

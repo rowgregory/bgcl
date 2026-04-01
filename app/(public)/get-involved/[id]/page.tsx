@@ -1,6 +1,6 @@
 'use client'
 
-import { jobApplicationStatusConfig } from '@/app/lib/constants/job-application.constants'
+import { jobApplicationStatusConfig, POSITION_LABELS } from '@/app/lib/constants/job-application.constants'
 import { PositionType } from '@prisma/client'
 import { motion } from 'framer-motion'
 import { CheckCircle, AlertCircle, FileText, Download, XCircle, FileCheck, UsersIcon, Car } from 'lucide-react'
@@ -119,11 +119,7 @@ const JobApplicationPage = ({ application }) => {
                           key={position}
                           className="px-3 py-1 text-xs font-medium bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-full"
                         >
-                          {position === 'SEASONAL_SUMMER'
-                            ? 'Seasonal Summer'
-                            : position === 'CAMP_COUNSELOR'
-                              ? 'Camp Counselor'
-                              : 'Life Guard'}
+                          {POSITION_LABELS[position] ?? position}
                         </span>
                       ))}
                     </div>

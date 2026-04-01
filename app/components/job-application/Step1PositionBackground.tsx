@@ -39,7 +39,7 @@ export function Step1PositionBackground({ formData, setFormData, errors }: any) 
                 <button
                   key={value}
                   type="button"
-                  onClick={() => togglePosition(value)}
+                  onClick={() => togglePosition(value as PositionType)}
                   aria-pressed={selected}
                   className={`px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg border font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 ${
                     selected

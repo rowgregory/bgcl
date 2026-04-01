@@ -92,28 +92,28 @@ export const adminNavigationLinkData = (
   const managementGroup = [
     {
       icon: Shield,
-      label: 'Command Pod',
+      label: 'Users',
       path: '/admin/command-pod',
       description: '',
       active: isStringInPath(path, 'command-pod')
     },
     {
       icon: Radio,
-      label: 'Signal Relay',
+      label: 'Newsletter Emails',
       path: '/admin/signal-relay',
       description: 'Manage Newsletter Subscribers',
       active: isStringInPath(path, 'signal-relay')
     },
     {
       icon: MessageSquare,
-      label: 'Transmissions',
+      label: 'Contact Submissions',
       path: '/admin/transmissions',
       description: 'Contact Form Submissions',
       active: isStringInPath(path, 'transmissions')
     },
     {
       icon: DoorOpen,
-      label: 'Airlock',
+      label: 'Job Applications',
       path: '/admin/airlock',
       description: 'Pending Job Applications',
       active: isStringInPath(path, 'airlock')
