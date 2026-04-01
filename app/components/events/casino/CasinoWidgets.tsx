@@ -41,10 +41,14 @@ export function CasinoWidgets({ data }: TCasinoWidgets) {
   return (
     <>
       <div
-        className="fixed z-30 top-0 left-0 h-13.5 sm:h-14.5 inset-0 pointer-events-none backdrop-blur-2xl"
+        className="fixed z-30 top-0 left-0 right-0 h-16 pointer-events-none backdrop-blur-2xl"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
         aria-hidden="true"
       />
-      <div className="fixed top-4 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-4 z-50 flex items-center gap-1.5 md:gap-2">
+      <div
+        className="fixed left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-4 z-50 flex items-center gap-1.5 md:gap-2"
+        style={{ top: 'calc(1rem + env(safe-area-inset-top))' }}
+      >
         {/* Backdrop */}
 
         {/* Admin Dashboard */}
@@ -187,12 +191,12 @@ export function CasinoWidgets({ data }: TCasinoWidgets) {
             className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 shrink-0 relative z-10"
             aria-hidden="true"
           />
-          <span className="oswald text-xs sm:text-sm font-black uppercase tracking-widest text-white/80 relative z-10">
+          <span className="oswald text-xs sm:text-sm font-black uppercase tracking-widest text-white/80 relative z-10 hidden sm:inline">
             Cart
           </span>
           {count > 0 && (
             <span
-              className="oswald text-[10px] sm:text-[11px] font-black px-1.5 sm:px-2 py-0.5 text-black relative z-10 shrink-0"
+              className="oswald text-[10px] sm:text-[11px] font-black px-1.5 sm:px-2 sm:py-0.5 text-black relative z-10 shrink-0"
               style={{ background: 'linear-gradient(135deg, #d4af37, #f5e678)' }}
               aria-hidden="true"
             >
