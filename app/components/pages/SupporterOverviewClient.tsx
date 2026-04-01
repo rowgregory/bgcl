@@ -222,7 +222,7 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards }) => {
 
           {/* Stats */}
           <motion.div variants={containerVariants} initial="hidden" animate="visible" custom={1}>
-            <dl className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            <dl className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {dashboard?.stats.map((stat, index) => (
                 <motion.div
                   key={index}
@@ -926,24 +926,30 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards }) => {
             <div className="mb-4">
               <h2 className="text-lg font-bold dark:text-white text-neutral-900">Mailing Address</h2>
               <p className="text-xs dark:text-neutral-500 text-neutral-500 mt-0.5">
-                So we can send you a personal thank you
+                Used for ticket delivery and correspondence
               </p>
             </div>
+
             {address?.addressLine1 ? (
-              <div className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-xl p-4 flex items-start justify-between gap-4">
+              <div className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-xl p-4 sm:flex sm:items-start sm:justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <div className="shrink-0 w-8 h-8 rounded-lg dark:bg-neutral-800 bg-neutral-200 flex items-center justify-center mt-0.5">
-                    <MapPin className="w-3.5 h-3.5 dark:text-sky-400 text-sky-600" aria-hidden="true" />
+                  <div
+                    className="shrink-0 w-8 h-8 rounded-lg dark:bg-neutral-800 bg-neutral-200 flex items-center justify-center mt-0.5"
+                    aria-hidden="true"
+                  >
+                    <MapPin className="w-3.5 h-3.5 dark:text-sky-400 text-sky-600" />
                   </div>
-                  <div className="space-y-0.5">
+                  <div className="flex-1 min-w-0 space-y-0.5">
                     <p className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-wider">
-                      Billing Address
+                      Mailing Address
                     </p>
-                    <p className="text-sm font-medium dark:text-white text-neutral-900">{address.addressLine1}</p>
+                    <p className="text-sm font-medium dark:text-white text-neutral-900 truncate">
+                      {address.addressLine1}
+                    </p>
                     {address.addressLine2 && (
-                      <p className="text-sm dark:text-neutral-400 text-neutral-600">{address.addressLine2}</p>
+                      <p className="text-sm dark:text-neutral-400 text-neutral-600 truncate">{address.addressLine2}</p>
                     )}
-                    <p className="text-sm dark:text-neutral-400 text-neutral-600">
+                    <p className="text-sm dark:text-neutral-400 text-neutral-600 truncate">
                       {[address.city, address.state, address.zipPostalCode].filter(Boolean).join(', ')}
                     </p>
                     {address.country && (
@@ -952,52 +958,64 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards }) => {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 shrink-0">
+                {/* Actions */}
+                <div className="flex items-center gap-3 mt-3 sm:mt-0 pt-3 sm:pt-0 border-t sm:border-0 dark:border-neutral-800 border-neutral-200">
                   <button
                     onClick={() => store.dispatch(setOpenUpdateAddressModal(address))}
-                    className="flex items-center gap-1.5 text-xs font-medium dark:text-neutral-500 text-neutral-400 dark:hover:text-neutral-300 hover:text-neutral-600 transition-colors"
+                    aria-label="Edit mailing address"
+                    className="flex items-center gap-1.5 text-xs font-medium dark:text-neutral-500 text-neutral-400 dark:hover:text-neutral-300 hover:text-neutral-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
                   >
                     <Pencil className="w-3 h-3" aria-hidden="true" />
                     Edit
                   </button>
-                  <div className="flex flex-col items-end gap-0.5">
-                    <button
-                      onClick={handleDeleteAddress}
-                      disabled={deletingAddress}
-                      className="flex items-center gap-1.5 text-xs font-medium text-red-400 dark:text-red-500 hover:text-red-600 dark:hover:text-red-400 transition-colors disabled:opacity-50"
-                    >
-                      {deletingAddress ? (
+                  <button
+                    onClick={handleDeleteAddress}
+                    disabled={deletingAddress}
+                    aria-label="Remove mailing address"
+                    className="flex items-center gap-1.5 text-xs font-medium text-red-400 dark:text-red-500 hover:text-red-600 dark:hover:text-red-400 transition-colors disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded"
+                  >
+                    {deletingAddress ? (
+                      <>
                         <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />
-                      ) : (
+                        Removing...
+                      </>
+                    ) : (
+                      <>
                         <Trash2 className="w-3 h-3" aria-hidden="true" />
-                      )}
-                      {deletingAddress ? 'Removing...' : 'Remove'}
-                    </button>
-                  </div>
+                        Remove
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             ) : (
-              <div className="dark:bg-neutral-900/50 dark:border-neutral-800 dark:border-dashed bg-neutral-50 border-neutral-200 border border-dashed rounded-xl p-5 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="shrink-0 w-8 h-8 rounded-lg dark:bg-neutral-800 bg-neutral-200 flex items-center justify-center">
-                    <MapPin className="w-3.5 h-3.5 dark:text-neutral-500 text-neutral-400" aria-hidden="true" />
+              <div className="dark:bg-neutral-900/50 dark:border-neutral-800 dark:border-dashed bg-neutral-50 border-neutral-200 border border-dashed rounded-xl p-4">
+                <div className="flex items-start sm:items-center justify-between gap-4 flex-col sm:flex-row">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="shrink-0 w-8 h-8 rounded-lg dark:bg-neutral-800 bg-neutral-200 flex items-center justify-center"
+                      aria-hidden="true"
+                    >
+                      <MapPin className="w-3.5 h-3.5 dark:text-neutral-500 text-neutral-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold dark:text-neutral-300 text-neutral-700">
+                        No mailing address on file
+                      </p>
+                      <p className="text-xs dark:text-neutral-500 text-neutral-400 mt-0.5">
+                        Required for physical ticket delivery and checkout
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold dark:text-neutral-300 text-neutral-700">
-                      No billing address on file
-                    </p>
-                    <p className="text-xs dark:text-neutral-500 text-neutral-400 mt-0.5">
-                      Adding your address speeds up future checkouts
-                    </p>
-                  </div>
+                  <button
+                    onClick={() => store.dispatch(setOpenUpdateAddressModal({}))}
+                    aria-label="Add mailing address"
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 w-full sm:w-auto justify-center"
+                  >
+                    <Plus className="w-3.5 h-3.5" aria-hidden="true" />
+                    Add Address
+                  </button>
                 </div>
-                <button
-                  onClick={() => store.dispatch(setOpenUpdateAddressModal({}))}
-                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition-all active:scale-95"
-                >
-                  <Plus className="w-3.5 h-3.5" aria-hidden="true" />
-                  Add Address
-                </button>
               </div>
             )}
           </motion.div>

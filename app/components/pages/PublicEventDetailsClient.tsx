@@ -20,6 +20,7 @@ import { TPublicEventDetailsClient } from '@/types/casino.types'
 import { CasinoIndividualTicket } from '../events/casino/CasinoIndividualTicket'
 import { CasinoBlackjackTicket } from '../events/casino/CasinoBlackjackTicket'
 import { CheckCircle2 } from 'lucide-react'
+import { CasinoCartDropdown } from '../events/casino/CasinoCartDropdown'
 
 export function PublicEventDetailsClient({ data, name, savedCards, address }: TPublicEventDetailsClient) {
   const [introComplete, setIntroComplete] = useState(false)
@@ -32,6 +33,8 @@ export function PublicEventDetailsClient({ data, name, savedCards, address }: TP
   return (
     <>
       <CasinoIntro onComplete={handleIntroComplete} />
+      {/* Dropdown */}
+      <CasinoCartDropdown data={data} />
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: introComplete ? 1 : 0 }} transition={{ duration: 0.6 }}>
         <VantaBackgroundCells>
           <div className="casino-page text-white min-h-screen">

@@ -13,7 +13,6 @@ export function TicketCheckoutSalesWindowNotice({ salesEnded, salesEndDate, sale
   const stripe = useStripe()
   const elements = useElements()
   const router = useRouter()
-  const [cardSaved, setCardSaved] = useState(false)
 
   const handleSaveCard = async () => {
     if (!stripe || !elements) return
@@ -26,7 +25,6 @@ export function TicketCheckoutSalesWindowNotice({ salesEnded, salesEndDate, sale
       await createPaymentMethod(paymentMethod.id)
       router.refresh()
       setAddingCard(false)
-      setCardSaved(true) // ← flip success
     } catch {}
     setSavingCard(false)
   }
@@ -51,7 +49,7 @@ export function TicketCheckoutSalesWindowNotice({ salesEnded, salesEndDate, sale
           </p>
           <Link
             href="/donate"
-            className="text-xs font-semibold dark:text-sky-400 text-sky-600 hover:underline underline-offset-2 transition-colors"
+            className="text-xs font-semibold dark:text-sky-400 text-sky-600 hover:underline underline-offset-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
           >
             Make a donation instead →
           </Link>
@@ -105,21 +103,25 @@ export function TicketCheckoutSalesWindowNotice({ salesEnded, salesEndDate, sale
                     <button
                       onClick={handleSaveCard}
                       disabled={savingCard}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-50"
+                      aria-label="Save card"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                     >
                       {savingCard ? (
                         <>
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" /> Saving...
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                          Saving...
                         </>
                       ) : (
                         <>
-                          <CreditCard className="w-3.5 h-3.5" aria-hidden="true" /> Save Card
+                          <CreditCard className="w-3.5 h-3.5" aria-hidden="true" />
+                          Save Card
                         </>
                       )}
                     </button>
                     <button
                       onClick={() => setAddingCard(false)}
-                      className="px-3 py-2 text-xs dark:text-neutral-500 text-neutral-400 hover:dark:text-neutral-300 hover:text-neutral-600 transition-colors border dark:border-neutral-700 border-neutral-200 rounded-lg"
+                      aria-label="Cancel adding card"
+                      className="px-4 py-2.5 text-xs dark:text-neutral-500 text-neutral-400 hover:dark:text-neutral-300 hover:text-neutral-600 transition-colors border dark:border-neutral-700 border-neutral-200 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500"
                     >
                       Cancel
                     </button>
@@ -131,7 +133,8 @@ export function TicketCheckoutSalesWindowNotice({ salesEnded, salesEndDate, sale
               ) : (
                 <button
                   onClick={() => setAddingCard(true)}
-                  className="flex items-center justify-center gap-1.5 mx-auto text-xs font-semibold dark:text-sky-400 text-sky-600 hover:underline underline-offset-2 transition-colors"
+                  aria-label="Add a payment method"
+                  className="flex items-center justify-center gap-1.5 mx-auto text-xs font-semibold dark:text-sky-400 text-sky-600 hover:underline underline-offset-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
                 >
                   <CreditCard className="w-3.5 h-3.5" aria-hidden="true" />
                   Add a payment method →
@@ -139,14 +142,14 @@ export function TicketCheckoutSalesWindowNotice({ salesEnded, salesEndDate, sale
               )}
             </div>
           ) : (
-            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
-              <div className="flex items-center justify-center gap-2 text-xs dark:text-emerald-400 text-emerald-600 font-semibold">
+            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="mb-3 space-y-2">
+              <div className="flex items-center justify-center gap-2 text-xs dark:text-emerald-400 text-emerald-600 font-semibold flex-wrap">
                 <CheckCircle2 className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                Card saved — you're ready for one-click checkout!
+                Card saved — you&apos;re ready for one-click checkout!
               </div>
               <Link
                 href="/supporter/overview"
-                className="flex items-center justify-center gap-1.5 mx-auto text-xs dark:text-neutral-500 text-neutral-400 hover:dark:text-neutral-300 hover:text-neutral-600 transition-colors"
+                className="flex items-center justify-center gap-1.5 mx-auto text-xs dark:text-neutral-500 text-neutral-400 hover:dark:text-neutral-300 hover:text-neutral-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
               >
                 <Settings className="w-3 h-3" aria-hidden="true" />
                 Manage your payment methods →
@@ -156,7 +159,7 @@ export function TicketCheckoutSalesWindowNotice({ salesEnded, salesEndDate, sale
 
           <Link
             href="/donate"
-            className="text-xs font-semibold dark:text-sky-400 text-sky-600 hover:underline underline-offset-2 transition-colors"
+            className="text-xs font-semibold dark:text-sky-400 text-sky-600 hover:underline underline-offset-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
           >
             Want to donate in the meantime? →
           </Link>

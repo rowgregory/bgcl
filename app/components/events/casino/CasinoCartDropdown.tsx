@@ -1,25 +1,26 @@
 import { getTicketStatus } from '@/app/lib/utils/getTicketStatus'
 import { AnimatePresence, motion } from 'framer-motion'
 import { GRADIENTS, SUITS } from './CasinoUiElements'
-import { store, useUiSelector } from '@/app/lib/store/store'
+import { store, useCartSelector, useUiSelector } from '@/app/lib/store/store'
 import { addToCart, removeFromCart, updateQuantity } from '@/app/lib/store/slices/cartSlice'
 import { Minus, Plus, Trash2, X } from 'lucide-react'
 import Link from 'next/link'
 import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
-import { TCasinoCartDropdown } from '@/types/casino.types'
+import { setCloseCartDropdown } from '@/app/lib/store/slices/uiSlice'
 
-export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDropdown) {
-  const { soundOn } = useUiSelector()
+export function CasinoCartDropdown({ data }) {
+  const { soundOn, cartDropdown } = useUiSelector()
   const { play: decrease } = useSoundEffect('/sound-effects/casino-11.mp3', soundOn)
   const { play: increase } = useSoundEffect('/sound-effects/casino-16.mp3', soundOn)
   const { play: proceed } = useSoundEffect('/sound-effects/casino-17.mp3', soundOn)
   const { play: close } = useSoundEffect('/sound-effects/casual-click-pop-ui.mp3', soundOn)
   const { play: remove } = useSoundEffect('/sound-effects/casino-7.wav', soundOn)
+  const { items } = useCartSelector()
   const total = items?.reduce((sum: number, i: any) => sum + i.price * i.quantity, 0)
 
   return (
     <AnimatePresence>
-      {open && (
+      {cartDropdown && (
         <>
           {/* Backdrop */}
           <motion.div
@@ -27,7 +28,7 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => {
-              setOpen(false)
+              store.dispatch(setCloseCartDropdown())
               close()
             }}
             className="fixed inset-0 z-40 backdrop-blur-sm"
@@ -40,12 +41,13 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.18, ease: 'easeOut' }}
-            className="absolute top-full right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm overflow-hidden z-50 bg-black"
+            className="fixed top-20 right-2 sm:right-4 w-[calc(100vw-1rem)] sm:w-80 max-w-sm overflow-hidden z-50 bg-black"
             style={{
               border: '1px solid rgba(212,175,55,0.2)',
               boxShadow: '0 0 0 1px rgba(212,175,55,0.08), 0 0 50px rgba(212,175,55,0.06), 0 24px 48px rgba(0,0,0,0.8)'
             }}
             role="dialog"
+            aria-modal="true"
             aria-label="Shopping cart"
           >
             {/* Gold top line */}
@@ -65,11 +67,11 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
               </div>
               <button
                 onClick={() => {
-                  setOpen(false)
+                  store.dispatch(setCloseCartDropdown())
                   close()
                 }}
                 aria-label="Close cart"
-                className="p-1 rounded-lg text-white/30 hover:text-white/70 transition-colors focus:outline-none"
+                className="p-1.5 rounded-lg text-white/30 hover:text-white/70 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
               >
                 <X className="w-4 h-4" aria-hidden="true" />
               </button>
@@ -112,13 +114,9 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
                           increase()
                         }}
                         className="relative flex items-center gap-0 w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 active:scale-[0.98] transition-transform"
-                        style={{
-                          border: '1px solid rgba(255,255,255,0.06)',
-                          boxShadow: `0 0 12px ${grad.glow}`
-                        }}
-                        aria-label={`Add ${ticket.name} to cart`}
+                        style={{ border: '1px solid rgba(255,255,255,0.06)', boxShadow: `0 0 12px ${grad.glow}` }}
+                        aria-label={`Add ${ticket.name} to cart — $${ticket.price.toLocaleString()}`}
                       >
-                        {/* Shine */}
                         <span
                           className="absolute inset-0 pointer-events-none z-10"
                           style={{
@@ -127,8 +125,6 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
                           }}
                           aria-hidden="true"
                         />
-
-                        {/* Suit thumbnail */}
                         <span
                           className="flex items-center justify-center w-9 h-9 shrink-0 text-base font-black suit"
                           style={{ background: grad.card }}
@@ -136,18 +132,14 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
                         >
                           {suit}
                         </span>
-
-                        {/* Name */}
                         <span
-                          className="flex-1 flex items-center h-9 px-3"
+                          className="flex-1 flex items-center h-9 px-3 min-w-0"
                           style={{ background: 'rgba(255,255,255,0.04)' }}
                         >
                           <span className="oswald text-[11px] font-black uppercase tracking-[0.06em] text-white/80 truncate">
                             {ticket.name}
                           </span>
                         </span>
-
-                        {/* Price */}
                         <span
                           className="flex items-center justify-center h-9 px-2.5 shrink-0"
                           style={{ background: 'rgba(0,0,0,0.3)', borderLeft: '1px solid rgba(255,255,255,0.06)' }}
@@ -169,10 +161,10 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
                   const suit = SUITS[type] ?? '♥'
                   return (
                     <li key={item.ticketId} className="px-4 py-3 space-y-2">
-                      {/* Top row — icon + name + subtotal + remove */}
-                      <div className="flex items-center gap-3">
+                      {/* Top row */}
+                      <div className="flex items-center gap-2.5">
                         <div
-                          className="w-8 h-8 flex items-center justify-center text-base font-black shrink-0 suit"
+                          className="w-8 h-8 flex items-center justify-center text-sm font-black shrink-0 suit"
                           style={{ background: grad.card }}
                           aria-hidden="true"
                         >
@@ -186,7 +178,7 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
                             ${item.price.toLocaleString()} each
                           </p>
                         </div>
-                        <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center gap-1.5 shrink-0">
                           <p
                             className="oswald text-sm font-black tabular-nums"
                             style={{ color: '#f5e678' }}
@@ -201,7 +193,7 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
                               remove()
                             }}
                             aria-label={`Remove ${item.ticketName} from cart`}
-                            className="p-1 rounded text-white/20 hover:text-red-400 transition-colors focus:outline-none"
+                            className="p-1.5 rounded text-white/20 hover:text-red-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50"
                           >
                             <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                           </button>
@@ -209,7 +201,7 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
                       </div>
 
                       {/* Quantity controls */}
-                      <div className="flex items-center gap-2 pl-11">
+                      <div className="flex items-center gap-2 pl-10">
                         <button
                           onClick={() => {
                             if (item.quantity <= 1) {
@@ -221,7 +213,7 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
                             }
                           }}
                           aria-label={`Decrease quantity of ${item.ticketName}`}
-                          className="w-6 h-6 rounded-md border border-white/10 text-white/40 hover:text-white hover:border-white/30 transition-all flex items-center justify-center focus:outline-none shrink-0"
+                          className="w-6 h-6 rounded-md border border-white/10 text-white/40 hover:text-white hover:border-white/30 transition-all flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20 shrink-0"
                         >
                           <Minus className="w-3 h-3" aria-hidden="true" />
                         </button>
@@ -240,7 +232,7 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
                             increase()
                           }}
                           aria-label={`Increase quantity of ${item.ticketName}`}
-                          className="w-6 h-6 rounded-md border border-white/10 text-white/40 hover:text-white hover:border-white/30 transition-all flex items-center justify-center focus:outline-none shrink-0"
+                          className="w-6 h-6 rounded-md border border-white/10 text-white/40 hover:text-white hover:border-white/30 transition-all flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20 shrink-0"
                         >
                           <Plus className="w-3 h-3" aria-hidden="true" />
                         </button>
@@ -254,28 +246,27 @@ export function CasinoCartDropdown({ setOpen, items, data, open }: TCasinoCartDr
             {/* Footer */}
             {items.length > 0 && (
               <div className="px-4 py-4 border-t border-white/6 space-y-3">
-                {/* Total */}
                 <div className="flex items-center justify-between">
                   <p className="oswald text-[10px] font-black uppercase tracking-[0.2em] text-white/25">Total</p>
                   <p
                     className="oswald text-2xl font-black"
+                    aria-live="polite"
+                    aria-label={`Total: $${total.toLocaleString()}`}
                     style={{ color: '#f5e678', textShadow: '0 0 20px rgba(212,175,55,0.5)' }}
                   >
                     ${total.toLocaleString()}
                   </p>
                 </div>
 
-                {/* Checkout */}
                 <Link
                   href="/checkout"
                   onClick={() => {
-                    setOpen(false)
+                    store.dispatch(setCloseCartDropdown())
                     proceed()
                   }}
                   className="oswald relative block w-full py-3 text-[13px] font-black uppercase tracking-widest text-white text-center overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 active:scale-[0.98] transition-transform"
-                  style={{
-                    background: 'linear-gradient(135deg, #7f0000 0%, #c0392b 45%, #e74c3c 65%, #922b21 100%)'
-                  }}
+                  style={{ background: 'linear-gradient(135deg, #7f0000 0%, #c0392b 45%, #e74c3c 65%, #922b21 100%)' }}
+                  aria-label={`Proceed to checkout — total $${total.toLocaleString()}`}
                 >
                   <span
                     className="absolute inset-0 pointer-events-none"

@@ -13,7 +13,7 @@ export function CasinoHero({ data }: { data: TCasinoHero }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
-      className="pt-18 pb-12 text-center flex flex-col items-center"
+      className="pt-28 lg:pt-18 text-center flex flex-col items-center"
     >
       <Link href="/">
         <Picture

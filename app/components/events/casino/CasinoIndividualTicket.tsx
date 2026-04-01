@@ -36,7 +36,7 @@ export function CasinoIndividualTicket({ data }: TCasinoSponsorTiers) {
         Individual Cash Madness Raffle Ticket
       </SectionHeading>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
         {data.tickets
           .filter((t: any) => t.ticketType === 'RAFFLE')
           .map((t: any, i: number) => {
@@ -79,7 +79,7 @@ export function CasinoIndividualTicket({ data }: TCasinoSponsorTiers) {
                 </div>
 
                 {/* Description */}
-                {t.description && <p className="text-xs text-white/35 leading-relaxed line-clamp-2">{t.description}</p>}
+                {t.description && <p className="text-xs text-white/35 leading-relaxed">{t.description}</p>}
 
                 {/* Availability */}
                 <div className="mb-6">

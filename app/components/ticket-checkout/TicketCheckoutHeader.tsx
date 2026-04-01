@@ -3,9 +3,16 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Picture from '../common/Picture'
 import { ArrowLeft, User } from 'lucide-react'
+import { useCartSelector, useUiSelector } from '@/app/lib/store/store'
+import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
 
 export function CheckoutHeader() {
   const session = useSession()
+  const { items } = useCartSelector()
+  const { soundOn } = useUiSelector()
+  const eventId = items?.[0]?.eventId ?? null
+  const { play } = useSoundEffect('/sound-effects/casino-1.mp3', soundOn)
+
   return (
     <div className="px-4 sm:px-6 md:px-12 py-6 sm:py-8 md:py-10 border-b border-neutral-200 dark:border-neutral-800">
       <div className="max-w-4xl mx-auto">
@@ -32,7 +39,6 @@ export function CheckoutHeader() {
               />
             </Link>
 
-            {/* Session indicator */}
             {session?.data?.user && (
               <Link href="/supporter/overview" className="flex items-center gap-2 min-w-0">
                 <div className="w-7 h-7 rounded-full bg-sky-500/10 dark:bg-sky-500/20 flex items-center justify-center shrink-0">
@@ -50,13 +56,32 @@ export function CheckoutHeader() {
 
           {/* Heading */}
           <div className="space-y-2 sm:space-y-3">
-            <Link
-              href="/cart"
-              className="inline-flex items-center gap-2 text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 transition-colors text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
-            >
-              <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-              Back to Cart
-            </Link>
+            <div className="flex items-center gap-3 flex-wrap">
+              <Link
+                href="/cart"
+                className="inline-flex items-center gap-2 text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 transition-colors text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+              >
+                <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+                Back to Cart
+              </Link>
+
+              {eventId && (
+                <>
+                  <span className="text-neutral-300 dark:text-neutral-600" aria-hidden="true">
+                    ·
+                  </span>
+                  <Link
+                    onClick={() => play()}
+                    href={`/events/${eventId}`}
+                    className="inline-flex items-center gap-2 text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 transition-colors text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+                  >
+                    <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+                    Back to Event
+                  </Link>
+                </>
+              )}
+            </div>
+
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
               Checkout
             </h1>

@@ -36,7 +36,7 @@ export function CasinoBlackjackTicket({ data }: TCasinoSponsorTiers) {
         Blackjack Tournament
       </SectionHeading>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
         {data.tickets
           .filter((t: any) => t.ticketType === 'TOURNAMENT')
           .map((t: any, i: number) => {

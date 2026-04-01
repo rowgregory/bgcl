@@ -11,6 +11,7 @@ export interface UiStatePayload {
   confetti: boolean
   paymentMethodModal: boolean
   soundOn: boolean
+  cartDropdown: boolean
 }
 
 const initialUiState: UiStatePayload = {
@@ -21,7 +22,8 @@ const initialUiState: UiStatePayload = {
   address: null,
   confetti: false,
   paymentMethodModal: false,
-  soundOn: true
+  soundOn: true,
+  cartDropdown: false
 }
 
 export const uiSlice = createSlice({
@@ -64,6 +66,12 @@ export const uiSlice = createSlice({
     },
     setSoundOn: (state, { payload }) => {
       state.soundOn = payload
+    },
+    setOpenCartDropdown: (state) => {
+      state.cartDropdown = true
+    },
+    setCloseCartDropdown: (state) => {
+      state.cartDropdown = false
     }
   }
 })
@@ -81,5 +89,7 @@ export const {
   setShowConfetti,
   setClosePaymentMethodModal,
   setOpenPaymentMethodModal,
-  setSoundOn
+  setSoundOn,
+  setCloseCartDropdown,
+  setOpenCartDropdown
 } = uiSlice.actions

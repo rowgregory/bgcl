@@ -65,7 +65,7 @@ export function CasinoSponsorTiers({ data }: TCasinoSponsorTiers) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
         {data.tickets
           .filter((t: any) => t.ticketType === 'SPONSORSHIP')
           .map((t: any, i: number) => {
