@@ -1,4 +1,4 @@
-import { Lexend, Oswald } from 'next/font/google'
+import { Lexend } from 'next/font/google'
 import './globals.css'
 import { SessionProvider } from 'next-auth/react'
 import { auth } from '@/app/lib/auth'
@@ -11,7 +11,7 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import Hotjar from './scripts/Hotjar'
 import { siteMetadata } from './lib/seo/metadata'
 import { jsonLd } from './lib/seo/jsonLd'
-import { getUpcomingOrOngoingEvent } from './lib/actions/getUpcomingOrOngoingEvent'
+import { getHero } from './lib/actions/getHero'
 
 const lexend = Lexend({
   subsets: ['latin'],
@@ -27,12 +27,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: ReactNode
 }>) {
-  const [session, programs, donations, pageContent, event] = await Promise.all([
+  const [session, programs, donations, pageContent, hero] = await Promise.all([
     auth(),
     getPrograms(),
     getDonationOrders(),
     getPageBySlugClient('home'),
-    getUpcomingOrOngoingEvent()
+    getHero()
   ])
 
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID
@@ -45,7 +45,7 @@ export default async function RootLayout({
       </head>
       <body className={`${lexend.variable} antialiased`}>
         <SessionProvider session={session}>
-          <RootLayoutWrapper programs={programs} pageContent={pageContent} donations={donations} event={event.data}>
+          <RootLayoutWrapper programs={programs} pageContent={pageContent} donations={donations} hero={hero?.data}>
             {children}
           </RootLayoutWrapper>
         </SessionProvider>

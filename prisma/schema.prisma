@@ -372,100 +372,59 @@ model Hero {
   name   String
   status HeroStatus @default(DRAFT)
 
-  // Layout & Height
-  minHeight    String @default("screen") // screen, half, full
-  actualHeight String @default("100vh")
-
-  // Background
-  backgroundType     String @default("gradient") // color, gradient, image, video
-  backgroundColor    String @default("#0a0a0a")
-  gradientFrom       String @default("#1e1b4b")
-  gradientTo         String @default("#0f172a")
-  backgroundImage    String @default("")
-  backgroundVideo    String @default("")
-  backgroundSize     String @default("cover") // cover, contain, auto
-  backgroundPosition String @default("center") // center, top, bottom, left, right, top-left, top-right, bottom-left, bottom-right
-  overlayOpacity     Float  @default(0.5)
-
   // Content
-  title              String  @default("Welcome to Our Mission")
-  titleColor         String  @default("#ffffff")
-  titleGradientWord  String  @default("") // Word to gradient
-  titleGradientFrom  String  @default("#6366f1") // Gradient start
-  titleGradientTo    String  @default("#ec4899") // Gradient end
-  titleUseGradient   Boolean @default(false) // Enable gradient
-  titleLineHeight    String  @default("1.2")
-  titleFontSize      String  @default("4rem")
-  subtitle           String  @default("Join us in making a difference")
-  subtitleColor      String  @default("#a3a3a3")
-  subtitleLineHeight String  @default("1.5")
-  subtitleFontSize   String  @default("1.5rem")
+  title    String @default("Welcome to Our Mission")
+  subtitle String @default("Join us in making a difference")
 
-  // Animations
-  titleAnimation          String @default("fade-up") // fade-up, fade-down, fade-left, fade-right, scale, bounce, none
-  subtitleAnimation       String @default("fade-up")
-  ctaAnimation            String @default("fade-up")
-  floatingButtonAnimation String @default("pulse") // pulse, bounce, shake, none
+  // Background — video or image, one at a time
+  backgroundType  String @default("video") // video, image
+  backgroundVideo String @default("")
+  backgroundImage String @default("")
+  overlayOpacity  Float  @default(0.5)
 
-  // Layout
-  layout String @default("side-by-side") // side-by-side, stacked-center, stacked-left, stacked-right
+  // CTA Button 1
+  cta1Text     String @default("Get Started")
+  cta1Link     String @default("/")
+  cta1LinkType String @default("internal") // internal, external
 
-  // CTA Button
-  ctaText            String @default("Get Started")
-  ctaLink            String @default("/")
-  ctaBackgroundColor String @default("#6366f1")
-  ctaTextColor       String @default("#ffffff")
-  ctaBorderRadius    String @default("50")
+  // CTA Button 2
+  cta2Text     String  @default("")
+  cta2Link     String  @default("")
+  cta2LinkType String  @default("internal") // internal, external
+  showCta2     Boolean @default(false)
+
+  // Announcement Strip
+  showAnnouncement      Boolean @default(false)
+  announcementText      String  @default("")
+  announcementLinkLabel String  @default("")
+  announcementLink      String  @default("")
+  announcementLinkType  String  @default("internal")
+  announcementColor1    String  @default("#0ea5e9") // sky-500
+  announcementColor2    String  @default("#6366f1") // indigo-500
+
+  // Countdown
+  showCountdown  Boolean @default(false)
+  countdownDate  String  @default("")
+  countdownLabel String  @default("Event Starts In")
 
   // Thermometer Widget
-  showThermometer     Boolean @default(false)
-  thermometerGoal     Int     @default(100000)
-  thermometerCurrent  Int     @default(45000)
-  thermometerColor    String  @default("#6366f1")
-  thermometerPosition String  @default("right") // left, center, right
-
-  // Countdown Widget
-  showCountdown     Boolean @default(false)
-  countdownDate     String  @default("2025-12-31")
-  countdownLabel    String  @default("Event Starts In")
-  countdownPosition String  @default("right") // left, center, right
-  countdownColor    String  @default("#6366f1")
+  showThermometer    Boolean @default(false)
+  thermometerGoal    Int     @default(100000)
+  thermometerCurrent Int     @default(0)
+  thermometerLabel   String  @default("Campaign Progress")
+  thermometerColor   String  @default("#0ea5e9")
 
   // Growth Tree Widget
-  showGrowthTree     Boolean @default(false)
-  growthTreeCurrent  Int     @default(8234)
-  growthTreeGoal     Int     @default(10000)
-  growthTreeLabel    String  @default("Community Members")
-  growthTreePosition String  @default("right") // left, center, right
-  growthTreeColor    String  @default("#10b981")
-
-  // Floating Button
-  showFloatingButton         Boolean @default(false)
-  floatingButtonText         String  @default("Get Help")
-  floatingButtonPosition     String  @default("bottom-right") // top-left, top-right, bottom-left, bottom-right
-  floatingButtonBgColor      String  @default("#6366f1")
-  floatingButtonTextColor    String  @default("#ffffff")
-  floatingButtonBorderRadius String  @default("50")
-  floatingButtonAction       String  @default("modal") // internal, external, modal, drawer
-  floatingButtonLink         String  @default("/contact")
-  floatingButtonIcon         String  @default("chat") // none, arrow, phone, email, chat, info, help
-
-  // Top Banner
-  showTopBanner      Boolean @default(false)
-  topBannerText      String  @default("Click here to learn about our Capital Campaign")
-  topBannerHeight    String  @default("40")
-  topBannerBgColor   String  @default("#6366f1")
-  topBannerTextColor String  @default("#ffffff")
-  topBannerFontSize  String  @default("0.875")
-  topBannerBold      Boolean @default(false)
-  topBannerLinkType  String  @default("none") // none, internal, external
-  topBannerLink      String  @default("")
+  showGrowthTree    Boolean @default(false)
+  growthTreeCurrent Int     @default(0)
+  growthTreeGoal    Int     @default(10000)
+  growthTreeLabel   String  @default("Community Members")
+  growthTreeColor   String  @default("#10b981")
 
   // Metadata
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([createdAt])
   @@index([status])
 }
 

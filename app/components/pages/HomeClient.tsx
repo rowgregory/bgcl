@@ -5,15 +5,16 @@ import { Hero } from '../home/Hero'
 import { HomePrograms } from '../home/HomePrograms'
 import { MissionSection } from '../home/MissionSection'
 import FacilitySection from '../home/FacilitySection'
+import { IHero } from '@/types/entities/hero'
 
 interface HomeClientProps {
   initialPageData?: any
   programs: IProgram[]
+  hero: IHero
 }
 
-const HomeClient = ({ initialPageData, programs }: HomeClientProps) => {
+const HomeClient = ({ initialPageData, programs, hero }: HomeClientProps) => {
   const sections = initialPageData?.sections
-  const hero = sections?.hero
   const facility = sections?.facility
   const mission = sections?.mission
 

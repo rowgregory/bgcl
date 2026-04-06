@@ -14,7 +14,6 @@ import { setOpenNewsletterDrawer } from '@/app/lib/store/slices/newsletterSlice'
 import { setOpenClubResourceDrawer } from '@/app/lib/store/slices/clubResourceSlice'
 import { setOpenCampaignDrawer } from '@/app/lib/store/slices/campaignSlice'
 import { setOpenClosingDrawer } from '@/app/lib/store/slices/closingSlice'
-import { deleteEvent } from '@/app/lib/actions/deleteEvent'
 import { setOpenEventDrawer } from '@/app/lib/store/slices/eventSlice'
 import { setOpenTicketDrawer } from '@/app/lib/store/slices/ticketSlice'
 import { archiveEvent } from '@/app/lib/actions/archiveEvent'
@@ -57,9 +56,6 @@ const AdminListItem = ({
         break
       case 'news':
         await deleteNews(item.id)
-        break
-      case 'event':
-        await deleteEvent(item.id)
         break
       case 'partner':
         await deletePartner(item.id)

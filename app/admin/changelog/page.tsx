@@ -21,6 +21,82 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.17.0',
+    date: '2026-04-06',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Hero Studio',
+        description:
+          'Built a full Hero Studio admin page for managing the homepage hero section. Admins can update title, subtitle, CTA buttons, background video or image, overlay opacity, announcement strip, countdown timer, thermometer widget, and growth tree widget — all without a deployment.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Announcement Strip',
+        description:
+          'Added a dismissible announcement strip that sits above the entire site. Supports animated radial gradient with two admin-configurable colors, custom text, an optional link (internal or external), and session-based dismissal so it stays gone until the next visit.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Hero Countdown Widget',
+        description:
+          'Added a glassmorphism countdown timer widget that renders inside the hero. Admin configures the target date and label. Counts down in real time with DD/HH/MM/SS units and hides automatically when the date has passed.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Hero Thermometer Widget',
+        description:
+          'Added a campaign thermometer widget for the hero section. Displays a vertical fill tube with configurable goal, current amount, label, and color. Admin-configurable and self-hiding when disabled.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Hero Growth Tree Widget',
+        description:
+          'Added an animated SVG growth tree widget for the hero. Leaves grow in proportion to progress toward a goal. Configurable current value, goal, label, and color. Wrapped in a glassmorphism card for legibility over video backgrounds.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Hero Background — Video or Image',
+        description:
+          'Hero background is now fully admin-controlled. Supports video (MP4, WebM, MOV/QuickTime) or image upload via Firebase Storage with drag-and-drop, real-time progress bar, and current media preview. Overlay opacity is configurable via a range slider.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Hero CTA Buttons — Dual with Link Type',
+        description:
+          'Hero now supports two independently configurable CTA buttons. Each has its own text, link, and internal/external link type selector. Button 2 is optional and toggled on/off by the admin.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Hero Model & Singleton Upsert',
+        description:
+          'Created the Hero Prisma model with 25+ configurable fields and a singleton upsert pattern — there is always exactly one Hero row. Added getHero and getEventIds server actions. Event IDs surface as quick-insert buttons in the announcement strip link field.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Hero Height Adjusts to Active Widgets',
+        description:
+          'Hero section height scales dynamically based on how many widgets are active — base 800px plus 120px per active widget — so content is never clipped regardless of configuration.',
+        impact: 'low'
+      },
+      {
+        type: 'ui',
+        title: 'Admin Hero Studio Layout',
+        description:
+          'Hero Studio uses a full-width two-column desktop layout (content + announcement left, background + countdown + widgets right) with a sticky bottom save bar. No max-width constraints — matches the admin dashboard layout pattern.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.16.0',
     date: '2026-04-06',
     changes: [

@@ -1,23 +1,18 @@
 import {
-  // Rocket,
   Globe,
-  // Satellite,
-  // Sliders,
-  // ScanLine,
   Shield,
   Fuel,
-  // Aperture,
   BookOpen,
   GitCommit,
   Radio,
   LucideIcon,
   MessageSquare,
   DoorOpen,
-  // User,
   Orbit,
   Logs,
   Rocket,
-  Satellite
+  Satellite,
+  Aperture
 } from 'lucide-react'
 
 const isStringInPath = (path: string, str: string) => path.includes(str)
@@ -27,7 +22,7 @@ export const adminNavigationLinkData = (
   isSuperUser: boolean
 ): {
   title: string
-  items: { icon: LucideIcon; label: string; path: string; description: string; active: boolean; isDrawer?: boolean }[]
+  items: { icon: LucideIcon; label: string; path: string; description: string; active: boolean }[]
 }[] => {
   const userGroup = [
     {
@@ -57,14 +52,15 @@ export const adminNavigationLinkData = (
       description: 'Public Site Content',
       active: isStringInPath(path, 'star-map')
     },
-    // {
-    //   icon: Aperture,
-    //   label: 'The Orbital Deck',
-    //   description: 'Hero Studio & Campaign Visuals',
-    //   isDrawer: true
-    // },
     {
-      icon: BookOpen, // or Archive, BookOpen, Library, Download
+      icon: Aperture,
+      label: 'Hero Studio',
+      path: '/admin/hero',
+      description: 'Hero Studio & Campaign Visuals',
+      active: isStringInPath(path, 'hero')
+    },
+    {
+      icon: BookOpen,
       label: 'The Library',
       path: '/admin/the-library/programs',
       description: 'Newsletters & Club Resources',

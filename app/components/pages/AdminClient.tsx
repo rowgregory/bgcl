@@ -15,7 +15,6 @@ import dropdownActionItems from '../../lib/constants/dropdownActionItems'
 import { getCurrentPageId } from '../../lib/utils/getCurrentPageId'
 
 import AdminSidebar from '../../admin/sidebar'
-import HeroStudio from '../hero-studio/HeroStudio'
 import ActionMenuButton from '../ui/buttons/ActionMenuButton'
 import ActionMenuDropdown from '../navigation/ActionMenuDropdown'
 import LogoutButton from '../ui/buttons/LogoutButton'
@@ -50,7 +49,6 @@ const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
   return (
     <>
       {/* ── Drawers & overlays ── */}
-      <HeroStudio />
       <EventDrawer />
       <TicketDrawer />
       <ProgramDrawer themes={themes} />

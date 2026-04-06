@@ -3,7 +3,6 @@ import { Reducer, createSlice } from '@reduxjs/toolkit'
 export interface AppStatePayload {
   mobileNavigation: boolean
   navigationDrawer: boolean
-  heroStudio: boolean
   languageDropdown: boolean
   selectedLanguage: string
   volunteerDrawer: boolean
@@ -16,7 +15,6 @@ export interface AppStatePayload {
 const initialAppState: AppStatePayload = {
   mobileNavigation: false,
   navigationDrawer: false,
-  heroStudio: false,
   languageDropdown: false,
   selectedLanguage: 'English',
   volunteerDrawer: false,
@@ -41,12 +39,6 @@ export const appSlice = createSlice({
     },
     setCloseNavigationDrawer: (state) => {
       state.navigationDrawer = false
-    },
-    setOpenHeroStudio: (state) => {
-      state.heroStudio = true
-    },
-    setCloseHeroStudio: (state) => {
-      state.heroStudio = false
     },
     setOpenLanguageDropdown: (state) => {
       state.languageDropdown = true
@@ -90,8 +82,6 @@ export const {
   setCloseMobileNavigation,
   setOpenNavigationDrawer,
   setCloseNavigationDrawer,
-  setCloseHeroStudio,
-  setOpenHeroStudio,
   setCloseLanguageDropdown,
   setOpenLanguageDropdown,
   setSelectedLanguage,

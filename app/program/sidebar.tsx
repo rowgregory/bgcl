@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { store } from '@/app/lib/store/store'
 import { usePathname, useRouter } from 'next/navigation'
 import { setCloseProgramSidebar } from '../lib/store/slices/dashboardSlice'
-import { setOpenHeroStudio } from '../lib/store/slices/appSlice'
 import { useSession } from 'next-auth/react'
 import { signOut } from 'next-auth/react'
 import { setIsLoading } from '../lib/store/slices/formSlice'
@@ -79,9 +78,6 @@ export const ProgramSidebar = () => {
                     <button
                       key={item.label}
                       onClick={() => {
-                        if (item.isDrawer) {
-                          store.dispatch(setOpenHeroStudio())
-                        }
                         onClose()
                       }}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all text-left cursor-pointer ${

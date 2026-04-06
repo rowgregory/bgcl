@@ -19,10 +19,11 @@ import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import WelcomeAnimation from './components/WelcomeAnimation'
 import { Confetti3D } from './components/unique/Confetti3D'
+import { AnnouncementStrip } from './components/unique/AnnouncementStrip'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
-export default function RootLayoutWrapper({ children, programs, pageContent, donations, event }) {
+export default function RootLayoutWrapper({ children, programs, pageContent, donations, hero }) {
   const pathname = usePathname()
   const show = !HIDDEN_PATHS.some((path) => pathname.startsWith(path))
 
@@ -40,8 +41,8 @@ export default function RootLayoutWrapper({ children, programs, pageContent, don
             <MobileNavigationDrawer />
             <WelcomeAnimation />
             <Confetti3D />
-
-            {show && <Header event={event} />}
+            <AnnouncementStrip hero={hero} />
+            {show && <Header />}
 
             {children}
             {show && <Footer />}

@@ -9,16 +9,14 @@ import { motion } from 'framer-motion'
 import { useIsAtTop } from '@/app/lib/hooks/useIsAtTop'
 import GoogleTranslate from '../GoogleTranslate'
 import { mainNavigationLinks } from '@/app/lib/constants/navigation'
-import { EventAnnouncementStrip } from '../events/EventAnnouncementStrip'
 
-export default function Header({ event }) {
+export default function Header() {
   const { data, status } = useSession()
   const pathname = usePathname()
   const router = useRouter()
   const isAtTop = useIsAtTop()
   const { mobileNavigation, isSpanish } = useApplicationSelector()
   const { items } = useCartSelector()
-  const showEventAnnouncementStripe = !['/events/', '/admin'].some((path) => pathname.startsWith(path))
 
   const getLaunchPath = () => {
     if (status !== 'authenticated') return '/auth/login'
@@ -146,30 +144,23 @@ export default function Header({ event }) {
             className="shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 lg:relative lg:left-auto lg:translate-x-0 lg:top-auto lg:translate-y-0"
           >
             <motion.div
-              className="flex items-center space-x-3 "
-              initial={{ scale: 1 }}
-              animate={{ scale: isAtTop ? 1 : 0.9 }}
+              className="overflow-hidden flex items-center justify-center"
+              animate={{ height: isAtTop ? '48px' : '40px' }}
+              initial={{ height: '48px' }}
               transition={{ duration: 0.3 }}
             >
-              <motion.div
-                className="overflow-hidden flex items-center justify-center"
-                initial={{ height: '56px' }}
-                animate={{ height: isAtTop ? '56px' : '48px' }}
-                transition={{ duration: 0.3 }}
-              >
-                <Picture
-                  src="/images/vertical-logo-light.png"
-                  alt="Boys & Girls Club of Lynn"
-                  className="dark:hidden block w-auto h-full cursor-pointer hover:opacity-80 transition-opacity"
-                  priority
-                />
-                <Picture
-                  src="/images/vertical-logo-dark.png"
-                  decorative
-                  className="dark:block hidden w-auto h-full cursor-pointer hover:opacity-80 transition-opacity"
-                  priority
-                />
-              </motion.div>
+              <Picture
+                src="/images/vertical-logo-light.png"
+                alt="Boys & Girls Club of Lynn"
+                className="dark:hidden block w-auto h-full cursor-pointer hover:opacity-80 transition-opacity"
+                priority
+              />
+              <Picture
+                src="/images/vertical-logo-dark.png"
+                decorative
+                className="dark:block hidden w-auto h-full cursor-pointer hover:opacity-80 transition-opacity"
+                priority
+              />
             </motion.div>
           </Link>
 
@@ -202,28 +193,41 @@ export default function Header({ event }) {
             </ul>
           </nav>
 
+          {/* ── Portal CTA ──────────────────────────────────────────── */}
           <motion.div
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.92 }}
-            animate={{ scale: isAtTop ? 1 : 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            animate={{ scale: isAtTop ? 1 : 0.92 }}
             transition={{ duration: 0.3 }}
+            className="shrink-0"
           >
             <a
               href="https://parentportal.bgcl.org/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Parent Portal - opens in a new tab"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-linear-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-sky-500/25 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-sky-600"
+              className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-5 lg:px-8 py-2 sm:py-3 lg:py-4 bg-linear-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold rounded-lg sm:rounded-xl transition-all shadow-lg shadow-sky-500/25 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-sky-600 text-xs sm:text-sm"
             >
-              <span className="hidden md:inline">Parent Portal</span>
-              <span className="md:hidden" aria-hidden="true">
-                Portal
-              </span>
+              {/* Icon only on 320–430, text from 430+ */}
+              <svg
+                className="w-4 h-4 sm:hidden shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              <span className="hidden sm:inline">Parent Portal</span>
             </a>
           </motion.div>
         </div>
       </motion.nav>
-      {showEventAnnouncementStripe && <EventAnnouncementStrip event={event} />}
     </>
   )
 }
