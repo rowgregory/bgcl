@@ -9,7 +9,9 @@ import { store } from '@/app/lib/store/store'
 import { setOpenVolunteerDrawer } from '@/app/lib/store/slices/appSlice'
 import YouthOfTheYearSection from '../home/YouthOfTheYearSection'
 
-const AwardWinnersClient = ({ newsAndTeamMembers }) => {
+const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
+  const t = pageData?.sections?.awards
+
   return (
     <>
       {/* Skip link for keyboard users */}
@@ -31,15 +33,12 @@ const AwardWinnersClient = ({ newsAndTeamMembers }) => {
             >
               <div className="space-y-3 sm:space-y-4">
                 <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-                  News, Updates & Recognition
+                  {t.eyebrow}
                 </p>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-                  Award Winners
+                  {t.heading}
                 </h1>
-                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
-                  Stay informed about what's happening at the Boys & Girls Club of Lynn. Read our latest news, celebrate
-                  our honorees, and discover the impact we're making in our community.
-                </p>
+                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t.subheading}</p>
               </div>
             </motion.div>
           </div>
@@ -59,11 +58,9 @@ const AwardWinnersClient = ({ newsAndTeamMembers }) => {
               className="mb-12 sm:mb-16"
             >
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4">
-                2025 Award Winners
+                {t.honorees_heading}
               </h2>
-              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">
-                Celebrating this year's award-winning honorees and their outstanding contributions.
-              </p>
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">{t.honorees_subheading}</p>
             </motion.div>
 
             <motion.div
@@ -126,11 +123,9 @@ const AwardWinnersClient = ({ newsAndTeamMembers }) => {
               className="mb-12"
             >
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4">
-                Hall of Fame Inductees
+                {t.fame_heading}
               </h2>
-              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">
-                Honoring the distinguished individuals who have shaped our organization's legacy.
-              </p>
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">{t.fame_subheading}</p>
             </motion.div>
 
             <motion.div
@@ -172,11 +167,9 @@ const AwardWinnersClient = ({ newsAndTeamMembers }) => {
                 id="helping-hands-heading"
                 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4"
               >
-                Helping Hands Business of the Year
+                {t.helping_heading}
               </h2>
-              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">
-                Celebrating local businesses that have generously supported our mission and community.
-              </p>
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">{t.helping_subheading}</p>
             </motion.div>
 
             <motion.div
@@ -217,11 +210,9 @@ const AwardWinnersClient = ({ newsAndTeamMembers }) => {
                 id="youth-recipients-heading"
                 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4"
               >
-                Commitment to Youth Recipients
+                {t.commitment_heading}
               </h2>
-              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">
-                Recognizing individuals who have demonstrated exceptional commitment to youth development.
-              </p>
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">{t.commitment_subheading}</p>
             </motion.div>
 
             <motion.div
@@ -259,13 +250,10 @@ const AwardWinnersClient = ({ newsAndTeamMembers }) => {
               className="space-y-6"
             >
               <h2 id="cta-heading" className="text-4xl font-black dark:text-white text-neutral-900">
-                Be Part of Our Story
+                {t.cta_heading}
               </h2>
 
-              <p className="text-lg dark:text-neutral-400 text-neutral-600">
-                Whether through volunteering, donating, or spreading the word, there are many ways to support our
-                mission and become part of our community's success stories.
-              </p>
+              <p className="text-lg dark:text-neutral-400 text-neutral-600">{t.cta_subheading}</p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button

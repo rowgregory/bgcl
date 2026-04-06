@@ -15,7 +15,16 @@ import { formatDate } from '@/app/lib/utils/date-utils'
 import { INews } from '@/types/entities/news'
 import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
 
-export default function LatestNewsClient({ newsletters, news }: { newsletters: INewsletter[]; news: INews[] }) {
+export default function LatestNewsClient({
+  newsletters,
+  news,
+  pageData
+}: {
+  newsletters: INewsletter[]
+  news: INews[]
+  pageData: any
+}) {
+  const t = pageData.sections.news
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [success, setSuccess] = useState(false)
@@ -85,17 +94,12 @@ export default function LatestNewsClient({ newsletters, news }: { newsletters: I
             >
               <div className="space-y-3 sm:space-y-4">
                 <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-                  Resources &amp; Updates
+                  {t.eyebrow}
                 </p>
-                <h1
-                  id="latest-news-heading"
-                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight"
-                >
-                  Latest News
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
+                  {t.heading}
                 </h1>
-                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
-                  Your one-stop destination for club resources, newsletters, and important information.
-                </p>
+                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t.subheading}</p>
               </div>
             </motion.div>
 
@@ -197,12 +201,11 @@ export default function LatestNewsClient({ newsletters, news }: { newsletters: I
                 <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
                   <Mail className="w-6 h-6 sm:w-8 sm:h-8 dark:text-sky-400 text-sky-600 shrink-0" aria-hidden="true" />
                   <h2 id="subscribe-heading" className="text-xl sm:text-2xl font-bold dark:text-white text-neutral-900">
-                    Stay Updated
+                    {t.subscribe_heading}
                   </h2>
                 </div>
                 <p className="dark:text-neutral-300 text-neutral-700 mb-6 sm:mb-8 max-w-2xl text-sm sm:text-base">
-                  Subscribe to our newsletter and never miss important updates, program announcements, and community
-                  news.
+                  {t.subscribe_subheading}
                 </p>
 
                 {/* Error Banner */}
@@ -386,11 +389,9 @@ export default function LatestNewsClient({ newsletters, news }: { newsletters: I
               className="mb-12"
             >
               <h2 id="newsletters-heading" className="text-4xl font-black dark:text-white text-neutral-900 mb-4">
-                Newsletters
+                {t.newsletters_heading}
               </h2>
-              <p className="text-lg dark:text-neutral-400 text-neutral-600">
-                Download our latest newsletters to stay informed about programs, events, and updates.
-              </p>
+              <p className="text-lg dark:text-neutral-400 text-neutral-600">{t.newsletters_subheading}</p>
             </motion.div>
 
             {Object.entries(
@@ -470,11 +471,9 @@ export default function LatestNewsClient({ newsletters, news }: { newsletters: I
               className="space-y-6"
             >
               <h2 id="cta-heading" className="text-4xl font-black dark:text-white text-neutral-900">
-                Can't Find What You Need?
+                {t.cta_heading}
               </h2>
-              <p className="text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl mx-auto">
-                Our team is here to help. Contact us with any questions or to request additional resources.
-              </p>
+              <p className="text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl mx-auto">{t.cta_subheading}</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
                   href="tel:781-593-1772"

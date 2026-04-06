@@ -21,6 +21,26 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.16.0',
+    date: '2026-04-06',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Page Content Management System',
+        description:
+          'Completed full page content editing section in the admin dashboard. All frontend page text is now managed through the CMS',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Editable Page Text — All Public Pages',
+        description:
+          'Every heading, subheading, eyebrow label, body paragraph, button text, and metadata across all public-facing pages is now driven by CMS page data arrays. Pages covered: Home, About, Programs, Events, Campaigns, News, Partners, Get Involved, Contact, Team, Capital Campaign and Award Winners.',
+        impact: 'high'
+      }
+    ]
+  },
+  {
     version: '1.15.1',
     date: '2026-03-31',
     changes: [

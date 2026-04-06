@@ -1,13 +1,11 @@
+import { PublicEventsClient } from '@/app/components/pages/PublicEventsClient'
+import { getActiveEvents } from '@/app/lib/actions/getActiveEvents'
+import { getPageBySlugClient } from '@/app/lib/actions/getPageBySlugClient'
+
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-import { PublicEventsClient } from '@/app/components/pages/PublicEventsClient'
-import { getActiveEvents } from '@/app/lib/actions/getActiveEvents'
-import { notFound } from 'next/navigation'
-
 export default async function PublicEventsPage() {
-  const result = await getActiveEvents()
-  if (!result.success) notFound()
-
-  return <PublicEventsClient events={result.data} />
+  const [events, pageData] = await Promise.all([getActiveEvents(), getPageBySlugClient('event')])
+  return <PublicEventsClient events={events.data} pageData={pageData} />
 }

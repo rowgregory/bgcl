@@ -52,7 +52,7 @@ export const adminNavigationLinkData = (
   const contentGroup = [
     {
       icon: Globe,
-      label: 'Star Map',
+      label: 'Page Content Editor',
       path: '/admin/star-map/home',
       description: 'Public Site Content',
       active: isStringInPath(path, 'star-map')

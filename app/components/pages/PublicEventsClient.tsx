@@ -6,7 +6,8 @@ import { Calendar, Heart, Home, Users } from 'lucide-react'
 import Link from 'next/link'
 import Picture from '../common/Picture'
 
-export function PublicEventsClient({ events }) {
+export function PublicEventsClient({ events, pageData }) {
+  const t = pageData?.sections?.events
   return (
     <>
       <a
@@ -87,19 +88,22 @@ export function PublicEventsClient({ events }) {
             <header className="px-4 sm:px-6 md:px-12 pt-12 sm:pt-16 pb-8 sm:pb-10" aria-label="Upcoming Events Hero">
               <div className="max-w-334 mx-auto">
                 <motion.div
+                  className="space-y-4 sm:space-y-6"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
                 >
-                  <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest mb-2">
-                    Join Us
-                  </p>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight mb-3">
-                    Upcoming Events
-                  </h1>
-                  <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
-                    Discover community events, programs, and activities happening at Boys &amp; Girls Club of Lynn.
-                  </p>
+                  <div className="space-y-3 sm:space-y-4">
+                    <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
+                      {t.eyebrow}
+                    </p>
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
+                      {t.heading}
+                    </h1>
+                    <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
+                      {t.subheading}
+                    </p>
+                  </div>
                 </motion.div>
               </div>
             </header>

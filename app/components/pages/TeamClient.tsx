@@ -7,26 +7,22 @@ import { Mail, Phone } from 'lucide-react'
 import Picture from '../common/Picture'
 import SqyshCard from '../SqyshCard'
 
-const TabButton = ({
-  active,
-  onClick,
-  children,
-  id,
-  controls
-}: {
+type TTabButton = {
   active: boolean
   onClick: () => void
   children: React.ReactNode
   id: string
   controls: string
-}) => (
+}
+
+const TabButton = ({ active, onClick, children, id, controls }: TTabButton) => (
   <button
     role="tab"
     id={id}
     aria-selected={active}
     aria-controls={controls}
     onClick={onClick}
-    className={`px-0 py-2 mr-8 font-semibold text-sm transition-all border-b-2 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-sm ${
+    className={`px-0 py-2 mr-8 font-semibold text-sm transition-all border-b-2 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
       active
         ? 'dark:text-white text-neutral-900 dark:border-sky-600 border-sky-600'
         : 'dark:text-neutral-400 text-neutral-600 dark:border-transparent border-transparent dark:hover:text-neutral-300 hover:text-neutral-700'
@@ -102,7 +98,9 @@ const TeamMemberCard = ({ member }: { member: ITeamMember }) => {
   )
 }
 
-export const TeamClient = ({ team }) => {
+export const TeamClient = ({ team, pageData }) => {
+  const t = pageData?.sections?.team
+
   const [activeTab, setActiveTab] = useState<'board' | 'staff'>('board')
   const [boardSubTab, setBoardSubTab] = useState<'officers' | 'directors' | 'corporators'>('officers')
   const [staffSubTab, setStaffSubTab] = useState<'admin' | 'program' | 'maintenance' | 'tech'>('admin')
@@ -119,18 +117,16 @@ export const TeamClient = ({ team }) => {
           >
             <div className="space-y-3 sm:space-y-4">
               <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-                Meet Our Team
+                {t?.eyebrow}
               </p>
               <h1
                 id="team-heading"
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight"
               >
-                {activeTab === 'board' ? 'Board of Directors' : 'Our Team'}
+                {activeTab === 'board' ? t?.board_heading : t?.staff_heading}
               </h1>
               <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
-                {activeTab === 'board'
-                  ? 'Our Board of Directors provides strategic guidance and governance to ensure we continue our mission of transforming youth lives'
-                  : 'Dedicated professionals committed to transforming lives and building brighter futures for our youth.'}
+                {activeTab === 'board' ? t?.board_subheading : t?.staff_subheading}
               </p>
             </div>
           </motion.div>

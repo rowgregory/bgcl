@@ -146,7 +146,7 @@ export function PageContentEditor({
   }
 
   return (
-    <div className="h-[calc(100dvh-62px)] flex flex-col md:flex-row bg-white dark:bg-neutral-950 pt-16.25">
+    <div className="min-h-[calc(100dvh-123px)] flex flex-col md:flex-row bg-white dark:bg-neutral-950">
       {/* Editor */}
       <div
         className={`${isPreviewVisible ? 'md:w-1/2' : 'w-full'} flex flex-col border-r dark:border-neutral-800 border-neutral-200`}

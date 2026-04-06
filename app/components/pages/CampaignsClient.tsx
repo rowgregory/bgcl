@@ -6,11 +6,11 @@ import { motion } from 'framer-motion'
 import { Heart, Users, Target, ArrowRight, Calendar } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { MotionLink } from '../common/MotionLink'
-import Link from 'next/link'
 import Picture from '../common/Picture'
 
-export default function CampaignsClient({ campaigns }: { campaigns: ICampaign[] }) {
+export default function CampaignsClient({ campaigns, pageData }: { campaigns: ICampaign[]; pageData: any }) {
   const router = useRouter()
+  const t = pageData.sections.campaigns
 
   const getProgressPercentage = (current: number, goal: number): number => {
     return Math.min((current / goal) * 100, 100)
@@ -32,15 +32,12 @@ export default function CampaignsClient({ campaigns }: { campaigns: ICampaign[] 
         >
           <div className="space-y-3 sm:space-y-4">
             <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-              Support Our Cause
+              {t.eyebrow}
             </p>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-              Active Campaigns
+              {t.heading}
             </h1>
-            <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
-              Every dollar raised directly supports Boys &amp; Girls Club of Lynn programs that empower youth in our
-              community.
-            </p>
+            <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t.subheading}</p>
           </div>
         </motion.div>
 

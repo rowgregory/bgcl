@@ -107,9 +107,9 @@ const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
         </motion.div>
 
         {/* ── Main content ── */}
-        <main className="flex-1 flex flex-col lg:ml-64 overflow-y-auto mt-15">
+        <main className="flex-1 flex flex-col lg:ml-64 overflow-y-auto lg:mt-15">
           {/* Mobile header */}
-          <div className="lg:hidden flex items-center justify-between dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border-b px-4 py-4">
+          <div className="fixed w-full z-20 top-0 lg:hidden flex items-center justify-between dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border-b px-4 py-4">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

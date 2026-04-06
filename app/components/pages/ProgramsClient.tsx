@@ -8,7 +8,16 @@ import Picture from '../common/Picture'
 import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
 import { IClubResource } from '@/types/entities/club-resource'
 
-export const ProgramsClient = ({ programs, resources }: { programs: IProgram[]; resources: IClubResource[] }) => {
+export const ProgramsClient = ({
+  programs,
+  resources,
+  pageData
+}: {
+  programs: IProgram[]
+  resources: IClubResource[]
+  pageData: any
+}) => {
+  const t = pageData.sections.programs
   return (
     <main id="main-content" className="py-12 sm:py-16 md:py-20">
       <div className="max-w-334 mx-auto space-y-12 sm:space-y-16 px-4 sm:px-6 md:px-12">
@@ -21,14 +30,12 @@ export const ProgramsClient = ({ programs, resources }: { programs: IProgram[]; 
         >
           <div className="space-y-3 sm:space-y-4">
             <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-              Our Offerings
+              {t.eyebrow}
             </p>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-              Our Programs
+              {t.heading}
             </h1>
-            <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
-              Discover a wide range of programs designed to inspire, challenge, and empower youth in our community.
-            </p>
+            <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t.subheading}</p>
           </div>
         </motion.div>
 

@@ -1,0 +1,40 @@
+'use client'
+
+import { PageContentEditor } from '@/app/components/common/PageContentEditor'
+import { createPage } from '@/app/lib/actions/createPage'
+import { updatePageBySlug } from '@/app/lib/actions/updatePageBySlug'
+import { showToast } from '@/app/lib/store/slices/toastSlice'
+import { store } from '@/app/lib/store/store'
+import { useState } from 'react'
+
+export const StarMapAwardWinnersClient = ({ data }) => {
+  const [isSaving, setIsSaving] = useState(false)
+
+  const handleSave = async (content: any): Promise<void> => {
+    setIsSaving(true)
+
+    if (data?.id) {
+      await updatePageBySlug('award-winner', content)
+      store.dispatch(
+        showToast({
+          message: 'Changes saved successfully',
+          description: 'Visitors will see the updated content immediately',
+          type: 'success'
+        })
+      )
+    } else {
+      await createPage('award-winner', content)
+      store.dispatch(
+        showToast({
+          message: 'Page created successfully',
+          description: 'Your award winner page text is now accessible to all visitors',
+          type: 'success'
+        })
+      )
+    }
+
+    setIsSaving(false)
+  }
+
+  return <PageContentEditor fields={data?.content} onSave={handleSave} isLoading={isSaving} />
+}

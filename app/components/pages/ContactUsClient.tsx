@@ -11,34 +11,8 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
-const contactInfo = [
-  {
-    icon: Phone,
-    label: 'Phone',
-    value: '781-593-1772',
-    href: 'tel:781-593-1772'
-  },
-  {
-    icon: Mail,
-    label: 'Email',
-    value: 'info@bgcl.org',
-    href: 'mailto:info@bgcl.org'
-  },
-  {
-    icon: MapPin,
-    label: 'Address',
-    value: '25 North Common Street\nLynn, MA 01902',
-    href: "https://www.google.com/maps/place/Boy's+%26+Girl's+Club+of+Lynn/@42.4642936,-70.9540298,15z/"
-  }
-]
-
-const hours = [
-  { period: 'Office', time: '9am – 5pm' },
-  { period: 'Programming', time: '1:45pm – 6pm' },
-  { period: 'Teen Hours', time: '1:45pm – 8:30pm' }
-]
-
-export default function ContactUsClient({ closings }) {
+export default function ContactUsClient({ closings, pageData }) {
+  const t = pageData?.sections?.contact
   const searchParams = useSearchParams()
   const subjectParam = searchParams.get('subject')
 
@@ -47,6 +21,33 @@ export default function ContactUsClient({ closings }) {
       store.dispatch(setInputs({ formName: 'contactForm', data: { subject: subjectParam } }))
     }
   }, [subjectParam])
+
+  const contactInfo = [
+    {
+      icon: Phone,
+      label: t?.phone_label,
+      value: t?.phone_value,
+      href: t?.phone_href
+    },
+    {
+      icon: Mail,
+      label: t?.email_label,
+      value: t?.email_value,
+      href: t?.email_href
+    },
+    {
+      icon: MapPin,
+      label: t?.address_label,
+      value: t?.address_value,
+      href: t?.address_href
+    }
+  ]
+
+  const hours = [
+    { period: t?.hours_office_period, time: t?.hours_office_time },
+    { period: t?.hours_programming_period, time: t?.hours_programming_time },
+    { period: t?.hours_teen_period, time: t?.hours_teen_time }
+  ]
 
   return (
     <div className="dark:bg-neutral-950 bg-white">
@@ -63,18 +64,15 @@ export default function ContactUsClient({ closings }) {
             >
               <div className="space-y-3 sm:space-y-4">
                 <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-                  Get In Touch
+                  {t?.eyebrow}
                 </p>
                 <h1
                   id="contact-heading"
                   className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight"
                 >
-                  Contact Us
+                  {t?.heading}
                 </h1>
-                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
-                  Fill out the form below if you'd like to get involved with the Boys &amp; Girls Club of Lynn or if you
-                  have any questions. We'll get back to you as soon as possible.
-                </p>
+                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t?.subheading}</p>
               </div>
             </motion.div>
 

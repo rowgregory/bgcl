@@ -5,7 +5,8 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { PartnerTier } from '@prisma/client'
 
-export default function PublicPartnersClient({ partners }: { partners: IPartner[] }) {
+export default function PublicPartnersClient({ partners, pageData }: { partners: IPartner[]; pageData: any }) {
+  const t = pageData?.sections?.partners
   const tiers: { key: PartnerTier; label: string }[] = [
     { key: 'FOUNDATION', label: 'Foundation' },
     { key: 'CORPORATE_BUSINESS', label: 'Corporate & Business' },
@@ -34,15 +35,12 @@ export default function PublicPartnersClient({ partners }: { partners: IPartner[
             >
               <div className="space-y-3 sm:space-y-4">
                 <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-                  Community & Corporate Support
+                  {t.eyebrow}
                 </p>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-                  Our Partnerships
+                  {t.heading}
                 </h1>
-                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
-                  The Boys &amp; Girls Club of Lynn is powered by the generosity of our community partners. Together, we
-                  create opportunities that change the lives of young people every day.
-                </p>
+                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t.subheading}</p>
               </div>
 
               <dl className="flex flex-wrap gap-6 sm:gap-10 pt-2">
@@ -110,15 +108,12 @@ export default function PublicPartnersClient({ partners }: { partners: IPartner[
             >
               <div className="space-y-3 max-w-xl">
                 <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-500 uppercase tracking-widest">
-                  Get Involved
+                  {t.cta_eyebrow}
                 </p>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 leading-tight">
-                  Become a Partner
+                  {t.cta_heading}
                 </h2>
-                <p className="text-sm sm:text-base dark:text-neutral-400 text-neutral-600">
-                  Join our network of community champions. Your support directly funds programs, mentors, and
-                  opportunities for the young people of Lynn.
-                </p>
+                <p className="text-sm sm:text-base dark:text-neutral-400 text-neutral-600">{t.cta_subheading}</p>
               </div>
               <Link
                 href="/contact?subject=other"
