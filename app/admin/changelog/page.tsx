@@ -21,6 +21,19 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.17.1',
+    date: '2026-04-09',
+    changes: [
+      {
+        type: 'fix',
+        title: 'Donation Admin Notification Email',
+        description:
+          'Admin was receiving a ticket purchase notification email when a one-time donation was processed. The webhook handler was hardcoding TICKET_PURCHASE as the notification type instead of using the dynamic orderType variable. One-time and recurring donations now correctly send their own labelled notification emails.',
+        impact: 'high'
+      }
+    ]
+  },
+  {
     version: '1.17.0',
     date: '2026-04-06',
     changes: [

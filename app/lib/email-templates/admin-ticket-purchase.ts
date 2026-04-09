@@ -34,7 +34,7 @@ export function ticketPurchaseAdminNotification(
       </table>
 
       
-        href="${process.env.NEXT_PUBLIC_APP_URL}/admin/capsule/transactions"
+      <a  href="${process.env.NEXTAUTH_URL}/admin/capsule/transactions"
         style="display: inline-block; margin-top: 24px; padding: 10px 20px; background: #1e3a5f; color: #fff; text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px;"
       >
         View Order in Mission Control →

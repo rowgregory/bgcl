@@ -129,7 +129,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         paymentMethod: 'stripe',
         paymentIntentId: id,
         customerEmail: (metadata?.email as string) || '',
-        customerName: (metadata?.name as string) || 'Guest',
+        customerName: metadata?.name as string,
         userId,
         paidAt: new Date(),
         billingAddress: {
@@ -312,16 +312,17 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
     await sendConfirmationEmail(completeOrder, orderType, amount)
 
     // Send confirmation to admin
-    await sendAdminNotification('TICKET_PURCHASE', {
+    await sendAdminNotification(orderType, {
       customerName: order.customerName,
       customerEmail: order.customerEmail,
       eventTitle: order.event?.title ?? '',
-      totalAmount: amount,
-      orderId: order.id
+      totalAmount: amount / 100,
+      orderId: order.id,
+      recurringFrequency: order.recurringFrequency
     })
 
     // Push to Pusher
-    const channelId = userId || `guest-${paymentIntent.id}`
+    const channelId = userId
     await pusher.trigger(`payment-${channelId}`, 'order-created', {
       orderId: order.id,
       amount: order.totalAmount,
