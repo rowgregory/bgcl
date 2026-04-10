@@ -321,7 +321,8 @@ function createPDF(orders: any[], stats: DonationStats, filters: ReportFilters):
           email: order.user?.email || order.customerEmail,
           billingAddress: order.billingAddress,
           count: 1,
-          total: order.totalAmount
+          total: order.totalAmount,
+          notes: order.notes
         })
       }
     })
@@ -361,15 +362,18 @@ function createPDF(orders: any[], stats: DonationStats, filters: ReportFilters):
         donor.email,
         addressStr,
         donor.count.toString(),
-        `$${donor.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+        `$${donor.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+        donor.notes
       ]
     })
 
     autoTable(doc, {
       startY: yPos,
-      head: [['#', 'Donor Name', 'Email Address', 'Billing Address', '# of Gifts', 'Total']],
+      head: [['#', 'Donor Name', 'Email Address', 'Billing Address', '# of Gifts', 'Total', 'Notes']],
       body: donorData,
       theme: 'striped',
+      tableWidth: 'auto',
+      margin: { left: 10, right: 10 },
       headStyles: {
         fillColor: [74, 139, 179],
         textColor: [255, 255, 255],
@@ -381,21 +385,20 @@ function createPDF(orders: any[], stats: DonationStats, filters: ReportFilters):
         fontSize: 8,
         cellPadding: 3,
         lineColor: [220, 220, 220],
-        lineWidth: 0.1
+        lineWidth: 0.1,
+        overflow: 'linebreak'
       },
       columnStyles: {
-        0: { cellWidth: 10, halign: 'center', textColor: [100, 100, 100] },
-        1: { cellWidth: 35, fontStyle: 'bold' },
-        2: { cellWidth: 45 },
-        3: { cellWidth: 60 }, // Wider for full address
-        4: { cellWidth: 18, halign: 'center' },
-        5: { cellWidth: 25, halign: 'right', fontStyle: 'bold', textColor: [74, 139, 179] }
+        0: { cellWidth: 8, halign: 'center', textColor: [100, 100, 100] },
+        1: { cellWidth: 28, fontStyle: 'bold' },
+        2: { cellWidth: 38 },
+        3: { cellWidth: 45 },
+        4: { cellWidth: 14, halign: 'center' },
+        5: { cellWidth: 20, halign: 'right', fontStyle: 'bold', textColor: [74, 139, 179] },
+        6: { cellWidth: 30 }
       },
-      alternateRowStyles: {
-        fillColor: [248, 250, 252]
-      },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
       didDrawPage: (data) => {
-        // Add page numbers
         doc.setFontSize(8)
         doc.setTextColor(128, 128, 128)
         doc.text(`Page ${doc.getCurrentPageInfo().pageNumber}`, pageWidth / 2, pageHeight - 10, { align: 'center' })

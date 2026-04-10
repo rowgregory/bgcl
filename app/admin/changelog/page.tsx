@@ -21,6 +21,18 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.17.3',
+    date: '2026-04-10',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Notes Column Added to Donor PDF Report',
+        description: 'The donor report PDF now includes a Notes column.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.17.1',
     date: '2026-04-09',
     changes: [
