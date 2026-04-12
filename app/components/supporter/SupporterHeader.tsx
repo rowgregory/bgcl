@@ -41,7 +41,7 @@ export function SupporterHeader({ event }) {
         {/* Right side */}
         <div className="flex items-center gap-1.5 sm:gap-x-3 min-w-0">
           {/* Casino event link */}
-          {event && (event.status === 'UPCOMING' || event.status === 'ONGOING') && (
+          {event && event.isPublic && (
             <MotionLink
               onClick={() => play()}
               href={`/events/${event.id}`}
