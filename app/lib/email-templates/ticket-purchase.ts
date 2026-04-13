@@ -9,13 +9,9 @@ export const ticketPurchaseTemplate = (
     name: string
     quantity: number
     price: number
-    raffleTicketNumber?: number | null
-    raffleTicketCode?: string | null
   }>,
   totalAmount: number,
-  orderId: string,
-  raffleDrawDate?: string | null,
-  raffleTerms?: string | null
+  orderId: string
 ) => `
 <!DOCTYPE html>
 <html lang="en">
@@ -54,7 +50,6 @@ export const ticketPurchaseTemplate = (
           Event
         </p>
         <p style="margin: 0 0 14px 0; color: #111827; font-size: 17px; font-weight: 800;">${eventName}</p>
-
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="padding: 4px 0; vertical-align: top; width: 16px;">
@@ -72,20 +67,6 @@ export const ticketPurchaseTemplate = (
               ${eventLocation}${eventAddress ? `<br><span style="color: #6b7280; font-size: 12px;">${eventAddress}</span>` : ''}
             </td>
           </tr>
-          ${
-            raffleDrawDate
-              ? `
-          <tr>
-            <td style="padding: 4px 0; vertical-align: top; width: 16px;">
-              <div style="width: 14px; height: 14px; background: #d97706; border-radius: 3px; margin-top: 1px;"></div>
-            </td>
-            <td style="padding: 4px 0 4px 8px; color: #374151; font-size: 13px; font-weight: 600;">
-              Raffle Draw: ${raffleDrawDate}
-            </td>
-          </tr>
-          `
-              : ''
-          }
         </table>
       </div>
 
@@ -94,39 +75,21 @@ export const ticketPurchaseTemplate = (
         <p style="margin: 0 0 12px 0; color: #6b7280; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;">
           Your Tickets
         </p>
-
         ${tickets
           .map(
             (ticket) => `
           <div style="margin-bottom: 10px; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden;">
-            <!-- Ticket header -->
-            <div style="background: #1a72b8; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <p style="margin: 0; color: rgba(255,255,255,0.7); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
-                  Boys &amp; Girls Club of Lynn
-                </p>
-                <p style="margin: 2px 0 0 0; color: #ffffff; font-size: 13px; font-weight: 700;">
-                  ${ticket.name}
-                </p>
-              </div>
-              ${
-                ticket.raffleTicketNumber
-                  ? `
-                <div style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 8px;">
-                  <p style="margin: 0; color: #ffffff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">Raffle</p>
-                </div>
-              `
-                  : ''
-              }
+            <div style="background: #1a72b8; padding: 10px 14px;">
+              <p style="margin: 0; color: rgba(255,255,255,0.7); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
+                Boys &amp; Girls Club of Lynn
+              </p>
+              <p style="margin: 2px 0 0 0; color: #ffffff; font-size: 13px; font-weight: 700;">
+                ${ticket.name}
+              </p>
             </div>
-
-            <!-- Gold stripe -->
             <div style="height: 2px; background: linear-gradient(90deg, #d97706, #fbbf24, #d97706);"></div>
-
-            <!-- Ticket body + stub -->
             <table style="width: 100%; border-collapse: collapse; background: #ffffff;">
               <tr>
-                <!-- Main body -->
                 <td style="padding: 12px 14px; vertical-align: top;">
                   <p style="margin: 0 0 6px 0; color: #374151; font-size: 12px;">
                     ${eventDate} &nbsp;·&nbsp; ${eventTime}
@@ -138,30 +101,6 @@ export const ticketPurchaseTemplate = (
                     $${(ticket.price * ticket.quantity).toFixed(2)}
                   </p>
                 </td>
-
-                ${
-                  ticket.raffleTicketNumber
-                    ? `
-                <!-- Stub -->
-                <td style="width: 80px; padding: 12px 10px; background: #eff6ff; border-left: 2px dashed #bfdbfe; text-align: center; vertical-align: middle;">
-                  <p style="margin: 0 0 4px 0; color: #6b7280; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
-                    Ticket No.
-                  </p>
-                  <p style="margin: 0 0 6px 0; color: #1a72b8; font-size: 22px; font-weight: 900; font-family: monospace; line-height: 1;">
-                    ${String(ticket.raffleTicketNumber).padStart(4, '0')}
-                  </p>
-                  ${
-                    ticket.raffleTicketCode
-                      ? `
-                  <p style="margin: 0; color: #6b7280; font-size: 9px; font-family: monospace;">
-                    ${ticket.raffleTicketCode}
-                  </p>
-                  `
-                      : ''
-                  }
-                </td>
-                `
-                    : `
                 <td style="width: 80px; padding: 12px 10px; background: #f9fafb; border-left: 2px dashed #e5e7eb; text-align: center; vertical-align: middle;">
                   <p style="margin: 0 0 4px 0; color: #9ca3af; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
                     Qty
@@ -170,23 +109,8 @@ export const ticketPurchaseTemplate = (
                     ${ticket.quantity}
                   </p>
                 </td>
-                `
-                }
               </tr>
             </table>
-
-            <!-- Terms strip -->
-            ${
-              raffleTerms && ticket.raffleTicketNumber
-                ? `
-            <div style="padding: 6px 14px; background: #f9fafb; border-top: 1px solid #e5e7eb;">
-              <p style="margin: 0; color: #9ca3af; font-size: 9px; line-height: 1.5;">
-                * ${raffleTerms}
-              </p>
-            </div>
-            `
-                : ''
-            }
           </div>
         `
           )
@@ -226,7 +150,6 @@ export const ticketPurchaseTemplate = (
           <li>Your tickets are saved to your account at bgcl.org</li>
           <li>Download your PDF tickets from your order confirmation page</li>
           <li>Bring your ticket confirmation to the event for entry</li>
-          ${raffleDrawDate ? `<li style="color: #d97706; font-weight: 600;">Be present at the raffle draw on ${raffleDrawDate} to claim your prize</li>` : ''}
         </ol>
       </div>
     </div>
