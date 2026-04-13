@@ -72,9 +72,7 @@ export default async function sendConfirmationEmail(
         event?.address || null,
         emailTickets,
         amount,
-        order.id,
-        raffleDrawDate,
-        event?.raffleTerms || null
+        order.id
       )
 
       subject = `Your Tickets for ${event?.title || 'the Event'} are Confirmed`
