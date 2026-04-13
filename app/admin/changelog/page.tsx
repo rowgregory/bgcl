@@ -21,6 +21,19 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.17.4',
+    date: '2026-04-13',
+    changes: [
+      {
+        type: 'fix',
+        title: 'Admin Notification Email Recipients Updated',
+        description:
+          'Donation and ticket purchase admin notifications now route to Erica directly. All other admin notifications (volunteer forms, contact forms, job applications) continue to go to the info address.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.17.3',
     date: '2026-04-10',
     changes: [

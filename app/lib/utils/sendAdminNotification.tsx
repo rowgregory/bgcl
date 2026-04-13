@@ -32,15 +32,19 @@ export default async function sendAdminNotification(notificationType: Notificati
   try {
     let emailHtml: string
     let subject: string
+    let recipientEmail: string
 
-    const recipientEmail = 'esousa@bgcl.org'
+    const ericaEmail = 'esousa@bgcl.org'
+    const infoEmail = 'info@bgcl.org'
 
     if (notificationType === 'VOLUNTEER_FORM') {
       emailHtml = volunteerFormNotification(data.firstName || '', data.lastName || '', data.email)
       subject = `New Volunteer Application from ${data.firstName} ${data.lastName}`
+      recipientEmail = infoEmail
     } else if (notificationType === 'CONTACT_FORM') {
       emailHtml = contactFormNotification(data.firstName || '', data.lastName || '', data.email)
       subject = `New Contact Form Submission from ${data.firstName} ${data.lastName}`
+      recipientEmail = infoEmail
     } else if (notificationType === 'TICKET_PURCHASE') {
       emailHtml = ticketPurchaseAdminNotification(
         data.customerName || '',
@@ -50,6 +54,7 @@ export default async function sendAdminNotification(notificationType: Notificati
         data.orderId || ''
       )
       subject = `New Ticket Purchase — ${data.customerName} · ${data.eventTitle}`
+      recipientEmail = ericaEmail
     } else if (notificationType === 'ONE_TIME_DONATION') {
       emailHtml = oneTimeDonationAdminNotification(
         data.customerName || '',
@@ -58,6 +63,7 @@ export default async function sendAdminNotification(notificationType: Notificati
         data.orderId || ''
       )
       subject = `New Donation — ${data.customerName} · $${data.totalAmount}`
+      recipientEmail = ericaEmail
     } else if (notificationType === 'RECURRING_DONATION') {
       emailHtml = recurringDonationAdminNotification(
         data.customerName || '',
@@ -67,9 +73,11 @@ export default async function sendAdminNotification(notificationType: Notificati
         data.recurringFrequency || 'Monthly'
       )
       subject = `New Recurring Donation — ${data.customerName} · $${data.totalAmount}/${data?.recurringFrequency === 'yearly' ? 'yr' : 'mo'}`
+      recipientEmail = ericaEmail
     } else {
       emailHtml = jobApplicationNotification(data.applicantName || `${data.firstName} ${data.lastName}`, data.email)
       subject = `New Job Application from ${data.applicantName || `${data.firstName} ${data.lastName}`}`
+      recipientEmail = infoEmail
     }
 
     await resend.emails.send({
