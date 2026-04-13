@@ -147,9 +147,8 @@ export const ticketPurchaseTemplate = (
           What's next?
         </p>
         <ol style="margin: 0; padding-left: 18px; color: #6b7280; font-size: 13px; line-height: 1.9;">
-          <li>Your tickets are saved to your account at bgcl.org</li>
-          <li>Download your PDF tickets from your order confirmation page</li>
-          <li>Bring your ticket confirmation to the event for entry</li>
+          <li>Your purchase history is saved to your account at bgcl.org</li>
+          <li>Tickets will be mailed to the address provided during checkout</li>
         </ol>
       </div>
     </div>
