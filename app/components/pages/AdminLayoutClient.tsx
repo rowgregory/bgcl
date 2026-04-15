@@ -14,7 +14,6 @@ import { adminNavigationLinkData } from '../../lib/constants/adminNavLinks'
 import dropdownActionItems from '../../lib/constants/dropdownActionItems'
 import { getCurrentPageId } from '../../lib/utils/getCurrentPageId'
 
-import AdminSidebar from '../../admin/sidebar'
 import ActionMenuButton from '../ui/buttons/ActionMenuButton'
 import ActionMenuDropdown from '../navigation/ActionMenuDropdown'
 import LogoutButton from '../ui/buttons/LogoutButton'
@@ -34,10 +33,10 @@ import { TeamMemberDrawer } from '../drawers/TeamMemberDrawer'
 import { TicketDrawer } from '../drawers/TicketDrawer'
 import { AdminTicketOrderDrawer } from '../drawers/AdminTicketOrderDrawer'
 import { UserDrawer } from '../drawers/UserDrawer'
-import { JobApplicationDrawer } from '../drawers/JobApplicationDrawer'
 import { ContactSubmissionDrawer } from '../drawers/ContactSubmissionDrawer'
+import AdminSidebar from '@/app/(authenticated)/admin/sidebar'
 
-const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
+export const AdminLayoutClient: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
   const pathname = usePathname()
   const session = useSession()
   const isSuperUser = session?.data?.user?.role === 'SUPERUSER'
@@ -64,7 +63,6 @@ const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
       <DonationDrawer />
       <AdminTicketOrderDrawer />
       <PartnerDrawer />
-      <JobApplicationDrawer />
       <ContactSubmissionDrawer />
 
       {/* ── Desktop header ── */}
@@ -127,5 +125,3 @@ const AdminLayout: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
     </>
   )
 }
-
-export default AdminLayout

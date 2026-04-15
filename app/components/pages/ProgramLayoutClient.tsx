@@ -7,13 +7,13 @@ import { store, useDashboardSelector } from '../../lib/store/store'
 import { ILayout } from '@/types/common'
 import { setCloseProgramSidebar, setToggleProgramSidebar } from '../../lib/store/slices/dashboardSlice'
 import { usePathname } from 'next/navigation'
-import { ProgramSidebar } from '../../program/sidebar'
 import { Menu } from 'lucide-react'
 import MobileMenuButton from '../ui/buttons/MobileMenuButton'
 import LogoutButton from '../ui/buttons/LogoutButton'
 import { programNavigationLinkData } from '@/app/lib/constants/programNavLinks'
+import { ProgramSidebar } from '@/app/(authenticated)/program/sidebar'
 
-export const ProgramClient: FC<ILayout> = ({ children }) => {
+export const ProgramLayoutClient: FC<ILayout> = ({ children }) => {
   const pathname = usePathname()
   const navigationGroups = programNavigationLinkData(pathname)
   const selectedPage = getCurrentPageId(pathname, navigationGroups)

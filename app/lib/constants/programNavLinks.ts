@@ -31,9 +31,9 @@ export const programNavigationLinkData = (
   const managementGroup = [
     {
       icon: DoorOpen,
-      label: 'Airlock',
-      path: '/program/airlock',
-      description: 'Pending Job Applications',
+      label: 'Job Applications',
+      path: '/program/job-applications',
+      description: 'Job Applications',
       active: isStringInPath(path, 'airlock')
     }
   ]

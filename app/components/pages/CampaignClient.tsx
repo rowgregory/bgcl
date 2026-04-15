@@ -4,7 +4,6 @@ import { ICampaign } from '@/types/entities/campaign'
 import { motion } from 'framer-motion'
 import { Heart, Users, Target, Calendar, Share2, ArrowLeft, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import Picture from '../common/Picture'
 import { formatDate } from '@/app/lib/utils/date-utils'
 import { MotionLink } from '../common/MotionLink'
@@ -14,7 +13,6 @@ interface CampaignPageProps {
 }
 
 export function CampaignClient({ campaign }: CampaignPageProps) {
-  const router = useRouter()
   const progress = Math.min((campaign?.currentAmount / campaign?.goalAmount) * 100, 100)
   const remaining = Math.max(campaign?.goalAmount - campaign?.currentAmount, 0)
   const supporters = campaign?._count?.orders || 0

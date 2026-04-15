@@ -3,12 +3,12 @@ import { LogOut, X } from 'lucide-react'
 import Link from 'next/link'
 import { store } from '@/app/lib/store/store'
 import { usePathname, useRouter } from 'next/navigation'
-import { setCloseProgramSidebar } from '../lib/store/slices/dashboardSlice'
 import { useSession } from 'next-auth/react'
 import { signOut } from 'next-auth/react'
-import { setIsLoading } from '../lib/store/slices/formSlice'
-import { showToast } from '../lib/store/slices/toastSlice'
-import { programNavigationLinkData } from '../lib/constants/programNavLinks'
+import { setCloseProgramSidebar } from '@/app/lib/store/slices/dashboardSlice'
+import { setIsLoading } from '@/app/lib/store/slices/formSlice'
+import { showToast } from '@/app/lib/store/slices/toastSlice'
+import { programNavigationLinkData } from '@/app/lib/constants/programNavLinks'
 
 export const ProgramSidebar = () => {
   const pathname = usePathname()

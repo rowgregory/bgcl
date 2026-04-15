@@ -20,6 +20,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import WelcomeAnimation from './components/WelcomeAnimation'
 import { Confetti3D } from './components/unique/Confetti3D'
 import { AnnouncementStrip } from './components/unique/AnnouncementStrip'
+import { JobApplicationDrawer } from './components/drawers/JobApplicationDrawer'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -39,6 +40,7 @@ export default function RootLayoutWrapper({ children, programs, pageContent, don
             <CapitalCampaignTab />
             <RegistrationModal modal={pageContent?.sections?.modal} />
             <MobileNavigationDrawer />
+            <JobApplicationDrawer />
             <WelcomeAnimation />
             <Confetti3D />
             <AnnouncementStrip hero={hero} />

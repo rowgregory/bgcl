@@ -10,7 +10,7 @@ import { getJobApplicationStatusBadge } from '@/app/lib/utils/getJobApplicationS
 import { store } from '@/app/lib/store/store'
 import { setOpenJobApplicationDrawer } from '@/app/lib/store/slices/uiSlice'
 
-export default function AirlockClient({ jobApplications }: { jobApplications: IJobApplication[] }) {
+export default function JobApplicationsClient({ jobApplications }: { jobApplications: IJobApplication[] }) {
   const [activeTab, setActiveTab] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -140,7 +140,7 @@ export default function AirlockClient({ jobApplications }: { jobApplications: IJ
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.03 }}
-                      className="bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                      className="bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer"
                     >
                       {/* Applicant */}
                       <td className="px-4 py-3">
