@@ -9,6 +9,7 @@ import { POSITION_LABELS, TAB_TO_STATUS, TABS } from '@/app/lib/constants/job-ap
 import { getJobApplicationStatusBadge } from '@/app/lib/utils/getJobApplicationStatusBadge'
 import { store } from '@/app/lib/store/store'
 import { setOpenJobApplicationDrawer } from '@/app/lib/store/slices/uiSlice'
+import { exportApplicationsAction } from '@/app/lib/actions/generateJobApplicationsPDF'
 
 export default function JobApplicationsClient({ jobApplications }: { jobApplications: IJobApplication[] }) {
   const [activeTab, setActiveTab] = useState('All')
@@ -35,10 +36,35 @@ export default function JobApplicationsClient({ jobApplications }: { jobApplicat
     rejected: jobApplications.filter((a) => a.status === 'REJECTED').length
   }
 
+  const [loading, setLoading] = useState(false)
+
+  const handleExportApplications = async () => {
+    setLoading(true)
+    try {
+      const buffer = await exportApplicationsAction()
+
+      const blob = new Blob([buffer], { type: 'application/pdf' })
+      const url = window.URL.createObjectURL(blob)
+
+      const now = new Date()
+
+      const date = now.toLocaleDateString('en-CA') // YYYY-MM-DD format
+
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `BGCLynn_Applications_Report_${date}.pdf`
+      a.click()
+
+      window.URL.revokeObjectURL(url)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="h-screen bg-white dark:bg-neutral-950 flex flex-col">
       {/* Tabs */}
-      <div className="fixed w-full border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-8 z-10 pb-3 lg:pb-0">
+      <div className="fixed w-full border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-8 z-10 pb-3 lg:pb-0 pt-20 lg:pt-0">
         <div className="flex flex-col lg:flex-row lg:items-center gap-y-3 lg:gap-x-8">
           <div className="flex gap-8">
             {TABS.map((tab) => (
@@ -79,28 +105,52 @@ export default function JobApplicationsClient({ jobApplications }: { jobApplicat
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-8 pb-6 pt-36 lg:pt-17">
+      <div className="flex-1 overflow-y-auto px-8 pb-6 pt-52 lg:pt-17">
         <div className="mx-auto">
           {/* Stats */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex gap-6">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-neutral-500 dark:text-neutral-400">Total:</span>
-                <span className="text-sm font-semibold text-neutral-900 dark:text-white">{stats.total}</span>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-6">
+            {/* STATS ROW */}
+            <div className="flex flex-wrap gap-x-4 gap-y-2 sm:gap-6">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Total:</span>
+                <span className="text-xs sm:text-sm font-semibold text-neutral-900 dark:text-white">{stats.total}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-neutral-500 dark:text-neutral-400">Pending:</span>
-                <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">{stats.pending}</span>
+
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Pending:</span>
+                <span className="text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-400">
+                  {stats.pending}
+                </span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-neutral-500 dark:text-neutral-400">Reviewing:</span>
-                <span className="text-sm font-semibold text-sky-600 dark:text-sky-400">{stats.review}</span>
+
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Reviewing:</span>
+                <span className="text-xs sm:text-sm font-semibold text-sky-600 dark:text-sky-400">{stats.review}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-neutral-500 dark:text-neutral-400">Approved:</span>
-                <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">{stats.approved}</span>
+
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Approved:</span>
+                <span className="text-xs sm:text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                  {stats.approved}
+                </span>
               </div>
             </div>
+
+            {/* EXPORT BUTTON */}
+            <button
+              disabled={loading}
+              onClick={handleExportApplications}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium rounded-full border border-sky-200 dark:border-sky-800 bg-white dark:bg-neutral-900 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-neutral-800 transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <>
+                  <span className="h-2 w-2 rounded-full bg-sky-500 animate-pulse" />
+                  Exporting...
+                </>
+              ) : (
+                'Export'
+              )}
+            </button>
           </div>
 
           {filteredApplications.length === 0 ? (
@@ -158,7 +208,7 @@ export default function JobApplicationsClient({ jobApplications }: { jobApplicat
                           {application.positionTypes?.map((position: PositionType) => (
                             <span
                               key={position}
-                              className="px-2 py-0.5 text-xs font-medium bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-full"
+                              className="px-2 py-0.5 text-xs font-medium bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-full whitespace-nowrap"
                             >
                               {POSITION_LABELS[position] ?? position}
                             </span>

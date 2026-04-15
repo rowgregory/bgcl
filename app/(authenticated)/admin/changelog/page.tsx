@@ -21,6 +21,26 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.17.5',
+    date: '2026-04-15',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Complete Job Applications PDF Export System',
+        description:
+          'Built a fully structured PDF export system for job applications including an executive summary, full applicant data export, references, driving history, certifications, and resume access via clickable links. The export is formatted as a professional HR-style report with improved readability, pagination, and dynamic filename generation.',
+        impact: 'high'
+      },
+      {
+        type: 'ui',
+        title: 'Improved Admin Stats Header Responsiveness and Export Button UI',
+        description:
+          'Enhanced the admin stats header layout to be fully responsive down to 320px using flex wrapping and improved spacing. Added export button with a modern pill-style Tailwind UI including loading states and better interaction feedback.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.17.4',
     date: '2026-04-13',
     changes: [
