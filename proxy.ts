@@ -24,7 +24,7 @@ export async function proxy(request) {
 
     if (role === 'ADMIN' || role === 'SUPERUSER')
       return NextResponse.redirect(new URL('/admin/mission-control', request.url))
-    if (role === 'PROGRAM') return NextResponse.redirect(new URL('/program/airlock', request.url))
+    if (role === 'PROGRAM') return NextResponse.redirect(new URL('/program/job-applications', request.url))
 
     const response = NextResponse.redirect(new URL(redirect || '/supporter/overview', request.url))
     response.cookies.delete('bgcl_redirect')

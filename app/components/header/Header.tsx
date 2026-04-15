@@ -23,7 +23,7 @@ export default function Header() {
     return ['ADMIN', 'SUPERUSER'].includes(data?.user?.role ?? '')
       ? '/admin/mission-control'
       : data?.user?.role === 'PROGRAM'
-        ? '/program/airlock'
+        ? '/program/job-applications'
         : '/supporter/overview'
   }
 

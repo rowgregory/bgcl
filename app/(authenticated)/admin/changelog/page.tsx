@@ -1422,7 +1422,7 @@ const changelogData: ChangelogEntry[] = [
         type: 'feature',
         title: 'Program Staff Role & Access Control',
         description:
-          'Introduced new PROGRAM role for program staff with dedicated access control. Program staff have their own isolated dashboard at /program/airlock and cannot access admin or supporter areas. Implemented complete middleware protection to enforce role-based routing.',
+          'Introduced new PROGRAM role for program staff with dedicated access control. Program staff have their own isolated dashboard at /program/job-applications and cannot access admin or supporter areas. Implemented complete middleware protection to enforce role-based routing.',
         impact: 'high'
       },
       {
@@ -1436,7 +1436,7 @@ const changelogData: ChangelogEntry[] = [
         type: 'feature',
         title: 'Role-Based Authentication Routing',
         description:
-          'Enhanced authentication middleware to redirect users to appropriate dashboards based on role: ADMIN/SUPERUSER to /admin/star-map/home, PROGRAM to /program/airlock, and SUPPORTER to /supporter/overview. Prevents cross-role navigation with automatic redirects.',
+          'Enhanced authentication middleware to redirect users to appropriate dashboards based on role: ADMIN/SUPERUSER to /admin/star-map/home, PROGRAM to /program/job-applications, and SUPPORTER to /supporter/overview. Prevents cross-role navigation with automatic redirects.',
         impact: 'high'
       },
       {
