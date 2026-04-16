@@ -11,6 +11,7 @@ import { initialClubResourceFormState } from '../../initial-states/club-resource
 import { initialCampaignFormState } from '../../initial-states/campaign'
 import { initialClosingFormState } from '../../initial-states/closing'
 import { initialPartnerFormState } from '../../initial-states/partner'
+import { initialDonateCheckoutFormState } from '../../initial-states/donate-checkout.initial-state'
 
 export type Inputs = {
   [key: string]: any
@@ -66,7 +67,8 @@ const formInitialState: InitialFormState = {
     closingForm: { inputs: initialClosingFormState, errors: {} },
     partnerForm: { inputs: initialPartnerFormState, errors: {} },
     ticketCheckoutForm: { inputs: { attendingEvent: true }, errors: {} },
-    paymentMethodForm: { inputs: { isDefault: false }, errors: {} }
+    paymentMethodForm: { inputs: { isDefault: false }, errors: {} },
+    donateCheckoutForm: { inputs: initialDonateCheckoutFormState, errors: {} }
   }
 }
 

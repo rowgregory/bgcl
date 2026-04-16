@@ -21,6 +21,61 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.17.6',
+    date: '2026-04-16',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Phone Number Collection at Checkout',
+        description:
+          'Added phone number as a required field to the donation checkout flow. Donors now provide their phone number alongside name and billing address during step 2 of checkout.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Phone Persisted Across All Checkout Paths',
+        description:
+          'Phone number collection and persistence was threaded through all four major checkout functions — createPaymentIntentForCheckout, createSetupIntentForCheckout, createSubscriptionAfterSetup, and createSubscriptionWithSavedCard — ensuring no checkout path misses the field regardless of payment method or subscription type.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Phone Number Stored on Order Record',
+        description:
+          'Updated the Stripe webhook handler to extract phone number from incoming payment event metadata and save it as customerPhone on the order record.',
+        impact: 'low'
+      },
+      {
+        type: 'feature',
+        title: 'updatePhoneNumber Server Action',
+        description:
+          'Created a dedicated updatePhoneNumber server action consistent with the existing updateUserName and updateAddress pattern. Phone, name, and address updates now run in parallel via Promise.all on step submission for faster checkout performance.',
+        impact: 'low'
+      },
+      {
+        type: 'improvement',
+        title: 'Phone Number Validation',
+        description:
+          'Added regex validation for US phone numbers supporting all common formats including dashes, dots, spaces, parentheses, and +1 country code prefix.',
+        impact: 'low'
+      },
+      {
+        type: 'improvement',
+        title: 'Removed Guest Checkout References',
+        description:
+          'Removed all remaining instances of "Guest" from the codebase. Guest checkout was officially deprecated when sign-in was moved to the first step of the donation flow.',
+        impact: 'low'
+      },
+      {
+        type: 'fix',
+        title: 'Standardized Zip Code Field Naming',
+        description:
+          'Aligned all instances of zip code to use zipPostalCode consistently across the codebase. Previously a mix of zipCode and zipPostalCode was used in different parts of the checkout flow, address forms, server actions, and webhook handler.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.17.5',
     date: '2026-04-15',
     changes: [

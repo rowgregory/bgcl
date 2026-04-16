@@ -1,11 +1,14 @@
 'use client'
 
 import { US_STATES } from '@/app/lib/constants/states'
-import { User, MapPin, ChevronRight, Loader2 } from 'lucide-react'
+import { formatPhone } from '@/app/lib/utils/phone.utils'
+import { isValidPhoneNumber, isValidZipPostalCode } from '@/app/lib/utils/regex'
+import { User, MapPin, ChevronRight, Loader2, Phone } from 'lucide-react'
 
 interface UserInfoForm {
   firstName: string
   lastName: string
+  phone: string
   addressLine1: string
   city: string
   state: string
@@ -25,21 +28,22 @@ const inputClass = `
 type ICheckoutStep2 = {
   onSubmit: () => void
   isLoading?: boolean
-  inputs: any
-  setErrors: any
+  inputs: Record<string, string>
+  setErrors: (errors: Record<string, string>) => void
   handleInput: any
-  errors: any
+  errors: Record<string, string>
 }
 
 function validate(inputs, setErrors): boolean {
   const newErrors: Partial<UserInfoForm> = {}
   if (!inputs?.firstName?.trim()) newErrors.firstName = 'First name is required'
   if (!inputs?.lastName?.trim()) newErrors.lastName = 'Last name is required'
+  if (!isValidPhoneNumber(inputs?.phone?.trim())) newErrors.phone = 'Phone number is required'
   if (!inputs?.addressLine1?.trim()) newErrors.addressLine1 = 'Address is required'
   if (!inputs?.city?.trim()) newErrors.city = 'City is required'
   if (!inputs?.state) newErrors.state = 'State is required'
   if (!inputs?.zipPostalCode?.trim()) newErrors.zipPostalCode = 'ZIP code is required'
-  else if (!/^\d{5}(-\d{4})?$/.test(inputs?.zipPostalCode)) newErrors.zipPostalCode = 'Enter a valid ZIP code'
+  else if (!isValidZipPostalCode(inputs?.zipPostalCode)) newErrors.zipPostalCode = 'Enter a valid ZIP code'
   setErrors(newErrors)
   return Object.keys(newErrors).length === 0
 }
@@ -64,7 +68,7 @@ export function CheckoutStep2({ onSubmit, isLoading = false, inputs, setErrors, 
           <div className="flex items-center gap-2 mb-3">
             <User className="w-4 h-4 dark:text-sky-400 text-sky-600 shrink-0" aria-hidden="true" />
             <p className="text-xs font-bold uppercase tracking-widest dark:text-neutral-400 text-neutral-500">
-              Full Name
+              Personal Details
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -118,6 +122,44 @@ export function CheckoutStep2({ onSubmit, isLoading = false, inputs, setErrors, 
                 </p>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Phone section */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Phone className="w-4 h-4 dark:text-sky-400 text-sky-600 shrink-0" aria-hidden="true" />
+            <p className="text-xs font-bold uppercase tracking-widest dark:text-neutral-400 text-neutral-500">
+              Contact Information
+            </p>
+          </div>
+
+          <div>
+            <label htmlFor="phone" className="block text-xs font-medium dark:text-neutral-300 text-neutral-700 mb-1.5">
+              Phone Number *
+            </label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              value={formatPhone(inputs.phone || '')}
+              onChange={(e) =>
+                handleInput({
+                  ...e,
+                  target: { ...e.target, name: 'phone', value: e.target.value.replace(/\D/g, '').slice(0, 10) }
+                })
+              }
+              placeholder="(978) 645-9865"
+              autoComplete="phone"
+              className={inputClass}
+              aria-invalid={!!errors?.phone}
+              aria-describedby={errors?.phone ? 'phone-error' : undefined}
+            />
+            {errors?.phone && (
+              <p id="phone-error" className="mt-1.5 text-xs text-red-500 dark:text-red-400" role="alert">
+                {errors?.phone}
+              </p>
+            )}
           </div>
         </div>
 

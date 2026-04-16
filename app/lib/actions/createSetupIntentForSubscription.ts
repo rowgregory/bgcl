@@ -12,6 +12,7 @@ interface SetupIntentParams {
   frequency: 'monthly' | 'yearly'
   coverFees?: boolean
   feesCovered?: number
+  phone?: string
 }
 
 export async function createSetupIntentForSubscription({
@@ -21,7 +22,8 @@ export async function createSetupIntentForSubscription({
   amount,
   frequency,
   coverFees,
-  feesCovered
+  feesCovered,
+  phone
 }: SetupIntentParams) {
   try {
     if (amount < 500) throw new Error('Minimum donation is $5')
@@ -47,7 +49,8 @@ export async function createSetupIntentForSubscription({
         amount: amount.toString(),
         type: 'RECURRING_DONATION',
         coverFees: coverFees ? 'true' : 'false',
-        feesCovered: feesCovered?.toString() || '0'
+        feesCovered: feesCovered?.toString() || '0',
+        phone
       }
     })
 

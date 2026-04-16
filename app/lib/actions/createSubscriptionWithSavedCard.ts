@@ -22,6 +22,7 @@ interface CreateSubscriptionWithSavedCardParams {
   notes?: string
   savedCardId?: string
   campaignId?: string
+  phone?: string
 }
 
 export async function createSubscriptionWithSavedCard({
@@ -35,7 +36,8 @@ export async function createSubscriptionWithSavedCard({
   address,
   notes,
   savedCardId,
-  campaignId
+  campaignId,
+  phone
 }: CreateSubscriptionWithSavedCardParams) {
   try {
     if (amount < 500) throw new Error('Minimum donation is $5')
@@ -83,7 +85,8 @@ export async function createSubscriptionWithSavedCard({
           zipCode: address?.zipCode || '',
           country: 'US',
           notes: notes || '',
-          campaignId: campaignId || ''
+          campaignId: campaignId || '',
+          phone
         }
       },
       {

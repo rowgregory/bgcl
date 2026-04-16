@@ -27,6 +27,7 @@ interface DonateCheckoutParams {
   savedCardId?: string
   campaignId?: string
   notes?: string
+  phone?: string
 }
 
 export async function createPaymentIntentForCheckout({
@@ -42,7 +43,8 @@ export async function createPaymentIntentForCheckout({
   address,
   notes,
   campaignId,
-  savedCardId
+  savedCardId,
+  phone
 }: DonateCheckoutParams) {
   try {
     if (amount < 500) {
@@ -79,7 +81,8 @@ export async function createPaymentIntentForCheckout({
         zipCode: address?.zipCode || '',
         country: 'US',
         notes: notes || '',
-        campaignId: campaignId || ''
+        campaignId: campaignId || '',
+        phone
       }
     }
 
@@ -118,6 +121,7 @@ export async function createPaymentIntentForCheckout({
       stripeError: error instanceof Error ? (error as any).code : undefined,
       name,
       email,
+      phone,
       savedCardId,
       userId
     })

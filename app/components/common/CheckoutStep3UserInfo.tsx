@@ -1,3 +1,4 @@
+import { formatPhone } from '@/app/lib/utils/phone.utils'
 import { IAddress } from '@/types/entities/address.types'
 import { motion } from 'framer-motion'
 import { signOut, useSession } from 'next-auth/react'
@@ -6,11 +7,13 @@ import { useState } from 'react'
 export function CheckoutStep3UserInfo({
   name,
   address,
-  setStep
+  setStep,
+  phone
 }: {
   name: string | null
   address: Partial<IAddress> | null
   setStep: (step: number) => void
+  phone?: string
 }) {
   const session = useSession()
   const email = session.data?.user?.email
@@ -66,6 +69,16 @@ export function CheckoutStep3UserInfo({
           <div className="flex items-center gap-2 sm:gap-4 px-4 py-3">
             <p className="text-xs font-medium dark:text-neutral-500 text-neutral-400 shrink-0 w-12 sm:w-24">Name</p>
             <p className="text-sm dark:text-white text-neutral-900 font-medium truncate flex-1 min-w-0">{name}</p>
+          </div>
+        )}
+
+        {/* Phone */}
+        {phone.trim() && (
+          <div className="flex items-center gap-2 sm:gap-4 px-4 py-3">
+            <p className="text-xs font-medium dark:text-neutral-500 text-neutral-400 shrink-0 w-12 sm:w-24">Phone</p>
+            <p className="text-sm dark:text-white text-neutral-900 font-medium truncate flex-1 min-w-0">
+              {formatPhone(phone)}
+            </p>
           </div>
         )}
 

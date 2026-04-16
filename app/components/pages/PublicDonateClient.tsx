@@ -14,20 +14,22 @@ import { CheckoutStepIndicator } from '../common/CheckoutStepIndicator'
 import { updateUserName } from '@/app/lib/actions/updateUserName'
 import { updateAddress } from '@/app/lib/actions/updateAddress'
 import { CheckoutStep2 } from '../common/CheckoutStep2'
-import { DonateCheckoutForm } from '../forms/DonateCheckoutForm'
+import { PublicDonateCheckoutForm } from '../forms/PublicDonateCheckoutForm'
 import { DonationFormLeftColumn } from '../donate-checkout/DonationFormLeftColumn'
 import { DonationFormHeader } from '../donate-checkout/DonationFormHeader'
+import { updatePhoneNumber } from '@/app/lib/actions/updatePhoneNumber'
 
 type IPublicDonateClient = {
   campaigns: ICampaign[]
   name: { firstName: string; lastName: string }
+  phone: string
   address: IAddress
   savedCards: IPaymentMethod[]
 }
 
 const donateCheckoutStepLabels = ['Sign In', 'User Info', 'Donate']
 
-export function PublicDonateClient({ campaigns, name, address, savedCards }: IPublicDonateClient) {
+export function PublicDonateClient({ campaigns, name, address, savedCards, phone }: IPublicDonateClient) {
   // ── Store ─────────────────────────────────────────────────────────────────
   const session = useSession()
   const isAuthed = session.status === 'authenticated'
@@ -36,7 +38,7 @@ export function PublicDonateClient({ campaigns, name, address, savedCards }: IPu
   const { handleInput, setErrors } = createFormActions('donateCheckoutForm', store.dispatch)
 
   // ── Derived ───────────────────────────────────────────────────────────────
-  const hasUserInfo = !!(name?.firstName?.trim() && name?.lastName?.trim() && address)
+  const hasUserInfo = !!(name?.firstName?.trim() && name?.lastName?.trim() && address && phone?.trim())
   const campaignName = searchParams.get('campaignName')
   const inputs = forms?.donateCheckoutForm?.inputs
   const errors = forms?.donateCheckoutForm?.errors
@@ -52,8 +54,8 @@ export function PublicDonateClient({ campaigns, name, address, savedCards }: IPu
 
   // ── Effects ───────────────────────────────────────────────────────────────
   useEffect(() => {
-    store.dispatch(setInputs({ formName: 'donateCheckoutForm', data: { ...name, ...address } }))
-  }, [address, name])
+    store.dispatch(setInputs({ formName: 'donateCheckoutForm', data: { ...name, ...address, ...{ phone } } }))
+  }, [address, name, phone])
 
   useEffect(() => {
     if (!stepFromUrl) return
@@ -61,19 +63,28 @@ export function PublicDonateClient({ campaigns, name, address, savedCards }: IPu
   }, [stepFromUrl, hasUserInfo])
 
   const handleStep2 = async () => {
+    const updates = []
+
     if (inputs?.firstName && inputs?.lastName) {
-      await updateUserName({ firstName: inputs.firstName, lastName: inputs.lastName })
+      updates.push(updateUserName({ firstName: inputs.firstName, lastName: inputs.lastName }))
+    }
+    if (inputs?.phone) {
+      updates.push(updatePhoneNumber({ phone: inputs.phone }))
     }
     if (inputs?.addressLine1) {
-      await updateAddress({
-        addressLine1: inputs.addressLine1,
-        addressLine2: inputs.addressLine2,
-        city: inputs.city,
-        state: inputs.state,
-        zipPostalCode: inputs.zipPostalCode,
-        country: 'US'
-      })
+      updates.push(
+        updateAddress({
+          addressLine1: inputs.addressLine1,
+          addressLine2: inputs.addressLine2,
+          city: inputs.city,
+          state: inputs.state,
+          zipPostalCode: inputs.zipPostalCode,
+          country: 'US'
+        })
+      )
     }
+
+    await Promise.all(updates)
     setStep(3)
   }
 
@@ -117,19 +128,13 @@ export function PublicDonateClient({ campaigns, name, address, savedCards }: IPu
             )}
 
             {step === 3 && (
-              <div className="dark:bg-zinc-900 dark:border-zinc-800 bg-neutral-100 border-neutral-200 rounded-lg border p-4 sm:p-6 md:p-8 shadow-sm">
-                <h2 className="text-xl sm:text-2xl font-bold dark:text-white text-neutral-900 mb-4 sm:mb-6">
-                  Make Your Donation
-                </h2>
-
-                <DonateCheckoutForm
-                  campaignName={campaignName}
-                  campaigns={campaigns}
-                  savedCards={savedCards}
-                  inputs={inputs}
-                  setStep={setStep}
-                />
-              </div>
+              <PublicDonateCheckoutForm
+                campaignName={campaignName}
+                campaigns={campaigns}
+                savedCards={savedCards}
+                inputs={inputs}
+                setStep={setStep}
+              />
             )}
 
             {/* Trust Badge */}

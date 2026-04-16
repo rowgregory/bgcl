@@ -21,6 +21,7 @@ interface CreateSubscriptionParams {
   }
   notes?: string
   campaignId?: string
+  phone?: string
 }
 
 export async function createSubscriptionAfterSetup({
@@ -33,7 +34,8 @@ export async function createSubscriptionAfterSetup({
   feesCovered,
   address,
   notes,
-  campaignId
+  campaignId,
+  phone
 }: CreateSubscriptionParams) {
   try {
     const setupIntent = await stripe.setupIntents.retrieve(setupIntentId)
@@ -84,7 +86,8 @@ export async function createSubscriptionAfterSetup({
           zipCode: address?.zipCode || '',
           country: address?.country || 'US',
           notes: notes || '',
-          campaignId: campaignId || ''
+          campaignId: campaignId || '',
+          phone
         }
       },
       {

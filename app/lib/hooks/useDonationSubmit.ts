@@ -12,6 +12,7 @@ export function useDonationSubmit({ inputs, finalAmount, feesCovered, usingSaved
   const stripe = useStripe()
   const elements = useElements()
   const session = useSession()
+  const userId = session.data?.user?.id
   const userEmail = session.data?.user?.email
   const { setupPusherListenerOneTime, getPaymentMethodId, setupPusherListenerRecurring } = usePaymentProcessor()
 
@@ -42,7 +43,7 @@ export function useDonationSubmit({ inputs, finalAmount, feesCovered, usingSaved
         await handleOneTimeDonation({
           stripe,
           elements,
-          session,
+          userId,
           userEmail,
           inputs,
           finalAmount,
@@ -58,7 +59,7 @@ export function useDonationSubmit({ inputs, finalAmount, feesCovered, usingSaved
         await handleRecurringDonation({
           stripe,
           elements,
-          session,
+          userId,
           userEmail,
           inputs,
           finalAmount,
@@ -85,7 +86,7 @@ export function useDonationSubmit({ inputs, finalAmount, feesCovered, usingSaved
 async function handleOneTimeDonation({
   stripe,
   elements,
-  session,
+  userId,
   userEmail,
   inputs,
   finalAmount,
@@ -98,7 +99,7 @@ async function handleOneTimeDonation({
   getPaymentMethodId
 }) {
   const intentResult = await createPaymentIntentForCheckout({
-    userId: session?.data?.user?.id,
+    userId,
     name: fullName,
     email: userEmail,
     amount: finalAmount,
@@ -109,8 +110,9 @@ async function handleOneTimeDonation({
     feesCovered,
     ...addressParams,
     savedCardId: usingSavedCard ? inputs?.selectedCardId : undefined,
+    campaignId: inputs?.campaign?.id,
     notes: inputs?.notes,
-    campaignId: inputs?.campaign?.id
+    phone: inputs?.phone
   })
 
   if (!intentResult.success) throw new Error(intentResult.error || 'Failed to create payment intent')
@@ -148,7 +150,7 @@ async function handleOneTimeDonation({
 async function handleRecurringDonation({
   stripe,
   elements,
-  session,
+  userId,
   userEmail,
   inputs,
   finalAmount,
@@ -161,7 +163,7 @@ async function handleRecurringDonation({
 }) {
   const frequency = inputs?.donationType === 'monthly' ? 'monthly' : ('yearly' as 'monthly' | 'yearly')
   const recurringBase = {
-    userId: session?.data?.user?.id,
+    userId,
     email: userEmail,
     name: fullName,
     amount: finalAmount,
@@ -170,7 +172,8 @@ async function handleRecurringDonation({
     feesCovered,
     ...addressParams,
     notes: inputs?.notes,
-    campaignId: inputs?.campaign?.id
+    campaignId: inputs?.campaign?.id,
+    phone: inputs?.phone
   }
 
   if (usingSavedCard) {
@@ -181,13 +184,14 @@ async function handleRecurringDonation({
   }
 
   const setupResult = await createSetupIntentForSubscription({
-    userId: session?.data?.user?.id,
+    userId,
     email: userEmail,
     name: fullName,
     amount: finalAmount,
     frequency,
     coverFees: inputs?.coverFees,
-    feesCovered
+    feesCovered,
+    phone: inputs?.phone
   })
 
   if (!setupResult.success) throw new Error(setupResult.error || 'Failed to create setup intent')
@@ -211,7 +215,8 @@ async function handleRecurringDonation({
     feesCovered,
     ...addressParams,
     notes: inputs?.notes,
-    campaignId: inputs?.campaign?.id
+    campaignId: inputs?.campaign?.id,
+    phone: inputs?.phone
   })
 
   if (!subscriptionResult.success) throw new Error(subscriptionResult.error || 'Failed to create subscription')

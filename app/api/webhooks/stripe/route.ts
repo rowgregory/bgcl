@@ -130,6 +130,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         paymentIntentId: id,
         customerEmail: (metadata?.email as string) || '',
         customerName: metadata?.name as string,
+        customerPhone: (metadata?.phone as string) || '',
         userId,
         paidAt: new Date(),
         billingAddress: {
@@ -353,7 +354,7 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   try {
     const orderType =
       (metadata?.orderType as 'ONE_TIME_DONATION' | 'RECURRING_DONATION' | 'TICKET_PURCHASE') || 'ONE_TIME_DONATION'
-    const userId = metadata?.userId && metadata.userId !== 'guest' ? metadata.userId : null
+    const userId = metadata.userId
 
     const order = await prisma.order.create({
       data: {
@@ -362,8 +363,9 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
         totalAmount: paymentIntent.amount / 100,
         paymentMethod: 'stripe',
         paymentIntentId: id,
-        customerEmail: (metadata?.email as string) || '',
-        customerName: (metadata?.name as string) || 'Guest',
+        customerEmail: metadata?.email as string,
+        customerName: metadata?.name as string,
+        customerPhone: (metadata?.phone as string) || '',
         userId,
         failureReason: last_payment_error?.message || 'Payment failed',
         failureCode: last_payment_error?.code || null
@@ -371,7 +373,7 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
     })
 
     // Push to same channel as successful orders
-    const channelId = userId || `guest-${paymentIntent.id}`
+    const channelId = userId
     await pusher.trigger(`payment-${channelId}`, 'order-failed', {
       orderId: order.id,
       error: last_payment_error?.message || 'Payment failed',
@@ -492,6 +494,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       frequency: subscription.metadata?.frequency || 'monthly',
       amount: subscription.items.data[0]?.price.unit_amount || 0,
       customerEmail: subscription.metadata?.email,
+      customerPhone: subscription.metadata?.phone,
       campaignId: subscription.metadata?.campaignId,
       currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
       createdAt: new Date(subscription.created * 1000)
@@ -651,7 +654,8 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
         paymentMethod: 'stripe',
         customerEmail: subscription.metadata?.email || invoice.customer_email || '',
         customerName: subscription.metadata?.name || '',
-        userId: userId && userId !== 'guest' ? userId : null,
+        customerPhone: subscription.metadata?.phone || '',
+        userId,
         stripeSubscriptionId: subscriptionId,
         paymentIntentId: paymentIntentId || null,
         paymentMethodId:
