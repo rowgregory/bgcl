@@ -26,10 +26,12 @@ export async function getCapsuleOverview() {
     const totalRevenue = ticketOrders.reduce((sum, o) => sum + o.totalAmount, 0)
     const totalTicketsSold = ticketOrders.reduce((sum, o) => sum + o.orderItems.reduce((s, i) => s + i.quantity, 0), 0)
     const totalAttendees = events.reduce((sum, e) => {
-      const uniqueEmails = new Set(e.orders.map((o) => o.customerEmail))
+      const uniqueEmails = new Set(e.orders.filter((o) => o.attendingEvent).map((o) => o.customerEmail))
       return sum + uniqueEmails.size
     }, 0)
-    const upcomingEvents = events.filter((e) => e.status === 'UPCOMING' && new Date(e.date) > now)
+    const upcomingEvents = events.filter(
+      (e) => (e.status === 'UPCOMING' || e.status === 'ONGOING') && new Date(e.date) > now
+    )
     const pastEvents = events.filter((e) => e.status === 'COMPLETED' || new Date(e.date) < now)
     const totalEvents = events.length
 

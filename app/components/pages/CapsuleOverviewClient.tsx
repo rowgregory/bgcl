@@ -197,7 +197,7 @@ export function CapsuleOverviewClient({ data }: { data: Awaited<ReturnType<typeo
                     title: e.title,
                     ticketsSold: e.tickets.reduce((sum, t) => sum + (t.quantitySold ?? 0), 0),
                     revenue: e.orders.reduce((sum, o) => sum + Number(o.totalAmount), 0),
-                    attendees: e.attendeeCount ?? 0
+                    attendees: e.guestCount ?? 0
                   }))}
                 >
                   {events.map((e, i) => {
@@ -402,7 +402,7 @@ export function CapsuleOverviewClient({ data }: { data: Awaited<ReturnType<typeo
                       </div>
                       <div>
                         <p className="text-xs text-neutral-500 dark:text-neutral-400">Attendees</p>
-                        <p className="text-lg font-bold text-neutral-900 dark:text-white">{event.attendeeCount ?? 0}</p>
+                        <p className="text-lg font-bold text-neutral-900 dark:text-white">{event.guestCount ?? 0}</p>
                       </div>
                       <div>
                         <p className="text-xs text-neutral-500 dark:text-neutral-400">Orders</p>

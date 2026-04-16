@@ -47,8 +47,6 @@ export function DonationDrawer() {
     }
   }
 
-  console.log(donation)
-
   const isCancelled = donation.status === 'CANCELLED'
 
   return (
