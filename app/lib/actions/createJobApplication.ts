@@ -40,7 +40,14 @@ export const createJobApplication = async (data: CreateJobApplicationInput) => {
       success: true,
       jobApplicationId: jobApplication.id
     }
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === 'P2002') {
+      return {
+        success: false,
+        error: 'An application with this email address has already been submitted.'
+      }
+    }
+
     await createLog('error', 'Failed to create job application', {
       error: error instanceof Error ? error.message : 'Unknown error',
       applicantName: data.applicantName,

@@ -56,29 +56,30 @@ export default function PublicGetInvolvedClient({ pageData }) {
       languages: stringifyArray(formData.languages as string[])
     }
 
-    try {
-      store.dispatch(setIsLoading(true))
-      const data = await createJobApplication(dataToSend as CreateJobApplicationInput)
+    store.dispatch(setIsLoading(true))
+    const result = await createJobApplication(dataToSend as CreateJobApplicationInput)
 
-      router.refresh()
-      router.push(`/get-involved/${data.jobApplicationId}`)
-      store.dispatch(
-        showToast({
-          message: 'Application submitted!',
-          description: 'We will review your application and get back to you shortly.'
-        })
-      )
-    } catch {
+    if (!result.success || !result.jobApplicationId) {
       store.dispatch(
         showToast({
           message: 'Submission failed',
-          description: 'Something went wrong submitting your application. Please try again.',
+          description: result.error ?? 'Something went wrong. Please try again.',
           type: 'error'
         })
       )
-    } finally {
       store.dispatch(setIsLoading(false))
+      return
     }
+
+    router.refresh()
+    router.push(`/get-involved/${result.jobApplicationId}`)
+    store.dispatch(
+      showToast({
+        message: 'Application submitted!',
+        description: 'We will review your application and get back to you shortly.'
+      })
+    )
+    store.dispatch(setIsLoading(false))
   }
 
   const progress = (currentStep / FORM_STEPS.length) * 100
