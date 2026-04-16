@@ -83,6 +83,8 @@ export function TicketCheckoutForm({ savedCards, inputs, setStep }: ICheckoutFor
   const isValid =
     salesStarted && !salesEnded && (usingSavedCard ? true : inputs?.cardComplete) && !!derivedName && !!derivedAddress
 
+  const showPaymentSection = salesStarted && !salesEnded && !!derivedName && !!derivedAddress
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -105,7 +107,7 @@ export function TicketCheckoutForm({ savedCards, inputs, setStep }: ICheckoutFor
           />
 
           {/* ── Payment ── */}
-          {isValid && (
+          {showPaymentSection && (
             <fieldset className="border-0 p-0 m-0">
               <legend className="text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-6">
                 Payment Method
@@ -124,6 +126,8 @@ export function TicketCheckoutForm({ savedCards, inputs, setStep }: ICheckoutFor
                     }
                   />
                 )}
+
+                <>{console.log('about to render CardElementField')}</>
 
                 {(!isAuthed || savedCards.length === 0 || inputs?.useNewCard) && (
                   <CardElementField formName="ticketCheckoutForm" />
