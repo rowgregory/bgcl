@@ -13,6 +13,7 @@ import {
   Loader2,
   MapPin,
   Pencil,
+  Phone,
   Plus,
   Ticket,
   Trash2,
@@ -32,6 +33,8 @@ import { setDefaultPaymentMethod } from '@/app/lib/actions/setDefaultPaymentMeth
 import { deletePaymentMethod } from '@/app/lib/actions/deletePaymentMethod'
 import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
 import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
+import { updatePhoneNumber } from '@/app/lib/actions/updatePhoneNumber'
+import { formatPhone } from '@/app/lib/utils/phone.utils'
 
 function SupporterOverviewFooter() {
   return (
@@ -63,7 +66,7 @@ function SupporterOverviewFooter() {
   )
 }
 
-const SupporterOverviewClient = ({ dashboard, address, name, savedCards }) => {
+const SupporterOverviewClient = ({ dashboard, address, name, savedCards, phone }) => {
   const hasActivity = dashboard?.recentDonations.length > 0 || dashboard?.upcomingEvents.length > 0
   const session = useSession()
   const router = useRouter()
@@ -72,6 +75,9 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards }) => {
   const [firstName, setFirstName] = useState(name?.firstName ?? '')
   const [lastName, setLastName] = useState(name?.lastName ?? '')
   const [savingName, setSavingName] = useState(false)
+  const [editingPhone, setEditingPhone] = useState(false)
+  const [savingPhone, setSavingPhone] = useState(false)
+  const [phoneNumber, setPhoneNumber] = useState(phone ?? '')
   const [deletingAddress, setDeletingAddress] = useState(false)
   const displayName =
     [firstName, lastName].filter(Boolean).join(' ') || session.data?.user?.name || session.data?.user?.email
@@ -104,6 +110,34 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards }) => {
       )
     } finally {
       setSavingName(false)
+    }
+  }
+
+  async function handleSavePhone() {
+    if (!phoneNumber.trim()) return
+    setSavingPhone(true)
+
+    try {
+      await updatePhoneNumber({ phone: phoneNumber.trim() })
+      setEditingPhone(false)
+      router.refresh()
+      store.dispatch(
+        showToast({
+          type: 'success',
+          message: 'Phone Number Updated!',
+          description: `Your phone number has been updated to ${[phoneNumber.trim()].filter(Boolean).join(' ')}.`
+        })
+      )
+    } catch (error) {
+      store.dispatch(
+        showToast({
+          type: 'error',
+          message: 'Failed to Update Phone Number',
+          description: error instanceof Error ? error.message : 'Something went wrong. Please try again.'
+        })
+      )
+    } finally {
+      setSavingPhone(false)
     }
   }
 
@@ -341,6 +375,82 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards }) => {
                     onClick={() => setEditingName(true)}
                     className="flex items-center gap-1.5 text-xs font-medium dark:text-neutral-500 text-neutral-400 dark:hover:text-neutral-300 hover:text-neutral-600 transition-colors"
                     aria-label="Edit your name"
+                  >
+                    <Pencil className="w-3 h-3" aria-hidden="true" />
+                    Edit
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Phone Number */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <div>
+                <h2 className="text-lg font-bold dark:text-white text-neutral-900">Your Phone Number</h2>
+                <p className="text-xs dark:text-neutral-500 text-neutral-500 mt-0.5">Used for our records only</p>
+              </div>
+            </div>
+
+            <div className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border rounded-xl p-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="shrink-0 w-8 h-8 rounded-lg dark:bg-neutral-800 bg-neutral-200 flex items-center justify-center">
+                  <Phone className="w-3.5 h-3.5 dark:text-sky-400 text-sky-600" aria-hidden="true" />
+                </div>
+                <div className="min-w-0">
+                  {editingPhone ? (
+                    <input
+                      type="text"
+                      value={formatPhone(phoneNumber) ?? ''}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      placeholder="(555) 444-3333"
+                      autoFocus
+                      onKeyDown={(e) => e.key === 'Enter' && handleSavePhone()}
+                      className="w-40 px-3 py-1.5 text-sm dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-white border-neutral-200 text-neutral-900 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+                    />
+                  ) : (
+                    <>
+                      <p className="text-sm font-medium dark:text-white text-neutral-900">
+                        {formatPhone([phone].filter(Boolean).join(' ')) || (
+                          <span className="dark:text-neutral-500 text-neutral-400 italic">No phone set</span>
+                        )}
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 shrink-0">
+                {editingPhone ? (
+                  <>
+                    <button
+                      onClick={handleSavePhone}
+                      disabled={savingPhone}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition-all disabled:opacity-50 active:scale-95"
+                    >
+                      {savingPhone ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <Check className="w-3.5 h-3.5" aria-hidden="true" />
+                      )}
+                      {savingPhone ? 'Saving...' : 'Save'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingPhone(false)
+                        setPhoneNumber(phone)
+                      }}
+                      className="text-xs font-medium dark:text-neutral-400 text-neutral-500 hover:dark:text-white hover:text-neutral-900 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setEditingPhone(true)}
+                    className="flex items-center gap-1.5 text-xs font-medium dark:text-neutral-500 text-neutral-400 dark:hover:text-neutral-300 hover:text-neutral-600 transition-colors"
+                    aria-label="Edit your phone number"
                   >
                     <Pencil className="w-3 h-3" aria-hidden="true" />
                     Edit

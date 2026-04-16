@@ -12,7 +12,8 @@ import {
   Logs,
   Rocket,
   Satellite,
-  Aperture
+  Aperture,
+  KeyRound
 } from 'lucide-react'
 
 const isStringInPath = (path: string, str: string) => path.includes(str)
@@ -27,7 +28,7 @@ export const adminNavigationLinkData = (
   const userGroup = [
     {
       icon: Orbit,
-      label: 'My Space',
+      label: 'Supporter Overview',
       path: '/supporter/overview',
       description: 'View your profile & donations',
       active: isStringInPath(path, 'supporter/overview')
@@ -36,10 +37,10 @@ export const adminNavigationLinkData = (
 
   const dashboardGroup = [
     {
-      icon: Rocket,
-      label: 'Mission Control',
+      icon: KeyRound,
+      label: 'Integrations',
       path: '/admin/mission-control',
-      description: 'Dashboard',
+      description: 'Integration credentials',
       active: isStringInPath(path, 'mission-control')
     }
   ]
@@ -156,10 +157,10 @@ export const adminNavigationLinkData = (
 
   return [
     { title: 'Dashboard', items: dashboardGroup },
-    { title: 'User', items: userGroup },
-    { title: 'Content', items: contentGroup },
     { title: 'Operations', items: operationsGroup },
     { title: 'Management', items: managementGroup },
+    { title: 'Content', items: contentGroup },
+    { title: 'User', items: userGroup },
     { title: 'System', items: systemGroup }
     // { title: 'Future', items: futureGroup }
   ]
