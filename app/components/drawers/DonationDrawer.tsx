@@ -47,6 +47,8 @@ export function DonationDrawer() {
     }
   }
 
+  console.log(donation)
+
   const isCancelled = donation.status === 'CANCELLED'
 
   return (
@@ -289,14 +291,24 @@ export function DonationDrawer() {
                     <MapPin className="w-4 h-4" />
                     Billing Address
                   </h3>
-                  <div className="text-sm text-neutral-900 dark:text-white space-y-1">
-                    {donation.billingAddress.address && <p>{donation.billingAddress.address}</p>}
-                    <p>
-                      {donation.billingAddress.city && `${donation.billingAddress.city}, `}
-                      {donation.billingAddress.state} {donation.billingAddress.zipCode}
+                  <div className="text-sm space-y-0.5">
+                    {donation.billingAddress.addressLine1 && (
+                      <p className="dark:text-white text-neutral-900 font-medium">
+                        {donation.billingAddress.addressLine1}
+                      </p>
+                    )}
+                    {donation.billingAddress.addressLine2 && (
+                      <p className="dark:text-neutral-300 text-neutral-700">{donation.billingAddress.addressLine2}</p>
+                    )}
+                    <p className="dark:text-neutral-300 text-neutral-700">
+                      {[donation.billingAddress.city, donation.billingAddress.state, donation.billingAddress.zipCode]
+                        .filter(Boolean)
+                        .join(', ')}
                     </p>
                     {donation.billingAddress.country && (
-                      <p className="text-neutral-600 dark:text-neutral-400">{donation.billingAddress.country}</p>
+                      <p className="dark:text-neutral-500 text-neutral-400 text-xs uppercase tracking-wider font-medium">
+                        {donation.billingAddress.country}
+                      </p>
                     )}
                   </div>
                 </div>
