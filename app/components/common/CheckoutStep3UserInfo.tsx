@@ -73,7 +73,7 @@ export function CheckoutStep3UserInfo({
         )}
 
         {/* Phone */}
-        {phone.trim() && (
+        {phone?.trim() && (
           <div className="flex items-center gap-2 sm:gap-4 px-4 py-3">
             <p className="text-xs font-medium dark:text-neutral-500 text-neutral-400 shrink-0 w-12 sm:w-24">Phone</p>
             <p className="text-sm dark:text-white text-neutral-900 font-medium truncate flex-1 min-w-0">
