@@ -344,8 +344,7 @@ function createPDF(orders: any[], stats: DonationStats, filters: ReportFilters):
           } else {
             // Format full address
             const parts = []
-            if (addr.address) parts.push(addr.address)
-            if (addr.addressLine1) parts.push(addr.addressLine1)
+            if (addr.address || addr.addressLine1) parts.push(addr.address || addr.addressLine1)
             if (addr.addressLine2) parts.push(addr.addressLine2)
             if (addr.city) parts.push(addr.city)
             if (addr.state) parts.push(addr.state)
