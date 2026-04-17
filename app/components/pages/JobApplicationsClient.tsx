@@ -14,6 +14,7 @@ import { exportApplicationsAction } from '@/app/lib/actions/generateJobApplicati
 export default function JobApplicationsClient({ jobApplications }: { jobApplications: IJobApplication[] }) {
   const [activeTab, setActiveTab] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const filterByTab = (tab: string) => setActiveTab(tab)
 
@@ -35,8 +36,6 @@ export default function JobApplicationsClient({ jobApplications }: { jobApplicat
     approved: jobApplications.filter((a) => a.status === 'APPROVED').length,
     rejected: jobApplications.filter((a) => a.status === 'REJECTED').length
   }
-
-  const [loading, setLoading] = useState(false)
 
   const handleExportApplications = async () => {
     setLoading(true)

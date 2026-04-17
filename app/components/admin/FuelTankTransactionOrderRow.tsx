@@ -48,9 +48,7 @@ export default function FuelTankTransactionOrderRow({ order, index }: { order: I
       <td className="px-4 py-3 whitespace-nowrap">
         <div className="flex items-center gap-1.5">
           <User className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-          <span className="text-sm text-neutral-900 dark:text-white max-w-30 truncate">
-            {order?.customerName || 'Guest'}
-          </span>
+          <span className="text-sm text-neutral-900 dark:text-white max-w-30 truncate">{order?.customerName}</span>
         </div>
       </td>
 

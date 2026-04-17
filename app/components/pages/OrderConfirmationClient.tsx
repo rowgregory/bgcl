@@ -200,7 +200,7 @@ export default function OrderConfirmationClient({ order }) {
                 <p className="font-semibold">{order.billingAddress.address || order.billingAddress.addressLine1}</p>
                 {order.billingAddress?.addressLine2 && <p>Unit {order.billingAddress?.addressLine2}</p>}
                 <p>
-                  {order.billingAddress.city}, {order.billingAddress.state} {order.billingAddress.zipCode}
+                  {order.billingAddress.city}, {order.billingAddress.state} {order.billingAddress.zipPostalCode}
                 </p>
                 <p>{order.billingAddress.country}</p>
               </div>

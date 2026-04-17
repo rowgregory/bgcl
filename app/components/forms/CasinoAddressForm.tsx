@@ -11,7 +11,7 @@ export function CasinoAddressForm() {
   const [addressLine2, setAddressLine2] = useState('')
   const [city, setCity] = useState('')
   const [state, setState] = useState('')
-  const [zipCode, setZipCode] = useState('')
+  const [zipPostalCode, setzipPostalCode] = useState('')
   const [savingAddress, setSavingAddress] = useState(false)
   const { soundOn } = useUiSelector()
 
@@ -19,7 +19,7 @@ export function CasinoAddressForm() {
   const router = useRouter()
 
   const handleSaveAddress = async () => {
-    if (!addressLine1.trim() || !city.trim() || !state || !zipCode.trim()) return
+    if (!addressLine1.trim() || !city.trim() || !state || !zipPostalCode.trim()) return
     setSavingAddress(true)
     try {
       await updateAddress({
@@ -27,7 +27,7 @@ export function CasinoAddressForm() {
         addressLine2: addressLine2.trim() || undefined,
         city: city.trim(),
         state,
-        zipPostalCode: zipCode.trim(),
+        zipPostalCode: zipPostalCode.trim(),
         country: 'US'
       })
       play()
@@ -86,8 +86,8 @@ export function CasinoAddressForm() {
         </select>
         <input
           type="text"
-          value={zipCode}
-          onChange={(e) => setZipCode(e.target.value)}
+          value={zipPostalCode}
+          onChange={(e) => setzipPostalCode(e.target.value)}
           placeholder="ZIP"
           autoComplete="postal-code"
           inputMode="numeric"
@@ -99,7 +99,7 @@ export function CasinoAddressForm() {
       {/* Save button */}
       <button
         onClick={handleSaveAddress}
-        disabled={savingAddress || !addressLine1.trim() || !city.trim() || !state || !zipCode.trim()}
+        disabled={savingAddress || !addressLine1.trim() || !city.trim() || !state || !zipPostalCode.trim()}
         className="oswald relative w-full flex items-center justify-center gap-2 py-3.5 text-[13px] font-black uppercase tracking-widest text-white overflow-hidden focus:outline-none active:scale-[0.98] transition-transform disabled:opacity-40 disabled:cursor-not-allowed mt-1"
         style={{ background: 'linear-gradient(135deg, #7f0000 0%, #c0392b 45%, #e74c3c 65%, #922b21 100%)' }}
       >

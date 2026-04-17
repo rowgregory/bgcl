@@ -21,6 +21,19 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.18.0',
+    date: '2026-04-17',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Events Financial Report Generator',
+        description:
+          'Added a downloadable PDF report for event orders. Includes an executive summary with total revenue, event count, fees covered, and order totals, plus a per-event breakdown table.',
+        impact: 'high'
+      }
+    ]
+  },
+  {
     version: '1.17.6',
     date: '2026-04-16',
     changes: [

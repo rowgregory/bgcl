@@ -127,8 +127,6 @@ export function TicketCheckoutForm({ savedCards, inputs, setStep }: ICheckoutFor
                   />
                 )}
 
-                <>{console.log('about to render CardElementField')}</>
-
                 {(!isAuthed || savedCards.length === 0 || inputs?.useNewCard) && (
                   <CardElementField formName="ticketCheckoutForm" />
                 )}

@@ -208,7 +208,7 @@ export const AdminTicketOrderDrawer = () => {
                   {billingAddress.addressLine2 && <Field label="Unit/Apt" value={billingAddress.addressLine2} />}
                   {billingAddress.city && <Field label="City" value={billingAddress.city} />}
                   {billingAddress.state && <Field label="State" value={billingAddress.state} />}
-                  {billingAddress.zipCode && <Field label="ZIP" value={billingAddress.zipCode} />}
+                  {billingAddress.zipPostalCode && <Field label="ZIP" value={billingAddress.zipPostalCode} />}
                   {billingAddress.country && <Field label="Country" value={billingAddress.country} />}
                 </Section>
               )}

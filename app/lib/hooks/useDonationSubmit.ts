@@ -28,7 +28,7 @@ export function useDonationSubmit({ inputs, finalAmount, feesCovered, usingSaved
       addressLine2: inputs?.addressLine2,
       city: inputs?.city,
       state: inputs?.state,
-      zipCode: inputs?.zipPostalCode
+      zipPostalCode: inputs?.zipPostalCode
     }
   }
 

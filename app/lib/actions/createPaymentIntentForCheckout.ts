@@ -21,7 +21,7 @@ interface DonateCheckoutParams {
     addressLine2?: string
     city?: string
     state?: string
-    zipCode?: string
+    zipPostalCode?: string
     country?: string
   }
   savedCardId?: string
@@ -78,7 +78,7 @@ export async function createPaymentIntentForCheckout({
         addressLine2: address?.addressLine2 || '',
         city: address?.city || '',
         state: address?.state || '',
-        zipCode: address?.zipCode || '',
+        zipPostalCode: address?.zipPostalCode || '',
         country: 'US',
         notes: notes || '',
         campaignId: campaignId || '',

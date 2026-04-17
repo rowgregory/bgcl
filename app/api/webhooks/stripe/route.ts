@@ -138,7 +138,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
           addressLine2: metadata.addressLine2,
           city: metadata.city,
           state: metadata.state,
-          zipCode: metadata.zipCode,
+          zipPostalCode: metadata.zipPostalCode,
           country: metadata.country
         },
         notes: metadata.notes || null,
@@ -673,7 +673,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
           addressLine2: subscription.metadata?.addressLine2 || '',
           city: subscription.metadata?.city || '',
           state: subscription.metadata?.state || '',
-          zipCode: subscription.metadata?.zipCode || '',
+          zipPostalCode: subscription.metadata?.zipPostalCode || '',
           country: subscription.metadata?.country || ''
         },
         notes: subscription.metadata?.notes || null,

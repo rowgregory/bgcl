@@ -348,7 +348,7 @@ function createPDF(orders: any[], stats: DonationStats, filters: ReportFilters):
             if (addr.addressLine2) parts.push(addr.addressLine2)
             if (addr.city) parts.push(addr.city)
             if (addr.state) parts.push(addr.state)
-            if (addr.zipCode || addr.zip) parts.push(addr.zipCode || addr.zip)
+            if (addr.zipPostalCode || addr.zipCode) parts.push(addr.zipPostalCode || addr.zipCode)
 
             addressStr = parts.length > 0 ? parts.join(', ') : 'N/A'
           }

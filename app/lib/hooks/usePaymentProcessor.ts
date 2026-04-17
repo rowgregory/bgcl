@@ -26,7 +26,7 @@ export function usePaymentProcessor() {
     setProcessingStatus?: any,
     setLoading?: any
   ) => {
-    const channelId = session?.data?.user?.id || `guest-${paymentIntentId}`
+    const channelId = session?.data?.user?.id
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER
     })

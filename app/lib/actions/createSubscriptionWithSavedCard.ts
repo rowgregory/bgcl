@@ -16,7 +16,7 @@ interface CreateSubscriptionWithSavedCardParams {
     addressLine2?: string
     city?: string
     state?: string
-    zipCode?: string
+    zipPostalCode?: string
     country?: string
   }
   notes?: string
@@ -82,7 +82,7 @@ export async function createSubscriptionWithSavedCard({
           addressLine2: address?.addressLine2 || '',
           city: address?.city || '',
           state: address?.state || '',
-          zipCode: address?.zipCode || '',
+          zipPostalCode: address?.zipPostalCode || '',
           country: 'US',
           notes: notes || '',
           campaignId: campaignId || '',

@@ -299,7 +299,11 @@ export function DonationDrawer() {
                       <p className="dark:text-neutral-300 text-neutral-700">{donation.billingAddress.addressLine2}</p>
                     )}
                     <p className="dark:text-neutral-300 text-neutral-700">
-                      {[donation.billingAddress.city, donation.billingAddress.state, donation.billingAddress.zipCode]
+                      {[
+                        donation.billingAddress.city,
+                        donation.billingAddress.state,
+                        donation.billingAddress.zipPostalCode
+                      ]
                         .filter(Boolean)
                         .join(', ')}
                     </p>

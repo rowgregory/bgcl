@@ -52,7 +52,7 @@ export function useTicketCheckoutSubmit({ inputs, amountInCents, processingFee, 
           addressLine2: inputs?.addressLine2,
           city: inputs?.city,
           state: inputs?.state,
-          zipCode: inputs?.zipPostalCode,
+          zipPostalCode: inputs?.zipPostalCode,
           country: inputs?.country
         },
         savedCardId: usingSavedCard ? inputs?.selectedCardId : undefined,
