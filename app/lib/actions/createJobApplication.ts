@@ -4,6 +4,8 @@ import prisma from '@/prisma/client'
 import sendAdminNotification from '../utils/sendAdminNotification'
 import { createLog } from './createLog'
 import { CreateJobApplicationInput } from '@/types/entities/job-application'
+import { resend } from '../resend'
+import { jobApplicationConfirmationEmail } from '../email-templates/job-applicant.template'
 
 export const createJobApplication = async (data: CreateJobApplicationInput) => {
   try {
@@ -22,11 +24,17 @@ export const createJobApplication = async (data: CreateJobApplicationInput) => {
       }
     })
 
-    // Send admin notification email for job application
     try {
       await sendAdminNotification('JOB_APPLICATION', {
         applicantName: data.applicantName.trim(),
         email: data.email.trim()
+      })
+
+      await resend.emails.send({
+        from: `Boys & Girls Club of Lynn <${process.env.RESEND_FROM_EMAIL}>`,
+        to: jobApplication.email,
+        subject: 'Thank You for Applying — Boys & Girls Club of Lynn',
+        html: jobApplicationConfirmationEmail()
       })
     } catch (emailError) {
       await createLog('error', 'Failed to send admin notification', {

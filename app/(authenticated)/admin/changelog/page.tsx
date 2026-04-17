@@ -21,6 +21,26 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.18.1',
+    date: '2026-04-17',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Job Application Confirmation Email',
+        description:
+          'Added a confirmation email sent to applicants upon submission. Covers the two-week review timeline, high-volume caveat, and sign-off from Boys & Girls Club of Lynn. No dynamic variables — fully static template.',
+        impact: 'medium'
+      },
+      {
+        type: 'ui',
+        title: 'Job Application Confirmation Page Redesigned',
+        description:
+          'Removed the two-column layout in favor of a single centered max-w-3xl column. Left sidebar (status card, contact card) replaced with inline cards at the bottom of the page. Email copy surfaced directly on the page in a confirmation banner that also shows the address the confirmation was sent to.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.18.0',
     date: '2026-04-17',
     changes: [
