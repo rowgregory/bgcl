@@ -28,7 +28,7 @@ const changelogData: ChangelogEntry[] = [
         type: 'feature',
         title: 'Admin Financial Dashboard',
         description:
-          'New dashboard page under Mission Control with 6 stat cards: Total Revenue, Total Supporters, Tickets Sold, Revenue This Month (with vs last month delta), Total Orders, and Fees Covered. Includes a recent orders table showing the 10 most recent confirmed orders with date, supporter, event, type, status, and amount.',
+          'New dashboard page with 6 stat cards: Total Revenue, Total Supporters, Tickets Sold, Revenue This Month (with vs last month delta), Total Orders, and Fees Covered. Includes a recent orders table showing the 10 most recent confirmed orders with date, supporter, event, type, status, and amount.',
         impact: 'high'
       },
       {
