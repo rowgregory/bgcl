@@ -4,7 +4,20 @@ import { createLog } from './createLog'
 export const getUsers = async () => {
   try {
     const users = await prisma.user.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      include: {
+        orders: {
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            type: true,
+            status: true,
+            totalAmount: true,
+            createdAt: true
+          }
+        },
+        address: true
+      }
     })
 
     return users

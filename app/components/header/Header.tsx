@@ -21,7 +21,7 @@ export default function Header() {
   const getLaunchPath = () => {
     if (status !== 'authenticated') return '/auth/login'
     return ['ADMIN', 'SUPERUSER'].includes(data?.user?.role ?? '')
-      ? '/admin/mission-control'
+      ? '/admin/dashboard'
       : data?.user?.role === 'PROGRAM'
         ? '/program/job-applications'
         : '/supporter/overview'

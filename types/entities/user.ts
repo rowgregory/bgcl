@@ -1,19 +1,5 @@
-// Enums
-export enum Role {
-  STAFF = 'STAFF',
-  VOLUNTEER = 'VOLUNTEER',
-  ADMIN = 'ADMIN',
-  SUPERUSER = 'SUPERUSER',
-  SUPPORTER = 'SUPPORTER',
-  PROGRAM = 'PROGRAM'
-}
-
-export enum StaffStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  ON_LEAVE = 'ON_LEAVE',
-  TERMINATED = 'TERMINATED'
-}
+import { Role, StaffStatus } from '@prisma/client'
+import { JsonValue } from '@prisma/client/runtime/library'
 
 export interface IUser {
   id: string
@@ -33,7 +19,7 @@ export interface IUser {
   staffStatus: StaffStatus | null
 
   // Flexible user-specific data
-  metadata: Record<string, unknown> | null
+  metadata: Record<string, unknown> | null | JsonValue
 
   createdAt: Date
   updatedAt: Date

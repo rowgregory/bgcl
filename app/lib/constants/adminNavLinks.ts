@@ -1,19 +1,19 @@
 import {
-  Globe,
-  Shield,
-  Fuel,
-  BookOpen,
-  GitCommit,
-  Radio,
   LucideIcon,
-  MessageSquare,
-  DoorOpen,
-  Orbit,
   Logs,
-  Rocket,
-  Satellite,
-  Aperture,
-  KeyRound
+  LayoutDashboard,
+  Plug,
+  Pencil,
+  Image,
+  Library,
+  CalendarDays,
+  HandCoins,
+  Users,
+  Mail,
+  Inbox,
+  BriefcaseBusiness,
+  GitCommit,
+  UserCircle
 } from 'lucide-react'
 
 const isStringInPath = (path: string, str: string) => path.includes(str)
@@ -27,7 +27,7 @@ export const adminNavigationLinkData = (
 }[] => {
   const userGroup = [
     {
-      icon: Orbit,
+      icon: UserCircle,
       label: 'Supporter Overview',
       path: '/supporter/overview',
       description: 'View your profile & donations',
@@ -37,7 +37,14 @@ export const adminNavigationLinkData = (
 
   const dashboardGroup = [
     {
-      icon: KeyRound,
+      icon: LayoutDashboard,
+      label: 'Dashboard',
+      path: '/admin/dashboard',
+      description: 'Key Performance Indicators',
+      active: isStringInPath(path, 'dashboard')
+    },
+    {
+      icon: Plug,
       label: 'Integrations',
       path: '/admin/mission-control',
       description: 'Integration credentials',
@@ -47,21 +54,21 @@ export const adminNavigationLinkData = (
 
   const contentGroup = [
     {
-      icon: Globe,
+      icon: Pencil,
       label: 'Page Content Editor',
       path: '/admin/star-map/home',
       description: 'Public Site Content',
       active: isStringInPath(path, 'star-map')
     },
     {
-      icon: Aperture,
+      icon: Image,
       label: 'Hero Studio',
       path: '/admin/hero',
       description: 'Hero Studio & Campaign Visuals',
       active: isStringInPath(path, 'hero')
     },
     {
-      icon: BookOpen,
+      icon: Library,
       label: 'The Library',
       path: '/admin/the-library/programs',
       description: 'Newsletters & Club Resources',
@@ -71,14 +78,14 @@ export const adminNavigationLinkData = (
 
   const operationsGroup = [
     {
-      icon: Satellite,
+      icon: CalendarDays,
       label: 'Events & Raffles',
       path: '/admin/capsule/overview',
       description: 'Event Management',
       active: isStringInPath(path, 'capsule')
     },
     {
-      icon: Fuel,
+      icon: HandCoins,
       label: 'Donations',
       path: '/admin/fuel-tank/overview',
       description: 'Organize Assets',
@@ -88,40 +95,33 @@ export const adminNavigationLinkData = (
 
   const managementGroup = [
     {
-      icon: Shield,
+      icon: Users,
       label: 'Users',
       path: '/admin/command-pod',
       description: '',
       active: isStringInPath(path, 'command-pod')
     },
     {
-      icon: Radio,
+      icon: Mail,
       label: 'Newsletter Emails',
       path: '/admin/signal-relay',
       description: 'Manage Newsletter Subscribers',
       active: isStringInPath(path, 'signal-relay')
     },
     {
-      icon: MessageSquare,
+      icon: Inbox,
       label: 'Contact Submissions',
       path: '/admin/transmissions',
       description: 'Contact Form Submissions',
       active: isStringInPath(path, 'transmissions')
     },
     {
-      icon: DoorOpen,
+      icon: BriefcaseBusiness,
       label: 'Job Applications',
       path: '/admin/airlock',
       description: 'Pending Job Applications',
       active: isStringInPath(path, 'airlock')
     }
-    // {
-    //   icon: Sliders,
-    //   label: 'Operation Panel',
-    //   path: '/admin/operations-panel',
-    //   description: 'System Settings',
-    //   active: isStringInPath(path, 'operations-panel')
-    // },
   ]
 
   const systemGroup = [
@@ -145,23 +145,12 @@ export const adminNavigationLinkData = (
       : [])
   ]
 
-  // const futureGroup = [
-  //   {
-  //     icon: ScanLine,
-  //     label: 'Cryo Chamber',
-  //     path: '/admin/cryo-chamber',
-  //     description: 'Future features in stasis',
-  //     active: isStringInPath(path, 'cryo-chamber')
-  //   }
-  // ]
-
   return [
-    { title: 'Dashboard', items: dashboardGroup },
+    { title: 'Overview', items: dashboardGroup },
     { title: 'Operations', items: operationsGroup },
     { title: 'Management', items: managementGroup },
     { title: 'Content', items: contentGroup },
-    { title: 'User', items: userGroup },
+    { title: 'Profile', items: userGroup },
     { title: 'System', items: systemGroup }
-    // { title: 'Future', items: futureGroup }
   ]
 }

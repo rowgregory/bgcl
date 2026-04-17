@@ -22,8 +22,7 @@ export async function proxy(request) {
   if (pathname === '/auth/login' && role) {
     const redirect = request.cookies.get('bgcl_redirect')?.value
 
-    if (role === 'ADMIN' || role === 'SUPERUSER')
-      return NextResponse.redirect(new URL('/admin/mission-control', request.url))
+    if (role === 'ADMIN' || role === 'SUPERUSER') return NextResponse.redirect(new URL('/admin/dashboard', request.url))
     if (role === 'PROGRAM') return NextResponse.redirect(new URL('/program/job-applications', request.url))
 
     const response = NextResponse.redirect(new URL(redirect || '/supporter/overview', request.url))

@@ -21,6 +21,26 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.18.2',
+    date: '2026-04-17',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Admin Financial Dashboard',
+        description:
+          'New dashboard page under Mission Control with 6 stat cards: Total Revenue, Total Supporters, Tickets Sold, Revenue This Month (with vs last month delta), Total Orders, and Fees Covered. Includes a recent orders table showing the 10 most recent confirmed orders with date, supporter, event, type, status, and amount.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Navigation De-themed',
+        description:
+          'Removed space-themed icons (Orbit, Satellite, Fuel, Radio, DoorOpen, Aperture) and replaced with straightforward Lucide equivalents. Overview group renamed from Mission Control to Overview.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.18.1',
     date: '2026-04-17',
     changes: [

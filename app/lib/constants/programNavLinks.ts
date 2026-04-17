@@ -8,16 +8,6 @@ export const programNavigationLinkData = (
   title: string
   items: { icon: LucideIcon; label: string; path: string; description: string; active: boolean; isDrawer?: boolean }[]
 }[] => {
-  // const dashboardGroup = [
-  //   {
-  //     icon: Rocket,
-  //     label: 'Mission Control',
-  //     path: '/program/mission-control',
-  //     description: 'Dashboard',
-  //     active: isStringInPath(path, 'mission-control')
-  //   }
-  // ]
-
   const userGroup = [
     {
       icon: Orbit,
@@ -39,7 +29,6 @@ export const programNavigationLinkData = (
   ]
 
   return [
-    // { title: 'Dashboard', items: dashboardGroup },
     { title: 'User', items: userGroup },
     { title: 'Management', items: managementGroup }
   ]

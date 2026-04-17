@@ -577,7 +577,9 @@ export default function FuelTankOverviewClient({ stats }: { stats: any }) {
                 <span className="text-sm dark:text-neutral-300 text-neutral-700">One-Time</span>
                 <span className="text-lg font-black dark:text-amber-400 text-amber-600">{stats?.oneTime}</span>
               </div>
-              <p className="text-xs dark:text-neutral-500 text-neutral-600">Total: ${stats?.oneTimeTotal ?? 0}</p>
+              <p className="text-xs dark:text-neutral-500 text-neutral-600">
+                Total: ${stats?.oneTimeTotal?.toFixed(2) ?? 0}
+              </p>
             </div>
           </div>
         </motion.div>

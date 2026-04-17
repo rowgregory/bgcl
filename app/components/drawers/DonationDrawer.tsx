@@ -21,6 +21,11 @@ import {
   XCircle
 } from 'lucide-react'
 
+const normalizeFees = (raw: any) => {
+  const n = Number(raw ?? 0)
+  return Number.isInteger(n) ? n / 100 : n
+}
+
 export function DonationDrawer() {
   const { donation, donationDrawer } = useDashboardSelector()
   const onClose = () => store.dispatch(setCloseDonationDrawer())
@@ -204,7 +209,7 @@ export function DonationDrawer() {
                   <div className="flex items-center gap-2 mt-3 pt-3 border-t border-emerald-200 dark:border-emerald-800">
                     <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
-                      Covered ${(donation.feesCovered / 100).toFixed(2)} in processing fees
+                      Covered ${normalizeFees(donation.feesCovered)} in processing fees
                     </span>
                   </div>
                 )}
