@@ -12,7 +12,12 @@ export interface DashboardStats {
   ticketsSold: number
   totalOrders: number
   totalFeesCovered: number
-  recentOrders: any
+  recentOrders: any[]
+}
+
+const normalizeFees = (raw: any) => {
+  const n = Number(raw ?? 0)
+  return Number.isInteger(n) ? n / 100 : n
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
@@ -22,29 +27,11 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
     const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59)
 
-    const [
-      confirmedOrders,
-      ordersThisMonth,
-      ordersLastMonth,
-      totalSupporters,
-      newSupportersThisMonth,
-      ticketsSold,
-      totalOrders,
-      recentOrders
-    ] = await Promise.all([
+    // 5 queries instead of 8 — confirmed orders fetched once, filtered in JS
+    const [confirmedOrders, totalSupporters, newSupportersThisMonth, ticketsSold, recentOrders] = await Promise.all([
       prisma.order.findMany({
         where: { status: 'CONFIRMED' },
-        select: { totalAmount: true, feesCovered: true }
-      }),
-
-      prisma.order.findMany({
-        where: { status: 'CONFIRMED', createdAt: { gte: startOfMonth } },
-        select: { totalAmount: true }
-      }),
-
-      prisma.order.findMany({
-        where: { status: 'CONFIRMED', createdAt: { gte: startOfLastMonth, lte: endOfLastMonth } },
-        select: { totalAmount: true }
+        select: { totalAmount: true, feesCovered: true, createdAt: true }
       }),
 
       prisma.user.count({
@@ -60,9 +47,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         _sum: { quantity: true }
       }),
 
-      prisma.order.count({
-        where: { status: 'CONFIRMED' }
-      }),
       prisma.order.findMany({
         take: 10,
         orderBy: { createdAt: 'desc' },
@@ -79,19 +63,20 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       })
     ])
 
-    const normalizeFees = (raw: any) => {
-      const n = Number(raw ?? 0)
-      return Number.isInteger(n) ? n / 100 : n
-    }
+    const thisMonthOrders = confirmedOrders.filter((o) => new Date(o.createdAt) >= startOfMonth)
+    const lastMonthOrders = confirmedOrders.filter((o) => {
+      const d = new Date(o.createdAt)
+      return d >= startOfLastMonth && d <= endOfLastMonth
+    })
 
     return {
       totalRevenue: confirmedOrders.reduce((s, o) => s + Number(o.totalAmount), 0),
-      revenueThisMonth: ordersThisMonth.reduce((s, o) => s + Number(o.totalAmount), 0),
-      revenueLastMonth: ordersLastMonth.reduce((s, o) => s + Number(o.totalAmount), 0),
+      revenueThisMonth: thisMonthOrders.reduce((s, o) => s + Number(o.totalAmount), 0),
+      revenueLastMonth: lastMonthOrders.reduce((s, o) => s + Number(o.totalAmount), 0),
       totalSupporters,
       newSupportersThisMonth,
       ticketsSold: ticketsSold._sum.quantity ?? 0,
-      totalOrders,
+      totalOrders: confirmedOrders.length,
       totalFeesCovered: confirmedOrders.reduce((s, o) => s + normalizeFees(o.feesCovered), 0),
       recentOrders
     }
