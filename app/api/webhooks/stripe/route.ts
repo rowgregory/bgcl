@@ -168,14 +168,27 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
     })
 
     if (orderType === 'TICKET_PURCHASE' && metadata?.tickets) {
-      const tickets = JSON.parse(metadata.tickets as string) as Array<{
-        ticketId: string
-        quantity: number
-        pricePerUnit: number
-        ticketName: string
-        ticketDescription?: string
-        ticketType: string
+      const ticketRefs = JSON.parse(metadata.tickets as string) as Array<{
+        i: string
+        q: number
       }>
+
+      const ticketRecords = await prisma.ticket.findMany({
+        where: { id: { in: ticketRefs.map((t) => t.i) } },
+        select: { id: true, name: true, price: true, ticketType: true, guestCount: true }
+      })
+
+      const tickets = ticketRefs.map((ref) => {
+        const record = ticketRecords.find((r) => r.id === ref.i)!
+        return {
+          ticketId: ref.i,
+          quantity: ref.q,
+          pricePerUnit: Number(record.price),
+          ticketName: record.name,
+          ticketType: record.ticketType,
+          guestCount: record.guestCount ?? 1
+        }
+      })
 
       // Check once whether this is a raffle event so we know whether to
       // assign ticket numbers. A single query covers all tickets in the order
@@ -198,9 +211,9 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 
             // Now safely get the current max without FOR UPDATE
             const result = await tx.$queryRaw<{ next_number: number }[]>`
-              SELECT COALESCE(MAX("raffleTicketNumber"), 0) + 1 AS next_number
-              FROM "OrderItem"
-              WHERE "ticketId" = ${ticket.ticketId}`
+          SELECT COALESCE(MAX("raffleTicketNumber"), 0) + 1 AS next_number
+          FROM "OrderItem"
+          WHERE "ticketId" = ${ticket.ticketId}`
 
             const firstNumber = Number(result[0].next_number)
 
@@ -266,7 +279,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 
       // Increment headcount based on highest guest count ticket if attending
       if (metadata?.eventId && order.attendingEvent !== false) {
-        const guestIncrement = Math.max(...tickets.map((t: any) => t.guestCount ?? 1))
+        const guestIncrement = Math.max(...tickets.map((t) => t.guestCount ?? 1))
 
         if (guestIncrement > 0) {
           await prisma.event.update({

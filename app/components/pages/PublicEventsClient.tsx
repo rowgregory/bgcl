@@ -95,13 +95,13 @@ export function PublicEventsClient({ events, pageData }) {
                 >
                   <div className="space-y-3 sm:space-y-4">
                     <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-                      {t.eyebrow}
+                      {t?.eyebrow}
                     </p>
                     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-                      {t.heading}
+                      {t?.heading}
                     </h1>
                     <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">
-                      {t.subheading}
+                      {t?.subheading}
                     </p>
                   </div>
                 </motion.div>
@@ -112,7 +112,7 @@ export function PublicEventsClient({ events, pageData }) {
               <div className="max-w-334 mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {events?.map((event) => (
-                    <EventCard key={event.id} event={event} />
+                    <EventCard key={event?.id} event={event} />
                   ))}
                 </div>
               </div>

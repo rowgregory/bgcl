@@ -54,7 +54,12 @@ export function useTicketCheckoutSubmit({ inputs, amountInCents, processingFee, 
           country: inputs?.country
         },
         savedCardId: usingSavedCard ? inputs?.selectedCardId : undefined,
-        tickets: JSON.stringify(ticketData),
+        tickets: JSON.stringify(
+          ticketData.map((item) => ({
+            i: item.ticketId, // shortened key
+            q: item.quantity // shortened key
+          }))
+        ),
         eventId: items[0]?.eventId,
         attendingEvent: inputs.attendingEvent
       })
