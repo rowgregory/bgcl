@@ -32,9 +32,7 @@ export function useTicketCheckoutSubmit({ inputs, amountInCents, processingFee, 
         quantity: item.quantity,
         pricePerUnit: item.price,
         ticketName: item.ticketName,
-        ticketDescription: item.ticketDescription ?? null,
         ticketType: item.ticketType ?? 'GENERAL',
-        isRaffleTicket: item.isRaffleTicket ?? false,
         guestCount: item.guestCount ?? 1
       }))
 
@@ -56,7 +54,7 @@ export function useTicketCheckoutSubmit({ inputs, amountInCents, processingFee, 
           country: inputs?.country
         },
         savedCardId: usingSavedCard ? inputs?.selectedCardId : undefined,
-        tickets: JSON.stringify(ticketData.map(({ ticketDescription: _, ...rest }) => rest)),
+        tickets: JSON.stringify(ticketData),
         eventId: items[0]?.eventId,
         attendingEvent: inputs.attendingEvent
       })

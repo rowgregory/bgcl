@@ -215,7 +215,6 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
                   pricePerUnit: ticket.pricePerUnit,
                   totalPrice: ticket.pricePerUnit,
                   ticketName: ticket.ticketName,
-                  ticketDescription: ticket.ticketDescription ?? null,
                   raffleTicketNumber: num,
                   raffleTicketCode: `RAFF-${String(num).padStart(4, '0')}`
                 }
@@ -236,8 +235,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
               quantity: ticket.quantity,
               pricePerUnit: ticket.pricePerUnit,
               totalPrice: ticket.pricePerUnit * ticket.quantity,
-              ticketName: ticket.ticketName,
-              ticketDescription: ticket.ticketDescription ?? null
+              ticketName: ticket.ticketName
             }
           })
 
