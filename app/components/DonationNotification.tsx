@@ -90,9 +90,18 @@ export default function DonationNotification({ donations }) {
   }, [donations])
 
   if (
-    ['/admin/', '/program/', '/supporter', '/cart', '/auth', '/get-involved', '/donate', '/events/', '/checkout'].some(
-      (link) => pathname.includes(link)
-    )
+    [
+      '/admin/',
+      '/program/',
+      '/supporter',
+      '/cart',
+      '/auth',
+      '/get-involved',
+      '/donate',
+      '/events/',
+      '/checkout',
+      '/super'
+    ].some((link) => pathname.includes(link))
   )
     return null
 

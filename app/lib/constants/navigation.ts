@@ -8,7 +8,8 @@ export const HIDDEN_PATHS = [
   '/donate',
   '/campaigns/',
   '/program/',
-  '/events/'
+  '/events/',
+  '/super'
 ]
 
 export const mainNavigationLinks = [

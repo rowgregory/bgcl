@@ -3,7 +3,6 @@
 import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Menu } from 'lucide-react'
-import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 
 import { ILayout } from '@/types/common'
@@ -35,15 +34,16 @@ import { AdminTicketOrderDrawer } from '../drawers/AdminTicketOrderDrawer'
 import { UserDrawer } from '../drawers/UserDrawer'
 import { ContactSubmissionDrawer } from '../drawers/ContactSubmissionDrawer'
 import AdminSidebar from '@/app/(authenticated)/admin/sidebar'
+import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 
 export const AdminLayoutClient: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
   const pathname = usePathname()
-  const session = useSession()
-  const isSuperUser = session?.data?.user?.role === 'SUPERUSER'
-  const navigationGroups = adminNavigationLinkData(pathname, isSuperUser)
+  const navigationGroups = adminNavigationLinkData(pathname)
   const selectedPage = getCurrentPageId(pathname, navigationGroups)
   const { adminSidebar } = useDashboardSelector()
   const onClose = () => store.dispatch(setCloseAdminSidebar())
+  const session = useSession()
 
   return (
     <>
@@ -69,6 +69,14 @@ export const AdminLayoutClient: FC<ILayout> = ({ children, themes, isModalEnable
       <header className="hidden lg:flex fixed top-0 left-64 right-0 items-center justify-between dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-b py-2.5 px-6 z-30 h-15.25">
         <h1 className="text-lg font-bold dark:text-neutral-100 text-neutral-900 capitalize">{selectedPage}</h1>
         <div className="flex items-center gap-2 md:gap-4">
+          {session.data.user.role === 'SUPERUSER' && (
+            <Link
+              href="/super"
+              className="text-xs font-mono text-neutral-400 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
+            >
+              super
+            </Link>
+          )}
           <ActionMenuButton />
           <MobileMenuButton />
           <LogoutButton />

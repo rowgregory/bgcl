@@ -1,32 +1,38 @@
+'use server'
+
 import prisma from '@/prisma/client'
-import { createLog } from './createLog'
+import { auth } from '../auth'
 
-export async function getLogs(filters?: { level?: string; userId?: string; startDate?: Date; endDate?: Date }) {
+export async function getLogs() {
   try {
+    const session = await auth()
+    if (session?.user?.role !== 'SUPERUSER') {
+      return { success: false, data: null, error: 'Unauthorized' }
+    }
+
     const logs = await prisma.log.findMany({
-      where: {
-        ...(filters?.level && { level: filters.level }),
-        ...(filters?.userId && { userId: filters.userId }),
-        ...(filters?.startDate &&
-          filters?.endDate && {
-            createdAt: {
-              gte: filters.startDate,
-              lte: filters.endDate
-            }
-          })
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      take: 100 // Limit to last 100 logs
+      take: 200,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        level: true,
+        message: true,
+        metadata: true,
+        userId: true,
+        createdAt: true
+      }
     })
 
-    return logs
+    return {
+      success: true,
+      data: logs.map((l) => ({ ...l, createdAt: l.createdAt.toISOString() })),
+      error: null
+    }
   } catch (error) {
-    await createLog('error', 'Failed to fetch logs', {
+    return {
+      success: false,
+      data: null,
       error: error instanceof Error ? error.message : 'Unknown error'
-    })
-
-    throw error
+    }
   }
 }

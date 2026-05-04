@@ -128,3 +128,15 @@ export function formatDatetimeLocalForInput(value: Date | string | null | undefi
   // datetime-local expects "YYYY-MM-DDTHH:mm"
   return `${year}-${month}-${day}T${hours}:${minutes}`
 }
+
+export const fmt = (d: string) =>
+  new Date(d).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: '2-digit' })
+
+export const fmtFull = (d: string) =>
+  new Date(d).toLocaleString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  })

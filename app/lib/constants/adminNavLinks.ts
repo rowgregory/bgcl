@@ -19,8 +19,7 @@ import {
 const isStringInPath = (path: string, str: string) => path.includes(str)
 
 export const adminNavigationLinkData = (
-  path: string,
-  isSuperUser: boolean
+  path: string
 ): {
   title: string
   items: { icon: LucideIcon; label: string; path: string; description: string; active: boolean }[]
@@ -131,18 +130,7 @@ export const adminNavigationLinkData = (
       path: '/admin/changelog',
       description: 'Version History & Updates',
       active: isStringInPath(path, 'changelog')
-    },
-    ...(isSuperUser
-      ? [
-          {
-            icon: Logs,
-            label: 'Logs',
-            path: '/admin/logs',
-            description: 'System details',
-            active: isStringInPath(path, 'logs')
-          }
-        ]
-      : [])
+    }
   ]
 
   return [
