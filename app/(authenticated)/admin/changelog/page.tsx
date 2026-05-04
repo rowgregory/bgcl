@@ -21,6 +21,33 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.18.3',
+    date: '2026-05-04',
+    changes: [
+      {
+        type: 'improvement',
+        title: 'Program Themes Section Redesigned',
+        description:
+          'Reorganized the Weekly Themes form section into three distinct panels: program-connected themes (inputs.themes) with a detach button, a filtered theme library showing only unconnected DB themes with a checkbox to add, and a create new panel. Eliminates the previous confusion where all DB themes were shown regardless of whether they were connected to the program.',
+        impact: 'medium'
+      },
+      {
+        type: 'fix',
+        title: 'Stripe Metadata 500 Character Limit',
+        description:
+          "Multi-ticket checkout was failing when purchasing 3+ ticket types due to Stripe's 500 char metadata limit. Fixed by sending only { i: ticketId, q: quantity } per ticket in metadata. Webhook now fetches full ticket details (name, price, ticketType, guestCount) from the DB via a single findMany before processing order items. Removed isRaffleTicket and ticketDescription from the payload entirely.",
+        impact: 'high'
+      },
+      {
+        type: 'performance',
+        title: 'Migrated Database to Neon',
+        description:
+          'Switched from Railway Postgres to Neon with pooled connection string (PgBouncer) and connection_limit=1. Resolves connection exhaustion errors seen under concurrent load in Next.js serverless environment.',
+        impact: 'high'
+      }
+    ]
+  },
+  {
     version: '1.18.2',
     date: '2026-04-17',
     changes: [
