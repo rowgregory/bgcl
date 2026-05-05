@@ -21,6 +21,19 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.18.4',
+    date: '2026-05-05',
+    changes: [
+      {
+        type: 'improvement',
+        title: 'Program Themes Reordering',
+        description:
+          'Connected themes now display a position dropdown (1 through total count) allowing admins to reorder themes. Selecting a new position automatically shifts other themes to prevent duplicates or gaps. Themes always render sorted by order. Removing a theme reindexes remaining themes cleanly.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.18.3',
     date: '2026-05-04',
     changes: [

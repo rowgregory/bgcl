@@ -582,33 +582,56 @@ export const ProgramForm: FC<IForm> = ({
 
                   {inputs?.themes && inputs.themes.length > 0 ? (
                     <div className="space-y-2">
-                      {(inputs.themes as { id: string; title: string; dates: string }[]).map((theme) => (
-                        <div
-                          key={theme.id}
-                          className="flex items-center justify-between p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900"
-                        >
-                          <div>
-                            <p className="text-sm font-medium text-neutral-900 dark:text-white">{theme.title}</p>
-                            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{theme.dates}</p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              store.dispatch(
-                                setInputs({
-                                  formName: 'programForm',
-                                  data: {
-                                    themes: (inputs.themes as { id: string }[]).filter((t) => t.id !== theme.id)
-                                  }
-                                })
-                              )
-                            }
-                            className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                      {[...(inputs.themes as { id: string; title: string; dates: string; order: number }[])]
+                        .sort((a, b) => a.order - b.order)
+                        .map((theme) => (
+                          <div
+                            key={theme.id}
+                            className="flex items-center gap-3 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      ))}
+                            <select
+                              value={theme.order}
+                              onChange={(e) => {
+                                const newOrder = parseInt(e.target.value)
+                                const allThemes = [...(inputs.themes as any[])]
+                                const updated = allThemes.map((t) => {
+                                  if (t.id === theme.id) return { ...t, order: newOrder }
+                                  // Shift other themes out of the way
+                                  if (t.order >= newOrder && t.order < theme.order) return { ...t, order: t.order + 1 }
+                                  if (t.order <= newOrder && t.order > theme.order) return { ...t, order: t.order - 1 }
+                                  return t
+                                })
+                                store.dispatch(setInputs({ formName: 'programForm', data: { themes: updated } }))
+                              }}
+                              className="w-14 px-2 py-1 text-sm text-center font-semibold rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                            >
+                              {(inputs.themes as any[]).map((_, i) => (
+                                <option key={i + 1} value={i + 1}>
+                                  {i + 1}
+                                </option>
+                              ))}
+                            </select>
+
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-neutral-900 dark:text-white">{theme.title}</p>
+                              <p className="text-xs text-neutral-500 dark:text-neutral-400">{theme.dates}</p>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const reindexed = (inputs.themes as any[])
+                                  .filter((t) => t.id !== theme.id)
+                                  .sort((a, b) => a.order - b.order)
+                                  .map((t, i) => ({ ...t, order: i + 1 }))
+                                store.dispatch(setInputs({ formName: 'programForm', data: { themes: reindexed } }))
+                              }}
+                              className="p-1.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors shrink-0"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
                     </div>
                   ) : (
                     <p className="text-sm text-neutral-400 dark:text-neutral-500 italic">

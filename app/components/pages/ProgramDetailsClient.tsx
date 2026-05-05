@@ -167,7 +167,7 @@ export const ProgramDetailsClient = ({ program, closings }: { program: IProgram;
                               aria-hidden="true"
                               className={`absolute -top-2 sm:-top-3 left-3 sm:left-4 ${colorScheme.badge} text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-lg`}
                             >
-                              Week {index + 1}
+                              Week {theme.order}
                             </div>
                             <h3 className="text-sm sm:text-base font-bold dark:text-white text-neutral-900 mt-2 mb-2">
                               <span className="sr-only">Week {theme.order}: </span>
