@@ -85,7 +85,13 @@ export function Step1PositionBackground({ formData, setFormData, errors }: any) 
             rows={3}
             className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors resize-none"
             placeholder="e.g. Camp Sunshine, June 2021 – Aug 2022, Boston MA, End of seasonal contract"
+            maxLength={1000}
           />
+          <p
+            className={`text-xs mt-1 text-right ${(formData.youthOrgEmployment?.length || 0) >= 900 ? 'text-red-500' : 'text-neutral-400 dark:text-neutral-500'}`}
+          >
+            {1000 - (formData.youthOrgEmployment?.length || 0)} characters remaining
+          </p>
           {errors.youthOrgEmployment && (
             <p id="youth-org-error" role="alert" className="text-red-500 text-xs sm:text-sm mt-1">
               {errors.youthOrgEmployment}
@@ -119,7 +125,13 @@ export function Step1PositionBackground({ formData, setFormData, errors }: any) 
             rows={3}
             className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors resize-none"
             placeholder="e.g. Boston Latin School, 123 Ave Boston MA, 2015–2019, Graduated"
+            maxLength={1000}
           />
+          <p
+            className={`text-xs mt-1 text-right ${(formData.education?.length || 0) >= 900 ? 'text-red-500' : 'text-neutral-400 dark:text-neutral-500'}`}
+          >
+            {1000 - (formData.education?.length || 0)} characters remaining
+          </p>
           {errors.education && (
             <p id="education-error" role="alert" className="text-red-500 text-xs sm:text-sm mt-1">
               {errors.education}
@@ -146,7 +158,13 @@ export function Step1PositionBackground({ formData, setFormData, errors }: any) 
             rows={3}
             className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors resize-none"
             placeholder="e.g. Soccer coach, piano, watercolor painting"
+            maxLength={1000}
           />
+          <p
+            className={`text-xs mt-1 text-right ${(formData.extracurricularsSkills?.length || 0) >= 900 ? 'text-red-500' : 'text-neutral-400 dark:text-neutral-500'}`}
+          >
+            {1000 - (formData.extracurricularsSkills?.length || 0)} characters remaining
+          </p>
         </div>
       </div>
     </div>

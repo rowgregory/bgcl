@@ -606,9 +606,9 @@ model JobApplication {
   status           ApplicationStatus @default(PENDING)
   submissionStatus SubmissionStatus  @default(INCOMPLETE)
 
-  youthOrgEmployment     String?
-  education              String?
-  extracurricularsSkills String?
+  youthOrgEmployment     String?        @db.Text
+  education              String?        @db.Text
+  extracurricularsSkills String?        @db.Text
   positionTypes          PositionType[]
 
   // Timestamps
