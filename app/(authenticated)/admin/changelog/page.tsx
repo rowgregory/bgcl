@@ -21,6 +21,26 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.18.5',
+    date: '2026-05-12',
+    changes: [
+      {
+        type: 'fix',
+        title: 'Job Application Column Length Errors',
+        description:
+          'Altered Reference table columns (name, positionAndCompany, workRelationship) from VARCHAR to TEXT in Neon after applicants exceeded character limits. Updated Prisma schema to match. Added maxLength attributes and character counters to all long-form inputs in Step1 and Step3 of the job application form. Counter turns red at 90% capacity.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Job Application Success Log',
+        description:
+          'Added an info log on successful job application creation capturing applicantName, email, positionTypes, and employmentType. Also improved the error log to include prismaCode, prismaMeta, and fieldLengths for easier debugging of future column constraint errors.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.18.4',
     date: '2026-05-05',
     changes: [

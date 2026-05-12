@@ -148,7 +148,17 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
               aria-describedby={errors.noLicenseReason ? 'no-license-reason-error' : undefined}
               className="w-full px-4 py-2.5 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
               placeholder="Please explain..."
+              maxLength={500}
             />
+            <p
+              className={`text-xs mt-1 text-right ${
+                (formData.noLicenseReason?.length || 0) >= 400
+                  ? 'text-red-500'
+                  : 'text-neutral-400 dark:text-neutral-500'
+              }`}
+            >
+              {500 - (formData.noLicenseReason?.length || 0)} characters remaining
+            </p>
             {errors.noLicenseReason && (
               <p id="no-license-reason-error" role="alert" className="text-red-500 text-sm mt-1">
                 {errors.noLicenseReason}
@@ -228,7 +238,17 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
               aria-describedby={errors.suspensionExplanation ? 'suspension-explanation-error' : undefined}
               className="w-full px-4 py-2.5 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent min-h-24 transition-colors resize-none"
               placeholder="Please explain the circumstances..."
+              maxLength={1000}
             />
+            <p
+              className={`text-xs mt-1 text-right ${
+                (formData.suspensionExplanation?.length || 0) >= 900
+                  ? 'text-red-500'
+                  : 'text-neutral-400 dark:text-neutral-500'
+              }`}
+            >
+              {1000 - (formData.suspensionExplanation?.length || 0)} characters remaining
+            </p>
             {errors.suspensionExplanation && (
               <p id="suspension-explanation-error" role="alert" className="text-red-500 text-sm mt-1">
                 {errors.suspensionExplanation}
@@ -262,7 +282,15 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
           aria-describedby={errors.trafficViolations ? 'traffic-violations-error' : 'traffic-violations-hint'}
           className="w-full px-4 py-2.5 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent min-h-32 transition-colors resize-none"
           placeholder="Enter offense details, dates, and locations. Enter 'None' if not applicable."
+          maxLength={1000}
         />
+        <p
+          className={`text-xs mt-1 text-right ${
+            (formData.trafficViolations?.length || 0) >= 900 ? 'text-red-500' : 'text-neutral-400 dark:text-neutral-500'
+          }`}
+        >
+          {1000 - (formData.trafficViolations?.length || 0)} characters remaining
+        </p>
         <p id="traffic-violations-hint" className="text-xs dark:text-neutral-500 text-neutral-500 mt-1">
           Include offense, date, location, and any comments. Enter "None" if not applicable.
         </p>

@@ -2,8 +2,10 @@
 
 import prisma from '@/prisma/client'
 
-import { createLog } from './createLog'
+import { createLog } from '../createLog'
 import { CreateClubResourceInput } from '@/types/entities/club-resource'
+import { getActor } from '../user/getActor'
+import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
 
 export async function createClubResource(data: CreateClubResourceInput) {
   try {
@@ -15,9 +17,13 @@ export async function createClubResource(data: CreateClubResourceInput) {
       }
     })
 
-    await createLog('info', 'Club resource created', {
+    const [actor, context] = await Promise.all([getActor(), getRequestContext()])
+    const message = await buildLogMessage('created a closing', actor, context)
+
+    await createLog('info', message, {
       resourceId: resource.id,
-      title: resource.title
+      title: resource.title,
+      ...context
     })
 
     return { success: true }

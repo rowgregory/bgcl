@@ -24,6 +24,14 @@ export const createJobApplication = async (data: CreateJobApplicationInput) => {
       }
     })
 
+    await createLog('info', 'Job application created', {
+      jobApplicationId: jobApplication.id,
+      applicantName: data.applicantName.trim(),
+      email: data.email.trim(),
+      positionTypes: data.positionTypes,
+      employmentType: data.employmentType
+    })
+
     try {
       await sendAdminNotification('JOB_APPLICATION', {
         applicantName: data.applicantName.trim(),

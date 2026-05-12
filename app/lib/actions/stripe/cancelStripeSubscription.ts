@@ -1,8 +1,8 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { stripe } from '../stripe/stripeClient'
-import { createLog } from './createLog'
+import { stripe } from '../../stripe/stripeClient'
+import { createLog } from '../createLog'
 
 /**
  * Cancel a Stripe subscription immediately and update the database

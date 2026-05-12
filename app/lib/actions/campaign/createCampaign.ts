@@ -1,9 +1,11 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { trimAndTransformData } from '../utils/trimAndTransformData'
-import { createLog } from './createLog'
+import { trimAndTransformData } from '../../utils/trimAndTransformData'
+import { createLog } from '../createLog'
 import { CreateCampaignInput } from '@/types/entities/campaign'
+import { getActor } from '../user/getActor'
+import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
 
 export async function createCampaign(data: CreateCampaignInput) {
   try {
@@ -18,10 +20,14 @@ export async function createCampaign(data: CreateCampaignInput) {
       data: processedData
     })
 
-    await createLog('info', 'Campaign created', {
+    const [actor, context] = await Promise.all([getActor(), getRequestContext()])
+    const message = await buildLogMessage('created a campaign', actor, context)
+
+    await createLog('info', message, {
       campaignId: campaign.id,
       name: campaign.name,
-      goalAmount: campaign.goalAmount
+      goalAmount: campaign.goalAmount,
+      ...context
     })
 
     return { success: true }

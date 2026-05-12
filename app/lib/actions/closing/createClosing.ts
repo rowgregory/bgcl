@@ -1,8 +1,10 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { createLog } from './createLog'
+import { createLog } from '../createLog'
 import { CreateClosingInput } from '@/types/entities/closing'
+import { getActor } from '../user/getActor'
+import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
 
 export async function createClosing(data: CreateClosingInput) {
   try {
@@ -14,10 +16,14 @@ export async function createClosing(data: CreateClosingInput) {
       }
     })
 
-    await createLog('info', 'Closing created', {
+    const [actor, context] = await Promise.all([getActor(), getRequestContext()])
+    const message = await buildLogMessage('created a closing', actor, context)
+
+    await createLog('info', message, {
       closingId: closing.id,
       title: closing.title,
-      date: closing.date
+      date: closing.date,
+      ...context
     })
 
     return { success: true }

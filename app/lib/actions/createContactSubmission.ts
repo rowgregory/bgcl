@@ -3,29 +3,20 @@
 import prisma from '@/prisma/client'
 import sendAdminNotification from '../utils/sendAdminNotification'
 import { createLog } from './createLog'
+import { isValidEmail } from '../utils/regex'
+import { getActor } from './user/getActor'
+import { buildLogMessage, getRequestContext } from '../utils/log.utils'
 
 export const createContactSubmission = async (data: Omit<IContactSubmission, 'id' | 'createdAt'>) => {
   try {
-    // Validate required fields
     if (!data.firstName?.trim() || !data.lastName?.trim() || !data.email?.trim() || !data.phone?.trim()) {
-      return {
-        success: false,
-        error: 'Missing required fields',
-        data: null
-      }
+      return { success: false, error: 'Missing required fields', data: null }
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(data.email)) {
-      return {
-        success: false,
-        error: 'Invalid email format',
-        data: null
-      }
+    if (!isValidEmail(data.email)) {
+      return { success: false, error: 'Invalid email format', data: null }
     }
 
-    // Build submission object - only include attributes if they exist
     const submissionData: any = {
       firstName: data.firstName.trim(),
       lastName: data.lastName.trim(),
@@ -34,47 +25,30 @@ export const createContactSubmission = async (data: Omit<IContactSubmission, 'id
       type: data.type
     }
 
-    // Add optional fields only if they exist and aren't empty
-    if (data.subject?.trim()) {
-      submissionData.subject = data.subject.trim()
-    }
+    if (data.subject?.trim()) submissionData.subject = data.subject.trim()
+    if (data.message?.trim()) submissionData.message = data.message.trim()
+    if (data.availabilityDays) submissionData.availabilityDays = data.availabilityDays
+    if (data.availabilityHours) submissionData.availabilityHours = data.availabilityHours
+    if (data.programInterests) submissionData.programInterests = data.programInterests
+    if (data.yearsExperience != null) submissionData.yearsExperience = data.yearsExperience
+    if (data.backgroundCheckAck != null) submissionData.backgroundCheckAck = data.backgroundCheckAck
+    if (data.additionalInfo?.trim()) submissionData.additionalInfo = data.additionalInfo.trim()
 
-    if (data.message?.trim()) {
-      submissionData.message = data.message.trim()
-    }
+    await prisma.contactSubmission.create({ data: submissionData })
 
-    if (data.availabilityDays) {
-      submissionData.availabilityDays = data.availabilityDays
-    }
+    const [actor, context] = await Promise.all([getActor(), getRequestContext()])
+    const message = await buildLogMessage('submitted a contact form', actor, context)
 
-    if (data.availabilityHours) {
-      submissionData.availabilityHours = data.availabilityHours
-    }
-
-    if (data.programInterests) {
-      submissionData.programInterests = data.programInterests
-    }
-
-    if (data.yearsExperience !== null && data.yearsExperience !== undefined) {
-      submissionData.yearsExperience = data.yearsExperience
-    }
-
-    if (data.backgroundCheckAck !== null && data.backgroundCheckAck !== undefined) {
-      submissionData.backgroundCheckAck = data.backgroundCheckAck
-    }
-
-    if (data.additionalInfo?.trim()) {
-      submissionData.additionalInfo = data.additionalInfo.trim()
-    }
-
-    await prisma.contactSubmission.create({
-      data: submissionData
+    await createLog('info', message, {
+      type: data.type,
+      email: data.email.trim(),
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      ...context
     })
 
-    // Send admin notification email based on submission type
     try {
       const notificationType = data.type === 'VOLUNTEER' ? 'VOLUNTEER_FORM' : 'CONTACT_FORM'
-
       await sendAdminNotification(notificationType, {
         firstName: data.firstName.trim(),
         lastName: data.lastName.trim(),
@@ -88,9 +62,7 @@ export const createContactSubmission = async (data: Omit<IContactSubmission, 'id
       })
     }
 
-    return {
-      success: true
-    }
+    return { success: true }
   } catch (error) {
     await createLog('error', 'Failed to create contact submission', {
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -99,9 +71,6 @@ export const createContactSubmission = async (data: Omit<IContactSubmission, 'id
       email: data.email
     })
 
-    return {
-      success: false,
-      error: 'Failed to create contact submission. Please try again.'
-    }
+    return { success: false, error: 'Failed to create contact submission. Please try again.' }
   }
 }

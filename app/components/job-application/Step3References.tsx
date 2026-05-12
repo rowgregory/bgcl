@@ -2,12 +2,12 @@ import { motion } from 'framer-motion'
 
 export function Step3References({ formData, setFormData, errors }: any) {
   const updateReference = (index: number, field: string, value: any) => {
-    const updatedReferemce = [...(formData.references || [])]
-    if (!updatedReferemce[index]) {
-      updatedReferemce[index] = {}
+    const updatedReference = [...(formData.references || [])]
+    if (!updatedReference[index]) {
+      updatedReference[index] = {}
     }
-    updatedReferemce[index][field] = value
-    setFormData({ ...formData, references: updatedReferemce })
+    updatedReference[index][field] = value
+    setFormData({ ...formData, references: updatedReference })
   }
 
   return (
@@ -31,6 +31,8 @@ export function Step3References({ formData, setFormData, errors }: any) {
           const relationshipId = `ref-${index}-relationship`
           const phoneId = `ref-${index}-phone`
           const emailId = `ref-${index}-email`
+
+          const workRelationshipLength = formData.references?.[index]?.workRelationship?.length || 0
 
           return (
             <li key={index}>
@@ -66,6 +68,7 @@ export function Step3References({ formData, setFormData, errors }: any) {
                       aria-invalid={!!errors[`name_${index}`]}
                       aria-describedby={errors[`name_${index}`] ? `${nameId}-error` : undefined}
                       autoComplete="off"
+                      maxLength={255}
                       className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
                       placeholder="John Smith"
                     />
@@ -97,6 +100,7 @@ export function Step3References({ formData, setFormData, errors }: any) {
                       aria-invalid={!!errors[`positionAndCompany_${index}`]}
                       aria-describedby={errors[`positionAndCompany_${index}`] ? `${positionId}-error` : undefined}
                       autoComplete="off"
+                      maxLength={500}
                       className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
                       placeholder="Manager at Tech Company Inc."
                     />
@@ -126,9 +130,17 @@ export function Step3References({ formData, setFormData, errors }: any) {
                       aria-required="true"
                       aria-invalid={!!errors[`workRelationship_${index}`]}
                       aria-describedby={errors[`workRelationship_${index}`] ? `${relationshipId}-error` : undefined}
+                      maxLength={1000}
                       className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent min-h-24 transition-colors resize-none"
                       placeholder="Senior Software Engineer - Led team of 5, managed product roadmap, improved performance by 40%"
                     />
+                    <p
+                      className={`text-xs mt-1 text-right ${
+                        workRelationshipLength >= 900 ? 'text-red-500' : 'text-neutral-400 dark:text-neutral-500'
+                      }`}
+                    >
+                      {1000 - workRelationshipLength} characters remaining
+                    </p>
                     {errors[`workRelationship_${index}`] && (
                       <p id={`${relationshipId}-error`} role="alert" className="text-red-500 text-xs sm:text-sm mt-1">
                         {errors[`workRelationship_${index}`]}
@@ -158,6 +170,7 @@ export function Step3References({ formData, setFormData, errors }: any) {
                         aria-invalid={!!errors[`phone_${index}`]}
                         aria-describedby={errors[`phone_${index}`] ? `${phoneId}-error` : undefined}
                         autoComplete="off"
+                        maxLength={20}
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
                         placeholder="(781) 593-1772"
                       />
@@ -188,6 +201,7 @@ export function Step3References({ formData, setFormData, errors }: any) {
                         aria-invalid={!!errors[`email_${index}`]}
                         aria-describedby={errors[`email_${index}`] ? `${emailId}-error` : undefined}
                         autoComplete="off"
+                        maxLength={255}
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
                         placeholder="reference@example.com"
                       />
@@ -208,7 +222,7 @@ export function Step3References({ formData, setFormData, errors }: any) {
       {/* Info Box */}
       <div
         role="note"
-        className="dark:bg-sky-500/10 dark:border-sky-500/30 bg-sky-100 border-sky-300 rounded-lg p-3 sm:p-4 border"
+        className="dark:bg-sky-500/10 dark:border-sky-500/30 bg-sky-100 border-sky-300 rounded-lg p-3 sm:p-4 border mt-4"
       >
         <p className="dark:text-sky-300 text-sky-700 text-xs sm:text-sm">
           <span aria-hidden="true">💡 </span>

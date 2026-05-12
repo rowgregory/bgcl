@@ -12,7 +12,7 @@ import { setCloseClubResourceDrawer } from '@/app/lib/store/slices/clubResourceS
 import validateClubResourceForm from '@/app/lib/validations/club-resource'
 import { ClubResourceForm } from '../forms/ClubResourceForm'
 import { updateClubResource } from '@/app/lib/actions/updateClubResource'
-import { createClubResource } from '@/app/lib/actions/createClubResource'
+import { createClubResource } from '@/app/lib/actions/club-resource/createClubResource'
 import { CreateClubResourceInput, UpdateClubResourceInput } from '@/types/entities/club-resource'
 
 export const ClubResourceDrawer = () => {
