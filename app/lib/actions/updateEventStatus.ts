@@ -12,6 +12,7 @@ export async function updateEventStatus(id: string, status: EventStatus) {
 
     if (!event) {
       await createLog('warn', 'Event not found for status update', {
+        source: 'updateEventStatus',
         eventId: id
       })
       return { success: false, error: 'Event not found', status: 404 }

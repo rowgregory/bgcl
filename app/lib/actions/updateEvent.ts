@@ -11,7 +11,10 @@ export async function updateEvent(body: UpdateEventInput) {
     })
 
     if (!existingEvent) {
-      await createLog('warn', 'Event not found for update', { eventId: body.id })
+      await createLog('warn', 'Event not found for update', {
+        source: 'updateEvent',
+        eventId: body.id
+      })
       return { success: false, error: 'Event not found', status: 404 }
     }
 

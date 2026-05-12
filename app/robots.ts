@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin/', '/api/', '/supporter/']
+      disallow: ['/admin/', '/api/', '/supporter/', '/events/']
     },
     sitemap: 'https://bgcl.org/sitemap.xml'
   }

@@ -259,33 +259,47 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         }
       }
 
-      // Add user to event attendees
+      // Add user to event attendees — guard the update
       if (metadata?.eventId && order.userId) {
         const event = await prisma.event.findUnique({
           where: { id: metadata.eventId as string },
           select: { attendees: { where: { id: order.userId }, select: { id: true } } }
         })
 
-        const alreadyAttending = (event?.attendees.length ?? 0) > 0
-
-        await prisma.event.update({
-          where: { id: metadata.eventId as string },
-          data: {
-            attendees: { connect: { id: order.userId } },
-            ...(!alreadyAttending && { attendeeCount: { increment: 1 } })
-          }
-        })
+        if (event) {
+          const alreadyAttending = (event.attendees.length ?? 0) > 0
+          await prisma.event.update({
+            where: { id: metadata.eventId as string },
+            data: {
+              attendees: { connect: { id: order.userId } },
+              ...(!alreadyAttending && { attendeeCount: { increment: 1 } })
+            }
+          })
+        } else {
+          await createLog('info', 'Webhook: skipped attendee update, event not found', {
+            source: 'stripeWebhook',
+            eventId: metadata.eventId,
+            userId: order.userId
+          })
+        }
       }
 
-      // Increment headcount based on highest guest count ticket if attending
+      // Increment guest count — guard the update
       if (metadata?.eventId && order.attendingEvent !== false) {
         const guestIncrement = Math.max(...tickets.map((t) => t.guestCount ?? 1))
 
         if (guestIncrement > 0) {
-          await prisma.event.update({
+          const eventExists = await prisma.event.findUnique({
             where: { id: metadata.eventId as string },
-            data: { guestCount: { increment: guestIncrement } }
+            select: { id: true }
           })
+
+          if (eventExists) {
+            await prisma.event.update({
+              where: { id: metadata.eventId as string },
+              data: { guestCount: { increment: guestIncrement } }
+            })
+          }
         }
       }
 

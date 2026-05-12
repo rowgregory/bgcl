@@ -16,9 +16,6 @@ export const getEventById = async (id: string) => {
     })
 
     if (!event) {
-      await createLog('warn', 'Event not found', {
-        eventId: id
-      })
       return null
     }
 
