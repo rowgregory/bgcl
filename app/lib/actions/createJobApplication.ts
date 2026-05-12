@@ -58,8 +58,23 @@ export const createJobApplication = async (data: CreateJobApplicationInput) => {
 
     await createLog('error', 'Failed to create job application', {
       error: error instanceof Error ? error.message : 'Unknown error',
+      prismaCode: error?.code,
+      prismaMeta: error?.meta,
       applicantName: data.applicantName,
-      email: data.email
+      email: data.email,
+      fieldLengths: {
+        applicantName: data.applicantName?.length,
+        email: data.email?.length,
+        hoursAvailable: data.hoursAvailable?.length,
+        languages: data.languages?.length,
+        licenseNumber: data.licenseNumber?.length,
+        signature: data.signature?.length,
+        resumeUrl: data.resumeUrl?.length,
+        resumeFileName: data.resumeFileName?.length,
+        youthOrgEmployment: data.youthOrgEmployment?.length,
+        education: data.education?.length,
+        extracurricularsSkills: data.extracurricularsSkills?.length
+      }
     })
 
     return {

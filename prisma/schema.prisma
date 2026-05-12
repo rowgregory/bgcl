@@ -622,9 +622,9 @@ model Reference {
   jobApplicationId String
 
   // Reference Information
-  name               String @db.VarChar(255)
-  positionAndCompany String @db.VarChar(500)
-  workRelationship   String @db.VarChar(255)
+  name               String @db.Text
+  positionAndCompany String @db.Text
+  workRelationship   String @db.Text
 
   // Contact Information
   phone String @db.VarChar(20)
