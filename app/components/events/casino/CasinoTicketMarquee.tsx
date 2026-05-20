@@ -70,17 +70,20 @@ export function CasinoTicketMarquee({
         onTouchStart={pause}
         onTouchEnd={resume}
       >
-        {doubled.map((ticket, i) => (
-          <CasinoQuickAddPill
-            key={`${ticket.id}-${i}`}
-            ticket={ticket}
-            eventId={eventId}
-            eventTitle={eventTitle}
-            ticketSalesStartDate={ticketSalesStartDate}
-            ticketSalesEndDate={ticketSalesEndDate}
-            soundOn={soundOn}
-          />
-        ))}
+        {doubled.map(
+          (ticket, i) =>
+            ticket.name !== 'Individual Ticket' && (
+              <CasinoQuickAddPill
+                key={`${ticket.id}-${i}`}
+                ticket={ticket}
+                eventId={eventId}
+                eventTitle={eventTitle}
+                ticketSalesStartDate={ticketSalesStartDate}
+                ticketSalesEndDate={ticketSalesEndDate}
+                soundOn={soundOn}
+              />
+            )
+        )}
       </div>
     </div>
   )
