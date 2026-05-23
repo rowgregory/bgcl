@@ -88,69 +88,71 @@ export function CasinoCartDropdown({ data }) {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  {data?.tickets?.map((ticket: any) => {
-                    const { available } = getTicketStatus(ticket)
-                    if (!available) return null
-                    const type = ticket.ticketType ?? 'GENERAL'
-                    const grad = GRADIENTS[type] ?? GRADIENTS.GENERAL
-                    const suit = SUITS[type] ?? '♥'
+                  {data?.tickets
+                    ?.filter((t) => t.type === 'TOURNAMENT')
+                    .map((ticket: any) => {
+                      const { available } = getTicketStatus(ticket)
+                      if (!available) return null
+                      const type = ticket.ticketType ?? 'GENERAL'
+                      const grad = GRADIENTS[type] ?? GRADIENTS.GENERAL
+                      const suit = SUITS[type] ?? '♥'
 
-                    return (
-                      <button
-                        key={ticket.id}
-                        onClick={() => {
-                          store.dispatch(
-                            addToCart({
-                              ticket: {
-                                ...ticket,
-                                eventId: data.id,
-                                eventTitle: data.title,
-                                ticketSalesEndDate: data.ticketSalesEndDate,
-                                ticketSalesStartDate: data.ticketSalesStartDate
-                              },
-                              quantity: 1
-                            })
-                          )
-                          increase()
-                        }}
-                        className="relative flex items-center gap-0 w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 active:scale-[0.98] transition-transform"
-                        style={{ border: '1px solid rgba(255,255,255,0.06)', boxShadow: `0 0 12px ${grad.glow}` }}
-                        aria-label={`Add ${ticket.name} to cart — $${ticket.price.toLocaleString()}`}
-                      >
-                        <span
-                          className="absolute inset-0 pointer-events-none z-10"
-                          style={{
-                            background: `linear-gradient(90deg, transparent 25%, ${grad.shimmer} 50%, transparent 75%)`,
-                            animation: 'btnShine 3s infinite linear'
+                      return (
+                        <button
+                          key={ticket.id}
+                          onClick={() => {
+                            store.dispatch(
+                              addToCart({
+                                ticket: {
+                                  ...ticket,
+                                  eventId: data.id,
+                                  eventTitle: data.title,
+                                  ticketSalesEndDate: data.ticketSalesEndDate,
+                                  ticketSalesStartDate: data.ticketSalesStartDate
+                                },
+                                quantity: 1
+                              })
+                            )
+                            increase()
                           }}
-                          aria-hidden="true"
-                        />
-                        <span
-                          className="flex items-center justify-center w-9 h-9 shrink-0 text-base font-black suit"
-                          style={{ background: grad.card }}
-                          aria-hidden="true"
+                          className="relative flex items-center gap-0 w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 active:scale-[0.98] transition-transform"
+                          style={{ border: '1px solid rgba(255,255,255,0.06)', boxShadow: `0 0 12px ${grad.glow}` }}
+                          aria-label={`Add ${ticket.name} to cart — $${ticket.price.toLocaleString()}`}
                         >
-                          {suit}
-                        </span>
-                        <span
-                          className="flex-1 flex items-center h-9 px-3 min-w-0"
-                          style={{ background: 'rgba(255,255,255,0.04)' }}
-                        >
-                          <span className="oswald text-[11px] font-black uppercase tracking-[0.06em] text-white/80 truncate">
-                            {ticket.name}
+                          <span
+                            className="absolute inset-0 pointer-events-none z-10"
+                            style={{
+                              background: `linear-gradient(90deg, transparent 25%, ${grad.shimmer} 50%, transparent 75%)`,
+                              animation: 'btnShine 3s infinite linear'
+                            }}
+                            aria-hidden="true"
+                          />
+                          <span
+                            className="flex items-center justify-center w-9 h-9 shrink-0 text-base font-black suit"
+                            style={{ background: grad.card }}
+                            aria-hidden="true"
+                          >
+                            {suit}
                           </span>
-                        </span>
-                        <span
-                          className="flex items-center justify-center h-9 px-2.5 shrink-0"
-                          style={{ background: 'rgba(0,0,0,0.3)', borderLeft: '1px solid rgba(255,255,255,0.06)' }}
-                        >
-                          <span className="oswald text-[11px] font-black" style={{ color: '#f5e678' }}>
-                            ${ticket.price.toLocaleString()}
+                          <span
+                            className="flex-1 flex items-center h-9 px-3 min-w-0"
+                            style={{ background: 'rgba(255,255,255,0.04)' }}
+                          >
+                            <span className="oswald text-[11px] font-black uppercase tracking-[0.06em] text-white/80 truncate">
+                              {ticket.name}
+                            </span>
                           </span>
-                        </span>
-                      </button>
-                    )
-                  })}
+                          <span
+                            className="flex items-center justify-center h-9 px-2.5 shrink-0"
+                            style={{ background: 'rgba(0,0,0,0.3)', borderLeft: '1px solid rgba(255,255,255,0.06)' }}
+                          >
+                            <span className="oswald text-[11px] font-black" style={{ color: '#f5e678' }}>
+                              ${ticket.price.toLocaleString()}
+                            </span>
+                          </span>
+                        </button>
+                      )
+                    })}
                 </div>
               </div>
             ) : (
