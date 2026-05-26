@@ -1,6 +1,6 @@
 import { setInputs } from '@/app/lib/store/slices/formSlice'
 import { store, useFormSelector } from '@/app/lib/store/store'
-import { CreditCard, Info } from 'lucide-react'
+import { CreditCard } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 export function SaveCardToggle({ formName }: { formName: string }) {
@@ -12,29 +12,7 @@ export function SaveCardToggle({ formName }: { formName: string }) {
   const usingExistingCard = !!inputs?.selectedCardId && !inputs?.useNewCard
   const isRecurring = inputs?.donationType === 'monthly' || inputs?.donationType === 'yearly'
 
-  if (!isAuthed || usingExistingCard) return null
-
-  // For recurring donations, the card is saved automatically (required for renewals).
-  // Show an info notice instead of a toggle so users understand what's happening.
-  if (isRecurring) {
-    return (
-      <div
-        className={`w-full flex items-center justify-between gap-2 sm:gap-4 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border-2 dark:bg-sky-500/10 dark:border-sky-500/50 bg-sky-500/10 border-sky-500/50`}
-      >
-        <div className="flex items-center gap-2 sm:gap-3 flex-1 text-left min-w-0">
-          <Info className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 dark:text-sky-400 text-sky-600" />
-          <div className="min-w-0 flex-1">
-            <p className="text-xs sm:text-sm font-medium truncate dark:text-white text-neutral-900">
-              Card saved for renewals
-            </p>
-            <p className="text-[10px] sm:text-xs dark:text-zinc-500 text-neutral-500 truncate">
-              Recurring donations require a card on file. Remove anytime from your member portal.
-            </p>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  if (!isAuthed || usingExistingCard || isRecurring) return null
 
   return (
     <button
