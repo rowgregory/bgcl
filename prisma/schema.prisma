@@ -235,6 +235,8 @@ model Ticket {
   ticketType     TicketType @default(GENERAL)
   isRaffleTicket Boolean    @default(false) // can derive from ticketType but keep for webhook convenience
 
+  isPublished Boolean @default(false)
+
   sponsorImpact String? // "Covers 10 campers for the week..."
   sponsorPerks  String[] // ["Company logo on play money", "Admission for up to 10 guests"]
 
@@ -515,15 +517,16 @@ model Resource {
 }
 
 model News {
-  id         String   @id @default(cuid())
-  title      String
-  image      String?
-  paragraph1 String?
-  paragraph2 String?
-  paragraph3 String?
-  order      Int      @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           String   @id @default(cuid())
+  title        String
+  image        String?
+  paragraph1   String?
+  paragraph2   String?
+  paragraph3   String?
+  externalLink String?  @default("")
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([title])
 }

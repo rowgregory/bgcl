@@ -52,6 +52,21 @@ export const NewsForm: FC<IForm> = ({ errors, handleInput, handleSubmit, inputs,
           <div className="space-y-4 dark:border-neutral-800 border-neutral-200 border-t pt-8">
             <div>
               <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
+                External Link
+              </label>
+              <input
+                type="text"
+                name="externalLink"
+                value={inputs.externalLink ?? ''}
+                onChange={handleInput}
+                className="w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
+                placeholder="https://example.com"
+              />
+              {errors?.externalLink && <p className="mt-2 text-sm text-red-400">{errors.externalLink}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium dark:text-neutral-300 text-neutral-700 mb-2">
                 Paragraph 1
               </label>
               <textarea

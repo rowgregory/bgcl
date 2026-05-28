@@ -50,7 +50,7 @@ export default function CapitalCampaignTab() {
   if (CAPITAL_CAMPAIGN_LINKS.some((link) => pathname.includes(link))) return null
 
   const goalAmount = 30000000
-  const raisedAmount = 17071500
+  const raisedAmount = 18053600
   const progressPercent = (raisedAmount / goalAmount) * 100
 
   return (
@@ -66,7 +66,7 @@ export default function CapitalCampaignTab() {
           >
             <Link
               href="/capital-campaign"
-              aria-label={`Capital Campaign - $17.1M raised of $30M goal (${progressPercent.toFixed(0)}%) - Click to learn more`}
+              aria-label={`Capital Campaign - $18M raised of $30M goal (${progressPercent.toFixed(0)}%) - Click to learn more`}
               className="group flex flex-col items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 rounded-l-xl"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
@@ -124,7 +124,7 @@ export default function CapitalCampaignTab() {
                   <p className="text-sm font-bold text-neutral-900 dark:text-white mb-2">Help us build the future</p>
                   <div className="mb-3">
                     <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                      <span>$17.1M raised</span>
+                      <span>$18M raised</span>
                       <span>{progressPercent.toFixed(2)}%</span>
                     </div>
                     <div className="h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">

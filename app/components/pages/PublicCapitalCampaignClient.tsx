@@ -522,26 +522,6 @@ export default function PublicCapitalCampaignClient({ pageData }) {
         </div>
       </section>
 
-      <BrochureDisplayer
-        images={[
-          '/images/capital_campaign_brochure-1.jpg',
-          '/images/capital_campaign_brochure-2.jpg',
-          '/images/capital_campaign_brochure-3.jpg',
-          '/images/capital_campaign_brochure-4.jpg',
-          '/images/capital_campaign_brochure-5.jpg',
-          '/images/capital_campaign_brochure-6.jpg',
-          '/images/capital_campaign_brochure-7.jpg',
-          '/images/capital_campaign_brochure-8.jpg',
-          '/images/capital_campaign_brochure-9.jpg',
-          '/images/capital_campaign_brochure-10.jpg',
-          '/images/capital_campaign_brochure-11.jpg',
-          '/images/capital_campaign_brochure-12.jpg',
-          '/images/capital_campaign_brochure-13.jpg',
-          '/images/capital_campaign_brochure-14.jpg',
-          '/images/capital_campaign_brochure-15.jpg'
-        ]}
-      />
-
       {/* Contact Section */}
       <section className="py-24 px-6 dark:bg-neutral-900 bg-neutral-50">
         <div className="max-w-4xl mx-auto text-center">

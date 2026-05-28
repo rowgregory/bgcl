@@ -6,7 +6,7 @@ export interface INews {
   paragraph2: string
   paragraph3: string
   order: number
-
+  externalLink?: string
   createdAt: Date
   updatedAt: Date
 }
@@ -18,6 +18,7 @@ export interface CreateNewsInput {
   paragraph2?: string
   paragraph3?: string
   order?: number
+  externalLink?: string
 }
 
 export interface UpdateNewsInput {
@@ -28,4 +29,5 @@ export interface UpdateNewsInput {
   paragraph2?: string
   paragraph3?: string
   order?: number
+  externalLink?: string
 }

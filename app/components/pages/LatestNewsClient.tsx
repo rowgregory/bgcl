@@ -128,13 +128,33 @@ export default function LatestNewsClient({
                           className="relative h-48 overflow-hidden dark:bg-neutral-800 bg-neutral-100"
                           aria-hidden="true"
                         >
-                          <Picture
-                            src={newsItem.image}
-                            alt=""
-                            priority={true}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <div className="absolute inset-0 dark:bg-black/20 group-hover:dark:bg-black/10 bg-black/10 group-hover:bg-black/5 transition-colors" />
+                          {newsItem.externalLink ? (
+                            <a
+                              href={newsItem.externalLink}
+                              target="_blank"
+                              // rel="noopener noreferrer"
+                              tabIndex={-1}
+                              className="block w-full h-full"
+                            >
+                              <Picture
+                                src={newsItem.image}
+                                alt=""
+                                priority={true}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                              <div className="absolute inset-0 dark:bg-black/20 group-hover:dark:bg-black/10 bg-black/10 group-hover:bg-black/5 transition-colors" />
+                            </a>
+                          ) : (
+                            <>
+                              <Picture
+                                src={newsItem.image}
+                                alt=""
+                                priority={true}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                              <div className="absolute inset-0 dark:bg-black/20 group-hover:dark:bg-black/10 bg-black/10 group-hover:bg-black/5 transition-colors" />
+                            </>
+                          )}
                         </div>
                       )}
 

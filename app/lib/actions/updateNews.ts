@@ -13,8 +13,8 @@ export async function updateNews(data: UpdateNewsInput) {
         image: data.image || null,
         paragraph1: data.paragraph1 || null,
         paragraph2: data.paragraph2 || null,
-        paragraph3: data.paragraph3 || null,
-        order: data.order ?? 0
+        order: data.order ?? 0,
+        externalLink: data.externalLink || null
       }
     })
 
