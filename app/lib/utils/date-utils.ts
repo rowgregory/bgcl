@@ -115,18 +115,19 @@ export function formatDatetimeLocalForInput(value: Date | string | null | undefi
   const date = new Date(value)
   if (isNaN(date.getTime())) return ''
 
-  // Convert to EST (America/New_York handles EST/EDT automatically)
-  const estString = date.toLocaleString('en-US', { timeZone: 'America/New_York' })
-  const estDate = new Date(estString)
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  }).formatToParts(date)
 
-  const year = estDate.getFullYear()
-  const month = String(estDate.getMonth() + 1).padStart(2, '0')
-  const day = String(estDate.getDate()).padStart(2, '0')
-  const hours = String(estDate.getHours()).padStart(2, '0')
-  const minutes = String(estDate.getMinutes()).padStart(2, '0')
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '00'
 
-  // datetime-local expects "YYYY-MM-DDTHH:mm"
-  return `${year}-${month}-${day}T${hours}:${minutes}`
+  return `${get('year')}-${get('month')}-${get('day')}T${get('hour') === '24' ? '00' : get('hour')}:${get('minute')}`
 }
 
 export const fmt = (d: string) =>

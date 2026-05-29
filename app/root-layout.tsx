@@ -24,7 +24,7 @@ import { JobApplicationDrawer } from './components/drawers/JobApplicationDrawer'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
-export default function RootLayoutWrapper({ children, programs, pageContent, donations, hero }) {
+export default function RootLayoutWrapper({ children, programs, pageContent, capitalPage, donations, hero }) {
   const pathname = usePathname()
   const show = !HIDDEN_PATHS.some((path) => pathname.startsWith(path))
 
@@ -37,7 +37,7 @@ export default function RootLayoutWrapper({ children, programs, pageContent, don
             <TicketSelectionDrawer />
             <DonationNotification donations={donations} />
             <VolunteerDrawer programs={programs} />
-            <CapitalCampaignTab />
+            <CapitalCampaignTab pageData={capitalPage} />
             <RegistrationModal modal={pageContent?.sections?.modal} />
             <MobileNavigationDrawer />
             <JobApplicationDrawer />

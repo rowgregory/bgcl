@@ -61,7 +61,7 @@ export default function Header() {
       {/* Top Bar */}
       <header
         role="banner"
-        className={`${pathname === '/' ? 'max-w-400' : ''} w-full mx-auto dark:bg-neutral-900 dark:border-neutral-700 bg-neutral-50 border-neutral-200 border-b relative z-100 px-4 sm:px-6 lg:px-8 py-3`}
+        className={`w-full mx-auto dark:bg-neutral-900 dark:border-neutral-700 bg-neutral-50 border-neutral-200 border-b relative z-100 px-4 sm:px-6 lg:px-8 py-3`}
       >
         <div className="max-w-375 flex items-center justify-between mx-auto">
           <div className="flex items-center space-x-4 lg:space-x-6">

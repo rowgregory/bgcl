@@ -90,8 +90,7 @@ export const eventTemplates: EventTemplate[] = [
       requirements: '21+ Only',
       materials: 'Business Cards',
       isPublic: true,
-      requiresRSVP: true,
-      allowMultipleTickets: false,
+
       isRaffle: true,
       raffleDrawDate: '2026-06-11T22:30:00.000Z',
       raffleTerms:
@@ -157,9 +156,11 @@ export const eventTemplates: EventTemplate[] = [
       maxAttendees: '200',
       requirements: 'Registration Required, 21+ Only',
       materials: '',
-      isPublic: true,
-      requiresRSVP: true,
-      allowMultipleTickets: true,
+      isPublic: false,
+      ticketSalesStartDate: '2026-09-01T00:00:00.000Z',
+      ticketSalesEndDate: '2026-10-10T23:59:00.000Z',
+      registrationDeadline: '2026-10-02T23:59:00.000Z',
+
       isRaffle: false,
       raffleDrawDate: null,
       raffleTerms: null,
@@ -195,8 +196,7 @@ export const eventTemplates: EventTemplate[] = [
       requirements: 'Registration Required, Photo Release',
       materials: 'Laptop, Notebook, Business Cards',
       isPublic: true,
-      requiresRSVP: true,
-      allowMultipleTickets: false,
+
       isRaffle: false,
       raffleDrawDate: null,
       raffleTerms: null,
@@ -232,8 +232,7 @@ export const eventTemplates: EventTemplate[] = [
       requirements: '18+ Only',
       materials: 'Business Cards',
       isPublic: true,
-      requiresRSVP: true,
-      allowMultipleTickets: false,
+
       isRaffle: false,
       raffleDrawDate: null,
       raffleTerms: null,
@@ -269,8 +268,7 @@ export const eventTemplates: EventTemplate[] = [
       requirements: 'ID Required',
       materials: '',
       isPublic: true,
-      requiresRSVP: false,
-      allowMultipleTickets: true,
+
       isRaffle: false,
       raffleDrawDate: null,
       raffleTerms: null,
@@ -306,8 +304,7 @@ export const eventTemplates: EventTemplate[] = [
       requirements: 'Registration Required, Pre-payment Required',
       materials: 'Laptop, Notebook, Pen/Pencil',
       isPublic: true,
-      requiresRSVP: true,
-      allowMultipleTickets: false,
+
       isRaffle: false,
       raffleDrawDate: null,
       raffleTerms: null,
@@ -343,8 +340,7 @@ export const eventTemplates: EventTemplate[] = [
       requirements: 'Registration Required',
       materials: '',
       isPublic: true,
-      requiresRSVP: true,
-      allowMultipleTickets: true,
+
       isRaffle: false,
       raffleDrawDate: null,
       raffleTerms: null,
@@ -380,8 +376,7 @@ export const eventTemplates: EventTemplate[] = [
       requirements: 'Registration Required, Liability Waiver',
       materials: 'Athletic Wear, Water Bottle',
       isPublic: true,
-      requiresRSVP: true,
-      allowMultipleTickets: false,
+
       isRaffle: false,
       raffleDrawDate: null,
       raffleTerms: null,
@@ -417,8 +412,7 @@ export const eventTemplates: EventTemplate[] = [
       requirements: 'Registration Required, 21+ Only',
       materials: '',
       isPublic: true,
-      requiresRSVP: true,
-      allowMultipleTickets: false,
+
       isRaffle: false,
       raffleDrawDate: null,
       raffleTerms: null,

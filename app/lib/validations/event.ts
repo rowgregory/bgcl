@@ -13,7 +13,6 @@ const validateEventForm = (
     maxAttendees?: any
     registrationUrl?: any
     meetingUrl?: any
-    requiresRSVP?: any
     registrationDeadline?: any
   },
   setErrors: (newErrors: Errors) => void
@@ -64,10 +63,6 @@ const validateEventForm = (
     !isValidUrl(inputs.meetingUrl)
   ) {
     newErrors.meetingUrl = 'Please enter valid URL'
-  }
-
-  if (inputs?.requiresRSVP && !inputs?.registrationDeadline) {
-    newErrors.registrationDeadline = 'Registration deadline required when RSVP is enabled'
   }
 
   setErrors(newErrors)

@@ -23,8 +23,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: ReactNode
 }>) {
-  const { session, programs, donationOrders, homePage, hero } = await getHomePageData()
-
+  const { session, programs, donationOrders, homePage, capitalPage, hero } = await getHomePageData()
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID
 
   return (
@@ -35,7 +34,13 @@ export default async function RootLayout({
       </head>
       <body className={`${lexend.variable} antialiased`}>
         <SessionProvider session={session}>
-          <RootLayoutWrapper programs={programs} pageContent={homePage} donations={donationOrders} hero={hero?.data}>
+          <RootLayoutWrapper
+            programs={programs}
+            pageContent={homePage}
+            capitalPage={capitalPage}
+            donations={donationOrders}
+            hero={hero?.data}
+          >
             {children}
           </RootLayoutWrapper>
         </SessionProvider>

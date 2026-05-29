@@ -10,6 +10,8 @@ export default function CapsuleLayout({ children }) {
   const path = usePathname()
   const [loading, setLoading] = useState(false)
 
+  const isEventDetailsPage = path.includes('/admin/capsule/events/')
+
   const handleExportEvents = async () => {
     setLoading(true)
     try {
@@ -30,6 +32,10 @@ export default function CapsuleLayout({ children }) {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (isEventDetailsPage) {
+    return <>{children}</>
   }
 
   return (

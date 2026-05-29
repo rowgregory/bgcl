@@ -22,7 +22,6 @@ export async function updateEvent(body: UpdateEventInput) {
       date,
       time,
       registrationDeadline,
-      rsvpDeadline,
       ticketSalesStartDate,
       ticketSalesEndDate,
       isUpdating,

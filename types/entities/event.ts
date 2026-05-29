@@ -42,12 +42,9 @@ export interface IEvent {
   attendeeCount: number
 
   // RSVP
-  requiresRSVP: boolean
   registrationDeadline: Date
-  rsvpDeadline: Date
 
   // Ticketing
-  allowMultipleTickets: boolean
   salesStartDate?: Date | null
   salesEndDate?: Date | null
 
@@ -107,8 +104,6 @@ export interface EventTemplate {
     requirements: string
     materials: string
     isPublic: boolean
-    requiresRSVP: boolean
-    allowMultipleTickets: boolean
 
     // Raffle
     isRaffle: boolean
@@ -158,16 +153,12 @@ export interface CreateEventInput {
   dresscode?: string | null
   maxAttendees?: number | null
   host?: string | null
-  featured?: boolean
   isPublic?: boolean
-  requiresRSVP?: boolean
-  allowMultipleTickets?: boolean
   requirements?: string | null
   materials?: string | null
   registrationUrl?: string | null
   meetingUrl?: string | null
   registrationDeadline?: string | null
-  rsvpDeadline?: string | null
   salesStartDate?: string | null
   salesEndDate?: string | null
   order?: number | null

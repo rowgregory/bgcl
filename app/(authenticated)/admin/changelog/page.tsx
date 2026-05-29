@@ -21,6 +21,33 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.18.7',
+    date: '2026-05-29',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Full-Bleed Event Control Panel',
+        description:
+          'Replaced the event and ticket drawer flow with a dedicated full-bleed control panel at /admin/capsule/events/[id]. Three-column layout: left sidebar with status selector, at-a-glance stats, and option toggles; main scrollable form with all event fields organized into labeled sections (Details, Scheduling, Location, Capacity, Dress Code, Raffle); right panel with inline ticket management. Tickets expand in-place to reveal all fields including sponsorship perks. Template selector swaps into the left sidebar on new event creation.',
+        impact: 'high'
+      },
+      {
+        type: 'fix',
+        title: 'Capital Campaign Current Amount Aligned',
+        description:
+          'Audited and corrected currentAmount across all references to the capital campaign — donor-facing display, admin dashboard stat, and the database value now reflect the same figure.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Capital Campaign Tab Pulls from Page Content',
+        description:
+          'CapitalCampaignTab now reads goalAmount, raisedAmount, and CTA heading directly from the Star Map page content (campaign_goal_amount, campaign_raised_amount, campaign_cta_heading) instead of hardcoded values. All money labels, progress percentages, and aria-labels update automatically when Erica changes the figures in the admin.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.18.6',
     date: '2026-05-28',
     changes: [

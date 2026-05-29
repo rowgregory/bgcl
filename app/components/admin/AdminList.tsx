@@ -15,8 +15,7 @@ import { store } from '@/app/lib/store/store'
 import { AlertCircle, Check, Plus } from 'lucide-react'
 import { useState } from 'react'
 import AdminListItem from './AdminListItem'
-import { setOpenEventDrawer } from '@/app/lib/store/slices/eventSlice'
-import { initialEventFormState } from '@/app/lib/initial-states/event'
+import { useRouter } from 'next/navigation'
 
 interface AdminListItem {
   id: string
@@ -39,6 +38,7 @@ export function AdminListPage<T extends AdminListItem>({
 }: AdminListPageProps<T>) {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const router = useRouter()
 
   const { draggedOver, dragPosition, handleDragStart, handleDragOver, handleDragLeave, handleDrop, handleDragEnd } =
     useGenericListReorder(data, itemType)
@@ -82,8 +82,7 @@ export function AdminListPage<T extends AdminListItem>({
         store.dispatch(setInputs({ formName: 'closingForm', data: initialClosingFormState }))
         break
       case 'event':
-        store.dispatch(setOpenEventDrawer())
-        store.dispatch(setInputs({ formName: 'eventForm', data: initialEventFormState }))
+        router.push(`/admin/capsule/events/new`)
         break
     }
   }

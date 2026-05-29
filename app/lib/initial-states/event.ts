@@ -13,16 +13,13 @@ export const initialEventFormState = {
   location: '',
   maxAttendees: null,
   status: 'UPCOMING',
-  featured: false,
   host: 'Boys & Girls Club of Lynn',
   requirements: '',
   materials: '',
   registrationUrl: '',
   meetingUrl: '',
-  isPublic: true,
-  requiresRSVP: false,
+  isPublic: false,
   registrationDeadline: new Date(),
-  allowMultipleTickets: false,
   salesStartDate: null,
   salesEndDate: null,
   isUpdating: false,
@@ -52,7 +49,7 @@ export const initialEventFormState = {
   bestDressedPrizes: '',
   dressCodeItems: [],
 
-  showTicketMarquee: true,
+  showTicketMarquee: false,
   showRaffleTicketNumbers: false
 }
 
@@ -79,9 +76,7 @@ export const cashMadnessMockEvent = {
   registrationUrl: 'https://www.bgcl.org',
   meetingUrl: '',
   isPublic: true,
-  requiresRSVP: true,
   registrationDeadline: new Date('2026-06-10T23:59:00'),
-  rsvpDeadline: new Date('2026-06-10T23:59:00'),
   allowMultipleTickets: false,
   salesStartDate: new Date('2026-01-01T00:00:00'),
   salesEndDate: new Date('2026-06-11T17:00:00'),

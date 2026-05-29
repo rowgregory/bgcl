@@ -19,7 +19,8 @@ const CAPITAL_CAMPAIGN_LINKS = [
   '/super'
 ]
 
-export default function CapitalCampaignTab() {
+export default function CapitalCampaignTab({ pageData }) {
+  const t = pageData?.sections?.campaign
   const pathname = usePathname()
   const [isHovered, setIsHovered] = useState(true)
   const [isMobileExpanded, setIsMobileExpanded] = useState(false)
@@ -49,9 +50,17 @@ export default function CapitalCampaignTab() {
 
   if (CAPITAL_CAMPAIGN_LINKS.some((link) => pathname.includes(link))) return null
 
-  const goalAmount = 30000000
-  const raisedAmount = 18053600
+  const goalAmount = Number(t?.campaign_goal_amount) || 30000000
+  const raisedAmount = Number(t?.campaign_raised_amount) || 18053600
   const progressPercent = (raisedAmount / goalAmount) * 100
+
+  const fmtMoney = (n: number) =>
+    n >= 1000000
+      ? `$${(n / 1000000).toLocaleString('en-US', { maximumFractionDigits: 1 })}M`
+      : `$${n.toLocaleString('en-US')}`
+
+  const raisedLabel = fmtMoney(raisedAmount)
+  const goalLabel = fmtMoney(goalAmount)
 
   return (
     <>
@@ -66,7 +75,7 @@ export default function CapitalCampaignTab() {
           >
             <Link
               href="/capital-campaign"
-              aria-label={`Capital Campaign - $18M raised of $30M goal (${progressPercent.toFixed(0)}%) - Click to learn more`}
+              aria-label={`Capital Campaign - ${raisedLabel} raised of ${goalLabel} goal (${progressPercent.toFixed(0)}%) - Click to learn more`}
               className="group flex flex-col items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 rounded-l-xl"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
@@ -121,10 +130,12 @@ export default function CapitalCampaignTab() {
                   <p className="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wide mb-1">
                     Capital Campaign
                   </p>
-                  <p className="text-sm font-bold text-neutral-900 dark:text-white mb-2">Help us build the future</p>
+                  <p className="text-sm font-bold text-neutral-900 dark:text-white mb-2">
+                    {t?.campaign_cta_heading || 'Help us build the future'}
+                  </p>
                   <div className="mb-3">
                     <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400 mb-1">
-                      <span>$18M raised</span>
+                      <span>{raisedLabel} raised</span>
                       <span>{progressPercent.toFixed(2)}%</span>
                     </div>
                     <div className="h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
@@ -166,16 +177,18 @@ export default function CapitalCampaignTab() {
                   className="bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 overflow-hidden"
                   id="capital-campaign-details"
                   role="region"
-                  aria-label="Capital Campaign details"
+                  aria-label={`Expand Capital Campaign details - ${raisedLabel} of ${goalLabel} goal raised`}
                 >
                   <div className="px-4 py-3">
                     <p className="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wide mb-1">
                       Capital Campaign
                     </p>
-                    <p className="text-sm font-bold text-neutral-900 dark:text-white mb-3">Help us build the future</p>
+                    <p className="text-sm font-bold text-neutral-900 dark:text-white mb-3">
+                      {t?.campaign_cta_heading || 'Help us build the future'}
+                    </p>
                     <div className="mb-3">
                       <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400 mb-1.5">
-                        <span>$17.1M raised</span>
+                        <span>{raisedLabel} raised</span>
                         <span>{progressPercent.toFixed(0)}%</span>
                       </div>
                       <div
@@ -183,7 +196,7 @@ export default function CapitalCampaignTab() {
                         aria-valuenow={progressPercent}
                         aria-valuemin={0}
                         aria-valuemax={100}
-                        aria-label={`Capital campaign progress: ${progressPercent.toFixed(0)}% of $30M goal reached`}
+                        aria-label={`Capital campaign progress: ${progressPercent.toFixed(0)}% of ${goalLabel} goal reached`}
                         className="h-2 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden"
                       >
                         <div
@@ -206,7 +219,7 @@ export default function CapitalCampaignTab() {
               aria-label={
                 isMobileExpanded
                   ? 'Collapse Capital Campaign details'
-                  : 'Expand Capital Campaign details - $17.1M of $30M goal raised'
+                  : 'Expand Capital Campaign details - $181M of $30M goal raised'
               }
               className="block bg-linear-to-r from-sky-600 to-sky-700 text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-inset"
               onClick={(e) => {
@@ -229,7 +242,9 @@ export default function CapitalCampaignTab() {
                   </div>
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wide opacity-90">Capital Campaign</p>
-                    <p className="text-sm font-bold">$17.1M / $30M Goal</p>
+                    <p className="text-sm font-bold">
+                      {raisedLabel} / {goalLabel} Goal
+                    </p>
                   </div>
                 </div>
 

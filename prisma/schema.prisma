@@ -125,8 +125,8 @@ model Event {
   type     EventType   @default(IN_PERSON)
   status   EventStatus @default(UPCOMING)
   category String
-  featured Boolean     @default(false)
-  isPublic Boolean     @default(true)
+
+  isPublic Boolean @default(true)
 
   // Details
   title        String
@@ -196,15 +196,17 @@ model Event {
   showTicketMarquee       Boolean @default(true)
   showRaffleTicketNumbers Boolean @default(false)
 
+  // deprecated
+  featured Boolean @default(false)
+
   @@index([date])
   @@index([status])
   @@index([status, date])
-  @@index([featured, status, date])
   @@index([isPublic, status, date])
   @@index([category, date])
   @@index([type, date])
   @@index([requiresRSVP, registrationDeadline])
-  @@index([salesStartDate])
+  @@index([ticketSalesStartDate])
   @@index([salesEndDate])
 }
 
