@@ -50,8 +50,8 @@ export default function CapitalCampaignTab({ pageData }) {
 
   if (CAPITAL_CAMPAIGN_LINKS.some((link) => pathname.includes(link))) return null
 
-  const goalAmount = Number(t?.campaign_goal_amount) || 30000000
-  const raisedAmount = Number(t?.campaign_raised_amount) || 18053600
+  const goalAmount = Number(t?.goal_amount) || 30000000
+  const raisedAmount = Number(t?.raised_amount) || 18053600
   const progressPercent = (raisedAmount / goalAmount) * 100
 
   const fmtMoney = (n: number) =>
