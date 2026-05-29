@@ -46,7 +46,7 @@ export const CreatedTicketsList: FC<TicketListProps> = ({ onSelectTicket, inputs
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  {ticket.isAvailable ? (
+                  {ticket.isPublished ? (
                     <span className="text-[9px] font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
                       Live
                     </span>
@@ -109,7 +109,7 @@ export const CreatedTicketsList: FC<TicketListProps> = ({ onSelectTicket, inputs
                         >
                           {ticket.name}
                         </h4>
-                        {ticket.isAvailable ? (
+                        {ticket.isPublished ? (
                           <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
                             Live
                           </span>

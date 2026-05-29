@@ -21,6 +21,47 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.18.6',
+    date: '2026-05-28',
+    changes: [
+      {
+        type: 'feature',
+        title: 'Ticket isPublished Toggle',
+        description:
+          'Replaced the static "Tickets are always public" info block in the ticket form with a CustomSwitch toggle for isPublished. Admins can now manually publish and unpublish individual tickets.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Auto-Unpublish Tickets via Cron',
+        description:
+          'Updated the updateEventStatuses cron to automatically flip all tickets to isPublished: false when the event ticketSalesEndDate has passed. Publishing remains manual — the cron only ever unpublishes.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'EventCard Respects isPublished',
+        description:
+          'Event cards now filter to only show published tickets in the ticket list. If no tickets are published, shows "Ticket sales are not currently open." CTA button text changes from "Buy Tickets" to "View Event" when all tickets are unpublished.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'News External Link',
+        description:
+          'Added an optional externalLink field to the NewsForm. If set, the news card image becomes a clickable link that opens the URL in a new tab.',
+        impact: 'low'
+      },
+      {
+        type: 'ui',
+        title: 'Capital Campaign Renderings Section Redesigned',
+        description:
+          'Removed the image gallery and brochure from the capital campaign renderings section. Replaced with two buttons linking directly to the Bloom Architecture PDFs — Architecture Drawings and Renderings — which open in a new tab.',
+        impact: 'medium'
+      }
+    ]
+  },
+  {
     version: '1.18.5',
     date: '2026-05-12',
     changes: [

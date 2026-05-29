@@ -14,89 +14,15 @@ import {
   Phone,
   Mail,
   MapPin,
-  ChevronLeft,
-  ChevronRight,
-  Maximize2
+  FileText
 } from 'lucide-react'
 import Link from 'next/link'
 import Picture from '@/app/components/common/Picture'
-import BrochureDisplayer from '@/app/components/BrochureDisplayer'
-
-const renderings = [
-  {
-    src: '/images/render_1.jpg',
-    alt: 'Exterior View 1'
-  },
-  {
-    src: '/images/render_2.jpg',
-    alt: 'Exterior View 2'
-  },
-  {
-    src: '/images/render_3.jpg',
-    alt: 'Pool Area'
-  },
-  {
-    src: '/images/render_4.jpg',
-    alt: 'Swimming Pool'
-  },
-  {
-    src: '/images/render_5.jpg',
-    alt: 'Dance Room'
-  },
-  {
-    src: '/images/render_6.jpg',
-    alt: 'Classroom'
-  },
-  {
-    src: '/images/render_7.jpg',
-    alt: 'Gaming Area'
-  },
-  {
-    src: '/images/render_8.jpg',
-    alt: 'Cooking Club'
-  },
-  {
-    src: '/images/render_9.jpg',
-    alt: 'Teen Center'
-  },
-  {
-    src: '/images/render_10.jpg',
-    alt: 'Cafeteria'
-  },
-  {
-    src: '/images/render_11.jpg',
-    alt: 'Classrooms'
-  },
-  {
-    src: '/images/render_12.jpg',
-    alt: 'Entry Check-in'
-  },
-  {
-    src: '/images/render_13.jpg',
-    alt: 'Gymnasium'
-  },
-  {
-    src: '/images/render_14.jpg',
-    alt: 'Interior Hallway'
-  }
-]
 
 export default function PublicCapitalCampaignClient({ pageData }) {
   const t = pageData?.sections?.campaign
-  const [lightboxOpen, setLightboxOpen] = useState(false)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [videoModalOpen, setVideoModalOpen] = useState(false)
   const [currentVideo, setCurrentVideo] = useState<string | null>(null)
-
-  const openLightbox = (index: number) => {
-    setCurrentImageIndex(index)
-    setLightboxOpen(true)
-  }
-
-  const closeLightbox = () => setLightboxOpen(false)
-
-  const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % renderings.length)
-  const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + renderings.length) % renderings.length)
 
   const goalAmount = Number(t?.goal_amount)
   const raisedAmount = Number(t?.raised_amount)
@@ -384,25 +310,27 @@ export default function PublicCapitalCampaignClient({ pageData }) {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            {renderings.map((image, index) => (
-              <button
-                key={index}
-                onClick={() => openLightbox(index)}
-                className="group relative aspect-4/3 rounded-xl overflow-hidden cursor-pointer"
-              >
-                <Picture
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  priority={false}
-                />
-                <div className="absolute inset-0 bg-neutral-950/0 group-hover:bg-neutral-950/30 transition-colors flex items-center justify-center">
-                  <Maximize2 className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-              </button>
-            ))}
+            <a
+              href="rendering-1.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl transition-colors"
+            >
+              <FileText className="w-5 h-5 shrink-0" aria-hidden="true" />
+              {t?.renderings_pdf_label_1 ?? 'Architecture Drawings'}
+            </a>
+
+            <a
+              href="rendering-2.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 px-8 py-4 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white dark:border-neutral-700 bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-200 font-bold rounded-xl transition-colors"
+            >
+              <FileText className="w-5 h-5 shrink-0" aria-hidden="true" />
+              {t?.renderings_pdf_label_2 ?? 'Renderings'}
+            </a>
           </motion.div>
         </div>
       </section>
@@ -562,65 +490,6 @@ export default function PublicCapitalCampaignClient({ pageData }) {
           </motion.div>
         </div>
       </section>
-
-      {/* Lightbox Modal */}
-      <AnimatePresence>
-        {lightboxOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-neutral-950/95 flex items-center justify-center p-4"
-            onClick={closeLightbox}
-          >
-            <button
-              onClick={closeLightbox}
-              className="absolute top-6 right-6 p-2 text-white/70 hover:text-white transition-colors"
-            >
-              <X className="w-8 h-8" />
-            </button>
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                prevImage()
-              }}
-              className="absolute left-6 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-
-            <motion.div
-              key={currentImageIndex}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="max-w-5xl max-h-[80vh] w-full"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Picture
-                src={renderings[currentImageIndex].src}
-                alt={renderings[currentImageIndex].alt}
-                className="w-full h-full object-contain rounded-lg"
-                priority={false}
-              />
-              <p className="text-center text-white/70 mt-4">
-                {renderings[currentImageIndex].alt} ({currentImageIndex + 1} of {renderings.length})
-              </p>
-            </motion.div>
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                nextImage()
-              }}
-              className="absolute right-6 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Video Modal */}
       <AnimatePresence>

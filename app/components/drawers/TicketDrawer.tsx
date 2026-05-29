@@ -39,12 +39,12 @@ export const TicketDrawer = () => {
       description: inputs.description,
       price: inputs.price,
       totalQuantity: inputs.totalQuantity,
-      isAvailable: inputs.isAvailable,
       sortOrder: inputs.sortOrder,
       ticketType: inputs.ticketType,
       sponsorImpact: inputs.sponsorImpact,
       sponsorPerks: inputs.sponsorPerks,
-      guestCount: inputs.guestCount
+      guestCount: inputs.guestCount,
+      isPublished: inputs.isPublished
     }
 
     try {
@@ -65,7 +65,7 @@ export const TicketDrawer = () => {
           message: inputs?.isUpdating ? 'Ticket Updated!' : 'Ticket Created!',
           description: inputs?.isUpdating
             ? `${inputs?.name} has been updated successfully.`
-            : inputs?.isAvailable
+            : inputs?.isPublished
               ? `${inputs?.name} is live and ready for purchase.`
               : `${inputs?.name} has been created but is not yet available for purchase.`
         })

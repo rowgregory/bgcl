@@ -4,12 +4,13 @@ import { IForm } from '@/types/common'
 import { TicketTemplates } from '../ticket/TicketTemplates'
 import { ticketTemplates } from '@/app/lib/constants/ticket.constants'
 import { CreatedTicketsList } from '../ticket/CreatedTicketsList'
-import { Info, Plus, Save, Trash2, X } from 'lucide-react'
+import { Plus, Save, Trash2, X } from 'lucide-react'
 import { store } from '@/app/lib/store/store'
 import { setInputs } from '@/app/lib/store/slices/formSlice'
 import { deleteTicket } from '@/app/lib/actions/deleteTicket'
 import { useRouter } from 'next/navigation'
 import { initialTicketFormState } from '@/app/lib/initial-states/ticket'
+import CustomSwitch from '../common/CustomSwitch'
 
 const InputStyles = `w-full px-4 py-2.5 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-500 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-500 focus:ring-sky-500 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors`
 
@@ -56,7 +57,7 @@ const TicketForm: FC<IForm> = ({ errors, handleInput, handleSubmit, inputs, isLo
                 <span className="text-neutral-300 dark:text-neutral-600">·</span>
                 <span className="text-sm dark:text-neutral-400 text-neutral-500">
                   <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                    {inputs?.tickets?.filter((t) => t.isAvailable)?.length}
+                    {inputs?.tickets?.filter((t) => t.isPublished)?.length}
                   </span>{' '}
                   of <span className="font-semibold dark:text-white text-neutral-900">{inputs?.tickets?.length}</span>{' '}
                   tickets live
@@ -317,25 +318,14 @@ const TicketForm: FC<IForm> = ({ errors, handleInput, handleSubmit, inputs, isLo
                     {errors?.totalQuantity && <p className="mt-2 text-sm text-red-400">{errors.totalQuantity}</p>}
                   </div>
 
-                  {/* Availability Info */}
-                  <div className="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700 rounded-lg space-y-2">
-                    <div className="flex items-start gap-2.5">
-                      <Info className="w-4 h-4 text-sky-500 dark:text-sky-400 shrink-0 mt-0.5" aria-hidden="true" />
-                      <div>
-                        <p className="text-sm font-semibold dark:text-white text-neutral-900 mb-1">
-                          Tickets are always public
-                        </p>
-                        <p className="text-xs dark:text-neutral-400 text-neutral-500 leading-relaxed">
-                          Tickets are visible on the public event page at all times, encouraging attendees to add them
-                          to their cart before the purchase window opens. Payment will be gated until the{' '}
-                          <span className="font-medium dark:text-neutral-300 text-neutral-700">
-                            Ticket Sales Start Date
-                          </span>{' '}
-                          is reached.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <CustomSwitch
+                    checked={!!inputs?.isPublished}
+                    onChange={(checked) =>
+                      store.dispatch(setInputs({ formName: 'ticketForm', data: { isPublished: checked } }))
+                    }
+                    label="Published Ticket"
+                    description="Ticket is visible on the public event page and available for purchase."
+                  />
 
                   {/* Sort Order */}
                   <div>

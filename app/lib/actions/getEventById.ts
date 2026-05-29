@@ -9,7 +9,7 @@ export const getEventById = async (id: string) => {
       where: { id },
       include: {
         tickets: {
-          where: { isAvailable: true },
+          where: { isPublished: true },
           orderBy: { sortOrder: 'asc' }
         }
       }

@@ -17,7 +17,7 @@ import { VantaBackgroundCells } from '../unique/VantaBackground'
 import { formatDate } from '@/app/lib/utils/date-utils'
 import { formatTime } from '@/app/lib/utils/time-utils'
 import { TPublicEventDetailsClient } from '@/types/casino.types'
-// import { CasinoIndividualTicket } from '../events/casino/CasinoIndividualTicket'
+import { CasinoIndividualTicket } from '../events/casino/CasinoIndividualTicket'
 import { CasinoBlackjackTicket } from '../events/casino/CasinoBlackjackTicket'
 import { CheckCircle2 } from 'lucide-react'
 import { CasinoCartDropdown } from '../events/casino/CasinoCartDropdown'
@@ -66,15 +66,15 @@ export function PublicEventDetailsClient({ data, name, savedCards, address }: TP
               <GoldDivider />
 
               {/* ── RAFFLE TICKET TIER ─────────────────────────────────────────────── */}
-              {/* {data?.tickets?.some((t: any) => t.ticketType === 'RAFFLE') && (
+              {data?.tickets?.some((t: any) => t.ticketType === 'RAFFLE' && t.isPublished) && (
                 <>
                   <CasinoIndividualTicket data={data} />
                   <GoldDivider />
                 </>
-              )} */}
+              )}
 
               {/* ── BLACKJACK TOURNAMENT TIER ─────────────────────────────────────────────── */}
-              {data?.tickets?.some((t: any) => t.ticketType === 'TOURNAMENT') && (
+              {data?.tickets?.some((t: any) => t.ticketType === 'TOURNAMENT' && t.isPublished) && (
                 <>
                   <CasinoBlackjackTicket data={data} />
                   <GoldDivider />
@@ -82,7 +82,7 @@ export function PublicEventDetailsClient({ data, name, savedCards, address }: TP
               )}
 
               {/* ── SPONSOR TIERS ─────────────────────────────────────────────── */}
-              {data?.tickets?.some((t: any) => t.ticketType === 'SPONSORSHIP') && (
+              {data?.tickets?.some((t: any) => t.ticketType === 'SPONSORSHIP' && t.isPublished) && (
                 <>
                   <CasinoSponsorTiers data={data} />
                   <GoldDivider />

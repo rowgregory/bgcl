@@ -23,12 +23,12 @@ export async function createTicket(eventId: string, data: CreateTicketInput) {
         description: data.description,
         price: Number(data.price),
         totalQuantity: Number(data.totalQuantity),
-        isAvailable: data.isAvailable ?? true,
         sortOrder: data.sortOrder ? Number(data.sortOrder) : 0,
         ticketType: data.ticketType,
         sponsorImpact: data.sponsorImpact,
         sponsorPerks: data.sponsorPerks,
         guestCount: data.guestCount,
+        isPublished: data.isPublished,
         event: {
           connect: { id: eventId }
         }

@@ -223,9 +223,7 @@ model Ticket {
   quantitySold     Int @default(0)
   quantityReserved Int @default(0)
 
-  // Availability
-  isAvailable Boolean @default(true)
-  sortOrder   Int     @default(0)
+  sortOrder Int @default(0)
 
   // Relations
   eventId    String
@@ -242,8 +240,11 @@ model Ticket {
 
   guestCount Int @default(1)
 
+  // Deprecated
+  isAvailable Boolean @default(true)
+
   @@index([eventId])
-  @@index([eventId, isAvailable])
+  @@index([eventId, isPublished])
 }
 
 model Order {

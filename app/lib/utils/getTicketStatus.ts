@@ -4,7 +4,7 @@ export function getTicketStatus(ticket: ITicket): {
   available: boolean
   message: string
 } {
-  if (!ticket.isAvailable) {
+  if (!ticket.isPublished) {
     return { available: false, message: 'Not available' }
   }
 

@@ -48,6 +48,11 @@ export default function CustomSwitch({ checked, onChange, label, description }: 
             className={`w-4 h-4 shrink-0 transition-colors ${checked ? 'dark:text-sky-400 text-sky-600' : 'dark:text-zinc-500 text-neutral-600'}`}
             aria-hidden="true"
           />
+        ) : label === 'Published Ticket' ? (
+          <Eye
+            className={`w-4 h-4 shrink-0 transition-colors ${checked ? 'dark:text-sky-400 text-sky-600' : 'dark:text-zinc-500 text-neutral-600'}`}
+            aria-hidden="true"
+          />
         ) : (
           <CreditCard
             className={`w-4 h-4 shrink-0 transition-colors ${checked ? 'dark:text-sky-400 text-sky-600' : 'dark:text-zinc-500 text-neutral-600'}`}

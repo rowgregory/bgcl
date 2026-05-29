@@ -13,7 +13,7 @@ export interface TicketTemplate {
     totalQuantity: number
     quantitySold?: number
     quantityReserved?: number
-    isAvailable: boolean
+    isPublished: boolean
     sortOrder: number
     ticketType: 'GENERAL' | 'RAFFLE' | 'TOURNAMENT' | 'SPONSORSHIP'
     isRaffleTicket: boolean
@@ -40,8 +40,6 @@ export interface ITicket {
   quantitySold: number
   quantityReserved: number
 
-  // Availability
-  isAvailable: boolean
   sortOrder: number
 
   // Ticketing
@@ -59,6 +57,7 @@ export interface ITicket {
   orderItems?: IOrderItem[]
 
   guestCount: number
+  isPublished: boolean
 }
 
 export interface UpdateTicketData {
@@ -66,13 +65,13 @@ export interface UpdateTicketData {
   description?: string | null
   price?: number
   totalQuantity?: number
-  isAvailable?: boolean
   sortOrder?: number
   ticketType?: 'GENERAL' | 'RAFFLE' | 'TOURNAMENT' | 'SPONSORSHIP'
   isRaffleTicket?: boolean
   sponsorImpact?: string | null
   sponsorPerks?: string[]
   guestCount: number
+  isPublished: boolean
 }
 
 export interface CreateTicketInput {
@@ -80,11 +79,11 @@ export interface CreateTicketInput {
   description?: string | null
   price: number
   totalQuantity: number
-  isAvailable?: boolean
   sortOrder?: number
   ticketType?: 'GENERAL' | 'RAFFLE' | 'TOURNAMENT' | 'SPONSORSHIP'
   isRaffleTicket?: boolean
   sponsorImpact?: string | null
   sponsorPerks?: string[]
   guestCount: number
+  isPublished: boolean
 }

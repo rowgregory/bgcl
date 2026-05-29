@@ -1,6 +1,6 @@
 import prisma from '@/prisma/client'
 
-// cron: runs every 15 minutes or hourly
+// cron: runs every 15 minutes
 export async function updateEventStatuses() {
   const now = new Date()
 
@@ -21,5 +21,16 @@ export async function updateEventStatuses() {
       date: { lt: now }
     },
     data: { status: 'COMPLETED' }
+  })
+
+  // Unpublish tickets whose event sales window has ended
+  await prisma.ticket.updateMany({
+    where: {
+      isPublished: true,
+      event: {
+        ticketSalesEndDate: { lt: now }
+      }
+    },
+    data: { isPublished: false }
   })
 }

@@ -80,25 +80,47 @@ export function EventCard({ event }: EventCardProps) {
         {/* Tickets */}
         {hasTickets && (
           <div className="px-6 py-3 dark:border-neutral-700/50 border-neutral-200 border-t">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium dark:text-neutral-400 text-neutral-600 uppercase">
-                Tickets Available
-              </span>
-              <span className="text-xs dark:text-neutral-500 text-neutral-500">
-                {event.tickets.length} type{event.tickets.length !== 1 ? 's' : ''}
-              </span>
-            </div>
-            <div className="space-y-2">
-              {event.tickets.slice(0, 2).map((ticket) => (
-                <div key={ticket.id} className="flex items-center justify-between text-sm">
-                  <span className="dark:text-neutral-400 text-neutral-600">{ticket.name}</span>
-                  <span className="font-semibold dark:text-sky-400 text-sky-600">${ticket.price.toFixed(2)}</span>
-                </div>
-              ))}
-              {event.tickets.length > 2 && (
-                <p className="text-xs dark:text-neutral-500 text-neutral-500 pt-2">+{event.tickets.length - 2} more</p>
-              )}
-            </div>
+            {(() => {
+              const publishedTickets = event.tickets.filter((t) => t.isPublished)
+              const hasPublished = publishedTickets.length > 0
+
+              return (
+                <>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-medium dark:text-neutral-400 text-neutral-600 uppercase">
+                      Tickets Available
+                    </span>
+                    <span className="text-xs dark:text-neutral-500 text-neutral-500">
+                      {hasPublished
+                        ? `${publishedTickets.length} type${publishedTickets.length !== 1 ? 's' : ''}`
+                        : 'None available'}
+                    </span>
+                  </div>
+
+                  {hasPublished ? (
+                    <div className="space-y-2">
+                      {publishedTickets.slice(0, 2).map((ticket) => (
+                        <div key={ticket.id} className="flex items-center justify-between text-sm">
+                          <span className="dark:text-neutral-400 text-neutral-600 truncate">{ticket.name}</span>
+                          <span className="font-semibold dark:text-sky-400 text-sky-600 shrink-0 ml-2">
+                            ${Number(ticket.price).toFixed(2)}
+                          </span>
+                        </div>
+                      ))}
+                      {publishedTickets.length > 2 && (
+                        <p className="text-xs dark:text-neutral-500 text-neutral-500 pt-2">
+                          +{publishedTickets.length - 2} more
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-xs dark:text-neutral-500 text-neutral-500">
+                      Ticket sales are not currently open.
+                    </p>
+                  )}
+                </>
+              )
+            })()}
           </div>
         )}
       </div>
@@ -108,7 +130,7 @@ export function EventCard({ event }: EventCardProps) {
           href={`/events/${event.id}`}
           className="block w-full px-4 py-2 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg transition-colors text-center"
         >
-          Buy Tickets
+          {hasTickets && event.tickets.every((t) => !t.isPublished) ? 'View Event' : 'Buy Tickets'}
         </Link>
       </div>
     </motion.div>
