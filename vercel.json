@@ -2,11 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/update-event-statuses",
-      "schedule": "*/15 * * * *"
-    },
-    {
-      "path": "/api/keep-alive",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 6 * * *"
     }
   ]
 }
