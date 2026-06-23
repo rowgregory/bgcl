@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 export async function deleteContactSubmission(id: string) {
   try {
@@ -27,6 +28,8 @@ export async function deleteContactSubmission(id: string) {
       firstName: contactSubmission.firstName,
       lastName: contactSubmission.lastName
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

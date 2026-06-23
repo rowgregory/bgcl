@@ -6,6 +6,7 @@ import { createLog } from '../createLog'
 import { CreateCampaignInput } from '@/types/entities/campaign'
 import { getActor } from '../user/getActor'
 import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
+import { revalidatePath } from 'next/cache'
 
 export async function createCampaign(data: CreateCampaignInput) {
   try {
@@ -29,6 +30,8 @@ export async function createCampaign(data: CreateCampaignInput) {
       goalAmount: campaign.goalAmount,
       ...context
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

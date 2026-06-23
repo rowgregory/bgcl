@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { UpdateClubResourceInput } from '@/types/entities/club-resource'
+import { revalidatePath } from 'next/cache'
 
 export async function updateClubResource(data: UpdateClubResourceInput) {
   try {
@@ -14,6 +15,8 @@ export async function updateClubResource(data: UpdateClubResourceInput) {
         order: data.order ?? 0
       }
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

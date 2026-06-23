@@ -4,6 +4,7 @@ import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { EventType } from '@prisma/client'
 import { CreateEventInput } from '@/types/entities/event'
+import { revalidatePath } from 'next/cache'
 
 export async function createEvent(data: CreateEventInput) {
   try {
@@ -58,6 +59,8 @@ export async function createEvent(data: CreateEventInput) {
         showRaffleTicketNumbers: data.showRaffleTicketNumbers
       }
     })
+
+    revalidatePath('/', 'layout')
 
     await createLog('info', 'Event created successfully', {
       eventId: event.id,

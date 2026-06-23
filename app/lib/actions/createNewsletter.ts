@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { CreateNewsletterInput } from '@/types/entities/newsletter'
+import { revalidatePath } from 'next/cache'
 
 export async function getNextNewsletterOrder(): Promise<number> {
   try {
@@ -46,6 +47,8 @@ export async function createNewsletter(data: CreateNewsletterInput) {
         order
       }
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

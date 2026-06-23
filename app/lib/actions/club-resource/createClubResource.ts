@@ -6,6 +6,7 @@ import { createLog } from '../createLog'
 import { CreateClubResourceInput } from '@/types/entities/club-resource'
 import { getActor } from '../user/getActor'
 import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
+import { revalidatePath } from 'next/cache'
 
 export async function createClubResource(data: CreateClubResourceInput) {
   try {
@@ -25,6 +26,8 @@ export async function createClubResource(data: CreateClubResourceInput) {
       title: resource.title,
       ...context
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { createLog } from './createLog'
 import prisma from '@/prisma/client'
 
@@ -34,6 +35,8 @@ export async function setToggleModal(slug: string) {
       pageId: page.id,
       modalEnabled: updatedContent.toggleModal
     })
+
+    revalidatePath('/', 'layout')
 
     return {
       success: true,

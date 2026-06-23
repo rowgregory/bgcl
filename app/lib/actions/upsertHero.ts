@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { IHero } from '@/types/entities/hero'
 import { HeroStatus } from '@prisma/client'
+import { revalidatePath } from 'next/cache'
 
 export const upsertHero = async (data: Partial<IHero>): Promise<{ success: boolean; data?: IHero; error?: string }> => {
   try {
@@ -48,6 +49,8 @@ export const upsertHero = async (data: Partial<IHero>): Promise<{ success: boole
         ...data
       }
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true, data: hero as IHero }
   } catch (error) {

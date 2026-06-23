@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 export async function unarchiveEvent(eventId: string) {
   try {
@@ -9,6 +10,8 @@ export async function unarchiveEvent(eventId: string) {
       where: { id: eventId },
       data: { status: 'COMPLETED' }
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true, data: event }
   } catch (error) {

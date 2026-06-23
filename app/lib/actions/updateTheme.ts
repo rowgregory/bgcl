@@ -1,6 +1,7 @@
 import prisma from '@/prisma/client'
 import { IUpdateTheme } from '@/types/entities/theme'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 export async function updateTheme(data: IUpdateTheme) {
   try {
@@ -12,6 +13,8 @@ export async function updateTheme(data: IUpdateTheme) {
         ...(data.order !== undefined && { order: data.order })
       }
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { IPartner } from '@/types/entities/partner'
+import { revalidatePath } from 'next/cache'
 
 export async function reorderPartners(tier: string, partners: IPartner[]) {
   try {
@@ -29,6 +30,8 @@ export async function reorderPartners(tier: string, partners: IPartner[]) {
 
     // Update database with recalculated orders
     const savedPartners = await updateOrderInDatabase(updatedPartners)
+
+    revalidatePath('/', 'layout')
 
     return {
       success: true,

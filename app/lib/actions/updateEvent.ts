@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { UpdateEventInput } from '@/types/entities/event'
+import { revalidatePath } from 'next/cache'
 
 export async function updateEvent(body: UpdateEventInput) {
   try {
@@ -44,6 +45,8 @@ export async function updateEvent(body: UpdateEventInput) {
         orders: true
       }
     })
+
+    revalidatePath('/', 'layout')
 
     await createLog('info', 'Event updated successfully', {
       eventId: event.id,

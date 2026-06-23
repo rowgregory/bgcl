@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 export async function deleteNewsletter(id: string) {
   try {
@@ -26,6 +27,8 @@ export async function deleteNewsletter(id: string) {
       year: newsletter.year,
       month: newsletter.month
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { ContactReadStatus } from '@prisma/client'
+import { revalidatePath } from 'next/cache'
 
 export async function updateContactSubmissionStatus(id: string, status: ContactReadStatus) {
   try {
@@ -27,6 +28,8 @@ export async function updateContactSubmissionStatus(id: string, status: ContactR
       previousStatus: status,
       newStatus: contactSubmission.status
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

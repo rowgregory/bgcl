@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 type JobApplicationStatus = 'PENDING' | 'REVIEW' | 'APPROVED' | 'REJECTED'
 
@@ -19,6 +20,8 @@ export async function updateJobApplicationStatus(id: string, status: JobApplicat
       where: { id },
       data: { status }
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true, jobApplication: updatedJobApplication }
   } catch (error) {

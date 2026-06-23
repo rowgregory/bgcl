@@ -1,12 +1,10 @@
-import { auth } from '../auth'
 import { getDonationOrders } from './getDonationOrders'
 import { getHero } from './getHero'
 import { getPageBySlugClient } from './getPageBySlugClient'
 import { getPrograms } from './getPrograms'
 
 export async function getHomePageData() {
-  const [session, programs, donationOrders, homePage, capitalPage, hero] = await Promise.all([
-    auth().catch(() => null),
+  const [programs, donationOrders, homePage, capitalPage, hero] = await Promise.all([
     getPrograms().catch(() => null),
     getDonationOrders().catch(() => null),
     getPageBySlugClient('home').catch(() => null),
@@ -14,5 +12,5 @@ export async function getHomePageData() {
     getHero().catch(() => null)
   ])
 
-  return { session, programs, donationOrders, homePage, capitalPage, hero }
+  return { programs, donationOrders, homePage, capitalPage, hero }
 }

@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { CreateTicketInput } from '@/types/entities/ticket'
+import { revalidatePath } from 'next/cache'
 
 export async function createTicket(eventId: string, data: CreateTicketInput) {
   try {
@@ -34,6 +35,8 @@ export async function createTicket(eventId: string, data: CreateTicketInput) {
         }
       }
     })
+
+    revalidatePath('/', 'layout')
 
     await createLog('info', 'Ticket created successfully', {
       ticketId: ticket.id,

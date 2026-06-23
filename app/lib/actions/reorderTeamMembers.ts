@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 interface TeamMember {
   id: string
@@ -37,6 +38,8 @@ export async function reorderTeamMembers(role: string, teamMembers: TeamMember[]
 
     // Update database with recalculated orders
     const savedMembers = await updateOrderInDatabase(updatedMembers)
+
+    revalidatePath('/', 'layout')
 
     return {
       success: true,

@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { ICreateTheme } from '@/types/entities/theme'
+import { revalidatePath } from 'next/cache'
 
 export async function createTheme(data: ICreateTheme) {
   try {
@@ -27,6 +28,8 @@ export async function createTheme(data: ICreateTheme) {
       title: theme.title,
       order: theme.order
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

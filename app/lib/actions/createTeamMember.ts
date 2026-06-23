@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { CreateTeamMemberInput } from '@/types/entities/team-member'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 export async function createTeamMember(data: CreateTeamMemberInput) {
   try {
@@ -36,6 +37,8 @@ export async function createTeamMember(data: CreateTeamMemberInput) {
         ...cleanData
       }
     })
+
+    revalidatePath('/', 'layout')
 
     await createLog('info', 'Team member created successfully', {
       teamMemberId: newTeamMember.id,

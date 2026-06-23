@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { UpdateNewsInput } from '@/types/entities/news'
+import { revalidatePath } from 'next/cache'
 
 export async function updateNews(data: UpdateNewsInput) {
   try {
@@ -17,6 +18,8 @@ export async function updateNews(data: UpdateNewsInput) {
         externalLink: data.externalLink || null
       }
     })
+
+    revalidatePath('/', 'layout')
 
     return {
       success: true,

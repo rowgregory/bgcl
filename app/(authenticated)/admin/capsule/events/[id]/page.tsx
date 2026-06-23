@@ -2,12 +2,11 @@ import { auth } from '@/app/lib/auth'
 import prisma from '@/prisma/client'
 import { redirect } from 'next/navigation'
 import { AdminEventDetailsClient } from './AdminEventDetailsClient'
+import { SerializedEvent } from '@/types/entities/event'
 
 interface Props {
   params: Promise<{ id: string }>
 }
-
-export const dynamic = 'force-dynamic'
 
 export default async function EventControlPanelPage({ params }: Props) {
   const session = await auth()
@@ -37,6 +36,7 @@ export default async function EventControlPanelPage({ params }: Props) {
         registrationDeadline: event.registrationDeadline?.toISOString() ?? null,
         ticketSalesStartDate: event.ticketSalesStartDate?.toISOString() ?? null,
         ticketSalesEndDate: event.ticketSalesEndDate?.toISOString() ?? null,
+        rafflePrizes: (event.rafflePrizes ?? []) as unknown as { place: string; amount: string }[],
         tickets: event.tickets.map((t) => ({
           ...t,
           createdAt: t.createdAt.toISOString(),
@@ -47,5 +47,5 @@ export default async function EventControlPanelPage({ params }: Props) {
       }
     : null
 
-  return <AdminEventDetailsClient event={serializedEvent as any} isNew={isNew} />
+  return <AdminEventDetailsClient event={serializedEvent as unknown as SerializedEvent} isNew={isNew} />
 }

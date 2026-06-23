@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 export async function deleteTeamMember(id: string) {
   try {
@@ -26,6 +27,8 @@ export async function deleteTeamMember(id: string) {
       name: teamMember.name,
       email: teamMember.email
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

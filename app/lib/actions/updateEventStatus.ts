@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { EventStatus } from '@prisma/client'
+import { revalidatePath } from 'next/cache'
 
 export async function updateEventStatus(id: string, status: EventStatus) {
   try {
@@ -29,6 +30,8 @@ export async function updateEventStatus(id: string, status: EventStatus) {
       previousStatus: event.status,
       newStatus: updatedEvent.status
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true, event: updatedEvent }
   } catch (error) {

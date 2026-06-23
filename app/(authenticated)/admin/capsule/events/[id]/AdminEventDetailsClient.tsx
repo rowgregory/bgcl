@@ -27,7 +27,7 @@ import {
   Layers
 } from 'lucide-react'
 import Link from 'next/link'
-import { IEvent } from '@/types/entities/event'
+import { SerializedEvent } from '@/types/entities/event'
 import { ITicket } from '@/types/entities/ticket'
 import { createEvent } from '@/app/lib/actions/createEvent'
 import { updateEvent } from '@/app/lib/actions/updateEvent'
@@ -39,7 +39,7 @@ import { EventTemplates } from '@/app/components/events/EventTemplates'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 interface Props {
-  event: (IEvent & { tickets: ITicket[] }) | null
+  event: SerializedEvent | null
   isNew: boolean
 }
 

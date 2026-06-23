@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { ITeamMember } from '@/types/entities/team-member'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 export async function updateTeamMember(id: string, data: Partial<Omit<ITeamMember, 'id' | 'createdAt' | 'updatedAt'>>) {
   try {
@@ -19,6 +20,8 @@ export async function updateTeamMember(id: string, data: Partial<Omit<ITeamMembe
       where: { id },
       data: cleanData
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

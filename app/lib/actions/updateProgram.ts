@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { UpdateProgramInputs } from '@/types/entities/program'
+import { revalidatePath } from 'next/cache'
 
 export async function updateProgram(data: UpdateProgramInputs) {
   try {
@@ -34,6 +35,8 @@ export async function updateProgram(data: UpdateProgramInputs) {
       programName: program.name,
       updatedFields: Object.keys(data)
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { CreateUserInputs } from '@/types/entities/user'
+import { revalidatePath } from 'next/cache'
 
 export async function createUser(data: CreateUserInputs) {
   try {
@@ -28,6 +29,8 @@ export async function createUser(data: CreateUserInputs) {
         department: data.department
       }
     })
+
+    revalidatePath('/', 'layout')
 
     await createLog('info', 'User created', {
       userId: newUser.id,

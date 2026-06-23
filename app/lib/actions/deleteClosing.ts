@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 export async function deleteClosing(id: string) {
   try {
@@ -26,6 +27,8 @@ export async function deleteClosing(id: string) {
       date: closing.date,
       title: closing.title
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 export async function reorderCampaigns(
   campaigns: Array<{ id: string; order?: number }>
@@ -15,6 +16,8 @@ export async function reorderCampaigns(
         })
       )
     )
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

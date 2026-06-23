@@ -5,6 +5,7 @@ import { ActionResult } from '@/types/common'
 import { sanitizePartnerData } from '../utils/sanitizePartnerData'
 import { createLog } from './createLog'
 import { UpdatePartnerInputs } from '@/types/entities/partner'
+import { revalidatePath } from 'next/cache'
 
 export async function updatePartner(data: UpdatePartnerInputs): Promise<ActionResult> {
   try {
@@ -16,6 +17,8 @@ export async function updatePartner(data: UpdatePartnerInputs): Promise<ActionRe
     const sanitized = sanitizePartnerData(data)
 
     await prisma.partner.update({ where: { id: data?.id }, data: sanitized })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (err) {

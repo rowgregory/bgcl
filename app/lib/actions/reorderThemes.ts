@@ -1,5 +1,6 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 export async function reorderThemes(themes: Array<{ id: string; order: number }>) {
   try {
@@ -11,6 +12,8 @@ export async function reorderThemes(themes: Array<{ id: string; order: number }>
         })
       )
     )
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

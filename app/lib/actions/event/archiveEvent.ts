@@ -4,6 +4,7 @@ import prisma from '@/prisma/client'
 import { createLog } from '../createLog'
 import { getActor } from '../user/getActor'
 import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
+import { revalidatePath } from 'next/cache'
 
 export async function archiveEvent(eventId: string) {
   try {
@@ -20,6 +21,8 @@ export async function archiveEvent(eventId: string) {
       eventName: event.title,
       ...context
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true, data: event }
   } catch (error) {

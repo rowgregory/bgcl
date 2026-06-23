@@ -5,6 +5,7 @@ import { createLog } from '../createLog'
 import { CreateClosingInput } from '@/types/entities/closing'
 import { getActor } from '../user/getActor'
 import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
+import { revalidatePath } from 'next/cache'
 
 export async function createClosing(data: CreateClosingInput) {
   try {
@@ -25,6 +26,8 @@ export async function createClosing(data: CreateClosingInput) {
       date: closing.date,
       ...context
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

@@ -196,3 +196,30 @@ export interface UpdateEventInput extends Partial<CreateEventInput> {
   isUpdating: boolean
   tickets: ITicket[]
 }
+
+export type SerializedTicket = Omit<ITicket, 'createdAt' | 'updatedAt'> & {
+  createdAt: string
+  updatedAt: string
+  price: number
+  sponsorPerks: string[]
+}
+
+export type SerializedEvent = Omit<
+  IEvent,
+  | 'date'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'raffleDrawDate'
+  | 'registrationDeadline'
+  | 'ticketSalesStartDate'
+  | 'ticketSalesEndDate'
+> & {
+  date: string
+  createdAt: string
+  updatedAt: string
+  raffleDrawDate: string | null
+  registrationDeadline: string | null
+  ticketSalesStartDate: string | null
+  ticketSalesEndDate: string | null
+  tickets: SerializedTicket[]
+}

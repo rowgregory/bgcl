@@ -4,6 +4,7 @@ import prisma from '@/prisma/client'
 import { trimAndTransformData } from '../utils/trimAndTransformData'
 import { createLog } from './createLog'
 import { UpdateCampaignInput } from '@/types/entities/campaign'
+import { revalidatePath } from 'next/cache'
 
 export async function updateCampaign(data: UpdateCampaignInput) {
   try {
@@ -40,6 +41,8 @@ export async function updateCampaign(data: UpdateCampaignInput) {
       where: { id: campaignId },
       data: cleanData
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { createLog } from './createLog'
 import prisma from '@/prisma/client'
 
@@ -21,6 +22,8 @@ export async function updatePageBySlug(slug: string, content: any) {
       slug,
       pageId: page.id
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true, page }
   } catch (error) {

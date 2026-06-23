@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { UpdateNewsletterInput } from '@/types/entities/newsletter'
+import { revalidatePath } from 'next/cache'
 
 export async function updateNewsletter(data: UpdateNewsletterInput) {
   try {
@@ -15,6 +16,8 @@ export async function updateNewsletter(data: UpdateNewsletterInput) {
         order: data.order
       }
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

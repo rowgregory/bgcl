@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 export async function createPage(slug: string, content: any) {
   try {
@@ -23,6 +24,8 @@ export async function createPage(slug: string, content: any) {
       slug: page.slug,
       pageId: page.id
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true, page }
   } catch (error) {

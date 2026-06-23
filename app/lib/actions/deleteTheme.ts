@@ -2,6 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
+import { revalidatePath } from 'next/cache'
 
 export async function deleteTheme(themeId: string) {
   try {
@@ -40,6 +41,8 @@ export async function deleteTheme(themeId: string) {
     await prisma.theme.delete({
       where: { id: themeId }
     })
+
+    revalidatePath('/', 'layout')
 
     await createLog('info', 'Theme deleted', {
       themeId,

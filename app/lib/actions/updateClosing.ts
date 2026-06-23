@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { UpdateClosingInput } from '@/types/entities/closing'
+import { revalidatePath } from 'next/cache'
 
 export async function updateClosing(data: UpdateClosingInput) {
   try {
@@ -14,6 +15,8 @@ export async function updateClosing(data: UpdateClosingInput) {
         order: data.order ?? 0
       }
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

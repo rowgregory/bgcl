@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { auth } from '../auth'
+import { revalidatePath } from 'next/cache'
 
 export async function deleteAddress() {
   const session = await auth()
@@ -17,6 +18,8 @@ export async function deleteAddress() {
     })
 
     await createLog('info', 'User deleted address', { userId: session.user.id })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from './createLog'
 import { CreateProgramInputs } from '@/types/entities/program'
+import { revalidatePath } from 'next/cache'
 
 export async function createProgram(data: CreateProgramInputs) {
   try {
@@ -40,6 +41,8 @@ export async function createProgram(data: CreateProgramInputs) {
       programId: program.id,
       name: program.name
     })
+
+    revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {

@@ -23,7 +23,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: ReactNode
 }>) {
-  const { session, programs, donationOrders, homePage, capitalPage, hero } = await getHomePageData()
+  const { programs, donationOrders, homePage, capitalPage, hero } = await getHomePageData()
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID
 
   return (
@@ -33,7 +33,7 @@ export default async function RootLayout({
         <Hotjar />
       </head>
       <body className={`${lexend.variable} antialiased`}>
-        <SessionProvider session={session}>
+        <SessionProvider>
           <RootLayoutWrapper
             programs={programs}
             pageContent={homePage}
