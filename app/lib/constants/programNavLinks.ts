@@ -1,4 +1,4 @@
-import { LucideIcon, DoorOpen, Orbit } from 'lucide-react'
+import { LucideIcon, DoorOpen, Orbit, FileText } from 'lucide-react'
 
 const isStringInPath = (path: string, str: string) => path.includes(str)
 
@@ -25,6 +25,13 @@ export const programNavigationLinkData = (
       path: '/program/job-applications',
       description: 'Job Applications',
       active: isStringInPath(path, 'airlock')
+    },
+    {
+      icon: FileText,
+      label: 'CIT Applications',
+      path: '/admin/cit-applications',
+      description: 'Pending CIT Applications',
+      active: isStringInPath(path, 'cit-applications')
     }
   ]
 

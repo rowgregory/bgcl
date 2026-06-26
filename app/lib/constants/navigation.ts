@@ -23,5 +23,6 @@ export const mainNavigationLinks = [
   { label: 'LATEST NEWS', href: '/latest-news', priority: 5 },
   { label: 'PARTNERSHIPS', href: '/partners', priority: 6 },
   { label: 'GET INVOLVED', href: '/get-involved', priority: 7 },
+  { label: 'CIT', href: '/cit', priority: 7 },
   { label: 'CONTACT', href: '/contact', priority: 7 }
 ]

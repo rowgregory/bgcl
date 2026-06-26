@@ -1,6 +1,6 @@
 'use client'
 
-import { generateDonationReport } from '@/app/lib/actions/generateDonationsReport'
+import { generateDonationReport } from '@/app/lib/actions/exports/generateDonationsReport'
 import { setOpenFailedPaymentDrawer } from '@/app/lib/store/slices/dashboardSlice'
 import { store, useApplicationSelector } from '@/app/lib/store/store'
 import { motion } from 'framer-motion'

@@ -9,7 +9,7 @@ import { POSITION_LABELS, TAB_TO_STATUS, TABS } from '@/app/lib/constants/job-ap
 import { getJobApplicationStatusBadge } from '@/app/lib/utils/getJobApplicationStatusBadge'
 import { store } from '@/app/lib/store/store'
 import { setOpenJobApplicationDrawer } from '@/app/lib/store/slices/uiSlice'
-import { exportApplicationsAction } from '@/app/lib/actions/generateJobApplicationsPDF'
+import { exportApplicationsAction } from '@/app/lib/actions/exports/generateJobApplicationsPDF'
 
 export default function JobApplicationsClient({ jobApplications }: { jobApplications: IJobApplication[] }) {
   const [activeTab, setActiveTab] = useState('All')

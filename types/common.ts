@@ -1,12 +1,6 @@
 import { ChangeEvent, ReactNode } from 'react'
-import { IHero } from './entities/hero'
 import { Errors, Inputs } from '@/app/lib/store/slices/formSlice'
 import { ITheme } from './entities/theme'
-
-export interface IHeroStudioEditor {
-  activeHero: IHero
-  updateActiveHero: (updates: Partial<IHero>) => void
-}
 
 export interface ILayout {
   children: ReactNode
@@ -36,8 +30,9 @@ export interface PageField {
   type: 'text' | 'textarea' | 'url' | 'array' | 'boolean'
 }
 
-export interface ActionResult {
-  success: boolean
-  error?: string
-  id?: string
-}
+/**
+ * Standard server action return shape used across the studio.
+ */
+export type ActionResult<T = void> =
+  | (void extends T ? { success: true; data?: undefined } : { success: true; data: T })
+  | { success: false; error: string }

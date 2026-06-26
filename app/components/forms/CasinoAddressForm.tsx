@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { updateAddress } from '@/app/lib/actions/updateAddress'
+import { updateAddress } from '@/app/lib/actions/address/updateAddress'
 import { useUiSelector } from '@/app/lib/store/store'
 import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
 import { useRouter } from 'next/navigation'

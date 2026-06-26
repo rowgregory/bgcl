@@ -1,7 +1,7 @@
 import { PublicTicketCheckoutClient } from '@/app/components/pages/PublicTicketCheckoutClient'
 import { getSavedPaymentMethods } from '@/app/lib/actions/getSavedPaymentMethods'
-import { getUserAddress } from '@/app/lib/actions/getUserAddress'
-import { getUserName } from '@/app/lib/actions/getUserName'
+import { getUserAddress } from '@/app/lib/actions/user/getUserAddress'
+import { getUserName } from '@/app/lib/actions/user/getUserName'
 import { auth } from '@/app/lib/auth'
 
 export default async function PublicCheckoutPage() {

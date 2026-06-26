@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react'
 import { useCartSelector } from '../store/store'
 import { usePaymentProcessor } from './usePaymentProcessor'
 import { setTicketCheckoutForm as setForm } from '../utils/setTicketCheckoutForm'
-import { createPaymentIntentForTicketCheckout } from '../actions/createPaymentIntentForTicketCheckout'
+import { createPaymentIntentForTicketCheckout } from '../actions/stripe/createPaymentIntentForTicketCheckout'
 
 export function useTicketCheckoutSubmit({ inputs, amountInCents, processingFee, usingSavedCard, fullName }) {
   const stripe = useStripe()

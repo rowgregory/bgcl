@@ -3,17 +3,17 @@
 import { AnimatePresence } from 'framer-motion'
 import validateEventForm from '@/app/lib/validations/event'
 import { setCloseEventDrawer } from '@/app/lib/store/slices/eventSlice'
-import { createFormActions, resetForm, setInputs, setIsLoading } from '@/app/lib/store/slices/formSlice'
+import { createFormActions, resetForm, setIsLoading } from '@/app/lib/store/slices/formSlice'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { store, useEventSelector, useFormSelector } from '@/app/lib/store/store'
 import Backdrop from '../common/Backdrop'
 import { EventForm } from '../forms/EventForm'
 import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
 import { useRouter } from 'next/navigation'
-import { updateEvent } from '@/app/lib/actions/updateEvent'
-import { createEvent } from '@/app/lib/actions/createEvent'
+import { updateEvent } from '@/app/lib/actions/event/updateEvent'
 import Drawer from '../common/Drawer'
 import { CreateEventInput, UpdateEventInput } from '@/types/entities/event'
+import { createEvent } from '@/app/lib/actions/event/createEvent'
 
 export const EventDrawer = () => {
   const router = useRouter()

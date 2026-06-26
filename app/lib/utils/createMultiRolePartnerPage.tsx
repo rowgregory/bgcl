@@ -1,4 +1,4 @@
-import { getPartnersByTier } from '../actions/getPartnerByTier'
+import { getPartnersByTier } from '../actions/partner/getPartnerByTier'
 import { PartnerTier } from '@prisma/client'
 import { PartnerList } from '@/app/components/admin/the-library/PartnerList'
 

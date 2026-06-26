@@ -1,8 +1,8 @@
 'use client'
 
 import { PageContentEditor } from '@/app/components/common/PageContentEditor'
-import { createPage } from '@/app/lib/actions/createPage'
-import { updatePageBySlug } from '@/app/lib/actions/updatePageBySlug'
+import { createPage } from '@/app/lib/actions/page/createPage'
+import { updatePageBySlug } from '@/app/lib/actions/page/updatePageBySlug'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { store } from '@/app/lib/store/store'
 import { useState } from 'react'

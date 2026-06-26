@@ -1,5 +1,5 @@
 import SupporterTicketsClient from '@/app/components/pages/SupporterTicketsClient'
-import { getTicketOrders } from '@/app/lib/actions/getTicketOrders'
+import { getTicketOrders } from '@/app/lib/actions/order/getTicketOrders'
 
 export const dynamic = 'force-dynamic'
 

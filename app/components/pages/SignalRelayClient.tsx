@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Trash2, Mail, Search } from 'lucide-react'
-import { deleteSubscriber } from '@/app/lib/actions/deleteSubscriber'
+import { deleteSubscriber } from '@/app/lib/actions/subscriber/deleteSubscriber'
 import { useRouter } from 'next/navigation'
 import { store } from '@/app/lib/store/store'
 import { showToast } from '@/app/lib/store/slices/toastSlice'

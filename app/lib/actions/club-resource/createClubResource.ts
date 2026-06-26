@@ -2,7 +2,7 @@
 
 import prisma from '@/prisma/client'
 
-import { createLog } from '../createLog'
+import { createLog } from '../log/createLog'
 import { CreateClubResourceInput } from '@/types/entities/club-resource'
 import { getActor } from '../user/getActor'
 import { buildLogMessage, getRequestContext } from '../../utils/log.utils'

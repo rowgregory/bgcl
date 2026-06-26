@@ -1,7 +1,7 @@
 import prisma from '@/prisma/client'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import NextAuth from 'next-auth'
-import { createLog } from './actions/createLog'
+import { createLog } from './actions/log/createLog'
 import { Role } from '@prisma/client'
 import googleProvider from './auth/googleProvider'
 import magicLinkProvider from './auth/magicLinkProvider'

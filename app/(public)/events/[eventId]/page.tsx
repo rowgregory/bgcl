@@ -1,8 +1,8 @@
 import { PublicEventDetailsClient } from '@/app/components/pages/PublicEventDetailsClient'
-import { getEventById } from '@/app/lib/actions/getEventById'
+import { getEventById } from '@/app/lib/actions/event/getEventById'
 import { getSavedPaymentMethods } from '@/app/lib/actions/getSavedPaymentMethods'
-import { getUserAddress } from '@/app/lib/actions/getUserAddress'
-import { getUserName } from '@/app/lib/actions/getUserName'
+import { getUserAddress } from '@/app/lib/actions/user/getUserAddress'
+import { getUserName } from '@/app/lib/actions/user/getUserName'
 
 export const dynamic = 'force-dynamic'
 

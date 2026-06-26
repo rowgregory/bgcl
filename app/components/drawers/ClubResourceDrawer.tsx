@@ -11,7 +11,7 @@ import Drawer from '../common/Drawer'
 import { setCloseClubResourceDrawer } from '@/app/lib/store/slices/clubResourceSlice'
 import validateClubResourceForm from '@/app/lib/validations/club-resource'
 import { ClubResourceForm } from '../forms/ClubResourceForm'
-import { updateClubResource } from '@/app/lib/actions/updateClubResource'
+import { updateClubResource } from '@/app/lib/actions/club-resource/updateClubResource'
 import { createClubResource } from '@/app/lib/actions/club-resource/createClubResource'
 import { CreateClubResourceInput, UpdateClubResourceInput } from '@/types/entities/club-resource'
 

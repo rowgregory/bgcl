@@ -1,7 +1,7 @@
 import prisma from '@/prisma/client'
 import type { Account, Profile, User } from 'next-auth'
-import { createLog } from '../../actions/createLog'
-import { createStripeCustomer } from '../../actions/createStripeCustomer'
+import { createLog } from '../../actions/log/createLog'
+import { createStripeCustomer } from '../../actions/stripe/createStripeCustomer'
 
 export async function handleGoogleProvider(user: User, account: Account, profile?: any) {
   const existingUser = await prisma.user.findUnique({

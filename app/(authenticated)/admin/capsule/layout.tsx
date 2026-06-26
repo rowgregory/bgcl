@@ -1,7 +1,7 @@
 'use client'
 
 import { SubNavLink } from '@/app/components/navigation/SubNavLink'
-import { generateEventsReport } from '@/app/lib/actions/generateEventsReport'
+import { generateEventsReport } from '@/app/lib/actions/exports/generateEventsReport'
 import { getCapsuleNavLinks } from '@/app/lib/utils/getCapsuleNavLinks'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'

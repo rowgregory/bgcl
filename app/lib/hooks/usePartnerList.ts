@@ -2,7 +2,7 @@ import { useRouter } from 'next/navigation'
 import { startTransition, useState } from 'react'
 import { store } from '../store/store'
 import { showToast } from '../store/slices/toastSlice'
-import { reorderPartners } from '../actions/reorderPartners'
+import { reorderPartners } from '../actions/partner/reorderPartners'
 
 export default function usePartnerList(data: any, tier: string) {
   const router = useRouter()

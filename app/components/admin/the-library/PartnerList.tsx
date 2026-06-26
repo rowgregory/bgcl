@@ -4,12 +4,12 @@ import { FC, useState } from 'react'
 import { GripVertical, Check, AlertCircle, Edit2, Plus, Trash2 } from 'lucide-react'
 import { store } from '@/app/lib/store/store'
 import { setInputs } from '@/app/lib/store/slices/formSlice'
-import { deletePartner } from '@/app/lib/actions/deletePartner'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { useRouter } from 'next/navigation'
 import { PartnerTier } from '@prisma/client'
 import { setOpenPartnerDrawer } from '@/app/lib/store/slices/uiSlice'
 import usePartnerList from '@/app/lib/hooks/usePartnerList'
+import { deletePartner } from '@/app/lib/actions/partner/deletePartner'
 
 interface PartnerListProps {
   data: any

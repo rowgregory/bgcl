@@ -11,8 +11,8 @@ import Drawer from '../common/Drawer'
 import validateNewsletterForm from '@/app/lib/validations/newsletter'
 import { setCloseNewsletterDrawer } from '@/app/lib/store/slices/newsletterSlice'
 import { NewsletterForm } from '../forms/NewsletterForm'
-import { updateNewsletter } from '@/app/lib/actions/updateNewsletter'
-import { createNewsletter } from '@/app/lib/actions/createNewsletter'
+import { updateNewsletter } from '@/app/lib/actions/newsletter/updateNewsletter'
+import { createNewsletter } from '@/app/lib/actions/newsletter/createNewsletter'
 import { CreateNewsletterInput, UpdateNewsletterInput } from '@/types/entities/newsletter'
 
 export const NewsletterDrawer = () => {

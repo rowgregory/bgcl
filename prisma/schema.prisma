@@ -701,6 +701,45 @@ model Address {
   @@index([userId, isDefault])
 }
 
+model CITApplication {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // ── Identity ───────────────────────────────────────────────────────────────
+  name        String
+  dateOfBirth DateTime
+  age         Int
+  city        String
+  school      String
+  grade       String // e.g. "10th"
+
+  // ── Contact ────────────────────────────────────────────────────────────────
+  cellPhone           String
+  personalEmail       String?
+  parentGuardianEmail String
+  emergencyContact1   String // NAME, NUMBER, RELATION
+  emergencyContact2   String // NAME, NUMBER, RELATION
+
+  // ── Availability ───────────────────────────────────────────────────────────
+  weeksAvailable String[] // ["Week 1: 06/22 - 06/26", ...]
+
+  // ── Application Questions ──────────────────────────────────────────────────
+  strengths               String @db.Text
+  hopesToLearn            String @db.Text
+  hobbiesExtracurriculars String @db.Text
+
+  // ── Status ─────────────────────────────────────────────────────────────────
+  status CITApplicationStatus @default(PENDING)
+}
+
+enum CITApplicationStatus {
+  PENDING
+  REVIEWED
+  ACCEPTED
+  REJECTED
+}
+
 enum PartnerTier {
   FOUNDATION
   CORPORATE_BUSINESS

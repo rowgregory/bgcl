@@ -1,5 +1,5 @@
 import { StarMapProgramsClient } from '@/app/components/pages/StarMapProgramsClient'
-import { getPageBySlug } from '@/app/lib/actions/getPageBySlug'
+import { getPageBySlug } from '@/app/lib/actions/page/getPageBySlug'
 
 export default async function StarMapProgramsPage() {
   const data = await getPageBySlug('program')

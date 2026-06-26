@@ -1,14 +1,14 @@
 import { useRouter } from 'next/navigation'
 import { startTransition, useState } from 'react'
-import { reorderPrograms } from '../actions/reorderPrograms'
+import { reorderPrograms } from '../actions/program/reorderPrograms'
 import { store } from '../store/store'
 import { showToast } from '../store/slices/toastSlice'
-import { reorderNews } from '../actions/reorderNews'
-import { reorderNewsletters } from '../actions/reorderNewsletters'
-import { reorderClubResources } from '../actions/reorderClubResources'
-import { reorderCampaigns } from '../actions/reorderCampaigns'
-import { reorderClosings } from '../actions/reorderClosings'
-import { reorderEvents } from '../actions/reorderEvents'
+import { reorderNews } from '../actions/news/reorderNews'
+import { reorderNewsletters } from '../actions/newsletter/reorderNewsletters'
+import { reorderClubResources } from '../actions/club-resource/reorderClubResources'
+import { reorderCampaigns } from '../actions/campaign/reorderCampaigns'
+import { reorderClosings } from '../actions/closing/reorderClosings'
+import { reorderEvents } from '../actions/event/reorderEvents'
 
 interface ReorderItem {
   id: string

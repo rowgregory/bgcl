@@ -3,7 +3,7 @@
 import prisma from '@/prisma/client'
 import { auth } from '../auth'
 import { stripe } from '../stripe/stripeClient'
-import { createLog } from './createLog'
+import { createLog } from './log/createLog'
 
 export async function getSetupIntentClientSecret() {
   try {

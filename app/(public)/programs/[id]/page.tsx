@@ -1,6 +1,6 @@
 import { ProgramDetailsClient } from '@/app/components/pages/ProgramDetailsClient'
-import { getClosings } from '@/app/lib/actions/getClosings'
-import { getProgramById } from '@/app/lib/actions/getProgramById'
+import { getClosings } from '@/app/lib/actions/closing/getClosings'
+import { getProgramById } from '@/app/lib/actions/program/getProgramById'
 import prisma from '@/prisma/client'
 import { IProgram } from '@/types/entities/program'
 import { redirect } from 'next/navigation'

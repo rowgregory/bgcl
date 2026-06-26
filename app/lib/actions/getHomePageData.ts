@@ -1,7 +1,7 @@
 import { getDonationOrders } from './getDonationOrders'
-import { getHero } from './getHero'
-import { getPageBySlugClient } from './getPageBySlugClient'
-import { getPrograms } from './getPrograms'
+import { getHero } from './hero/getHero'
+import { getPageBySlugClient } from './page/getPageBySlugClient'
+import { getPrograms } from './program/getPrograms'
 
 export async function getHomePageData() {
   const [programs, donationOrders, homePage, capitalPage, hero] = await Promise.all([

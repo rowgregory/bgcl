@@ -11,13 +11,13 @@ import { createFormActions, setInputs } from '@/app/lib/store/slices/formSlice'
 import { useSession } from 'next-auth/react'
 import { CheckoutStep1 } from '../common/CheckoutStep1'
 import { CheckoutStepIndicator } from '../common/CheckoutStepIndicator'
-import { updateUserName } from '@/app/lib/actions/updateUserName'
-import { updateAddress } from '@/app/lib/actions/updateAddress'
+import { updateUserName } from '@/app/lib/actions/user/updateUserName'
+import { updateAddress } from '@/app/lib/actions/address/updateAddress'
 import { CheckoutStep2 } from '../common/CheckoutStep2'
 import { PublicDonateCheckoutForm } from '../forms/PublicDonateCheckoutForm'
 import { DonationFormLeftColumn } from '../donate-checkout/DonationFormLeftColumn'
 import { DonationFormHeader } from '../donate-checkout/DonationFormHeader'
-import { updatePhoneNumber } from '@/app/lib/actions/updatePhoneNumber'
+import { updatePhoneNumber } from '@/app/lib/actions/user/updatePhoneNumber'
 
 type IPublicDonateClient = {
   campaigns: ICampaign[]

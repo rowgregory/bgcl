@@ -11,9 +11,9 @@ import { setClosePartnerDrawer } from '@/app/lib/store/slices/uiSlice'
 import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
 import validatePartnerForm from '@/app/lib/validations/partner'
 import PartnerForm from '../forms/PartnerForm'
-import { createPartner } from '@/app/lib/actions/createPartner'
 import { CreatePartnerInputs, UpdatePartnerInputs } from '@/types/entities/partner'
-import { updatePartner } from '@/app/lib/actions/updatePartner'
+import { updatePartner } from '@/app/lib/actions/partner/updatePartner'
+import { createPartner } from '@/app/lib/actions/partner/createPartner'
 
 export const PartnerDrawer = () => {
   const router = useRouter()

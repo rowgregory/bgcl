@@ -1,5 +1,5 @@
 import PublicGetInvolvedClient from '@/app/components/pages/PublicGetInvolvedClient'
-import { getPageBySlugClient } from '@/app/lib/actions/getPageBySlugClient'
+import { getPageBySlugClient } from '@/app/lib/actions/page/getPageBySlugClient'
 
 export default async function PublicGetInvolvedPage() {
   const [pageData] = await Promise.all([getPageBySlugClient('get-involved')])

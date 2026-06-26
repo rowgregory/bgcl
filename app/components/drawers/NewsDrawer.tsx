@@ -11,8 +11,8 @@ import Drawer from '../common/Drawer'
 import validateNewsForm from '@/app/lib/validations/news'
 import { setCloseNewsDrawer } from '@/app/lib/store/slices/newsSlice'
 import { NewsForm } from '../forms/NewsForm'
-import { updateNews } from '@/app/lib/actions/updateNews'
-import { createNews } from '@/app/lib/actions/createNews'
+import { updateNews } from '@/app/lib/actions/news/updateNews'
+import { createNews } from '@/app/lib/actions/news/createNews'
 import { CreateNewsInput, UpdateNewsInput } from '@/types/entities/news'
 
 export const NewsDrawer = () => {

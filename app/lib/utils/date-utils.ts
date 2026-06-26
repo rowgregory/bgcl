@@ -141,3 +141,14 @@ export const fmtFull = (d: string) =>
     hour: '2-digit',
     minute: '2-digit'
   })
+
+export function formatDateTime(date: Date | string): string {
+  return new Date(date).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: 'America/New_York'
+  })
+}

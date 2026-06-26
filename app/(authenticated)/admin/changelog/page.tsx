@@ -21,6 +21,47 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.19.0',
+    date: '2026-06-26',
+    changes: [
+      {
+        type: 'feature',
+        title: 'CIT Application System',
+        description:
+          'Added an end-to-end Counselor-in-Training application flow: a five-step public form covering applicant info, contact and emergency details, week availability, application questions, and an optional health form upload, with per-step validation and a confirmation state on submit.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Admin Application Review',
+        description:
+          'Built an admin review surface with a filterable, searchable applications table. Tabs segment applications by status with live counts, and selecting an applicant opens a detail drawer showing every field alongside inline status controls.',
+        impact: 'high'
+      },
+      {
+        type: 'feature',
+        title: 'Application Status Workflow',
+        description:
+          'Admins can move applications through Pending, Reviewed, Accepted, and Rejected states. Status changes apply optimistically with rollback on failure and are persisted via a guarded server action.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'PDF Export',
+        description:
+          'Added a one-click export that generates a branded PDF report — a summary of application counts by status, health-form completion, and week availability, followed by a full detail page per applicant.',
+        impact: 'medium'
+      },
+      {
+        type: 'feature',
+        title: 'Health Form Uploads',
+        description:
+          'Applicants can attach a health form during submission, stored via Firebase with an upload progress indicator. Uploaded forms are linked directly from the admin detail view.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.18.7',
     date: '2026-05-29',
     changes: [

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/prisma/client'
 import Stripe from 'stripe'
-import { createLog } from '@/app/lib/actions/createLog'
+import { createLog } from '@/app/lib/actions/log/createLog'
 import { stripe } from '@/app/lib/stripe/stripeClient'
 import { pusher } from '@/app/lib/pusher'
 import sendConfirmationEmail from '@/app/lib/utils/sendConfirmationEmail'

@@ -1,5 +1,5 @@
 import JobApplicationsClient from '@/app/components/pages/JobApplicationsClient'
-import { getJobApplications } from '@/app/lib/actions/getJobApplications'
+import { getJobApplications } from '@/app/lib/actions/job-application/getJobApplications'
 
 export default async function ProgramJobApplicationsPage() {
   const jobApplications = await getJobApplications()

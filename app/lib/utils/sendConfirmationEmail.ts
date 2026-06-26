@@ -2,7 +2,7 @@ import oneTimeDonationTemplate from '../email-templates/one-time-donation'
 import recurringDonationTemplate from '../email-templates/recurring-donation'
 import { resend } from '@/app/lib/resend'
 import { ticketPurchaseTemplate } from '../email-templates/ticket-purchase'
-import { createLog } from '../actions/createLog'
+import { createLog } from '../actions/log/createLog'
 
 export default async function sendConfirmationEmail(
   order: any,

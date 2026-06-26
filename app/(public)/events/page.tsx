@@ -1,6 +1,6 @@
 import { PublicEventsClient } from '@/app/components/pages/PublicEventsClient'
-import { getActiveEvents } from '@/app/lib/actions/getActiveEvents'
-import { getPageBySlugClient } from '@/app/lib/actions/getPageBySlugClient'
+import { getActiveEvents } from '@/app/lib/actions/event/getActiveEvents'
+import { getPageBySlugClient } from '@/app/lib/actions/page/getPageBySlugClient'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0

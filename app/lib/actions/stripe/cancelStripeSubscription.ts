@@ -2,7 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { stripe } from '../../stripe/stripeClient'
-import { createLog } from '../createLog'
+import { createLog } from '../log/createLog'
 
 /**
  * Cancel a Stripe subscription immediately and update the database

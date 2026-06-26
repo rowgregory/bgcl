@@ -2,7 +2,7 @@ import { useRouter } from 'next/navigation'
 import { startTransition, useState } from 'react'
 import { store } from '../store/store'
 import { showToast } from '../store/slices/toastSlice'
-import { reorderTeamMembers } from '../actions/reorderTeamMembers'
+import { reorderTeamMembers } from '../actions/team-member/reorderTeamMembers'
 
 export default function useTeamMemberList(data: any, role: string) {
   const router = useRouter()

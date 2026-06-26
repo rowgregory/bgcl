@@ -1,4 +1,4 @@
-import { getJobApplicationById } from '@/app/lib/actions/getJobApplicationById'
+import { getJobApplicationById } from '@/app/lib/actions/job-application/getJobApplicationById'
 import JobApplicationPage from './page'
 
 export default async function JobApplicationLayout({ params }: { params: Promise<{ id: string }> }) {

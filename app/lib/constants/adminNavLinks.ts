@@ -13,7 +13,8 @@ import {
   Inbox,
   BriefcaseBusiness,
   GitCommit,
-  UserCircle
+  UserCircle,
+  FileText
 } from 'lucide-react'
 
 const isStringInPath = (path: string, str: string) => path.includes(str)
@@ -120,6 +121,13 @@ export const adminNavigationLinkData = (
       path: '/admin/airlock',
       description: 'Pending Job Applications',
       active: isStringInPath(path, 'airlock')
+    },
+    {
+      icon: FileText,
+      label: 'CIT Applications',
+      path: '/admin/cit-applications',
+      description: 'Pending CIT Applications',
+      active: isStringInPath(path, 'cit-applications')
     }
   ]
 

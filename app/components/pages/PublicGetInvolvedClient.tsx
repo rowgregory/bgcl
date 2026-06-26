@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronRight, ChevronLeft, ArrowRightFromLine } from 'lucide-react'
 import { store, useFormSelector } from '@/app/lib/store/store'
 import { setOpenVolunteerDrawer } from '@/app/lib/store/slices/appSlice'
-import { createJobApplication } from '@/app/lib/actions/createJobApplication'
 import { useRouter } from 'next/navigation'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { CreateJobApplicationInput, IJobApplication } from '@/types/entities/job-application'
@@ -19,6 +18,7 @@ import { Step2PersonalInfo } from '@/app/components/job-application/Step2Persona
 import { Step3References } from '@/app/components/job-application/Step3References'
 import { Step4DrivingInfo } from '@/app/components/job-application/Step4DrivingInfo'
 import { Step1PositionBackground } from '@/app/components/job-application/Step1PositionBackground'
+import { createJobApplication } from '@/app/lib/actions/job-application/createJobApplication'
 
 export default function PublicGetInvolvedClient({ pageData }) {
   const t = pageData?.sections?.careers

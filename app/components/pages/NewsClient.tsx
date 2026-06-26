@@ -9,7 +9,7 @@ import { formatDate } from '@/app/lib/utils/date-utils'
 import { store, useFormSelector } from '@/app/lib/store/store'
 import { useRouter } from 'next/navigation'
 import { setIsLoading } from '@/app/lib/store/slices/formSlice'
-import { createSubscriber } from '@/app/lib/actions/createSubscriber'
+import { createSubscriber } from '@/app/lib/actions/subscriber/createSubscriber'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 
 // const relatedNews = [

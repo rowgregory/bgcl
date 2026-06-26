@@ -1,5 +1,5 @@
 import { TeamMemberList } from '@/app/components/admin/the-library/TeamMemberList'
-import { getTeamMembersByRole } from '../actions/getTeamMembersByRole'
+import { getTeamMembersByRole } from '../actions/team-member/getTeamMembersByRole'
 
 export function createMultiRoleAdminPage(roles: Array<{ id: string; label: string }>, pageTitle: string) {
   return {

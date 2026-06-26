@@ -1,5 +1,5 @@
 import NewsClient from '@/app/components/pages/NewsClient'
-import { getNewsById } from '@/app/lib/actions/getNewsById'
+import { getNewsById } from '@/app/lib/actions/news/getNewsById'
 
 export default async function NewsDetailPage({ params }) {
   const { id } = await params

@@ -1,5 +1,5 @@
 import { AdminListPage } from '@/app/components/admin/AdminList'
-import { getCampaigns } from '@/app/lib/actions/getCampaigns'
+import { getCampaigns } from '@/app/lib/actions/campaign/getCampaigns'
 
 export const metadata = { title: 'Campaigns - Admin' }
 

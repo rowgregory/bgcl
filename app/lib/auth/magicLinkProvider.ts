@@ -1,6 +1,6 @@
 import type { EmailConfig } from 'next-auth/providers/email'
 import magicLinkTemplate from '../email-templates/magic-link'
-import { createLog } from '../actions/createLog'
+import { createLog } from '../actions/log/createLog'
 import { resend } from '../resend'
 
 const magicLinkProvider: EmailConfig = {

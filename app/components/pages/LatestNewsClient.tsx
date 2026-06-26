@@ -3,7 +3,7 @@
 import { useId, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createSubscriber } from '@/app/lib/actions/createSubscriber'
+import { createSubscriber } from '@/app/lib/actions/subscriber/createSubscriber'
 import { setIsLoading } from '@/app/lib/store/slices/formSlice'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { store, useFormSelector } from '@/app/lib/store/store'

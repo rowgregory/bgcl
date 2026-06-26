@@ -100,7 +100,8 @@ export default function DonationNotification({ donations }) {
       '/donate',
       '/events/',
       '/checkout',
-      '/super'
+      '/super',
+      '/cit'
     ].some((link) => pathname.includes(link))
   )
     return null

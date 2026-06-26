@@ -58,6 +58,11 @@ const getStarMapLinks = (path: string) => [
     textKey: 'Campital Campaign',
     linkKey: '/admin/star-map/capital-campaign',
     isActive: path === '/admin/star-map/capital-campaign'
+  },
+  {
+    textKey: 'CIT Application',
+    linkKey: '/admin/star-map/cit-application',
+    isActive: path === '/admin/star-map/cit-application'
   }
 ]
 

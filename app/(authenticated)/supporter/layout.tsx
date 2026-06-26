@@ -1,4 +1,4 @@
-import { getUpcomingOrOngoingEvent } from '@/app/lib/actions/getUpcomingOrOngoingEvent'
+import { getUpcomingOrOngoingEvent } from '@/app/lib/actions/event/getUpcomingOrOngoingEvent'
 import SupporterPage from './page'
 
 export default async function SupporterLayout({ children }) {

@@ -6,7 +6,7 @@ import useTeamMemberList from '@/app/lib/hooks/useTeamMemberList'
 import { store } from '@/app/lib/store/store'
 import { setInputs } from '@/app/lib/store/slices/formSlice'
 import { setOpenTeamMemberDrawer } from '@/app/lib/store/slices/teamMemberSlice'
-import { deleteTeamMember } from '@/app/lib/actions/deleteTeamMember'
+import { deleteTeamMember } from '@/app/lib/actions/team-member/deleteTeamMember'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { useRouter } from 'next/navigation'
 

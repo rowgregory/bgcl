@@ -1,5 +1,5 @@
 import { AdminListPage } from '@/app/components/admin/AdminList'
-import { getClosings } from '@/app/lib/actions/getClosings'
+import { getClosings } from '@/app/lib/actions/closing/getClosings'
 
 export default async function ClosingsPage() {
   const closings = await getClosings()

@@ -11,7 +11,7 @@ import Drawer from '../common/Drawer'
 import validateCampaignForm from '@/app/lib/validations/campaign'
 import { setCloseCampaignDrawer } from '@/app/lib/store/slices/campaignSlice'
 import { CampaignForm } from '../forms/CampaignForm'
-import { updateCampaign } from '@/app/lib/actions/updateCampaign'
+import { updateCampaign } from '@/app/lib/actions/campaign/updateCampaign'
 import { createCampaign } from '@/app/lib/actions/campaign/createCampaign'
 import { CreateCampaignInput, UpdateCampaignInput } from '@/types/entities/campaign'
 

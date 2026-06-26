@@ -1,5 +1,5 @@
-import { createPaymentMethod } from '@/app/lib/actions/createPaymentMethod'
-import { updateUserName } from '@/app/lib/actions/updateUserName'
+import { createPaymentMethod } from '@/app/lib/actions/stripe/createPaymentMethod'
+import { updateUserName } from '@/app/lib/actions/user/updateUserName'
 import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
 import { useCartSelector, useUiSelector } from '@/app/lib/store/store'
 import { TCasinoSignInPrompt } from '@/types/casino.types'

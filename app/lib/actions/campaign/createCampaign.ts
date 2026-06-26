@@ -2,7 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { trimAndTransformData } from '../../utils/trimAndTransformData'
-import { createLog } from '../createLog'
+import { createLog } from '../log/createLog'
 import { CreateCampaignInput } from '@/types/entities/campaign'
 import { getActor } from '../user/getActor'
 import { buildLogMessage, getRequestContext } from '../../utils/log.utils'

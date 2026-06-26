@@ -1,6 +1,6 @@
 import prisma from '@/prisma/client'
 import type { User } from 'next-auth'
-import { createStripeCustomer } from '../../actions/createStripeCustomer'
+import { createStripeCustomer } from '../../actions/stripe/createStripeCustomer'
 
 export async function handleEmailProvider(user: User) {
   const dbUser = await findOrCreateUser(user)

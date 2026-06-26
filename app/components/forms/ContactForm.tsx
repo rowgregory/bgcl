@@ -1,4 +1,4 @@
-import { createContactSubmission } from '@/app/lib/actions/createContactSubmission'
+import { createContactSubmission } from '@/app/lib/actions/contact-submission/createContactSubmission'
 import { createFormActions, resetForm, setIsLoading } from '@/app/lib/store/slices/formSlice'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { store, useFormSelector } from '@/app/lib/store/store'

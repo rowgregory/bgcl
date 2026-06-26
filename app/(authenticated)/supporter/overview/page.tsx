@@ -1,9 +1,9 @@
 import SupporterOverviewClient from '@/app/components/pages/SupporterOverviewClient'
-import { getPhoneNumber } from '@/app/lib/actions/getPhoneNumber'
+import { getPhoneNumber } from '@/app/lib/actions/user/getPhoneNumber'
 import { getSavedPaymentMethods } from '@/app/lib/actions/getSavedPaymentMethods'
 import { getSupporterDashboard } from '@/app/lib/actions/getSupporterDashboard'
-import { getUserAddress } from '@/app/lib/actions/getUserAddress'
-import { getUserName } from '@/app/lib/actions/getUserName'
+import { getUserAddress } from '@/app/lib/actions/user/getUserAddress'
+import { getUserName } from '@/app/lib/actions/user/getUserName'
 
 export const dynamic = 'force-dynamic'
 

@@ -72,7 +72,7 @@ export const AdminLayoutClient: FC<ILayout> = ({ children, themes, isModalEnable
         <header className="hidden lg:flex fixed top-0 left-64 right-0 items-center justify-between dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-b py-2.5 px-6 z-30 h-15.25">
           <h1 className="text-lg font-bold dark:text-neutral-100 text-neutral-900 capitalize">{selectedPage}</h1>
           <div className="flex items-center gap-2 md:gap-4">
-            {session.data.user.role === 'SUPERUSER' && (
+            {session.data?.user?.role === 'SUPERUSER' && (
               <Link
                 href="/super"
                 className="text-xs font-mono text-neutral-400 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"

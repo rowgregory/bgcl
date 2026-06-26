@@ -9,11 +9,11 @@ import Backdrop from '../common/Backdrop'
 import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
 import UserForm from '../forms/UserForm'
 import validateUserForm from '@/app/lib/validations/user'
-import { updateUser } from '@/app/lib/actions/updateUser'
+import { updateUser } from '@/app/lib/actions/user/updateUser'
 import Drawer from '../common/Drawer'
 import { useRouter } from 'next/navigation'
 import { CreateUserInputs, UpdateUserInputs } from '@/types/entities/user'
-import { createUser } from '@/app/lib/actions/createUser'
+import { createUser } from '@/app/lib/actions/user/createUser'
 
 export const UserDrawer = () => {
   const { userDrawer } = useUserSelector()

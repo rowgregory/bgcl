@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, MapPin, Loader2, Check } from 'lucide-react'
-import { updateAddress } from '@/app/lib/actions/updateAddress'
+import { updateAddress } from '@/app/lib/actions/address/updateAddress'
 import { store, useUiSelector } from '@/app/lib/store/store'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { US_STATES } from '@/app/lib/constants/states'

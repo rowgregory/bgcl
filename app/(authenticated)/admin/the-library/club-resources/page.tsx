@@ -1,5 +1,5 @@
 import { AdminListPage } from '@/app/components/admin/AdminList'
-import { getClubResources } from '@/app/lib/actions/getClubResources'
+import { getClubResources } from '@/app/lib/actions/club-resource/getClubResources'
 
 export const metadata = { title: 'Club Resources - Admin' }
 

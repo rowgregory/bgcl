@@ -4,10 +4,10 @@ import { motion } from 'framer-motion'
 import { store, useFormSelector } from '@/app/lib/store/store'
 import { createFormActions, setInputs, setIsLoading } from '@/app/lib/store/slices/formSlice'
 import { validateContactSubmissionForm } from '@/app/lib/validations/contact-submission'
-import { createContactSubmission } from '@/app/lib/actions/createContactSubmission'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { useRouter } from 'next/navigation'
 import { setCloseVolunteerDrawer } from '@/app/lib/store/slices/appSlice'
+import { createContactSubmission } from '@/app/lib/actions/contact-submission/createContactSubmission'
 
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 

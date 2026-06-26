@@ -2,7 +2,7 @@
 
 import { failedPaymentTemplate } from '../email-templates/failed-payment'
 import { resend } from '../resend'
-import { createLog } from './createLog'
+import { createLog } from './log/createLog'
 
 export async function sendFailedPaymentEmail(customerName: string, customerEmail: string, amount: number) {
   try {

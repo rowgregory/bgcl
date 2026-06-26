@@ -5,11 +5,11 @@ import { IForm } from '@/types/common'
 import { Plus, Save, Trash2, X } from 'lucide-react'
 import ImageUpload from '../common/ImageUpload'
 import CustomSwitch from '../common/CustomSwitch'
-import { createTheme } from '@/app/lib/actions/createTheme'
+import { createTheme } from '@/app/lib/actions/theme/createTheme'
 import { ICreateTheme } from '@/types/entities/theme'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { useRouter } from 'next/navigation'
-import { deleteTheme } from '@/app/lib/actions/deleteTheme'
+import { deleteTheme } from '@/app/lib/actions/theme/deleteTheme'
 
 export const ProgramForm: FC<IForm> = ({
   errors,

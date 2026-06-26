@@ -16,7 +16,8 @@ const CAPITAL_CAMPAIGN_LINKS = [
   '/auth',
   '/get-involved',
   '/donate',
-  '/super'
+  '/super',
+  '/cit'
 ]
 
 export default function CapitalCampaignTab({ pageData }) {

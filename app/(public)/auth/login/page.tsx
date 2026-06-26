@@ -11,7 +11,7 @@ import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { useSearchParams } from 'next/navigation'
 import Picture from '@/app/components/common/Picture'
 import getAuthErrorMessage from '@/app/lib/auth/getAuthErrorMessage'
-import { logAuthError } from '@/app/lib/actions/logAuthError'
+import { logAuthError } from '@/app/lib/actions/log/logAuthError'
 import { MotionLink } from '@/app/components/common/MotionLink'
 
 const Login = () => {

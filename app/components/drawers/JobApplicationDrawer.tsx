@@ -1,6 +1,6 @@
 'use client'
 
-import { updateJobApplicationStatus } from '@/app/lib/actions/updateJobApplicationStatus'
+import { updateJobApplicationStatus } from '@/app/lib/actions/job-application/updateJobApplicationStatus'
 import { POSITION_LABELS, STATUS_OPTIONS, STATUS_STYLES } from '@/app/lib/constants/job-application.constants'
 import { setIsLoading } from '@/app/lib/store/slices/formSlice'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
