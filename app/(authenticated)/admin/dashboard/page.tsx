@@ -1,5 +1,5 @@
 import AdminDashboardClient from '@/app/components/pages/AdminDashboardClient'
-import { getDashboardStats } from '@/app/lib/actions/getDashboardStats'
+import { getDashboardStats } from '@/app/lib/actions/_dashboard/getDashboardStats'
 
 export default async function AdminDashboardPage() {
   const result = await getDashboardStats()

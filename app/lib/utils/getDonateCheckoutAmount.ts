@@ -1,4 +1,4 @@
-import { MONTHLY_PLANS, ONE_TIME_PLANS, YEARLY_PLANS } from '../constants/donate-page'
+import { MONTHLY_PLANS, ONE_TIME_PLANS, YEARLY_PLANS } from '../constants/donate.constants'
 
 export const getDonateCheckoutAmount = (inputs) => {
   // If a preset plan is selected, get its amount

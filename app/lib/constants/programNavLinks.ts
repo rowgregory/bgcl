@@ -29,7 +29,7 @@ export const programNavigationLinkData = (
     {
       icon: FileText,
       label: 'CIT Applications',
-      path: '/admin/cit-applications',
+      path: '/program/cit-applications',
       description: 'Pending CIT Applications',
       active: isStringInPath(path, 'cit-applications')
     }

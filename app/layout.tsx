@@ -7,7 +7,7 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import Hotjar from './scripts/Hotjar'
 import { siteMetadata } from './lib/seo/metadata'
 import { jsonLd } from './lib/seo/jsonLd'
-import { getHomePageData } from './lib/actions/getHomePageData'
+import { getHomePageData } from './lib/actions/_infra/getHomePageData'
 
 const lexend = Lexend({
   subsets: ['latin'],

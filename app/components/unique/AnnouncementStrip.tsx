@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { X, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import { IHero } from '@/types/entities/hero'
-import { HIDDEN_PATHS } from '@/app/lib/constants/navigation'
+import { HIDDEN_PATHS } from '@/app/lib/constants/navigation.constants'
 import { usePathname } from 'next/navigation'
 
 interface AnnouncementStripProps {

@@ -7,7 +7,7 @@ import { TicketSelectionDrawer } from './components/drawers/TicketSelectionDrawe
 import { PersistGate } from 'redux-persist/integration/react'
 import Header from './components/header/Header'
 import { usePathname } from 'next/navigation'
-import { HIDDEN_PATHS } from './lib/constants/navigation'
+import { HIDDEN_PATHS } from './lib/constants/navigation.constants'
 import { Footer } from './components/footer/Footer'
 import DonationNotification from './components/DonationNotification'
 import VolunteerDrawer from './components/drawers/VolunteerDrawer'

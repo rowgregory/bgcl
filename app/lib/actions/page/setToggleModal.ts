@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createLog } from './log/createLog'
+import { createLog } from '../log/createLog'
 import prisma from '@/prisma/client'
 
 export async function setToggleModal(slug: string) {

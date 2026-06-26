@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { eventTemplates } from '@/app/lib/constants/events'
+import { eventTemplates } from '@/app/lib/constants/events.constants'
 import { motion } from 'framer-motion'
 import { EventTemplate } from '@/types/entities/event'
 

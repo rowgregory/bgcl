@@ -8,7 +8,7 @@ import {
   EVENT_TYPES,
   MATERIAL_TAGS,
   REQUIREMENT_TAGS
-} from '@/app/lib/constants/events'
+} from '@/app/lib/constants/events.constants'
 import { EventTemplates } from '../events/EventTemplates'
 import { formatDateForInput, formatDatetimeLocalForInput } from '@/app/lib/utils/date-utils'
 import { EventType } from '@prisma/client'

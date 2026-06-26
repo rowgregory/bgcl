@@ -8,6 +8,9 @@ import { isValidEmail } from '../../utils/regex'
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { CIT_ADMIN_PATH, CIT_APPLICATION_PATH } from '../../constants/cit-application.constants'
+import sendAdminNotification from '../../utils/sendAdminNotification'
+import { resend } from '../../resend'
+import { citApplicationConfirmationEmail } from '../../email-templates/cit-application-confirmation.template'
 
 /**
  * Creates a new CIT application.
@@ -79,6 +82,29 @@ export async function createCITApplication(input: CreateCITApplicationInput): Pr
         hobbiesExtracurriculars: input.hobbiesExtracurriculars.trim()
       }
     })
+
+    try {
+      await sendAdminNotification('CIT_APPLICATION', {
+        name: input.name.trim(),
+        parentGuardianEmail: input.parentGuardianEmail.trim(),
+        school: input.school.trim(),
+        grade: input.grade.trim(),
+        weeksAvailable: input.weeksAvailable
+      })
+
+      await resend.emails.send({
+        from: `Boys & Girls Club of Lynn <${process.env.RESEND_FROM_EMAIL}>`,
+        to: input.parentGuardianEmail.trim(),
+        subject: 'Thank You for Applying — Boys & Girls Club of Lynn',
+        html: citApplicationConfirmationEmail()
+      })
+    } catch (emailError) {
+      await createLog('error', 'Failed to send CIT application notification', {
+        type: 'CIT_APPLICATION',
+        email: input.parentGuardianEmail,
+        error: emailError instanceof Error ? emailError.message : 'Unknown error'
+      })
+    }
 
     await createLog('INFO', `CIT application created: ${application.id}`, {
       applicationId: application.id,

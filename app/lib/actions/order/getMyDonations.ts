@@ -1,6 +1,6 @@
 import prisma from '@/prisma/client'
-import { auth } from '../auth'
-import { createLog } from './log/createLog'
+import { auth } from '../../auth'
+import { createLog } from '../log/createLog'
 
 export const getMyDonations = async () => {
   try {

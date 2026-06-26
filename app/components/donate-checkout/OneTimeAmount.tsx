@@ -1,4 +1,4 @@
-import { ONE_TIME_PLANS } from '@/app/lib/constants/donate-page'
+import { ONE_TIME_PLANS } from '@/app/lib/constants/donate.constants'
 import { motion } from 'framer-motion'
 
 const OneTimeAmount = ({ setSelectedPlan, selectedPlan, setAmount, amount }) => {

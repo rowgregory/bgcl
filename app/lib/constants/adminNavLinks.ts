@@ -1,8 +1,6 @@
 import {
   LucideIcon,
-  Logs,
   LayoutDashboard,
-  Plug,
   Pencil,
   Image,
   Library,
@@ -42,13 +40,6 @@ export const adminNavigationLinkData = (
       path: '/admin/dashboard',
       description: 'Key Performance Indicators',
       active: isStringInPath(path, 'dashboard')
-    },
-    {
-      icon: Plug,
-      label: 'Integrations',
-      path: '/admin/mission-control',
-      description: 'Integration credentials',
-      active: isStringInPath(path, 'mission-control')
     }
   ]
 

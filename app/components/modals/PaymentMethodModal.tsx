@@ -9,7 +9,7 @@ import { createFormActions, setInputs, setIsLoading } from '@/app/lib/store/slic
 import { createPaymentMethod } from '@/app/lib/actions/stripe/createPaymentMethod'
 import extractErrorMessage from '@/app/lib/utils/extractErrorMessage'
 import PaymentMethodForm from '../forms/PaymentMethodForm'
-import { getSetupIntentClientSecret } from '@/app/lib/actions/getSetupIntentClientSecret'
+import { getSetupIntentClientSecret } from '@/app/lib/actions/stripe/getSetupIntentClientSecret'
 import { setClosePaymentMethodModal } from '@/app/lib/store/slices/uiSlice'
 
 const validatePaymentMethodForm = (inputs, setErrors) => {

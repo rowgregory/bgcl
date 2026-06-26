@@ -1,7 +1,7 @@
 import { PublicDonateClient } from '@/app/components/pages/PublicDonateClient'
 import { getCampaigns } from '@/app/lib/actions/campaign/getCampaigns'
 import { getPhoneNumber } from '@/app/lib/actions/user/getPhoneNumber'
-import { getSavedPaymentMethods } from '@/app/lib/actions/getSavedPaymentMethods'
+import { getSavedPaymentMethods } from '@/app/lib/actions/stripe/getSavedPaymentMethods'
 import { getUserAddress } from '@/app/lib/actions/user/getUserAddress'
 import { getUserName } from '@/app/lib/actions/user/getUserName'
 

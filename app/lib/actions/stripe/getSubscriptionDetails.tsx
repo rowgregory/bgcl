@@ -1,5 +1,5 @@
 import prisma from '@/prisma/client'
-import { stripe } from '../stripe/stripeClient'
+import { stripe } from '../../stripe/stripeClient'
 
 export async function getSubscriptionDetails(subscriptionId: string) {
   try {

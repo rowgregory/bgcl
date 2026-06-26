@@ -1,5 +1,5 @@
 import SupporterDonationsClient from '@/app/components/pages/SupporterDonationsClient'
-import { getMyDonations } from '@/app/lib/actions/getMyDonations'
+import { getMyDonations } from '@/app/lib/actions/order/getMyDonations'
 
 export const dynamic = 'force-dynamic'
 

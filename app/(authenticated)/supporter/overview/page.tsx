@@ -1,7 +1,7 @@
 import SupporterOverviewClient from '@/app/components/pages/SupporterOverviewClient'
 import { getPhoneNumber } from '@/app/lib/actions/user/getPhoneNumber'
-import { getSavedPaymentMethods } from '@/app/lib/actions/getSavedPaymentMethods'
-import { getSupporterDashboard } from '@/app/lib/actions/getSupporterDashboard'
+import { getSavedPaymentMethods } from '@/app/lib/actions/stripe/getSavedPaymentMethods'
+import { getSupporterDashboard } from '@/app/lib/actions/_dashboard/getSupporterDashboard'
 import { getUserAddress } from '@/app/lib/actions/user/getUserAddress'
 import { getUserName } from '@/app/lib/actions/user/getUserName'
 

@@ -1,8 +1,8 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { auth } from '../auth'
-import { createLog } from './log/createLog'
+import { auth } from '../../auth'
+import { createLog } from '../log/createLog'
 
 export async function setDefaultPaymentMethod(paymentMethodId: string) {
   try {

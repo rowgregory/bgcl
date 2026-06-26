@@ -1,5 +1,5 @@
 import { CapsuleTransactionsClient } from '@/app/components/pages/CapsuleTransactionsClient'
-import { getCapsuleTransactions } from '@/app/lib/actions/getCapsuleTransactions'
+import { getCapsuleTransactions } from '@/app/lib/actions/_dashboard/getCapsuleTransactions'
 
 export default async function CapsuleTransactionsPage() {
   const data = await getCapsuleTransactions()

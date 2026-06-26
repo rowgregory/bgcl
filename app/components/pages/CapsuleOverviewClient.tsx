@@ -1,6 +1,6 @@
 'use client'
 
-import { getCapsuleOverview } from '@/app/lib/actions/getCapsuleOverview'
+import { getCapsuleOverview } from '@/app/lib/actions/_dashboard/getCapsuleOverview'
 import { formatCurrency } from '@/app/lib/utils/currency.utils'
 import { motion } from 'framer-motion'
 import { Calendar, DollarSign, Ticket, Users, Clock, CheckCircle } from 'lucide-react'

@@ -1,4 +1,4 @@
-import { MONTHLY_PLANS } from '@/app/lib/constants/donate-page'
+import { MONTHLY_PLANS } from '@/app/lib/constants/donate.constants'
 import { motion } from 'framer-motion'
 
 const MonthlyPlans = ({ setSelectedPlan, selectedPlan, amount, setAmount }) => {

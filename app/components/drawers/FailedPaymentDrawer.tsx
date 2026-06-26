@@ -1,6 +1,6 @@
 'use client'
 
-import { sendFailedPaymentEmail } from '@/app/lib/actions/sendFailedPaymentEmail'
+import { sendFailedPaymentEmail } from '@/app/lib/actions/_infra/sendFailedPaymentEmail'
 import { setCloseFailedPaymentDrawer } from '@/app/lib/store/slices/dashboardSlice'
 import { showToast } from '@/app/lib/store/slices/toastSlice'
 import { store, useDashboardSelector } from '@/app/lib/store/store'
