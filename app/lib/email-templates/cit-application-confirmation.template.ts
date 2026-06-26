@@ -22,8 +22,7 @@ export function citApplicationConfirmationEmail(): string {
             <td style="padding: 24px 28px;">
               <p style="margin: 0 0 16px 0; color: #0f172a; font-size: 14px; line-height: 1.6;">Hello,</p>
               <p style="margin: 0 0 16px 0; color: #64748b; font-size: 14px; line-height: 1.6;">Thank you for applying to the Counselor-in-Training (CIT) program at Camp Creighton Pond in Middleton, MA. We're excited that you're interested in growing as a leader with us this summer.</p>
-              <p style="margin: 0 0 16px 0; color: #64748b; font-size: 14px; line-height: 1.6;">Our team will carefully review every application after the application window closes on May 1st. If you are selected to move forward, we will reach out with details about orientation, which will be held at Camp Creighton Pond (date to be determined).</p>
-              <p style="margin: 0 0 16px 0; color: #64748b; font-size: 14px; line-height: 1.6;">As a reminder, tuition for the program is $65 per week. More information will follow after the selection process is complete.</p>
+              <p style="margin: 0 0 16px 0; color: #64748b; font-size: 14px; line-height: 1.6;">Our team will carefully review your application and will be reaching out to you with next steps.</p>
               <p style="margin: 0 0 24px 0; color: #64748b; font-size: 14px; line-height: 1.6;">If you have any questions in the meantime, please don't hesitate to reach out to us at <a href="mailto:info@bgcl.org" style="color: #0ea5e9; text-decoration: none; font-weight: 500;">info@bgcl.org</a>.</p>
               <p style="margin: 0; color: #64748b; font-size: 14px; line-height: 1.6;">Sincerely,<br/><span style="color: #0f172a; font-weight: 600;">Boys & Girls Club of Lynn</span></p>
             </td>
