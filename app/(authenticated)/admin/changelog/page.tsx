@@ -21,6 +21,47 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.20.0',
+    date: '2026-06-30',
+    changes: [
+      {
+        type: 'fix',
+        title: 'Recurring donation renewals now record reliably',
+        description:
+          'Subscription renewal payments succeeded on Stripe but could fail to record in the database. Renewals are now keyed to their Stripe invoice, so each billing cycle is captured as its own order and webhook retries no longer create duplicates.',
+        impact: 'high'
+      },
+      {
+        type: 'fix',
+        title: 'Corrected next billing date on recurring donations',
+        description:
+          'The "next billing" date was calculated from the original subscription start and never advanced, so it showed the same date every cycle. It now reflects the actual upcoming charge date from Stripe and updates with each renewal.',
+        impact: 'medium'
+      },
+      {
+        type: 'fix',
+        title: 'Fixed covered-fee amounts on donation receipts',
+        description:
+          'Some donations displayed the covered processing fee at 100x its real value (e.g. "$87.00" instead of "$0.87") due to inconsistent storage units. Fee amounts are now stored and displayed consistently, and existing records have been corrected.',
+        impact: 'high'
+      },
+      {
+        type: 'improvement',
+        title: 'Processing fees recalculated from each payment',
+        description:
+          'Covered fees are now derived from the actual charge at payment time rather than relying on values saved when the subscription was first created, so older subscriptions self-correct on their next renewal.',
+        impact: 'medium'
+      },
+      {
+        type: 'fix',
+        title: 'Donations now appear immediately in the admin dashboard',
+        description:
+          'New donations and renewals could be missing from the admin dashboard and transactions views due to cached pages serving stale data. These admin views now always show current data.',
+        impact: 'high'
+      }
+    ]
+  },
+  {
     version: '1.19.0',
     date: '2026-06-26',
     changes: [

@@ -6,6 +6,7 @@ import { stripe } from '@/app/lib/stripe/stripeClient'
 import { pusher } from '@/app/lib/pusher'
 import sendConfirmationEmail from '@/app/lib/utils/sendConfirmationEmail'
 import sendAdminNotification from '@/app/lib/utils/sendAdminNotification'
+import { resolveFeesCovered } from '@/app/lib/utils/resolveFeesCovered'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
@@ -635,11 +636,8 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     }
 
     // Check if order already exists
-    const existingOrder = await prisma.order.findFirst({
-      where: {
-        stripeSubscriptionId: subscriptionId,
-        ...(paymentIntentId && { paymentIntentId })
-      }
+    const existingOrder = await prisma.order.findUnique({
+      where: { stripeInvoiceId: invoice.id }
     })
 
     if (existingOrder) {
@@ -656,18 +654,26 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     const userId = subscription.metadata?.userId
 
     const frequency = subscription.metadata?.frequency || 'monthly'
+
+    function baseFromTotal(total: number): number {
+      // total = (base + 0.30) / (1 - 0.022)  when fees are covered
+      // => base = total * (1 - 0.022) - 0.30
+      return total * (1 - 0.022) - 0.3
+    }
+
     const amount = invoice.amount_paid / 100
     const coverFees = subscription.metadata?.coverFees === 'true'
-    const feesCovered = parseFloat(subscription.metadata?.feesCovered || '0')
+    const baseAmount = coverFees ? baseFromTotal(amount) : amount
+    const feesCovered = resolveFeesCovered(coverFees, baseAmount)
 
-    function getNextBillingDate(subscription: any): Date {
-      const frequency = subscription.metadata?.frequency || 'monthly'
-      const anchor = new Date(subscription.billing_cycle_anchor * 1000)
+    function getNextBillingDate(inv: any, sub: any): Date {
+      const periodEnd =
+        (sub as any).current_period_end || sub.items?.data?.[0]?.current_period_end || inv.lines?.data?.[0]?.period?.end
+      if (periodEnd) return new Date(periodEnd * 1000)
 
-      if (frequency === 'yearly') {
-        return new Date(anchor.setFullYear(anchor.getFullYear() + 1))
-      }
-
+      const f = sub.metadata?.frequency || 'monthly'
+      const anchor = new Date(sub.billing_cycle_anchor * 1000)
+      if (f === 'yearly') return new Date(anchor.setFullYear(anchor.getFullYear() + 1))
       return new Date(anchor.setMonth(anchor.getMonth() + 1))
     }
 
@@ -682,6 +688,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
         customerPhone: subscription.metadata?.phone || '',
         userId,
         stripeSubscriptionId: subscriptionId,
+        stripeInvoiceId: invoice.id,
         paymentIntentId: paymentIntentId || null,
         paymentMethodId:
           typeof subscription.default_payment_method === 'string'
@@ -692,7 +699,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
         coverFees: coverFees,
         feesCovered: feesCovered,
         paidAt: invoice.status_transitions?.paid_at ? new Date(invoice.status_transitions.paid_at * 1000) : new Date(),
-        nextBillingDate: getNextBillingDate(subscription),
+        nextBillingDate: getNextBillingDate(invoice, subscription),
         billingAddress: {
           addressLine1: subscription.metadata?.addressLine1 || '',
           addressLine2: subscription.metadata?.addressLine2 || '',

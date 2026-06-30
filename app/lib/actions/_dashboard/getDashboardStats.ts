@@ -15,11 +15,6 @@ export interface DashboardStats {
   recentOrders: any[]
 }
 
-const normalizeFees = (raw: any) => {
-  const n = Number(raw ?? 0)
-  return Number.isInteger(n) ? n / 100 : n
-}
-
 export async function getDashboardStats(): Promise<DashboardStats> {
   try {
     const now = new Date()
@@ -77,7 +72,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       newSupportersThisMonth,
       ticketsSold: ticketsSold._sum.quantity ?? 0,
       totalOrders: confirmedOrders.length,
-      totalFeesCovered: confirmedOrders.reduce((s, o) => s + normalizeFees(o.feesCovered), 0),
+      totalFeesCovered: confirmedOrders.reduce((s, o) => s + Number(o.feesCovered), 0),
       recentOrders
     }
   } catch (error) {

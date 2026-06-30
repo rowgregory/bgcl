@@ -155,7 +155,7 @@ export function FailedPaymentsDrawer() {
                       <div className="flex items-center gap-3">
                         <DollarSign className="w-4 h-4 text-neutral-400" />
                         <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                          Attempted to cover ${(payment?.feesCovered / 100)?.toFixed(2)} in fees
+                          Attempted to cover ${payment?.feesCovered?.toFixed(2)} in fees
                         </span>
                       </div>
                     )}

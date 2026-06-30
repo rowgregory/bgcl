@@ -4,7 +4,6 @@ import { SessionProvider } from 'next-auth/react'
 import { ReactNode } from 'react'
 import RootLayoutWrapper from './root-layout'
 import { GoogleAnalytics } from '@next/third-parties/google'
-import Hotjar from './scripts/Hotjar'
 import { siteMetadata } from './lib/seo/metadata'
 import { jsonLd } from './lib/seo/jsonLd'
 import { getHomePageData } from './lib/actions/_infra/getHomePageData'
@@ -30,7 +29,6 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <GoogleAnalytics gaId={GA_ID!} />
-        <Hotjar />
       </head>
       <body className={`${lexend.variable} antialiased`}>
         <SessionProvider>

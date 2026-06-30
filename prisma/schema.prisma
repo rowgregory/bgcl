@@ -284,6 +284,7 @@ model Order {
   isRecurring          Boolean   @default(false)
   recurringFrequency   String?
   stripeSubscriptionId String?
+  stripeInvoiceId      String?   @unique
   nextBillingDate      DateTime?
 
   // Relations
