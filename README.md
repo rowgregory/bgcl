@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://sqysh.com?utm_source=github&utm_medium=referral&utm_campaign=bgcl">
+    <img src="public/sqysh-animated-purple.gif" alt="Sqysh" width="120" />
+  </a>
+</p>
+
 # Boys & Girls Club of Lynn
 
 Website and internal management platform for the **Boys & Girls Club of Lynn**.
