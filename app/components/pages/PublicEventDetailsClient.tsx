@@ -12,7 +12,7 @@ import { CasinoDressCodeAndHighlights } from '../events/casino/CasinoDressCodeAn
 import { CasinoIntro } from '../events/casino/CasinoIntro'
 import { useCallback, useState } from 'react'
 import { motion } from 'framer-motion'
-import AddToCartToast from '../cart/AddToCartToast'
+import AddToCartToast from '../../(public)/cart/_components/AddToCartToast'
 import { VantaBackgroundCells } from '../events/casino/VantaBackground'
 import { formatDate } from '@/app/lib/utils/date-utils'
 import { formatTime } from '@/app/lib/utils/time-utils'

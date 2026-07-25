@@ -54,7 +54,7 @@ export function CasinoWidgets({ data }: TCasinoWidgets) {
         {/* Admin Dashboard */}
         {isAdmin && (
           <MotionLink
-            href="/admin/capsule/events"
+            href="/admin/events/events"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             aria-label={userRole}

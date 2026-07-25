@@ -3,7 +3,7 @@
 import { ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import getStarMapLinks from '@/app/lib/utils/getStarMapLinks'
-import { SubNavLink } from '@/app/components/navigation/SubNavLink'
+import { SubNavLink } from '@/app/(authenticated)/admin/_components/SubNavLink'
 
 export default function StarMapLayout({ children }: { children: ReactNode }) {
   const path = usePathname()

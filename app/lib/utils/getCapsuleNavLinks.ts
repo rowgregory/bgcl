@@ -1,27 +1,27 @@
-export const getCapsuleNavLinks = (path: string) => [
+export const getEventsNavLinks = (path: string) => [
   {
     textKey: 'Overview',
-    linkKey: '/admin/capsule/overview',
-    isActive: path === '/admin/capsule/overview'
+    linkKey: '/admin/events/overview',
+    isActive: path === '/admin/events/overview'
   },
   {
     textKey: 'Events',
-    linkKey: '/admin/capsule/events',
-    isActive: path === '/admin/capsule/events'
+    linkKey: '/admin/events/events',
+    isActive: path === '/admin/events/events'
   },
   {
     textKey: 'Transactions',
-    linkKey: '/admin/capsule/transactions',
-    isActive: path === '/admin/capsule/transactions'
+    linkKey: '/admin/events/transactions',
+    isActive: path === '/admin/events/transactions'
   },
   {
     textKey: 'Manifest',
-    linkKey: '/admin/capsule/manifest',
-    isActive: path === '/admin/capsule/manifest'
+    linkKey: '/admin/events/manifest',
+    isActive: path === '/admin/events/manifest'
   },
   {
     textKey: 'Archive',
-    linkKey: '/admin/capsule/archive',
-    isActive: path === '/admin/capsule/archive'
+    linkKey: '/admin/events/archive',
+    isActive: path === '/admin/events/archive'
   }
 ]

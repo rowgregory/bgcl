@@ -1,4 +1,4 @@
-import AboutPageClient from '@/app/components/pages/AboutClient'
+import AboutPageClient from '@/app/(public)/about/AboutClient'
 import { getPageBySlugClient } from '@/app/lib/actions/page/getPageBySlugClient'
 
 export default async function PublicAboutPage() {

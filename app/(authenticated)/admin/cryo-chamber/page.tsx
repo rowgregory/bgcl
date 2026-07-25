@@ -78,11 +78,11 @@ const features = [
     }
   },
   {
-    id: 'capsule',
-    name: 'The Capsule',
+    id: 'events',
+    name: 'The Events',
     tagline: 'Event Management Platform',
     description:
-      'The Capsule streamlines event creation, registration, and attendee management. Handle ticket sales, capacity limits, and check-ins all in one place. Perfect for fundraisers, community events, camps, and programs.',
+      'The Events streamlines event creation, registration, and attendee management. Handle ticket sales, capacity limits, and check-ins all in one place. Perfect for fundraisers, community events, camps, and programs.',
     icon: Calendar,
     gradient: 'from-purple-950 via-indigo-900 to-black',
     accentColor: 'purple-400',
@@ -101,7 +101,7 @@ const features = [
       }
     ],
     status: 'not_purchased',
-    linkKey: '/admin/capsule/core',
+    linkKey: '/admin/events/core',
     pricing: {
       build: 2800,
       monthly: 75

@@ -110,7 +110,7 @@ const changelogData: ChangelogEntry[] = [
         type: 'feature',
         title: 'Full-Bleed Event Control Panel',
         description:
-          'Replaced the event and ticket drawer flow with a dedicated full-bleed control panel at /admin/capsule/events/[id]. Three-column layout: left sidebar with status selector, at-a-glance stats, and option toggles; main scrollable form with all event fields organized into labeled sections (Details, Scheduling, Location, Capacity, Dress Code, Raffle); right panel with inline ticket management. Tickets expand in-place to reveal all fields including sponsorship perks. Template selector swaps into the left sidebar on new event creation.',
+          'Replaced the event and ticket drawer flow with a dedicated full-bleed control panel at /admin/events/events/[id]. Three-column layout: left sidebar with status selector, at-a-glance stats, and option toggles; main scrollable form with all event fields organized into labeled sections (Details, Scheduling, Location, Capacity, Dress Code, Raffle); right panel with inline ticket management. Tickets expand in-place to reveal all fields including sponsorship perks. Template selector swaps into the left sidebar on new event creation.',
         impact: 'high'
       },
       {
@@ -788,7 +788,7 @@ const changelogData: ChangelogEntry[] = [
         type: 'improvement',
         title: 'Decimal Serialization Across BGCL Actions',
         description:
-          'Fixed Decimal objects not serializable for client components across getCapsuleOverview, getCapsuleTransactions, getSupporterDashboard, getOrder, getDonations, and getMyDonations.',
+          'Fixed Decimal objects not serializable for client components across getEventsOverview, getEventsTransactions, getSupporterDashboard, getOrder, getDonations, and getMyDonations.',
         impact: 'high'
       },
       {

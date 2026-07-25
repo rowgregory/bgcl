@@ -14,7 +14,7 @@ import dropdownActionItems from '../../lib/constants/dropdownActionItems'
 import { getCurrentPageId } from '../../lib/utils/getCurrentPageId'
 
 import ActionMenuButton from '../ui/buttons/ActionMenuButton'
-import ActionMenuDropdown from '../navigation/ActionMenuDropdown'
+import ActionMenuDropdown from '../../(authenticated)/admin/_components/ActionMenuDropdown'
 import LogoutButton from '../ui/buttons/LogoutButton'
 import MobileMenuButton from '../ui/buttons/MobileMenuButton'
 
@@ -45,7 +45,7 @@ export const AdminLayoutClient: FC<ILayout> = ({ children, themes, isModalEnable
   const onClose = () => store.dispatch(setCloseAdminSidebar())
   const session = useSession()
 
-  const isEventDetailsPage = pathname.includes('/admin/capsule/events/')
+  const isEventDetailsPage = pathname.includes('/admin/events/events/')
 
   return (
     <>

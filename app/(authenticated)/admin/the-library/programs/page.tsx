@@ -1,4 +1,4 @@
-import { AdminListPage } from '@/app/components/admin/AdminList'
+import { AdminListPage } from '@/components/admin/layout/AdminList'
 import { getPrograms } from '@/app/lib/actions/program/getPrograms'
 
 export const metadata = { title: 'Programs - Admin' }

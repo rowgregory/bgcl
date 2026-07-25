@@ -136,7 +136,7 @@ export default function AdminDocumentationPage() {
           title: 'Creating Events',
           description: 'Add new events for community members to discover and register for.',
           steps: [
-            'Navigate to "The Capsule" (Events)',
+            'Navigate to "The Events" (Events)',
             'Click "Create New Event"',
             'Fill in event details: title, description, date, time, location',
             'Set capacity limits and pricing if applicable',

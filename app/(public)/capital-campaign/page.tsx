@@ -1,4 +1,4 @@
-import PublicCapitalCampaignClient from '@/app/components/pages/PublicCapitalCampaignClient'
+import PublicCapitalCampaignClient from '@/app/(public)/capital-campaign/PublicCapitalCampaignClient'
 import { getPageBySlugClient } from '@/app/lib/actions/page/getPageBySlugClient'
 
 export default async function PublicCapitalCampaignPage() {

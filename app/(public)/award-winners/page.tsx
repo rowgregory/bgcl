@@ -1,4 +1,4 @@
-import AwardWinnersClient from '@/app/components/pages/AwardWinnersClient'
+import AwardWinnersClient from '@/app/(public)/award-winners/AwardWinnersClient'
 import { getNewsAndTeamMembers } from '@/app/lib/actions/_infra/getNewsAndTeamMembers'
 import { getPageBySlugClient } from '@/app/lib/actions/page/getPageBySlugClient'
 

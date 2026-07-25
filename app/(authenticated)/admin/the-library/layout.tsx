@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { SubNavLink } from '@/app/components/navigation/SubNavLink'
+import { SubNavLink } from '@/app/(authenticated)/admin/_components/SubNavLink'
 import { usePathname } from 'next/navigation'
 import { getTheLibraryLinks } from '@/app/lib/utils/getTheLibraryLinks'
 

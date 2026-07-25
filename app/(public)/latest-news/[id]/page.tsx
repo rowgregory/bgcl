@@ -1,4 +1,4 @@
-import NewsClient from '@/app/components/pages/NewsClient'
+import NewsClient from '@/app/(public)/award-winners/[id]/NewsClient'
 import { getNewsById } from '@/app/lib/actions/news/getNewsById'
 
 export default async function NewsDetailPage({ params }) {

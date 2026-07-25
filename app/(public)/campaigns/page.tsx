@@ -1,4 +1,4 @@
-import CampaignsClient from '@/app/components/pages/CampaignsClient'
+import CampaignsClient from '@/app/(public)/campaigns/CampaignsClient'
 import { getCampaigns } from '@/app/lib/actions/campaign/getCampaigns'
 import { getPageBySlugClient } from '@/app/lib/actions/page/getPageBySlugClient'
 

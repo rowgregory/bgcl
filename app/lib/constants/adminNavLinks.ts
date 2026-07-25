@@ -71,9 +71,9 @@ export const adminNavigationLinkData = (
     {
       icon: CalendarDays,
       label: 'Events & Raffles',
-      path: '/admin/capsule/overview',
+      path: '/admin/events/overview',
       description: 'Event Management',
-      active: isStringInPath(path, 'capsule')
+      active: isStringInPath(path, 'events')
     },
     {
       icon: HandCoins,

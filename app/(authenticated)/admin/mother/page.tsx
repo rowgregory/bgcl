@@ -1,71 +1,71 @@
-"use client";
+'use client'
 
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { BrainCircuit, Send, Sparkles, Activity } from "lucide-react";
+import React, { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { BrainCircuit, Send, Sparkles, Activity } from 'lucide-react'
 
 const Mother = () => {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('')
   const [messages, setMessages] = useState([
     {
-      type: "system",
-      text: "MOTHER SYSTEMS ONLINE",
-      timestamp: new Date(),
+      type: 'system',
+      text: 'MOTHER SYSTEMS ONLINE',
+      timestamp: new Date()
     },
     {
-      type: "mother",
-      text: "Good afternoon. I am Mother, your central intelligence system. I have access to all organizational data across The Fuel Station, The Capsule, programs, and youth records.",
-      timestamp: new Date(),
+      type: 'mother',
+      text: 'Good afternoon. I am Mother, your central intelligence system. I have access to all organizational data across The Fuel Station, The Events, programs, and youth records.',
+      timestamp: new Date()
     },
     {
-      type: "mother",
-      text: "What would you like to know?",
-      timestamp: new Date(),
-    },
-  ]);
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+      type: 'mother',
+      text: 'What would you like to know?',
+      timestamp: new Date()
+    }
+  ])
+  const [isTyping, setIsTyping] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    scrollToBottom()
+  }, [messages])
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+    e.preventDefault()
+    if (!input.trim()) return
 
     // Add user message
     const userMessage = {
-      type: "user",
+      type: 'user',
       text: input,
-      timestamp: new Date(),
-    };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setIsTyping(true);
+      timestamp: new Date()
+    }
+    setMessages((prev) => [...prev, userMessage])
+    setInput('')
+    setIsTyping(true)
 
     // Simulate Mother's response
     setTimeout(() => {
       const motherResponse = {
-        type: "mother",
-        text: "Processing your request. This feature is currently in development. Soon I will provide real-time analytics, generate custom reports, and offer predictive insights across all your systems.",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, motherResponse]);
-      setIsTyping(false);
-    }, 1500);
-  };
+        type: 'mother',
+        text: 'Processing your request. This feature is currently in development. Soon I will provide real-time analytics, generate custom reports, and offer predictive insights across all your systems.',
+        timestamp: new Date()
+      }
+      setMessages((prev) => [...prev, motherResponse])
+      setIsTyping(false)
+    }, 1500)
+  }
 
   const suggestions = [
-    "Show me donation trends for the past 6 months",
-    "Which events had the highest attendance?",
-    "How many youth are enrolled in STEM programs?",
-    "Compare revenue across all platforms",
-  ];
+    'Show me donation trends for the past 6 months',
+    'Which events had the highest attendance?',
+    'How many youth are enrolled in STEM programs?',
+    'Compare revenue across all platforms'
+  ]
 
   return (
     <div className="h-[calc(100vh-68px)] bg-black text-green-400 font-mono relative overflow-hidden">
@@ -78,7 +78,7 @@ const Mother = () => {
             linear-gradient(rgba(0, 255, 0, 0.1) 1px, transparent 1px),
             linear-gradient(90deg, rgba(0, 255, 0, 0.1) 1px, transparent 1px)
           `,
-            backgroundSize: "50px 50px",
+            backgroundSize: '50px 50px'
           }}
         />
       </div>
@@ -87,17 +87,16 @@ const Mother = () => {
       <motion.div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background:
-            "linear-gradient(to bottom, transparent 50%, rgba(0, 255, 0, 0.02) 50%)",
-          backgroundSize: "100% 4px",
+          background: 'linear-gradient(to bottom, transparent 50%, rgba(0, 255, 0, 0.02) 50%)',
+          backgroundSize: '100% 4px'
         }}
         animate={{
-          backgroundPosition: ["0% 0%", "0% 100%"],
+          backgroundPosition: ['0% 0%', '0% 100%']
         }}
         transition={{
           duration: 8,
           repeat: Infinity,
-          ease: "linear",
+          ease: 'linear'
         }}
       />
 
@@ -113,9 +112,7 @@ const Mother = () => {
 
             <div>
               <h1 className="text-3xl font-bold tracking-wider">MOTHER</h1>
-              <p className="text-green-400/70 text-sm">
-                Central Intelligence System v2.0
-              </p>
+              <p className="text-green-400/70 text-sm">Central Intelligence System v2.0</p>
             </div>
           </div>
 
@@ -124,11 +121,11 @@ const Mother = () => {
               <motion.div
                 className="w-2 h-2 rounded-full bg-green-400"
                 animate={{
-                  opacity: [1, 0.5, 1],
+                  opacity: [1, 0.5, 1]
                 }}
                 transition={{
                   duration: 1.5,
-                  repeat: Infinity,
+                  repeat: Infinity
                 }}
               />
               <span>SYSTEMS ONLINE</span>
@@ -149,31 +146,25 @@ const Mother = () => {
             {messages.map((message, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, x: message.type === "user" ? 20 : -20 }}
+                initial={{ opacity: 0, x: message.type === 'user' ? 20 : -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3 }}
-                className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
                   className={`max-w-3xl ${
-                    message.type === "system"
-                      ? "text-center text-green-400/50 text-xs italic w-full"
-                      : message.type === "user"
-                        ? "bg-green-400/10 border border-green-400/30 rounded-lg p-4"
-                        : "border-l-2 border-green-400/50 pl-4"
+                    message.type === 'system'
+                      ? 'text-center text-green-400/50 text-xs italic w-full'
+                      : message.type === 'user'
+                        ? 'bg-green-400/10 border border-green-400/30 rounded-lg p-4'
+                        : 'border-l-2 border-green-400/50 pl-4'
                   }`}
                 >
-                  {message.type !== "system" && (
+                  {message.type !== 'system' && (
                     <div className="flex items-center space-x-2 mb-2 text-xs text-green-400/70">
-                      {message.type === "mother" && (
-                        <BrainCircuit className="w-3 h-3" />
-                      )}
-                      <span className="font-bold">
-                        {message.type === "mother" ? "MOTHER" : "ADMIN"}
-                      </span>
-                      <span className="text-green-400/50">
-                        {message.timestamp.toLocaleTimeString()}
-                      </span>
+                      {message.type === 'mother' && <BrainCircuit className="w-3 h-3" />}
+                      <span className="font-bold">{message.type === 'mother' ? 'MOTHER' : 'ADMIN'}</span>
+                      <span className="text-green-400/50">{message.timestamp.toLocaleTimeString()}</span>
                     </div>
                   )}
                   <p className="text-sm leading-relaxed">{message.text}</p>
@@ -190,10 +181,7 @@ const Mother = () => {
             >
               <BrainCircuit className="w-4 h-4" />
               <span>Mother is analyzing</span>
-              <motion.span
-                animate={{ opacity: [1, 0.5, 1] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              >
+              <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1, repeat: Infinity }}>
                 ...
               </motion.span>
             </motion.div>
@@ -264,7 +252,7 @@ const Mother = () => {
         </motion.form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Mother;
+export default Mother

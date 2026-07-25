@@ -73,7 +73,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
     icon: Satellite,
     open: setOpenEventDrawer,
     isUnlocked: true,
-    linkKey: '/admin/capsule/overview'
+    linkKey: '/admin/events/overview'
   },
   {
     action: 'the-library',
