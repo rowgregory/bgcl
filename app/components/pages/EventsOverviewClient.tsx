@@ -304,7 +304,6 @@ export function EventsOverviewClient({ data }: { data: Awaited<ReturnType<typeof
                   ticketMap[key].revenue += (t.quantitySold ?? 0) * Number(t.price)
                 })
               })
-              console.log('ticketMap: ', ticketMap)
 
               const rows = Object.values(ticketMap).filter((t) => t.sold > 0)
               return rows.map((item, i) => (
