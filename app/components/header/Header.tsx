@@ -7,7 +7,7 @@ import { store, useApplicationSelector, useCartSelector } from '@/app/lib/store/
 import { setOpenMobileNavigation } from '@/app/lib/store/slices/appSlice'
 import { motion } from 'framer-motion'
 import { useIsAtTop } from '@/app/lib/hooks/useIsAtTop'
-import GoogleTranslate from '../GoogleTranslate'
+import GoogleTranslate from './GoogleTranslate'
 import { mainNavigationLinks } from '@/app/lib/constants/navigation.constants'
 
 export default function Header() {

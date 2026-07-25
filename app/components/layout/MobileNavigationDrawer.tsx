@@ -3,11 +3,11 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { store, useApplicationSelector } from '../lib/store/store'
-import { setCloseMobileNavigation } from '../lib/store/slices/appSlice'
-import Picture from './common/Picture'
+import { store, useApplicationSelector } from '../../lib/store/store'
+import { setCloseMobileNavigation } from '../../lib/store/slices/appSlice'
+import Picture from '../common/Picture'
 import { X } from 'lucide-react'
-import { mainNavigationLinks } from '../lib/constants/navigation.constants'
+import { mainNavigationLinks } from '../../lib/constants/navigation.constants'
 
 export default function MobileNavigationDrawer() {
   const pathname = usePathname()

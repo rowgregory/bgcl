@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { ITeamMember } from '@/types/entities/team-member'
 import { Mail, Phone } from 'lucide-react'
 import Picture from '../common/Picture'
-import SqyshCard from '../SqyshCard'
+import SqyshCard from '../public/team/SqyshCard'
 
 type TTabButton = {
   active: boolean

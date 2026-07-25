@@ -6,9 +6,9 @@ import Link from 'next/link'
 import { ArrowRight, Heart, Play, Pause } from 'lucide-react'
 import { IHero } from '@/types/entities/hero'
 import { fadeIn, fadeUp } from '@/app/lib/constants/motion'
-import { HeroCountdown } from '../unique/HeroCountdown'
-import Thermometer from '../unique/Thermometer'
-import GrowthTree from '../unique/GrowthTree'
+import { HeroCountdown } from './HeroCountdown'
+import Thermometer from './Thermometer'
+import GrowthTree from './GrowthTree'
 
 export const Hero = ({ hero }: { hero: IHero | null }) => {
   const [isVideoPaused, setIsVideoPaused] = useState(false)

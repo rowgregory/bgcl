@@ -1,6 +1,6 @@
 'use client'
 
-import FacilityClosings from '@/app/components/FacilityClosings'
+import FacilityClosings from '@/app/components/_shared/FacilityClosings'
 import ContactForm from '@/app/components/forms/ContactForm'
 import { setOpenVolunteerDrawer } from '@/app/lib/store/slices/appSlice'
 import { setInputs } from '@/app/lib/store/slices/formSlice'

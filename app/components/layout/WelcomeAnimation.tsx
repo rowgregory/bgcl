@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import Picture from './common/Picture'
+import Picture from '../common/Picture'
 
 export default function WelcomeAnimation() {
   const [isVisible, setIsVisible] = useState(() => {

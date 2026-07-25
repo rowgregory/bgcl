@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { Globe, ChevronDown } from 'lucide-react'
-import { store } from '../lib/store/store'
-import { setIsNotSpanish, setIsSpanish } from '../lib/store/slices/appSlice'
+import { store } from '../../lib/store/store'
+import { setIsNotSpanish, setIsSpanish } from '../../lib/store/slices/appSlice'
 
 const LANGUAGES = [
   { code: 'en', name: 'English' },

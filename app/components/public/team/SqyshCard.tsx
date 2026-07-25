@@ -3,9 +3,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
-import Picture from './common/Picture'
-import ActionButton from './common/ActionButton'
-import { useOverlayAccessibility } from '../lib/hooks/useOverlayAccessibility'
+import Picture from '../../common/Picture'
+import ActionButton from '../../common/ActionButton'
+import { useOverlayAccessibility } from '../../../lib/hooks/useOverlayAccessibility'
 
 interface SqyshCardProps {
   member: {
