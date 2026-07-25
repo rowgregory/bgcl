@@ -2,7 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 
 export async function getSavedPaymentMethods() {
   try {

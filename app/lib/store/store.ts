@@ -3,7 +3,6 @@
 import { combineReducers, Reducer } from 'redux'
 import { configureStore } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
-import { api } from './api'
 import { formReducer } from './slices/formSlice'
 import { logReducer } from './slices/logSlice'
 import { adminReducer } from './slices/adminSlice'
@@ -91,8 +90,7 @@ const rootReducer = combineReducers({
   clubResource: clubResourceReducer,
   campaign: campaignReducer,
   closing: closingReducer,
-  ui: uiReducer,
-  [api.reducerPath]: api.reducer
+  ui: uiReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -105,7 +103,7 @@ export const store = configureStore({
     getDefaultMiddleware({
       immutableCheck: false,
       serializableCheck: false
-    }).concat(api.middleware)
+    })
 })
 
 export const persistor = persistStore(store)

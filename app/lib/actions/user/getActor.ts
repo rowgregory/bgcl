@@ -1,5 +1,5 @@
 import prisma from '@/prisma/client'
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 
 export async function getActor() {
   const session = await auth()

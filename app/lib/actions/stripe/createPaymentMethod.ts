@@ -1,6 +1,6 @@
 'use server'
 
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 import { createLog } from '../log/createLog'
 import prisma from '@/prisma/client'
 import { stripe } from '../../stripe/stripeClient'

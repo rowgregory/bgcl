@@ -1,12 +1,12 @@
 import prisma from '@/prisma/client'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import NextAuth from 'next-auth'
-import { createLog } from './actions/log/createLog'
+import { createLog } from '../actions/log/createLog'
 import { Role } from '@prisma/client'
-import googleProvider from './auth/googleProvider'
-import magicLinkProvider from './auth/magicLinkProvider'
-import { handleEmailProvider } from './auth/handlers/handleEmailProvider'
-import { handleGoogleProvider } from './auth/handlers/handleGoogleProvider'
+import googleProvider from '../providers/google.provider'
+import magicLinkProvider from '../providers/magic-link.provider'
+import { handleMagicLinkCallback } from './callbacks/magic-link.callback'
+import { handleGoogleCallback } from './callbacks/google.callback'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: false,
@@ -28,11 +28,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       try {
         switch (account?.provider) {
           case 'email':
-            return await handleEmailProvider(user)
-
+            return await handleMagicLinkCallback(user)
           case 'google':
-            return await handleGoogleProvider(user, account, profile)
-
+            return await handleGoogleCallback(user, account, profile)
           default:
             return true
         }

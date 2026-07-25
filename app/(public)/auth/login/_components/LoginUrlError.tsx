@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ShieldAlert } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
-import getAuthErrorMessage from '@/app/lib/auth/getAuthErrorMessage'
+import getAuthErrorMessage from '@/app/(public)/auth/login/_utils/getAuthErrorMessage'
 import { logAuthError } from '@/app/lib/actions/log/logAuthError'
 
 const KNOWN_ERRORS = [

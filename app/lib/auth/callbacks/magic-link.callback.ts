@@ -2,7 +2,7 @@ import prisma from '@/prisma/client'
 import type { User } from 'next-auth'
 import { createStripeCustomer } from '../../actions/stripe/createStripeCustomer'
 
-export async function handleEmailProvider(user: User) {
+export async function handleMagicLinkCallback(user: User) {
   const dbUser = await findOrCreateUser(user)
   await ensureEmailAccount(dbUser.id, user.email!)
 

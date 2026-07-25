@@ -1,4 +1,4 @@
-import uploadFileToFirebase from '@/app/lib/firebase/uploadFileToFirebase'
+import uploadFileToFirebase from '@/app/lib/utils/uploadFileToFirebase'
 import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronRight } from 'lucide-react'

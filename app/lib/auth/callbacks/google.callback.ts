@@ -3,7 +3,7 @@ import type { Account, Profile, User } from 'next-auth'
 import { createLog } from '../../actions/log/createLog'
 import { createStripeCustomer } from '../../actions/stripe/createStripeCustomer'
 
-export async function handleGoogleProvider(user: User, account: Account, profile?: any) {
+export async function handleGoogleCallback(user: User, account: Account, profile?: any) {
   const existingUser = await prisma.user.findUnique({
     where: { email: user.email! },
     include: { accounts: true }

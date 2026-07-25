@@ -1,4 +1,4 @@
-import { resend } from '@/app/lib/resend'
+import { resend } from '@/app/lib/resend/resend'
 import volunteerFormNotification from '../email-templates/volunteer'
 import contactFormNotification from '../email-templates/contact'
 import jobApplicationNotification from '../email-templates/job'

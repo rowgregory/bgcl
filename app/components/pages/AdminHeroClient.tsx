@@ -24,7 +24,7 @@ import {
 } from 'lucide-react'
 import { HeroStatus } from '@prisma/client'
 import { IHero } from '@/types/entities/hero'
-import uploadFileToFirebase from '@/app/lib/firebase/uploadFileToFirebase'
+import uploadFileToFirebase from '@/app/lib/utils/uploadFileToFirebase'
 import { upsertHero } from '@/app/lib/actions/hero/upsertHero'
 import { useRouter } from 'next/navigation'
 

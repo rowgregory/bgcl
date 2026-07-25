@@ -1,6 +1,6 @@
 import oneTimeDonationTemplate from '../email-templates/one-time-donation'
 import recurringDonationTemplate from '../email-templates/recurring-donation'
-import { resend } from '@/app/lib/resend'
+import { resend } from '@/app/lib/resend/resend'
 import { ticketPurchaseTemplate } from '../email-templates/ticket-purchase'
 import { createLog } from '../actions/log/createLog'
 
@@ -41,19 +41,19 @@ export default async function sendConfirmationEmail(
           })
         : ''
 
-      const raffleDrawDate = event?.raffleDrawDate
-        ? `${new Date(event.raffleDrawDate).toLocaleDateString('en-US', {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric'
-          })} at ${new Date(event.raffleDrawDate).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true,
-            timeZone: 'America/New_York'
-          })} EST`
-        : null
+      // const raffleDrawDate = event?.raffleDrawDate
+      //   ? `${new Date(event.raffleDrawDate).toLocaleDateString('en-US', {
+      //       weekday: 'long',
+      //       month: 'long',
+      //       day: 'numeric',
+      //       year: 'numeric'
+      //     })} at ${new Date(event.raffleDrawDate).toLocaleTimeString('en-US', {
+      //       hour: 'numeric',
+      //       minute: '2-digit',
+      //       hour12: true,
+      //       timeZone: 'America/New_York'
+      //     })} EST`
+      //   : null
 
       const emailTickets = order.orderItems.map((item: any) => ({
         name: item.ticketName,

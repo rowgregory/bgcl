@@ -4,7 +4,7 @@ import prisma from '@/prisma/client'
 import { CreateJobApplicationInput } from '@/types/entities/job-application'
 import { createLog } from '../log/createLog'
 import sendAdminNotification from '../../utils/sendAdminNotification'
-import { resend } from '../../resend'
+import { resend } from '../../resend/resend'
 import { jobApplicationConfirmationEmail } from '../../email-templates/job-applicant.template'
 
 export const createJobApplication = async (data: CreateJobApplicationInput) => {

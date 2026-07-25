@@ -9,7 +9,7 @@ import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { CIT_ADMIN_PATH, CIT_APPLICATION_PATH } from '../../constants/cit-application.constants'
 import sendAdminNotification from '../../utils/sendAdminNotification'
-import { resend } from '../../resend'
+import { resend } from '../../resend/resend'
 import { citApplicationConfirmationEmail } from '../../email-templates/cit-application-confirmation.template'
 
 /**

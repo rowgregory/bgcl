@@ -2,7 +2,7 @@ import { PublicTicketCheckoutClient } from '@/app/(public)/checkout/PublicTicket
 import { getSavedPaymentMethods } from '@/app/lib/actions/stripe/getSavedPaymentMethods'
 import { getUserAddress } from '@/app/lib/actions/user/getUserAddress'
 import { getUserName } from '@/app/lib/actions/user/getUserName'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 
 export default async function PublicCheckoutPage() {
   const session = await auth()
