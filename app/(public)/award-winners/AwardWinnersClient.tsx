@@ -3,11 +3,11 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Briefcase, Heart, Trophy } from 'lucide-react'
-import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
-import Picture from '@/app/components/common/Picture'
-import { store } from '@/app/lib/store/store'
-import { setOpenVolunteerDrawer } from '@/app/lib/store/slices/appSlice'
-import YouthOfTheYearSection from '../../components/home/YouthOfTheYearSection'
+import { containerVariants, itemVariants } from '@/lib/constants/motion'
+import Picture from '@/components/_shared/Picture'
+import { store } from '@/lib/store/store'
+import { setOpenVolunteerDrawer } from '@/lib/store/slices/appSlice'
+import YouthOfTheYearSection from '@/components/home/YouthOfTheYearSection'
 
 const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
   const t = pageData?.sections?.awards

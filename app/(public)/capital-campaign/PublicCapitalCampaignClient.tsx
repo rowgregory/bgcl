@@ -17,7 +17,7 @@ import {
   FileText
 } from 'lucide-react'
 import Link from 'next/link'
-import Picture from '@/app/components/common/Picture'
+import Picture from '@/components/_shared/Picture'
 
 export default function PublicCapitalCampaignClient({ pageData }) {
   const t = pageData?.sections?.campaign

@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ShieldAlert } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import getAuthErrorMessage from '@/app/(public)/auth/login/_utils/getAuthErrorMessage'
-import { logAuthError } from '@/app/lib/actions/log/logAuthError'
+import { logAuthError } from '@/lib/actions/log/logAuthError'
 
 const KNOWN_ERRORS = [
   'AccessDenied',

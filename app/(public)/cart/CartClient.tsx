@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { useCartSelector } from '@/app/lib/store/store'
+import { useCartSelector } from '@/lib/store/store'
 import { CartItemRow } from './_components/CartItemRow'
 import { CartOrderSummary } from './_components/CartOrderSummary'
 import { EmptyCart } from './_components/EmptyCart'

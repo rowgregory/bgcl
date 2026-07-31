@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import Picture from '@/app/components/common/Picture'
+import Picture from '@/components/_shared/Picture'
 import { LoginUrlError } from './_components/LoginUrlError'
 import { LoginForm } from './_components/LoginForm'
 

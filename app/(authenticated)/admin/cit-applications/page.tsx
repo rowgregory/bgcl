@@ -1,4 +1,4 @@
-import { getCITApplications } from '@/app/lib/actions/cit-application/getCITApplications'
+import { getCITApplications } from '@/lib/actions/cit-application/getCITApplications'
 import { CITApplicationsClient } from './CITApplicationsClient'
 
 export const metadata = {

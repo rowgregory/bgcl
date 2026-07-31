@@ -1,7 +1,7 @@
-import { getPrograms } from '@/app/lib/actions/program/getPrograms'
-import { getClubResources } from '@/app/lib/actions/club-resource/getClubResources'
-import { ProgramsClient } from '@/app/components/pages/ProgramsClient'
-import { getPageBySlugClient } from '@/app/lib/actions/page/getPageBySlugClient'
+import { getPrograms } from '@/lib/actions/program/getPrograms'
+import { getClubResources } from '@/lib/actions/club-resource/getClubResources'
+import { ProgramsClient } from '@/components/pages/ProgramsClient'
+import { getPageBySlugClient } from '@/lib/actions/page/getPageBySlugClient'
 
 export default async function PublicProgramsPage() {
   const [programs, resources, pageData] = await Promise.all([

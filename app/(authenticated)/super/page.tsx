@@ -1,5 +1,5 @@
 import SuperDashboardClient from './SuperDashboardClient'
-import { getSuperDashboardData } from '@/app/lib/actions/_dashboard/getSuperDashboardData'
+import { getSuperDashboardData } from '@/lib/actions/_dashboard/getSuperDashboardData'
 
 export const dynamic = 'force-dynamic'
 

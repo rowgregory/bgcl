@@ -1,5 +1,5 @@
 import { AdminListPage } from '@/components/admin/layout/AdminList'
-import { getEvents } from '@/app/lib/actions/event/getEvents'
+import { getEvents } from '@/lib/actions/event/getEvents'
 
 export const metadata = { title: 'Events - Admin' }
 

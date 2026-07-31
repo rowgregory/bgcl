@@ -1,5 +1,5 @@
 import { ChangeEvent, ReactNode } from 'react'
-import { Errors, Inputs } from '@/app/lib/store/slices/formSlice'
+import { Errors, Inputs } from '@/lib/store/slices/formSlice'
 import { ITheme } from './entities/theme'
 
 export interface ILayout {

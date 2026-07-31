@@ -1,12 +1,12 @@
 'use client'
 
-import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
+import { containerVariants, itemVariants } from '@/lib/constants/motion'
 import { ICampaign } from '@/types/entities/campaign'
 import { motion } from 'framer-motion'
 import { Heart, Users, Target, ArrowRight, Calendar } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { MotionLink } from '../../components/common/MotionLink'
-import Picture from '../../components/common/Picture'
+import { MotionLink } from '@/components/_shared/MotionLink'
+import Picture from '@/components/_shared/Picture'
 
 export default function CampaignsClient({ campaigns, pageData }: { campaigns: ICampaign[]; pageData: any }) {
   const router = useRouter()

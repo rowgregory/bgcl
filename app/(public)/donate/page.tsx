@@ -1,9 +1,9 @@
-import { PublicDonateClient } from '@/app/components/pages/PublicDonateClient'
-import { getCampaigns } from '@/app/lib/actions/campaign/getCampaigns'
-import { getPhoneNumber } from '@/app/lib/actions/user/getPhoneNumber'
-import { getSavedPaymentMethods } from '@/app/lib/actions/stripe/getSavedPaymentMethods'
-import { getUserAddress } from '@/app/lib/actions/user/getUserAddress'
-import { getUserName } from '@/app/lib/actions/user/getUserName'
+import { PublicDonateClient } from '@/components/pages/PublicDonateClient'
+import { getCampaigns } from '@/lib/actions/campaign/getCampaigns'
+import { getPhoneNumber } from '@/lib/actions/user/getPhoneNumber'
+import { getSavedPaymentMethods } from '@/lib/actions/stripe/getSavedPaymentMethods'
+import { getUserAddress } from '@/lib/actions/user/getUserAddress'
+import { getUserName } from '@/lib/actions/user/getUserName'
 
 export const dynamic = 'force-dynamic'
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { jobApplicationStatusConfig, POSITION_LABELS } from '@/app/lib/constants/job-application.constants'
+import { jobApplicationStatusConfig, POSITION_LABELS } from '@/lib/constants/job-application.constants'
 import { PositionType } from '@prisma/client'
 import { motion } from 'framer-motion'
 import { CheckCircle, AlertCircle, FileText, Download, XCircle, FileCheck, UsersIcon, Car } from 'lucide-react'

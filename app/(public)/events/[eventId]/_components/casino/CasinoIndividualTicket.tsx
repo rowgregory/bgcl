@@ -1,8 +1,8 @@
 import { GRADIENTS, SectionHeading } from './CasinoUiElements'
 import { motion } from 'framer-motion'
-import { store, useCartSelector, useUiSelector } from '@/app/lib/store/store'
-import { addToCart, setOpenAddToCartToast } from '@/app/lib/store/slices/cartSlice'
-import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
+import { store, useCartSelector, useUiSelector } from '@/lib/store/store'
+import { addToCart, setOpenAddToCartToast } from '@/lib/store/slices/cartSlice'
+import useSoundEffect from '@/lib/hooks/useSoundEffect'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
 import { TCasinoSponsorTiers } from '@/types/casino.types'
 

@@ -1,14 +1,14 @@
 import { motion } from 'framer-motion'
 import { LogOut, X } from 'lucide-react'
 import Link from 'next/link'
-import { store } from '@/app/lib/store/store'
+import { store } from '@/lib/store/store'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { signOut } from 'next-auth/react'
-import { setCloseProgramSidebar } from '@/app/lib/store/slices/dashboardSlice'
-import { setIsLoading } from '@/app/lib/store/slices/formSlice'
-import { showToast } from '@/app/lib/store/slices/toastSlice'
-import { programNavigationLinkData } from '@/app/lib/constants/programNavLinks'
+import { setCloseProgramSidebar } from '@/lib/store/slices/dashboardSlice'
+import { setIsLoading } from '@/lib/store/slices/formSlice'
+import { showToast } from '@/lib/store/slices/toastSlice'
+import { programNavigationLinkData } from '@/lib/constants/programNavLinks'
 
 export const ProgramSidebar = () => {
   const pathname = usePathname()

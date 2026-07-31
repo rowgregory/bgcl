@@ -1,6 +1,6 @@
-import PublicPartnersClient from '@/app/components/pages/PublicPartnersClient'
-import { getPageBySlugClient } from '@/app/lib/actions/page/getPageBySlugClient'
-import { getPartners } from '@/app/lib/actions/partner/getPartners'
+import PublicPartnersClient from '@/components/pages/PublicPartnersClient'
+import { getPageBySlugClient } from '@/lib/actions/page/getPageBySlugClient'
+import { getPartners } from '@/lib/actions/partner/getPartners'
 
 export default async function PublicPartnerPage() {
   const [partners, pageData] = await Promise.all([getPartners(), getPageBySlugClient('partner')])

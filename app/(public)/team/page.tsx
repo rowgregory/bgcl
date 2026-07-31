@@ -1,6 +1,6 @@
-import { TeamClient } from '@/app/components/pages/TeamClient'
-import { getPageBySlugClient } from '@/app/lib/actions/page/getPageBySlugClient'
-import { getTeamMembers } from '@/app/lib/actions/team-member/getTeamMembers'
+import { TeamClient } from '@/components/pages/TeamClient'
+import { getPageBySlugClient } from '@/lib/actions/page/getPageBySlugClient'
+import { getTeamMembers } from '@/lib/actions/team-member/getTeamMembers'
 
 export default async function PublicTeamPage() {
   const team = await getTeamMembers()

@@ -2,9 +2,9 @@
 
 import { useState, useTransition } from 'react'
 import { RefreshCw } from 'lucide-react'
-import { getLogs } from '@/app/lib/actions/log/getLogs'
+import { getLogs } from '@/lib/actions/log/getLogs'
 import Link from 'next/link'
-import { timeAgo } from '@/app/lib/utils/time-utils'
+import { timeAgo } from '@/lib/utils/time-utils'
 
 interface Log {
   id: string

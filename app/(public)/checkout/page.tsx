@@ -1,8 +1,8 @@
 import { PublicTicketCheckoutClient } from '@/app/(public)/checkout/PublicTicketCheckoutClient'
-import { getSavedPaymentMethods } from '@/app/lib/actions/stripe/getSavedPaymentMethods'
-import { getUserAddress } from '@/app/lib/actions/user/getUserAddress'
-import { getUserName } from '@/app/lib/actions/user/getUserName'
-import { auth } from '@/app/lib/auth/auth'
+import { getSavedPaymentMethods } from '@/lib/actions/stripe/getSavedPaymentMethods'
+import { getUserAddress } from '@/lib/actions/user/getUserAddress'
+import { getUserName } from '@/lib/actions/user/getUserName'
+import { auth } from '@/lib/auth/auth'
 
 export default async function PublicCheckoutPage() {
   const session = await auth()

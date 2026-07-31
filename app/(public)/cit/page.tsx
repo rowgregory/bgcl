@@ -1,4 +1,4 @@
-import { getPageBySlugClient } from '@/app/lib/actions/page/getPageBySlugClient'
+import { getPageBySlugClient } from '@/lib/actions/page/getPageBySlugClient'
 import { CITClient } from './CITClient'
 
 export default async function CITPage() {

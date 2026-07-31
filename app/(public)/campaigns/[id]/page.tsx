@@ -1,7 +1,7 @@
 'use server'
 
 import { CampaignClient } from '@/app/(public)/campaigns/[id]/CampaignClient'
-import { getCampaignById } from '@/app/lib/actions/campaign/getCampaignById'
+import { getCampaignById } from '@/lib/actions/campaign/getCampaignById'
 
 export default async function CampaignPage({ params }) {
   const { id } = await params

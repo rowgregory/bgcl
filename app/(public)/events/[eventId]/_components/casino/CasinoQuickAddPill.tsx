@@ -1,11 +1,11 @@
-import { store, useCartSelector } from '@/app/lib/store/store'
-import { getTicketStatus } from '@/app/lib/utils/getTicketStatus'
+import { store, useCartSelector } from '@/lib/store/store'
+import { getTicketStatus } from '@/lib/utils/getTicketStatus'
 import { ITicket } from '@/types/entities/ticket'
 import { motion } from 'framer-motion'
-import { addToCart, setOpenAddToCartToast } from '@/app/lib/store/slices/cartSlice'
+import { addToCart, setOpenAddToCartToast } from '@/lib/store/slices/cartSlice'
 import { Plus } from 'lucide-react'
 import { GRADIENTS, SUITS } from './CasinoUiElements'
-import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
+import useSoundEffect from '@/lib/hooks/useSoundEffect'
 
 export function CasinoQuickAddPill({
   ticket,

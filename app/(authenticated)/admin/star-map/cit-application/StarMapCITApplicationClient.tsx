@@ -1,10 +1,10 @@
 'use client'
 
-import { PageContentEditor } from '@/app/components/common/PageContentEditor'
-import { createPage } from '@/app/lib/actions/page/createPage'
-import { updatePageBySlug } from '@/app/lib/actions/page/updatePageBySlug'
-import { showToast } from '@/app/lib/store/slices/toastSlice'
-import { store } from '@/app/lib/store/store'
+import { PageContentEditor } from '@/components/_shared/PageContentEditor'
+import { createPage } from '@/lib/actions/page/createPage'
+import { updatePageBySlug } from '@/lib/actions/page/updatePageBySlug'
+import { showToast } from '@/lib/store/slices/toastSlice'
+import { store } from '@/lib/store/store'
 import { useState } from 'react'
 
 export const StarMapCITApplicationClient = ({ data }) => {

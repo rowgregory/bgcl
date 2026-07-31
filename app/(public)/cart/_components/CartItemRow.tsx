@@ -1,5 +1,5 @@
-import { CartItem, removeFromCart, updateQuantity } from '@/app/lib/store/slices/cartSlice'
-import { useAppDispatch } from '@/app/lib/store/store'
+import { CartItem, removeFromCart, updateQuantity } from '@/lib/store/slices/cartSlice'
+import { useAppDispatch } from '@/lib/store/store'
 import { motion } from 'framer-motion'
 import { Minus, Plus, Ticket, Trash2 } from 'lucide-react'
 

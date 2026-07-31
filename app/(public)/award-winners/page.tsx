@@ -1,6 +1,6 @@
 import AwardWinnersClient from '@/app/(public)/award-winners/AwardWinnersClient'
-import { getNewsAndTeamMembers } from '@/app/lib/actions/_infra/getNewsAndTeamMembers'
-import { getPageBySlugClient } from '@/app/lib/actions/page/getPageBySlugClient'
+import { getNewsAndTeamMembers } from '@/lib/actions/_infra/getNewsAndTeamMembers'
+import { getPageBySlugClient } from '@/lib/actions/page/getPageBySlugClient'
 
 export default async function AwardWinnersPage() {
   const [newsAndTeamMembers, pageData] = await Promise.all([

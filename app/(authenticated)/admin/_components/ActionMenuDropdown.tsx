@@ -1,12 +1,12 @@
 import { FC, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { useAppDispatch, useDashboardSelector } from '@/app/lib/store/store'
-import { setCloseActionMenu, setOpenActionDropdownSubmenu } from '@/app/lib/store/slices/dashboardSlice'
-import Backdrop from '../../../components/common/Backdrop'
-import { setInputs } from '@/app/lib/store/slices/formSlice'
+import { useAppDispatch, useDashboardSelector } from '@/lib/store/store'
+import { setCloseActionMenu, setOpenActionDropdownSubmenu } from '@/lib/store/slices/dashboardSlice'
+import Backdrop from '@/components/_shared/Backdrop'
+import { setInputs } from '@/lib/store/slices/formSlice'
 import { ChevronRight } from 'lucide-react'
-import { IActionItems } from '@/app/lib/constants/dropdownActionItems'
+import { IActionItems } from '@/lib/constants/dropdownActionItems'
 
 const ActionMenuDropdown: FC<{ actionItems: IActionItems[]; isModalEnabled: boolean }> = ({
   actionItems,

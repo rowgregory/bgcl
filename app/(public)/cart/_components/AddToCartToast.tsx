@@ -1,10 +1,10 @@
-import { setCloseAddToCartToast } from '@/app/lib/store/slices/cartSlice'
-import { store, useCartSelector, useUiSelector } from '@/app/lib/store/store'
+import { setCloseAddToCartToast } from '@/lib/store/slices/cartSlice'
+import { store, useCartSelector, useUiSelector } from '@/lib/store/store'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ShoppingCart, X } from 'lucide-react'
 import { useCallback, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
+import useSoundEffect from '@/lib/hooks/useSoundEffect'
 import { GRADIENTS, SUITS } from '../../events/[eventId]/_components/casino/CasinoUiElements'
 
 export default function AddToCartToast() {

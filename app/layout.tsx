@@ -4,9 +4,9 @@ import { SessionProvider } from 'next-auth/react'
 import { ReactNode } from 'react'
 import RootLayoutWrapper from './root-layout'
 import { GoogleAnalytics } from '@next/third-parties/google'
-import { siteMetadata } from './lib/seo/metadata'
-import { jsonLd } from './lib/seo/jsonLd'
-import { getHomePageData } from './lib/actions/_infra/getHomePageData'
+import { siteMetadata } from '@/lib/seo/metadata'
+import { jsonLd } from '@/lib/seo/jsonLd'
+import { getHomePageData } from '@/lib/actions/_infra/getHomePageData'
 
 const lexend = Lexend({
   subsets: ['latin'],

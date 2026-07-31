@@ -1,13 +1,13 @@
-import { store, useCartSelector, useUiSelector } from '@/app/lib/store/store'
+import { store, useCartSelector, useUiSelector } from '@/lib/store/store'
 import { signIn, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { LayoutDashboard, LogIn, ShoppingCart, User, Volume2, VolumeX, X } from 'lucide-react'
-import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
-import { setOpenCartDropdown, setSoundOn } from '@/app/lib/store/slices/uiSlice'
+import useSoundEffect from '@/lib/hooks/useSoundEffect'
+import { setOpenCartDropdown, setSoundOn } from '@/lib/store/slices/uiSlice'
 import { TCasinoWidgets } from '@/types/casino.types'
-import { MotionLink } from '@/app/components/common/MotionLink'
+import { MotionLink } from '@/components/_shared/MotionLink'
 
 export function CasinoWidgets({ data }: TCasinoWidgets) {
   const [open, setOpen] = useState(false)

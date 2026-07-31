@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/prisma/client'
 import Stripe from 'stripe'
-import { createLog } from '@/app/lib/actions/log/createLog'
-import { stripe } from '@/app/lib/stripe/stripeClient'
-import { pusher } from '@/app/lib/pusher/pusher.config'
-import sendConfirmationEmail from '@/app/lib/utils/sendConfirmationEmail'
-import sendAdminNotification from '@/app/lib/utils/sendAdminNotification'
-import { resolveFeesCovered } from '@/app/lib/utils/resolveFeesCovered'
+import { createLog } from '@/lib/actions/log/createLog'
+import { stripe } from '@/lib/stripe/stripeClient'
+import { pusher } from '@/lib/pusher/pusher.config'
+import sendConfirmationEmail from '@/lib/utils/sendConfirmationEmail'
+import sendAdminNotification from '@/lib/utils/sendAdminNotification'
+import { resolveFeesCovered } from '@/lib/utils/resolveFeesCovered'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 

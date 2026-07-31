@@ -1,8 +1,8 @@
 'use client'
 
 import { SubNavLink } from '@/app/(authenticated)/admin/_components/SubNavLink'
-import { generateEventsReport } from '@/app/lib/actions/exports/generateEventsReport'
-import { getEventsNavLinks } from '@/app/lib/utils/getEventsNavLinks'
+import { generateEventsReport } from '@/lib/actions/exports/generateEventsReport'
+import { getEventsNavLinks } from '@/lib/utils/getEventsNavLinks'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 

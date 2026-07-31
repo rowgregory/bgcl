@@ -1,8 +1,8 @@
 'use client'
 
-import { US_STATES } from '@/app/lib/constants/states'
-import { formatPhone } from '@/app/lib/utils/phone.utils'
-import { isValidPhoneNumber, isValidZipPostalCode } from '@/app/lib/utils/regex'
+import { US_STATES } from '@/lib/constants/states'
+import { formatPhone } from '@/lib/utils/phone.utils'
+import { isValidPhoneNumber, isValidZipPostalCode } from '@/lib/utils/regex'
 import { User, MapPin, ChevronRight, Loader2, Phone } from 'lucide-react'
 
 interface UserInfoForm {

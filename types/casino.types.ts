@@ -1,4 +1,4 @@
-import { CartItem } from '@/app/lib/store/slices/cartSlice'
+import { CartItem } from '@/lib/store/slices/cartSlice'
 import { IPaymentMethod } from './entities/payment-method'
 import { ITicket } from './entities/ticket'
 import { IAddress } from './entities/address.types'

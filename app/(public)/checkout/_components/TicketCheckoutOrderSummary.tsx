@@ -1,4 +1,4 @@
-import { calculateStripeFees } from '@/app/lib/utils/calculateStripeFees'
+import { calculateStripeFees } from '@/lib/utils/calculateStripeFees'
 import { motion } from 'framer-motion'
 import { Lock, ShieldCheck, Ticket, Users } from 'lucide-react'
 

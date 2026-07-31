@@ -1,15 +1,15 @@
 'use client'
 
-import { setCloseTicketSelectionDrawer } from '@/app/lib/store/slices/ticketSlice'
-import { store, useTicketSelector } from '@/app/lib/store/store'
+import { setCloseTicketSelectionDrawer } from '@/lib/store/slices/ticketSlice'
+import { store, useTicketSelector } from '@/lib/store/store'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Minus, Plus, X } from 'lucide-react'
 import { useState } from 'react'
-import Backdrop from '../../../../../components/common/Backdrop'
-import { addToCart, setOpenAddToCartToast } from '@/app/lib/store/slices/cartSlice'
-import { drawerVariants } from '@/app/lib/constants/motion'
-import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
-import Picture from '../../../../../components/common/Picture'
+import Backdrop from '@/components/_shared/Backdrop'
+import { addToCart, setOpenAddToCartToast } from '@/lib/store/slices/cartSlice'
+import { drawerVariants } from '@/lib/constants/motion'
+import useSoundEffect from '@/lib/hooks/useSoundEffect'
+import Picture from '@/components/_shared/Picture'
 import { GRADIENTS, SUITS } from '@/app/(public)/events/[eventId]/_components/casino/CasinoUiElements'
 
 export function TicketSelectionDrawer() {

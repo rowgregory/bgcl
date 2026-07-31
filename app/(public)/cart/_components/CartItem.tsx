@@ -1,5 +1,5 @@
-import { removeFromCart, updateQuantity } from '@/app/lib/store/slices/cartSlice'
-import { store } from '@/app/lib/store/store'
+import { removeFromCart, updateQuantity } from '@/lib/store/slices/cartSlice'
+import { store } from '@/lib/store/store'
 import { motion } from 'framer-motion'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import { FC } from 'react'

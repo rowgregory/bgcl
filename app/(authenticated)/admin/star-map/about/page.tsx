@@ -1,5 +1,5 @@
-import { StarMapAboutClient } from '@/app/components/pages/StarMapAboutClient'
-import { getPageBySlug } from '@/app/lib/actions/page/getPageBySlug'
+import { StarMapAboutClient } from '@/components/pages/StarMapAboutClient'
+import { getPageBySlug } from '@/lib/actions/page/getPageBySlug'
 
 export default async function StarMapAboutPage() {
   const data = await getPageBySlug('about')

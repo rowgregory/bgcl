@@ -1,4 +1,4 @@
-import { getOrder } from '@/app/lib/actions/order/getOrder'
+import { getOrder } from '@/lib/actions/order/getOrder'
 import CheckoutSuccessPage from './page'
 
 export default async function CheckoutSuccessLayout() {

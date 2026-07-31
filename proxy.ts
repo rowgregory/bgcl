@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { auth } from './app/lib/auth/auth'
+import { auth } from '@/lib/auth/auth'
 
 const URL_REDIRECTS: Record<string, string> = {
   '/our-team': '/team',

@@ -1,6 +1,6 @@
-import LogsClient from '@/app/components/pages/LogsClient'
-import { getLogs } from '@/app/lib/actions/log/getLogs'
-import { getLogStats } from '@/app/lib/actions/log/getLogStats'
+import LogsClient from '@/components/pages/LogsClient'
+import { getLogs } from '@/lib/actions/log/getLogs'
+import { getLogStats } from '@/lib/actions/log/getLogStats'
 
 export default async function LogsPage() {
   const logs = await getLogs()

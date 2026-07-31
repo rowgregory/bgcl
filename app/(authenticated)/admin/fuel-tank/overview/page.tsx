@@ -1,5 +1,5 @@
-import FuelTankOverviewClient from '@/app/components/pages/FuelTankOverviewClient'
-import { getDonationStats } from '@/app/lib/actions/_dashboard/getDonationStats'
+import FuelTankOverviewClient from '@/components/pages/FuelTankOverviewClient'
+import { getDonationStats } from '@/lib/actions/_dashboard/getDonationStats'
 
 export const dynamic = 'force-dynamic'
 

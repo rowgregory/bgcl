@@ -5,11 +5,11 @@ import { motion } from 'framer-motion'
 import { Search } from 'lucide-react'
 import { Tab } from '@/types/entities/cit-application.types'
 import { CITApplication } from '@prisma/client'
-import { TAB_LABELS, TABS } from '@/app/lib/constants/cit-application.constants'
-import { formatDate } from '@/app/lib/utils/date-utils'
-import { CITApplicationDrawer } from '@/app/components/drawers/CITApplicationDrawer'
+import { TAB_LABELS, TABS } from '@/lib/constants/cit-application.constants'
+import { formatDate } from '@/lib/utils/date-utils'
+import { CITApplicationDrawer } from '@/components/drawers/CITApplicationDrawer'
 import { StatusBadge } from './CITCAdmin.subcomponents'
-import { exportCITApplicationsAction } from '@/app/lib/actions/exports/generateCITApplicationsPDF'
+import { exportCITApplicationsAction } from '@/lib/actions/exports/generateCITApplicationsPDF'
 
 interface AdminCITApplicationsClientProps {
   applications: CITApplication[]

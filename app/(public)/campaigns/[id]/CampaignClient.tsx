@@ -4,9 +4,9 @@ import { ICampaign } from '@/types/entities/campaign'
 import { motion } from 'framer-motion'
 import { Heart, Users, Target, Calendar, Share2, ArrowLeft, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
-import Picture from '../../../components/common/Picture'
-import { formatDate } from '@/app/lib/utils/date-utils'
-import { MotionLink } from '../../../components/common/MotionLink'
+import Picture from '@/components/_shared/Picture'
+import { formatDate } from '@/lib/utils/date-utils'
+import { MotionLink } from '@/components/_shared/MotionLink'
 
 interface CampaignPageProps {
   campaign: ICampaign

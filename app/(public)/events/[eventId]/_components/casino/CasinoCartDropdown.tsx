@@ -1,12 +1,12 @@
-import { getTicketStatus } from '@/app/lib/utils/getTicketStatus'
+import { getTicketStatus } from '@/lib/utils/getTicketStatus'
 import { AnimatePresence, motion } from 'framer-motion'
 import { GRADIENTS, SUITS } from './CasinoUiElements'
-import { store, useCartSelector, useUiSelector } from '@/app/lib/store/store'
-import { addToCart, removeFromCart, updateQuantity } from '@/app/lib/store/slices/cartSlice'
+import { store, useCartSelector, useUiSelector } from '@/lib/store/store'
+import { addToCart, removeFromCart, updateQuantity } from '@/lib/store/slices/cartSlice'
 import { Minus, Plus, Trash2, X } from 'lucide-react'
 import Link from 'next/link'
-import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
-import { setCloseCartDropdown } from '@/app/lib/store/slices/uiSlice'
+import useSoundEffect from '@/lib/hooks/useSoundEffect'
+import { setCloseCartDropdown } from '@/lib/store/slices/uiSlice'
 
 export function CasinoCartDropdown({ data }) {
   const { soundOn, cartDropdown } = useUiSelector()

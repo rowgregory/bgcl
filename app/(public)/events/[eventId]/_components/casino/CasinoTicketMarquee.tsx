@@ -1,8 +1,8 @@
-import { getTicketStatus } from '@/app/lib/utils/getTicketStatus'
+import { getTicketStatus } from '@/lib/utils/getTicketStatus'
 import { ShoppingCart } from 'lucide-react'
 import { useRef } from 'react'
 import { CasinoQuickAddPill } from './CasinoQuickAddPill'
-import { useUiSelector } from '@/app/lib/store/store'
+import { useUiSelector } from '@/lib/store/store'
 import { TCasinoTicketMarquee } from '@/types/casino.types'
 
 export function CasinoTicketMarquee({

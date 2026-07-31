@@ -1,9 +1,9 @@
 'use client'
 
-import Picture from '@/app/components/common/Picture'
+import Picture from '@/components/_shared/Picture'
 import { motion } from 'framer-motion'
-import { HistorySection } from '../../components/home/HistorySection'
-import { MissionSection } from '../../components/home/MissionSection'
+import { HistorySection } from '@/components/home/HistorySection'
+import { MissionSection } from '@/components/home/MissionSection'
 
 export default function AboutPage({ initialPageData }) {
   const sections = initialPageData?.sections

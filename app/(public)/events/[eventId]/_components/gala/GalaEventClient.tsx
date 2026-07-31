@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { CountdownCard } from './CountdownCard'
 import { ArrowBigRight, ArrowsUpFromLineIcon, CheckCircle, Phone } from 'lucide-react'
 import { FoilText } from './FoilText'
-import { formatCurrency } from '@/app/lib/utils/currency.utils'
+import { formatCurrency } from '@/lib/utils/currency.utils'
 
 // Brand — burgundy/red replacing the template's purple
 const RED = '#e0355a' // bright accent (their #a855f7 equivalent)

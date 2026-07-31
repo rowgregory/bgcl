@@ -1,4 +1,4 @@
-import Picture from '@/app/components/common/Picture'
+import Picture from '@/components/_shared/Picture'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Calendar, CreditCard, Home, ShoppingCart, Sparkles, Ticket } from 'lucide-react'

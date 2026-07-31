@@ -3,9 +3,9 @@ import Link from 'next/link'
 import { Calendar, Clock, MapPin } from 'lucide-react'
 import { CasinoCountdown } from './CasinoCountdown'
 import { TCasinoHero } from '@/types/casino.types'
-import { formatDate } from '@/app/lib/utils/date-utils'
-import { formatTime } from '@/app/lib/utils/time-utils'
-import Picture from '@/app/components/common/Picture'
+import { formatDate } from '@/lib/utils/date-utils'
+import { formatTime } from '@/lib/utils/time-utils'
+import Picture from '@/components/_shared/Picture'
 
 export function CasinoHero({ data }: { data: TCasinoHero }) {
   return (

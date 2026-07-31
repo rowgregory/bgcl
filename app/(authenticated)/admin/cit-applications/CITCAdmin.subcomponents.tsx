@@ -1,4 +1,4 @@
-import { STATUS_STYLES } from '@/app/lib/constants/job-application.constants'
+import { STATUS_STYLES } from '@/lib/constants/job-application.constants'
 import { CITApplicationStatus } from '@prisma/client'
 
 export function StatusBadge({ status }: { status: CITApplicationStatus }) {

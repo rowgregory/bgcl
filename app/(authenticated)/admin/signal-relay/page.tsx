@@ -1,5 +1,5 @@
-import SignalRelayClient from '@/app/components/pages/SignalRelayClient'
-import { getSubscribers } from '@/app/lib/actions/subscriber/getSubscribers'
+import SignalRelayClient from '@/components/pages/SignalRelayClient'
+import { getSubscribers } from '@/lib/actions/subscriber/getSubscribers'
 
 export default async function SignalRelayPage() {
   const subscribers = await getSubscribers()

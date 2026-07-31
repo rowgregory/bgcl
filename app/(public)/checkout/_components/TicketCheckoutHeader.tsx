@@ -1,10 +1,10 @@
 import { useSession } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import Picture from '../../../components/common/Picture'
+import Picture from '@/components/_shared/Picture'
 import { ArrowLeft, User } from 'lucide-react'
-import { useCartSelector, useUiSelector } from '@/app/lib/store/store'
-import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
+import { useCartSelector, useUiSelector } from '@/lib/store/store'
+import useSoundEffect from '@/lib/hooks/useSoundEffect'
 
 export function TicketCheckoutHeader() {
   const session = useSession()

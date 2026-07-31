@@ -1,6 +1,6 @@
-import ContactUsClient from '@/app/components/pages/ContactUsClient'
-import { getClosings } from '@/app/lib/actions/closing/getClosings'
-import { getPageBySlugClient } from '@/app/lib/actions/page/getPageBySlugClient'
+import ContactUsClient from '@/components/pages/ContactUsClient'
+import { getClosings } from '@/lib/actions/closing/getClosings'
+import { getPageBySlugClient } from '@/lib/actions/page/getPageBySlugClient'
 
 export default async function ContactUsPage() {
   const [closings, pageData] = await Promise.all([getClosings(), getPageBySlugClient('contact')])

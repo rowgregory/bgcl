@@ -1,5 +1,5 @@
-import TransmissionsClient from '@/app/components/pages/TransmissionsClient'
-import { getContactSubmissions } from '@/app/lib/actions/contact-submission/getContactSubmissions'
+import TransmissionsClient from '@/components/pages/TransmissionsClient'
+import { getContactSubmissions } from '@/lib/actions/contact-submission/getContactSubmissions'
 
 export default async function TransmissionsPage() {
   const transmissions = await getContactSubmissions()

@@ -15,8 +15,8 @@ import { CasinoSponsorTiers } from './CasinoSponsorTiers'
 import { CasinoPrizes } from './CasinoPrizes'
 import { CasinoRaffleStats } from './CasinoRaffleStats'
 import { CasinoDressCodeAndHighlights } from './CasinoDressCodeAndHighlights'
-import { formatTime } from '@/app/lib/utils/time-utils'
-import { formatDate } from '@/app/lib/utils/date-utils'
+import { formatTime } from '@/lib/utils/time-utils'
+import { formatDate } from '@/lib/utils/date-utils'
 import { CheckCircle2 } from 'lucide-react'
 
 export function CasinoEventClient({ data, savedCards, name, address }) {

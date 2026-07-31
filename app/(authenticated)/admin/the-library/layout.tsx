@@ -3,7 +3,7 @@
 import { ReactNode } from 'react'
 import { SubNavLink } from '@/app/(authenticated)/admin/_components/SubNavLink'
 import { usePathname } from 'next/navigation'
-import { getTheLibraryLinks } from '@/app/lib/utils/getTheLibraryLinks'
+import { getTheLibraryLinks } from '@/lib/utils/getTheLibraryLinks'
 
 export default function TheLibraryLayout({ children }: { children: ReactNode }) {
   const path = usePathname()

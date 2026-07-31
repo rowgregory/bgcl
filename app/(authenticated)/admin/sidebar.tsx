@@ -1,14 +1,14 @@
 import { motion } from 'framer-motion'
 import { LogOut, X } from 'lucide-react'
 import Link from 'next/link'
-import { store } from '@/app/lib/store/store'
+import { store } from '@/lib/store/store'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { signOut } from 'next-auth/react'
-import { setCloseAdminSidebar } from '@/app/lib/store/slices/dashboardSlice'
-import { setIsLoading } from '@/app/lib/store/slices/formSlice'
-import { showToast } from '@/app/lib/store/slices/toastSlice'
-import { adminNavigationLinkData } from '@/app/lib/constants/adminNavLinks'
+import { setCloseAdminSidebar } from '@/lib/store/slices/dashboardSlice'
+import { setIsLoading } from '@/lib/store/slices/formSlice'
+import { showToast } from '@/lib/store/slices/toastSlice'
+import { adminNavigationLinkData } from '@/lib/constants/adminNavLinks'
 
 const AdminSidebar = () => {
   const pathname = usePathname()

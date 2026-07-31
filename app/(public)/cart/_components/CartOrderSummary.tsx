@@ -1,5 +1,5 @@
-import { CartItem, clearCart } from '@/app/lib/store/slices/cartSlice'
-import { useAppDispatch } from '@/app/lib/store/store'
+import { CartItem, clearCart } from '@/lib/store/slices/cartSlice'
+import { useAppDispatch } from '@/lib/store/store'
 import { Lock, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
 

@@ -4,8 +4,8 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { AlertTriangle, Clock, Shield, Mail, Lock, Compass, ArrowLeft } from 'lucide-react'
-import { MotionLink } from '@/app/components/common/MotionLink'
-import Picture from '@/app/components/common/Picture'
+import { MotionLink } from '@/components/_shared/MotionLink'
+import Picture from '@/components/_shared/Picture'
 
 const getAuthErrorMessage = (error: string | null) => {
   switch (error) {

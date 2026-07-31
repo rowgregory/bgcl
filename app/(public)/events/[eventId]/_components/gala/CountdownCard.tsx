@@ -1,4 +1,4 @@
-import { useCountdown } from '@/app/lib/hooks/useCountdown'
+import { useCountdown } from '@/lib/hooks/useCountdown'
 
 const RED = '#e0355a'
 const pad = (n) => String(n).padStart(2, '0')

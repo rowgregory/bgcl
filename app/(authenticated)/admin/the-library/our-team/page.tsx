@@ -1,4 +1,4 @@
-import { createMultiRoleAdminPage } from '@/app/lib/utils/createMultiRoleAdminPage'
+import { createMultiRoleAdminPage } from '@/lib/utils/createMultiRoleAdminPage'
 
 const { metadata, default: Page } = createMultiRoleAdminPage(
   [

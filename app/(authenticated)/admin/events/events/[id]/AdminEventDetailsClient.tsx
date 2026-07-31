@@ -29,13 +29,13 @@ import {
 import Link from 'next/link'
 import { SerializedEvent } from '@/types/entities/event'
 import { ITicket } from '@/types/entities/ticket'
-import { updateEvent } from '@/app/lib/actions/event/updateEvent'
-import { createTicket } from '@/app/lib/actions/ticket/createTicket'
-import { updateTicket } from '@/app/lib/actions/ticket/updateTicket'
-import { deleteTicket } from '@/app/lib/actions/ticket/deleteTicket'
-import { formatDatetimeLocalForInput } from '@/app/lib/utils/date-utils'
-import { EventTemplates } from '@/app/components/events/EventTemplates'
-import { createEvent } from '@/app/lib/actions/event/createEvent'
+import { updateEvent } from '@/lib/actions/event/updateEvent'
+import { createTicket } from '@/lib/actions/ticket/createTicket'
+import { updateTicket } from '@/lib/actions/ticket/updateTicket'
+import { deleteTicket } from '@/lib/actions/ticket/deleteTicket'
+import { formatDatetimeLocalForInput } from '@/lib/utils/date-utils'
+import { EventTemplates } from '@/components/events/EventTemplates'
+import { createEvent } from '@/lib/actions/event/createEvent'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 interface Props {
