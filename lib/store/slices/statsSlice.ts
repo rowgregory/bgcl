@@ -1,5 +1,4 @@
-// store/slices/statsSlice.ts
-import { AdminStats } from '@/types/admin'
+import { AdminStats } from '@/app/(authenticated)/admin/_types/admin.types'
 import { createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit'
 
 interface StatsStatePayload {

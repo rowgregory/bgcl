@@ -1,6 +1,6 @@
 import { Plus, Save, Trash2, X } from 'lucide-react'
 import { ChangeEvent, useEffect, useState } from 'react'
-import { IForm } from '@/types/common'
+import { IForm } from '@/types/common.types'
 import {
   DRESS_CODES,
   DURATIONS,

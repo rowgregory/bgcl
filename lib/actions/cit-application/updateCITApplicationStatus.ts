@@ -1,6 +1,6 @@
 'use server'
 
-import { ActionResult } from '@/types/common'
+import { ActionResult } from '@/types/common.types'
 import { UpdateCITApplicationStatusInput } from '@/types/entities/cit-application.types'
 import { CITApplication } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
@@ -9,11 +9,6 @@ import { CIT_ADMIN_PATH, CIT_APPLICATION_STATUSES } from '../../constants/cit-ap
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 
-/**
- * Updates the review status of a CIT application.
- *
- * Admin-only — guarded on session at the top per studio convention.
- */
 export async function updateCITApplicationStatus(
   input: UpdateCITApplicationStatusInput
 ): Promise<ActionResult<CITApplication>> {

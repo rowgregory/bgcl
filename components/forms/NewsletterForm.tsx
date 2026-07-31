@@ -3,7 +3,7 @@
 import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Calendar } from 'lucide-react'
-import { IForm } from '@/types/common'
+import { IForm } from '@/types/common.types'
 
 const MONTHS = [
   'January',

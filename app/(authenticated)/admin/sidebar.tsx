@@ -21,7 +21,7 @@ const AdminSidebar = () => {
     try {
       store.dispatch(setIsLoading(true))
       await signOut({
-        callbackUrl: '/auth/login'
+        redirectTo: '/auth/login'
       })
     } catch (error: unknown) {
       store.dispatch(

@@ -1,6 +1,6 @@
 'use server'
 
-import { ActionResult } from '@/types/common'
+import { ActionResult } from '@/types/common.types'
 import { CreateCITApplicationInput } from '@/types/entities/cit-application.types'
 import { CITApplication } from '@prisma/client'
 import { revalidatePath } from 'next/cache'

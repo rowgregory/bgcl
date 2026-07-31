@@ -1,4 +1,4 @@
-import { PageField } from '@/types/common'
+import { PageField } from '@/types/common.types'
 
 export const initialContent: PageField[] = [
   // Hero Section

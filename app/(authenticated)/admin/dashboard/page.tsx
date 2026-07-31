@@ -1,4 +1,4 @@
-import AdminDashboardClient from '@/components/pages/AdminDashboardClient'
+import AdminDashboardClient from '@/app/(authenticated)/admin/dashboard/AdminDashboardClient'
 import { getDashboardStats } from '@/lib/actions/_dashboard/getDashboardStats'
 
 export const dynamic = 'force-dynamic'

@@ -30,7 +30,7 @@ export function FailedPaymentsDrawer() {
   const openStripePayment = (paymentIntentId: string) => {
     const isTestMode =
       process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.includes('_test_')
-    const stripeAccountId = process.env.NEXT_PUBLIC_STRIPE_ACCOUNT_ID || 'acct_1Sngee7U2cwtK0RQ'
+    const stripeAccountId = 'acct_1Sngee7U2cwtK0RQ'
     const mode = isTestMode ? 'test' : 'live'
 
     const url = `https://dashboard.stripe.com/${stripeAccountId}/${mode}/payments/${paymentIntentId}`

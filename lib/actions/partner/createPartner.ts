@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { ActionResult } from '@/types/common'
+import { ActionResult } from '@/types/common.types'
 import { CreatePartnerInputs } from '@/types/entities/partner'
 import { revalidatePath } from 'next/cache'
 import { sanitizePartnerData } from '../../utils/sanitizePartnerData'

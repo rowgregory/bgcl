@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, useState } from 'react'
 import { motion } from 'framer-motion'
-import { IForm } from '@/types/common'
+import { IForm } from '@/types/common.types'
 import { TicketTemplates } from '../ticket/TicketTemplates'
 import { ticketTemplates } from '@/lib/constants/ticket.constants'
 import { CreatedTicketsList } from '../ticket/CreatedTicketsList'

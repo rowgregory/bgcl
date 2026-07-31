@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react'
 import { setInputs, setIsLoading } from '@/lib/store/slices/formSlice'
 import { store } from '@/lib/store/store'
-import { IForm } from '@/types/common'
+import { IForm } from '@/types/common.types'
 import { Plus, Save, Trash2, X } from 'lucide-react'
 import ImageUpload from '../_shared/ImageUpload'
 import CustomSwitch from '../_shared/CustomSwitch'

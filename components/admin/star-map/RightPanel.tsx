@@ -1,4 +1,4 @@
-import { PageField } from '@/types/common'
+import { PageField } from '@/types/common.types'
 
 export function RightPanel({ fields }: { fields: PageField[] }) {
   const sections = Array.from(new Set(fields.map((f) => f.section)))

@@ -2,7 +2,7 @@
 
 import { FC } from 'react'
 import { motion } from 'framer-motion'
-import { IForm } from '@/types/common'
+import { IForm } from '@/types/common.types'
 import ImageUpload from '../_shared/ImageUpload'
 import CustomSwitch from '../_shared/CustomSwitch'
 import { store } from '@/lib/store/store'

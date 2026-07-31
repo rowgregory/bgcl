@@ -1,6 +1,6 @@
 'use client'
 
-import { IForm } from '@/types/common'
+import { IForm } from '@/types/common.types'
 import { motion } from 'framer-motion'
 import { UserCog } from 'lucide-react'
 

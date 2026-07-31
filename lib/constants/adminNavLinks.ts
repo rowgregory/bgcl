@@ -109,7 +109,7 @@ export const adminNavigationLinkData = (
     {
       icon: BriefcaseBusiness,
       label: 'Job Applications',
-      path: '/admin/airlock',
+      path: '/admin/job-applications',
       description: 'Pending Job Applications',
       active: isStringInPath(path, 'airlock')
     },

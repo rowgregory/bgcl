@@ -2,7 +2,7 @@
 
 import { FC } from 'react'
 import { motion } from 'framer-motion'
-import { IForm } from '@/types/common'
+import { IForm } from '@/types/common.types'
 
 export const ClubResourceForm: FC<IForm> = ({
   errors,

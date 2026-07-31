@@ -2,7 +2,7 @@ import { STATUS_STYLES } from '@/lib/constants/job-application.constants'
 import { ORDER_TYPE_LABEL, ROLE_STYLES } from '@/lib/constants/super'
 import { usd } from '@/lib/utils/currency.utils'
 import { fmt } from '@/lib/utils/date-utils'
-import { OrderStatus, User } from '@/types/super'
+import { OrderStatus, User } from '@/types/super.types'
 import { AnimatePresence, motion } from 'framer-motion'
 import { CreditCard, MapPin, ShoppingBag, X } from 'lucide-react'
 

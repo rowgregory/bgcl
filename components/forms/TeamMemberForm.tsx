@@ -2,7 +2,7 @@
 
 import { FC, useRef, useState, ChangeEvent } from 'react'
 import { Upload, X } from 'lucide-react'
-import { IForm } from '@/types/common'
+import { IForm } from '@/types/common.types'
 import uploadFileToFirebase from '@/lib/utils/uploadFileToFirebase'
 import { store } from '@/lib/store/store'
 import { setInputs } from '@/lib/store/slices/formSlice'

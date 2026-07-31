@@ -1,4 +1,4 @@
-import { AdminLayoutClient } from '@/components/pages/AdminLayoutClient'
+import { AdminLayoutClient } from '@/app/(authenticated)/admin/AdminLayoutClient'
 import { getModalToggleState } from '@/lib/actions/page/getModalToggleState'
 import { getThemes } from '@/lib/actions/theme/getThemes'
 

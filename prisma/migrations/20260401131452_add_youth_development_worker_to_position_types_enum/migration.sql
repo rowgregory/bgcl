@@ -1,2 +1,0 @@
--- AlterEnum
-ALTER TYPE "PositionType" ADD VALUE 'YOUTH_DEVELOPMENT_WORKER';

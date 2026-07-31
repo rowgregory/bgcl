@@ -1,4 +1,4 @@
-import { LogLevel } from '@/types/super'
+import { LogLevel } from '@/types/super.types'
 import { OrderStatus } from '@prisma/client'
 import { AlertCircle, Info, ScrollText, Users } from 'lucide-react'
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Check, ChevronDown, ChevronRight, Edit2, Eye, EyeOff, X } from 'lucide-react'
-import { PageField } from '@/types/common'
+import { PageField } from '@/types/common.types'
 import { RightPanel } from '../admin/star-map/RightPanel'
 
 export function Field({ field, onChange }: { field: PageField | any; onChange: (value: string | string[]) => void }) {

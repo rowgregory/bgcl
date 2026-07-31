@@ -1,6 +1,6 @@
 'use server'
 
-import { ActionResult } from '@/types/common'
+import { ActionResult } from '@/types/common.types'
 import { CITApplication } from '@prisma/client'
 import { auth } from '../../auth/auth'
 import prisma from '@/prisma/client'

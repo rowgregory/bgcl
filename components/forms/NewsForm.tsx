@@ -2,7 +2,7 @@
 
 import { FC } from 'react'
 import { motion } from 'framer-motion'
-import { IForm } from '@/types/common'
+import { IForm } from '@/types/common.types'
 import ImageUpload from '../_shared/ImageUpload'
 
 export const NewsForm: FC<IForm> = ({ errors, handleInput, handleSubmit, inputs, isLoading, isUpdating, onClose }) => {

@@ -1,4 +1,4 @@
-import { AdminHeroClient } from '@/components/pages/AdminHeroClient'
+import { AdminHeroClient } from '@/app/(authenticated)/admin/hero/AdminHeroClient'
 import { getCampaignIds } from '@/lib/actions/campaign/getCampaignIds'
 import { getEventIds } from '@/lib/actions/event/getEventIds'
 import { getHero } from '@/lib/actions/hero/getHero'
