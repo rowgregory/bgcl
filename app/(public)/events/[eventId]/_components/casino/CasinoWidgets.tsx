@@ -7,7 +7,7 @@ import { LayoutDashboard, LogIn, ShoppingCart, User, Volume2, VolumeX, X } from 
 import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
 import { setOpenCartDropdown, setSoundOn } from '@/app/lib/store/slices/uiSlice'
 import { TCasinoWidgets } from '@/types/casino.types'
-import { MotionLink } from '../../common/MotionLink'
+import { MotionLink } from '@/app/components/common/MotionLink'
 
 export function CasinoWidgets({ data }: TCasinoWidgets) {
   const [open, setOpen] = useState(false)

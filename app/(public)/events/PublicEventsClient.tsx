@@ -4,7 +4,7 @@ import { EventCard } from '@/app/components/events/EventCard'
 import { motion } from 'framer-motion'
 import { Calendar, Heart, Home, Users } from 'lucide-react'
 import Link from 'next/link'
-import Picture from '../common/Picture'
+import Picture from '../../components/common/Picture'
 
 export function PublicEventsClient({ events, pageData }) {
   const t = pageData?.sections?.events

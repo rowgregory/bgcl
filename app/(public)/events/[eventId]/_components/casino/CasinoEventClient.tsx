@@ -1,35 +1,31 @@
-'use client'
-
-import { CasinoSignInPrompt } from '../events/casino/CasinoSignInPrompt'
-import { CasinoTicketMarquee } from '../events/casino/CasinoTicketMarquee'
-import { CasinoWidgets } from '../events/casino/CasinoWidgets'
-import { CasinoHero } from '../events/casino/CasinoHero'
-import { CasinoStyles, GoldDivider, MetaItem, SectionHeading } from '../events/casino/CasinoUiElements'
-import { CasinoSponsorTiers } from '../events/casino/CasinoSponsorTiers'
-import { CasinoPrizes } from '../events/casino/CasinoPrizes'
-import { CasinoRaffleStats } from '../events/casino/CasinoRaffleStats'
-import { CasinoDressCodeAndHighlights } from '../events/casino/CasinoDressCodeAndHighlights'
-import { CasinoIntro } from '../events/casino/CasinoIntro'
 import { useCallback, useState } from 'react'
+import { CasinoIntro } from './CasinoIntro'
+import { CasinoCartDropdown } from './CasinoCartDropdown'
 import { motion } from 'framer-motion'
-import AddToCartToast from '../../(public)/cart/_components/AddToCartToast'
-import { VantaBackgroundCells } from '../events/casino/VantaBackground'
-import { formatDate } from '@/app/lib/utils/date-utils'
+import { VantaBackgroundCells } from './VantaBackground'
+import { CasinoStyles, GoldDivider, MetaItem, SectionHeading } from './CasinoUiElements'
+import AddToCartToast from '@/app/(public)/cart/_components/AddToCartToast'
+import { CasinoWidgets } from './CasinoWidgets'
+import { CasinoHero } from './CasinoHero'
+import { CasinoTicketMarquee } from './CasinoTicketMarquee'
+import { CasinoSignInPrompt } from './CasinoSignInPrompt'
+import { CasinoIndividualTicket } from './CasinoIndividualTicket'
+import { CasinoBlackjackTicket } from './CasinoBlackjackTicket'
+import { CasinoSponsorTiers } from './CasinoSponsorTiers'
+import { CasinoPrizes } from './CasinoPrizes'
+import { CasinoRaffleStats } from './CasinoRaffleStats'
+import { CasinoDressCodeAndHighlights } from './CasinoDressCodeAndHighlights'
 import { formatTime } from '@/app/lib/utils/time-utils'
-import { TPublicEventDetailsClient } from '@/types/casino.types'
-import { CasinoIndividualTicket } from '../events/casino/CasinoIndividualTicket'
-import { CasinoBlackjackTicket } from '../events/casino/CasinoBlackjackTicket'
+import { formatDate } from '@/app/lib/utils/date-utils'
 import { CheckCircle2 } from 'lucide-react'
-import { CasinoCartDropdown } from '../events/casino/CasinoCartDropdown'
 
-export function PublicEventDetailsClient({ data, name, savedCards, address }: TPublicEventDetailsClient) {
+export function CasinoEventClient({ data, savedCards, name, address }) {
   const [introComplete, setIntroComplete] = useState(false)
 
   const prizes = data?.rafflePrizes ?? []
   const schedule = data?.raffleSchedule ?? []
 
   const handleIntroComplete = useCallback(() => setIntroComplete(true), [])
-
   return (
     <>
       <CasinoIntro onComplete={handleIntroComplete} />

@@ -5,12 +5,12 @@ import { store, useTicketSelector } from '@/app/lib/store/store'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Minus, Plus, X } from 'lucide-react'
 import { useState } from 'react'
-import Backdrop from '../common/Backdrop'
+import Backdrop from '../../../../../components/common/Backdrop'
 import { addToCart, setOpenAddToCartToast } from '@/app/lib/store/slices/cartSlice'
 import { drawerVariants } from '@/app/lib/constants/motion'
-import { GRADIENTS, SUITS } from '../events/casino/CasinoUiElements'
 import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
-import Picture from '../common/Picture'
+import Picture from '../../../../../components/common/Picture'
+import { GRADIENTS, SUITS } from '@/app/(public)/events/[eventId]/_components/casino/CasinoUiElements'
 
 export function TicketSelectionDrawer() {
   const [quantity, setQuantity] = useState(1)

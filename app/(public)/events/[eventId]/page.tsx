@@ -1,4 +1,4 @@
-import { PublicEventDetailsClient } from '@/app/components/pages/PublicEventDetailsClient'
+import { PublicEventDetailsClient } from '@/app/(public)/events/[eventId]/PublicEventDetailsClient'
 import { getEventById } from '@/app/lib/actions/event/getEventById'
 import { getSavedPaymentMethods } from '@/app/lib/actions/stripe/getSavedPaymentMethods'
 import { getUserAddress } from '@/app/lib/actions/user/getUserAddress'

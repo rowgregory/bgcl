@@ -3,12 +3,12 @@
 import Link from 'next/link'
 import { ChevronRight, Volume2, VolumeX } from 'lucide-react'
 import { IEvent } from '@/types/entities/event'
-import { CasinoStyles } from './casino/CasinoUiElements'
 import { formatDate } from '@/app/lib/utils/date-utils'
 import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
 import { motion } from 'framer-motion'
 import { store, useUiSelector } from '@/app/lib/store/store'
 import { setSoundOn } from '@/app/lib/store/slices/uiSlice'
+import { CasinoStyles } from '@/app/(public)/events/[eventId]/_components/casino/CasinoUiElements'
 
 export function EventAnnouncementStrip({ event }: { event: IEvent }) {
   const { soundOn } = useUiSelector()

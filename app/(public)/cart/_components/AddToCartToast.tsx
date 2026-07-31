@@ -3,9 +3,9 @@ import { store, useCartSelector, useUiSelector } from '@/app/lib/store/store'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ShoppingCart, X } from 'lucide-react'
 import { useCallback, useEffect, useRef } from 'react'
-import { GRADIENTS, SUITS } from '../../../components/events/casino/CasinoUiElements'
 import Link from 'next/link'
 import useSoundEffect from '@/app/lib/hooks/useSoundEffect'
+import { GRADIENTS, SUITS } from '../../events/[eventId]/_components/casino/CasinoUiElements'
 
 export default function AddToCartToast() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)

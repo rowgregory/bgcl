@@ -30,7 +30,7 @@ export function VantaBackgroundFog({ children }: { children: React.ReactNode }) 
           lowlightColor: 0x222222,
           baseColor: 0x0,
           blurFactor: 0.24,
-          speed: 0.7,
+          speed: 1,
           zoom: 3.0
         })
       )

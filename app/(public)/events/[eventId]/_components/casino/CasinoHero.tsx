@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import Picture from '../../common/Picture'
 import { Calendar, Clock, MapPin } from 'lucide-react'
 import { CasinoCountdown } from './CasinoCountdown'
 import { TCasinoHero } from '@/types/casino.types'
 import { formatDate } from '@/app/lib/utils/date-utils'
 import { formatTime } from '@/app/lib/utils/time-utils'
+import Picture from '@/app/components/common/Picture'
 
 export function CasinoHero({ data }: { data: TCasinoHero }) {
   return (
@@ -18,7 +18,6 @@ export function CasinoHero({ data }: { data: TCasinoHero }) {
       <Link href="/">
         <Picture
           src="/images/logo-1.webp"
-          alt=""
           aria-hidden="true"
           className="w-14 h-fit object-contain opacity-[0.4] hover:opacity-100 duration-150 pointer-events-none select-none mb-2"
           priority={true}

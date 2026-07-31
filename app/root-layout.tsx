@@ -3,7 +3,7 @@
 import { Provider } from 'react-redux'
 import { persistor, store } from './lib/store/store'
 import Toast from './components/common/Toast'
-import { TicketSelectionDrawer } from './components/drawers/TicketSelectionDrawer'
+import { TicketSelectionDrawer } from './(public)/events/[eventId]/_components/casino/TicketSelectionDrawer'
 import { PersistGate } from 'redux-persist/integration/react'
 import Header from './components/header/Header'
 import { usePathname } from 'next/navigation'

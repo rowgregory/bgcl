@@ -1,4 +1,4 @@
-import { PublicEventsClient } from '@/app/components/pages/PublicEventsClient'
+import { PublicEventsClient } from '@/app/(public)/events/PublicEventsClient'
 import { getActiveEvents } from '@/app/lib/actions/event/getActiveEvents'
 import { getPageBySlugClient } from '@/app/lib/actions/page/getPageBySlugClient'
 
