@@ -1,4 +1,4 @@
-import SupporterTicketsClient from '@/components/pages/SupporterTicketsClient'
+import SupporterTicketsClient from '@/app/(authenticated)/supporter/tickets/SupporterTicketsClient'
 import { getTicketOrders } from '@/lib/actions/order/getTicketOrders'
 
 export const dynamic = 'force-dynamic'

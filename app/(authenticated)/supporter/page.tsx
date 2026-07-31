@@ -3,15 +3,15 @@
 import { UpdateAddressModal } from '@/components/modals/UpdateAddressModal'
 import CancelSubscriptionDrawer from '@/components/drawers/CancelSubscriptionDrawer'
 import { PaymentMethodModal } from '@/components/modals/PaymentMethodModal'
-import { SupporterHeader } from '@/components/supporter/SupporterHeader'
+import { SupporterHeader } from '@/app/(authenticated)/supporter/_components/SupporterHeader'
 
-export default function SupporterPage({ children, result }) {
+export default function SupporterPage({ children }) {
   return (
     <>
       <PaymentMethodModal />
       <CancelSubscriptionDrawer />
       <UpdateAddressModal />
-      <SupporterHeader event={result.data} />
+      <SupporterHeader />
       {children}
     </>
   )

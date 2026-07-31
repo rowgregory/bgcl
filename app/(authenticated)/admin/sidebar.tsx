@@ -8,7 +8,7 @@ import { signOut } from 'next-auth/react'
 import { setCloseAdminSidebar } from '@/lib/store/slices/dashboardSlice'
 import { setIsLoading } from '@/lib/store/slices/formSlice'
 import { showToast } from '@/lib/store/slices/toastSlice'
-import { adminNavigationLinkData } from '@/lib/constants/adminNavLinks'
+import { adminNavigationLinkData } from '@/lib/utils/adminNavLinks'
 
 const AdminSidebar = () => {
   const pathname = usePathname()

@@ -1,4 +1,4 @@
-import { EventsOverviewClient } from '@/components/pages/EventsOverviewClient'
+import { EventsOverviewClient } from '@/app/(authenticated)/admin/events/overview/EventsOverviewClient'
 import { getEventsOverview } from '@/lib/actions/_dashboard/getEventsOverview'
 
 export default async function EventsOverviewPage() {

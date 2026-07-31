@@ -1,4 +1,4 @@
-import { EventsTransactionsClient } from '@/components/pages/EventsTransactionsClient'
+import { EventsTransactionsClient } from '@/app/(authenticated)/admin/events/transactions/EventsTransactionsClient'
 import { getEventsTransactions } from '@/lib/actions/_dashboard/getEventsTransactions'
 
 export default async function EventsTransactionsPage() {

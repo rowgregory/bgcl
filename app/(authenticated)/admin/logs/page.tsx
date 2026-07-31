@@ -1,4 +1,4 @@
-import LogsClient from '@/components/pages/LogsClient'
+import LogsClient from '@/app/(authenticated)/admin/logs/LogsClient'
 import { getLogs } from '@/lib/actions/log/getLogs'
 import { getLogStats } from '@/lib/actions/log/getLogStats'
 

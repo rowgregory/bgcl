@@ -9,7 +9,7 @@ import { ILayout } from '@/types/common.types'
 
 import { store, useDashboardSelector } from '@/lib/store/store'
 import { setCloseAdminSidebar, setToggleAdminSidebar } from '@/lib/store/slices/dashboardSlice'
-import { adminNavigationLinkData } from '@/lib/constants/adminNavLinks'
+import { adminNavigationLinkData } from '@/lib/utils/adminNavLinks'
 import dropdownActionItems from '@/lib/constants/dropdownActionItems'
 import { getCurrentPageId } from '@/lib/utils/getCurrentPageId'
 

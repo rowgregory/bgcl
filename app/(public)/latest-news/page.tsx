@@ -1,4 +1,4 @@
-import LatestNewsClient from '@/components/pages/LatestNewsClient'
+import LatestNewsClient from '@/app/(public)/latest-news/LatestNewsClient'
 import { getNews } from '@/lib/actions/news/getNews'
 import { getNewsletters } from '@/lib/actions/newsletter/getNewsletters'
 import { getPageBySlugClient } from '@/lib/actions/page/getPageBySlugClient'

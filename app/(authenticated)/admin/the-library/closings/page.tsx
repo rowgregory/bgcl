@@ -1,4 +1,4 @@
-import { AdminListPage } from '@/components/admin/layout/AdminList'
+import { AdminListPage } from '@/app/(authenticated)/admin/_components/AdminList'
 import { getClosings } from '@/lib/actions/closing/getClosings'
 
 export default async function ClosingsPage() {

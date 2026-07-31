@@ -1,4 +1,4 @@
-import SupporterDonationsClient from '@/components/pages/SupporterDonationsClient'
+import SupporterDonationsClient from '@/app/(authenticated)/supporter/donations/SupporterDonationsClient'
 import { getMyDonations } from '@/lib/actions/order/getMyDonations'
 
 export const dynamic = 'force-dynamic'

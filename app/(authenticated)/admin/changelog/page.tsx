@@ -1774,7 +1774,7 @@ const changelogData: ChangelogEntry[] = [
         type: 'feature',
         title: 'Role-Based Authentication Routing',
         description:
-          'Enhanced authentication middleware to redirect users to appropriate dashboards based on role: ADMIN/SUPERUSER to /admin/star-map/home, PROGRAM to /program/job-applications, and SUPPORTER to /supporter/overview. Prevents cross-role navigation with automatic redirects.',
+          'Enhanced authentication middleware to redirect users to appropriate dashboards based on role: ADMIN/SUPERUSER to /admin/page/home, PROGRAM to /program/job-applications, and SUPPORTER to /supporter/overview. Prevents cross-role navigation with automatic redirects.',
         impact: 'high'
       },
       {

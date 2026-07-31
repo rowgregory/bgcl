@@ -1,4 +1,4 @@
-import { createMultiRolePartnerPage } from '@/lib/utils/createMultiRolePartnerPage'
+import { createMultiRolePartnerPage } from '@/app/(authenticated)/admin/_utils/createMultiRolePartnerPage'
 
 const { metadata, default: Page } = createMultiRolePartnerPage(
   [

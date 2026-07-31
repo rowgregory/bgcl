@@ -1,4 +1,4 @@
-import SupporterOverviewClient from '@/components/pages/SupporterOverviewClient'
+import SupporterOverviewClient from '@/app/(authenticated)/supporter/overview/SupporterOverviewClient'
 import { getPhoneNumber } from '@/lib/actions/user/getPhoneNumber'
 import { getSavedPaymentMethods } from '@/lib/actions/stripe/getSavedPaymentMethods'
 import { getSupporterDashboard } from '@/lib/actions/_dashboard/getSupporterDashboard'

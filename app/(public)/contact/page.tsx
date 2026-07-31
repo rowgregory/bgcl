@@ -1,4 +1,4 @@
-import ContactUsClient from '@/components/pages/ContactUsClient'
+import ContactUsClient from '@/app/(public)/contact/ContactUsClient'
 import { getClosings } from '@/lib/actions/closing/getClosings'
 import { getPageBySlugClient } from '@/lib/actions/page/getPageBySlugClient'
 

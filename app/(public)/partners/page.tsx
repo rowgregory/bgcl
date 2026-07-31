@@ -1,4 +1,4 @@
-import PublicPartnersClient from '@/components/pages/PublicPartnersClient'
+import PublicPartnersClient from '@/app/(public)/partners/PublicPartnersClient'
 import { getPageBySlugClient } from '@/lib/actions/page/getPageBySlugClient'
 import { getPartners } from '@/lib/actions/partner/getPartners'
 

@@ -1,4 +1,4 @@
-import EventsArchiveClient from '@/components/pages/EventsArchiveClient'
+import EventsArchiveClient from '@/app/(authenticated)/admin/events/archive/EventsArchiveClient'
 import { getArchivedEvents } from '@/lib/actions/event/getArchivedEvents'
 
 export default async function EventsArchivePage() {

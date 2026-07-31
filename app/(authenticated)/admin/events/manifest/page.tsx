@@ -1,4 +1,4 @@
-import EventsManifestClient from '@/components/pages/EventsManifestClient'
+import EventsManifestClient from '@/app/(authenticated)/admin/events/manifest/EventsManifestClient'
 import { getEventsTransactions } from '@/lib/actions/_dashboard/getEventsTransactions'
 
 export default async function EventsManifestPage() {

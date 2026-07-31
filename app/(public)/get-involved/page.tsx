@@ -1,4 +1,4 @@
-import PublicGetInvolvedClient from '@/components/pages/PublicGetInvolvedClient'
+import PublicGetInvolvedClient from '@/app/(public)/get-involved/PublicGetInvolvedClient'
 import { getPageBySlugClient } from '@/lib/actions/page/getPageBySlugClient'
 
 export default async function PublicGetInvolvedPage() {

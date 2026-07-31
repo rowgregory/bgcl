@@ -1,4 +1,4 @@
-import { ProgramDetailsClient } from '@/components/pages/ProgramDetailsClient'
+import { ProgramDetailsClient } from '@/app/(public)/programs/[id]/ProgramDetailsClient'
 import { getClosings } from '@/lib/actions/closing/getClosings'
 import { getProgramById } from '@/lib/actions/program/getProgramById'
 import prisma from '@/prisma/client'

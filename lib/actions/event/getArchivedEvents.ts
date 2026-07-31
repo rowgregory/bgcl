@@ -1,6 +1,6 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
-import { ArchivedEvent } from '@/components/pages/EventsArchiveClient'
+import { ArchivedEvent } from '@/app/(authenticated)/admin/events/archive/EventsArchiveClient'
 
 export async function getArchivedEvents() {
   try {

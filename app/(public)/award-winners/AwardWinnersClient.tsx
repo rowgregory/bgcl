@@ -7,7 +7,7 @@ import { containerVariants, itemVariants } from '@/lib/constants/motion'
 import Picture from '@/components/_shared/Picture'
 import { store } from '@/lib/store/store'
 import { setOpenVolunteerDrawer } from '@/lib/store/slices/appSlice'
-import YouthOfTheYearSection from '@/components/home/YouthOfTheYearSection'
+import YouthOfTheYearSection from '@/app/(public)/award-winners/_components/YouthOfTheYearSection'
 
 const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
   const t = pageData?.sections?.awards

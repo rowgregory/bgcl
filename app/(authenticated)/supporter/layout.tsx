@@ -1,7 +1,5 @@
-import { getUpcomingOrOngoingEvent } from '@/lib/actions/event/getUpcomingOrOngoingEvent'
 import SupporterPage from './page'
 
 export default async function SupporterLayout({ children }) {
-  const result = await getUpcomingOrOngoingEvent()
-  return <SupporterPage result={result}>{children}</SupporterPage>
+  return <SupporterPage>{children}</SupporterPage>
 }

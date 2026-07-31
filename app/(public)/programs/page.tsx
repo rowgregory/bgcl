@@ -1,6 +1,6 @@
 import { getPrograms } from '@/lib/actions/program/getPrograms'
 import { getClubResources } from '@/lib/actions/club-resource/getClubResources'
-import { ProgramsClient } from '@/components/pages/ProgramsClient'
+import { ProgramsClient } from '@/app/(public)/programs/ProgramsClient'
 import { getPageBySlugClient } from '@/lib/actions/page/getPageBySlugClient'
 
 export default async function PublicProgramsPage() {

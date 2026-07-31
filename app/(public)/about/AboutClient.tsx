@@ -2,7 +2,7 @@
 
 import Picture from '@/components/_shared/Picture'
 import { motion } from 'framer-motion'
-import { HistorySection } from '@/components/home/HistorySection'
+import { HistorySection } from '@/app/(public)/about/_components/HistorySection'
 import { MissionSection } from '@/components/home/MissionSection'
 
 export default function AboutPage({ initialPageData }) {

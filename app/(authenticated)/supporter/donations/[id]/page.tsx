@@ -1,4 +1,4 @@
-import SupporterSubscriptionsClient from '@/components/pages/SupporterSubscriptionsClient'
+import SupporterSubscriptionsClient from '@/app/(authenticated)/supporter/donations/[id]/SupporterSubscriptionsClient'
 import { getSubscriptionDetails } from '@/lib/actions/stripe/getSubscriptionDetails'
 
 export default async function SupporterSubscriptionsPage({ params }) {
