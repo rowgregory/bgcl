@@ -6,8 +6,8 @@ import { createFormActions, setInputs, setIsLoading } from '@/lib/store/slices/f
 import { validateContactSubmissionForm } from '@/lib/validations/contact-submission'
 import { showToast } from '@/lib/store/slices/toastSlice'
 import { useRouter } from 'next/navigation'
-import { setCloseVolunteerDrawer } from '@/lib/store/slices/appSlice'
 import { createContactSubmission } from '@/lib/actions/contact-submission/createContactSubmission'
+import { useVolunteerDrawer } from '@/stores/drawers'
 
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
@@ -34,7 +34,7 @@ export default function VolunteerForm({ programs }) {
   const inputs = forms?.volunteerForm?.inputs
   const errors = forms?.volunteerForm?.errors
 
-  const onClose = () => store.dispatch(setCloseVolunteerDrawer())
+  const onClose = () => useVolunteerDrawer.getState().close()
 
   const handleDayToggle = (day: string) => {
     const daysArray = parseStringArray(inputs?.availabilityDays)

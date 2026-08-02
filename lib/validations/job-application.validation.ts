@@ -1,121 +1,133 @@
-export const validateJobApplication = (step: number, formData: any, setErrors: any) => {
-  const newErrors: Record<string, string> = {}
+import { z } from 'zod'
+import { PositionType, EmploymentType } from '@prisma/client'
 
-  switch (step) {
-    case 1: // Position & Background
-      if (!formData?.positionTypes?.length) {
-        newErrors.positionTypes = 'At least one position is required'
-      }
-      if (!formData?.youthOrgEmployment?.trim()) {
-        newErrors.youthOrgEmployment = 'Please indicate your youth organization employment history'
-      }
-      if (!formData?.education?.trim()) {
-        newErrors.education = 'Education is required'
-      }
-      // extracurricularsSkills is optional — no validation needed
+const phoneRegex = /^[\d\s\-()+]{10,}$/
 
-      break
-    case 2: // Personal Info
-      if (!formData?.applicantName?.trim()) {
-        newErrors.applicantName = 'Name is required'
-      }
-      if (!formData?.email?.trim()) {
-        newErrors.email = 'Email is required'
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        newErrors.email = 'Invalid email format'
-      }
-      if (!formData?.employmentType) {
-        newErrors.employmentType = 'Employment type is required'
-      }
-      if (!formData?.hoursAvailable?.trim()) {
-        newErrors.hoursAvailable = 'Hours available is required'
-      }
+export const referenceSchema = z.object({
+  name: z.string().trim().min(1, { error: 'Name is required' }),
+  positionAndCompany: z.string().trim().min(1, { error: 'Position & company is required' }),
+  workRelationship: z.string().trim().min(1, { error: 'Work relationship is required' }),
+  phone: z
+    .string()
+    .trim()
+    .min(1, { error: 'Phone number is required' })
+    .regex(phoneRegex, { error: 'Invalid phone number' }),
+  email: z
+    .string()
+    .trim()
+    .min(1, { error: 'Email is required' })
+    .pipe(z.email({ error: 'Invalid email format' }))
+})
 
-      break
+// ── Per-step schemas (used to validate as the user advances) ──────────────────
 
-    case 3: // References
-      const references = formData?.references || []
-      // if (references.length < 3) {
-      //   newErrors.references = '3 references are required'
-      // }
+export const step1Schema = z.object({
+  positionTypes: z.array(z.enum(PositionType)).min(1, { error: 'At least one position is required' }),
+  youthOrgEmployment: z.string().trim().min(1, { error: 'Please indicate your youth organization employment history' }),
+  education: z.string().trim().min(1, { error: 'Education is required' }),
+  extracurricularsSkills: z.string().trim().optional()
+})
 
-      for (let index = 0; index < 3; index++) {
-        const ref = references[index]
+export const step2Schema = z.object({
+  applicantName: z.string().trim().min(1, { error: 'Name is required' }),
+  email: z
+    .string()
+    .trim()
+    .min(1, { error: 'Email is required' })
+    .pipe(z.email({ error: 'Invalid email format' })),
+  employmentType: z.enum(EmploymentType, { error: 'Employment type is required' }),
+  hoursAvailable: z.string().trim().min(1, { error: 'Hours available is required' }),
+  languages: z.array(z.string()).transform((arr) => arr.join(', '))
+})
 
-        if (!ref?.name?.trim()) {
-          newErrors[`name_${index}`] = `Name is required`
-        }
-        if (!ref?.positionAndCompany?.trim()) {
-          newErrors[`positionAndCompany_${index}`] = `Position & company is required`
-        }
-        if (!ref?.workRelationship?.trim()) {
-          newErrors[`workRelationship_${index}`] = `Work relationship is required`
-        }
-        if (!ref?.phone?.trim()) {
-          newErrors[`phone_${index}`] = `Phone number is required`
-        } else if (!/^[\d\s\-\(\)\+]{10,}$/.test(ref.phone)) {
-          newErrors[`phone_${index}`] = `Invalid phone number`
-        }
-        if (!ref?.email?.trim()) {
-          newErrors[`email_${index}`] = `Email is required`
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ref.email)) {
-          newErrors[`email_${index}`] = `Invalid email format`
-        }
-      }
-      break
+export const step3Schema = z.object({
+  references: z.array(referenceSchema).length(3, { error: '3 references are required' })
+})
 
-    case 4: // Driving Info
-      if (formData?.hasValidDriverLicense === undefined || formData?.hasValidDriverLicense === null) {
-        newErrors.hasValidDriverLicense = "Please indicate if you have a valid driver's license"
+export const step4Schema = z
+  .object({
+    hasValidDriverLicense: z.boolean({ error: "Please indicate if you have a valid driver's license" }),
+    licenseNumber: z.string().trim().optional(),
+    licenseExpiration: z.coerce.date().optional(),
+    noLicenseReason: z.string().trim().optional(),
+    licenseSuspended: z.boolean().default(false),
+    suspensionExplanation: z.string().trim().optional(),
+    trafficViolations: z.string().trim().optional()
+  })
+  .superRefine((data, ctx) => {
+    if (data.hasValidDriverLicense) {
+      if (!data.licenseNumber?.trim()) {
+        ctx.addIssue({ code: 'custom', path: ['licenseNumber'], message: 'License number is required' })
       }
-      if (formData?.hasValidDriverLicense === true) {
-        if (!formData?.licenseNumber?.trim()) {
-          newErrors.licenseNumber = 'License number is required'
-        }
-        if (!formData?.licenseExpiration) {
-          newErrors.licenseExpiration = 'License expiration date is required'
-        } else if (new Date(formData.licenseExpiration) < new Date()) {
-          newErrors.licenseExpiration = 'License is expired'
-        }
+      if (!data.licenseExpiration) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['licenseExpiration'],
+          message: 'License expiration date is required'
+        })
+      } else if (data.licenseExpiration < new Date()) {
+        ctx.addIssue({ code: 'custom', path: ['licenseExpiration'], message: 'License is expired' })
       }
-      if (formData?.hasValidDriverLicense === false) {
-        if (!formData?.noLicenseReason?.trim()) {
-          newErrors.noLicenseReason = "Please explain why you don't have a license"
-        }
+    } else {
+      if (!data.noLicenseReason?.trim()) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['noLicenseReason'],
+          message: "Please explain why you don't have a license"
+        })
       }
-      if (formData?.licenseSuspended === true) {
-        if (!formData?.suspensionExplanation?.trim()) {
-          newErrors.suspensionExplanation = 'Please explain the suspension'
-        }
-      }
-      break
+    }
 
-    case 5: // Resume
-      // Uncomment to make resume required:
-      if (!formData?.resumeUrl) {
-        newErrors.resumeUrl = 'Resume is required'
-      }
-      break
+    if (data.licenseSuspended && !data.suspensionExplanation?.trim()) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['suspensionExplanation'],
+        message: 'Please explain the suspension'
+      })
+    }
+  })
 
-    case 6: // Certification
-      if (!formData?.agreeToTerms) {
-        newErrors.agreeToTerms = 'You must agree to the terms'
-      }
-      if (!formData?.certifyInformation) {
-        newErrors.certifyInformation = 'You must certify the information is accurate'
-      }
-      if (!formData?.authorizeBackground) {
-        newErrors.authorizeBackground = 'You must authorize the background check'
-      }
-      if (!formData?.understandActiveStatus) {
-        newErrors.understandActiveStatus = 'You must acknowledge the active status requirement'
-      }
-      if (!formData?.signature?.trim()) {
-        newErrors.signature = 'Signature is required'
-      }
-      break
-  }
+export const step5Schema = z.object({
+  resumeUrl: z.string().min(1, { error: 'Resume is required' }),
+  resumeFileName: z.string().optional(),
+  resumeFileSize: z.number().optional(),
+  resumeUploadedAt: z.coerce.date().optional()
+})
 
-  setErrors(newErrors)
-  return Object.keys(newErrors).length === 0
-}
+export const step6Schema = z.object({
+  agreeToTerms: z.literal(true, { error: 'You must agree to the terms' }),
+  certifyInformation: z.literal(true, { error: 'You must certify the information is accurate' }),
+  authorizeBackground: z.literal(true, { error: 'You must authorize the background check' }),
+  understandActiveStatus: z.literal(true, { error: 'You must acknowledge the active status requirement' }),
+  signature: z.string().trim().min(1, { error: 'Signature is required' })
+})
+
+// ── The whole application ─────────────────────────────────────────────────────
+
+export const jobApplicationSchema = step1Schema
+  .extend(step2Schema.shape)
+  .extend(step3Schema.shape)
+  .extend(step5Schema.shape)
+  .extend(step6Schema.shape)
+  .extend({
+    hasValidDriverLicense: z.boolean(),
+    licenseNumber: z.string().trim().optional(),
+    licenseExpiration: z.coerce.date().optional(),
+    noLicenseReason: z.string().trim().optional(),
+    licenseSuspended: z.boolean().default(false),
+    suspensionExplanation: z.string().trim().optional(),
+    trafficViolations: z.string().trim().optional()
+  })
+
+export type JobApplicationFormInput = z.input<typeof jobApplicationSchema>
+export type JobApplicationFormValues = z.output<typeof jobApplicationSchema>
+
+/** Step index → the fields RHF should validate before advancing. */
+export const STEP_FIELDS = {
+  1: ['positionTypes', 'youthOrgEmployment', 'education'],
+  2: ['applicantName', 'email', 'employmentType', 'hoursAvailable'],
+  3: ['references'],
+  4: ['hasValidDriverLicense', 'licenseNumber', 'licenseExpiration', 'noLicenseReason', 'suspensionExplanation'],
+  5: ['resumeUrl'],
+  6: ['agreeToTerms', 'certifyInformation', 'authorizeBackground', 'understandActiveStatus', 'signature']
+} as const satisfies Record<number, readonly (keyof JobApplicationFormValues)[]>

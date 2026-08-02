@@ -3,21 +3,21 @@
 import { AnimatePresence } from 'framer-motion'
 import { createFormActions, resetForm, setIsLoading } from '@/lib/store/slices/formSlice'
 import { showToast } from '@/lib/store/slices/toastSlice'
-import { useCampaignSelector, useFormSelector, store } from '@/lib/store/store'
+import { useFormSelector, store } from '@/lib/store/store'
 import Backdrop from '../_shared/Backdrop'
 import extractErrorMessage from '@/lib/utils/extractErrorMessage'
 import { useRouter } from 'next/navigation'
 import Drawer from '../_shared/Drawer'
 import validateCampaignForm from '@/lib/validations/campaign'
-import { setCloseCampaignDrawer } from '@/lib/store/slices/campaignSlice'
 import { CampaignForm } from '../forms/CampaignForm'
 import { updateCampaign } from '@/lib/actions/campaign/updateCampaign'
 import { createCampaign } from '@/lib/actions/campaign/createCampaign'
 import { CreateCampaignInput, UpdateCampaignInput } from '@/types/entities/campaign'
+import { useCampaignDrawer } from '@/stores/drawers'
 
 export const CampaignDrawer = () => {
   const router = useRouter()
-  const { campaignDrawer } = useCampaignSelector()
+  const { isOpen } = useCampaignDrawer()
   const { forms, isLoading } = useFormSelector()
   const inputs = forms.campaignForm.inputs
   const errors = forms.campaignForm.errors
@@ -26,7 +26,7 @@ export const CampaignDrawer = () => {
 
   const onClose = () => {
     store.dispatch(resetForm('campaignForm'))
-    store.dispatch(setCloseCampaignDrawer())
+    useCampaignDrawer.getState().close()
   }
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
@@ -72,7 +72,7 @@ export const CampaignDrawer = () => {
 
   return (
     <AnimatePresence>
-      {campaignDrawer && (
+      {isOpen && (
         <>
           {/* Backdrop Overlay */}
           <Backdrop onClose={onClose} />

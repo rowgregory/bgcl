@@ -3,13 +3,13 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { useCartSelector } from '@/lib/store/store'
 import { CartItemRow } from './_components/CartItemRow'
 import { CartOrderSummary } from './_components/CartOrderSummary'
 import { EmptyCart } from './_components/EmptyCart'
+import { useCartStore } from '@/stores/useCartStore'
 
 export default function CartClient() {
-  const { items } = useCartSelector()
+  const { items } = useCartStore()
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0)
 
   if (items.length === 0) return <EmptyCart />

@@ -2,84 +2,98 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, ChevronLeft, ArrowRightFromLine } from 'lucide-react'
-import { store, useFormSelector } from '@/lib/store/store'
-import { setOpenVolunteerDrawer } from '@/lib/store/slices/appSlice'
+import { ChevronRight, ChevronLeft, ArrowRightFromLine, AlertCircle } from 'lucide-react'
+import { useForm, FormProvider } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
-import { showToast } from '@/lib/store/slices/toastSlice'
-import { CreateJobApplicationInput, IJobApplication } from '@/types/entities/job-application'
-import { setIsLoading } from '@/lib/store/slices/formSlice'
-import { stringifyArray } from '@/components/forms/VolunteerForm'
+import { useVolunteerDrawer } from '@/stores/drawers'
+import {
+  JobApplicationFormInput,
+  jobApplicationSchema,
+  STEP_FIELDS
+} from '@/lib/validations/job-application.validation'
 import { FORM_STEPS } from '@/lib/constants/job-application.constants'
-import { validateJobApplication } from '@/lib/validations/job-application.validation'
-import { Step5Resume } from '@/components/job-application/Step5Resume'
-import { Step6Certification } from '@/components/job-application/Step6Certification'
+import { Step1PositionBackground } from '@/components/job-application/Step1PositionBackground'
 import { Step2PersonalInfo } from '@/components/job-application/Step2PersonalInfo'
 import { Step3References } from '@/components/job-application/Step3References'
 import { Step4DrivingInfo } from '@/components/job-application/Step4DrivingInfo'
-import { Step1PositionBackground } from '@/components/job-application/Step1PositionBackground'
+import { Step5Resume } from '@/components/job-application/Step5Resume'
+import { Step6Certification } from '@/components/job-application/Step6Certification'
 import { createJobApplication } from '@/lib/actions/job-application/createJobApplication'
+import { CreateJobApplicationInput } from '@/types/entities/job-application'
+import z from 'zod'
+
+const DEFAULT_VALUES: Partial<JobApplicationFormInput> = {
+  employmentType: 'FULL_TIME',
+  hoursAvailable: 'Monday-Friday 9am-5pm',
+  hasValidDriverLicense: true,
+  licenseSuspended: false,
+  positionTypes: [],
+  languages: [],
+  references: [
+    { name: '', positionAndCompany: '', workRelationship: '', phone: '', email: '' },
+    { name: '', positionAndCompany: '', workRelationship: '', phone: '', email: '' },
+    { name: '', positionAndCompany: '', workRelationship: '', phone: '', email: '' }
+  ]
+}
 
 export default function PublicGetInvolvedClient({ pageData }) {
   const t = pageData?.sections?.careers
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState<Partial<IJobApplication>>({
-    employmentType: 'FULL_TIME',
-    hoursAvailable: 'Monday-Friday 9am-5pm',
-    hasValidDriverLicense: true,
-    licenseSuspended: false
+  const openVolunteerDrawer = useVolunteerDrawer((s) => s.open)
+
+  const methods = useForm<z.input<typeof jobApplicationSchema>, unknown, z.output<typeof jobApplicationSchema>>({
+    resolver: zodResolver(jobApplicationSchema),
+    defaultValues: DEFAULT_VALUES,
+    mode: 'onTouched'
   })
-  const [errors, setErrors] = useState({})
-  const { isLoading } = useFormSelector()
 
-  const handleNext = () => {
-    if (validateJobApplication(currentStep, formData, setErrors)) {
-      if (currentStep < FORM_STEPS.length) {
-        setCurrentStep(currentStep + 1)
-      } else {
-        handleSubmit()
-      }
-    }
-  }
+  const {
+    trigger,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting }
+  } = methods
 
-  const handleBack = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1)
-    }
-  }
-
-  const handleSubmit = async () => {
-    const dataToSend = {
-      ...formData,
-      licenseExpiration: new Date(formData.licenseExpiration),
-      languages: stringifyArray(formData.languages as string[])
-    }
-
-    store.dispatch(setIsLoading(true))
-    const result = await createJobApplication(dataToSend as CreateJobApplicationInput)
+  const submit = handleSubmit(async (values) => {
+    const result = await createJobApplication(values as unknown as CreateJobApplicationInput)
 
     if (!result.success || !result.jobApplicationId) {
-      store.dispatch(
-        showToast({
-          message: 'Submission failed',
-          description: result.error ?? 'Something went wrong. Please try again.',
-          type: 'error'
-        })
-      )
-      store.dispatch(setIsLoading(false))
+      setError('root', { message: result.error ?? 'Something went wrong. Please try again.' })
       return
     }
 
     router.refresh()
     router.push(`/get-involved/${result.jobApplicationId}`)
-    store.dispatch(
-      showToast({
-        message: 'Application submitted!',
-        description: 'We will review your application and get back to you shortly.'
-      })
-    )
-    store.dispatch(setIsLoading(false))
+  })
+
+  const handleNext = async () => {
+    const valid = await trigger(STEP_FIELDS[currentStep])
+    console.log('CURRENT STEP: ', currentStep)
+    if (!valid) return
+
+    if (currentStep < FORM_STEPS.length) {
+      setCurrentStep((s) => s + 1)
+    } else {
+      await submit()
+    }
+  }
+
+  const handleBack = () => {
+    if (currentStep > 1) setCurrentStep((s) => s - 1)
+  }
+
+  // Jumping via the step indicators: back is always allowed, forward validates.
+  const goToStep = async (target: number) => {
+    if (target < currentStep) {
+      setCurrentStep(target)
+      return
+    }
+    if (target > currentStep) {
+      const valid = await trigger(STEP_FIELDS[currentStep])
+      if (valid) setCurrentStep((s) => Math.min(s + 1, target))
+    }
   }
 
   const progress = (currentStep / FORM_STEPS.length) * 100
@@ -105,7 +119,7 @@ export default function PublicGetInvolvedClient({ pageData }) {
               <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">{t?.paragraph2}</p>
               <button
                 type="button"
-                onClick={() => store.dispatch(setOpenVolunteerDrawer())}
+                onClick={() => openVolunteerDrawer()}
                 className="cursor-pointer text-sm sm:text-base md:text-lg dark:text-neutral-400 text-neutral-600 hover:dark:text-sky-400 hover:text-sky-600 transition-colors underline-offset-4 hover:underline flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 rounded"
               >
                 {t?.volunteer_link}
@@ -135,9 +149,7 @@ export default function PublicGetInvolvedClient({ pageData }) {
                 </p>
               </div>
 
-              {/* Vertical Progress Line and Steps */}
               <ol className="relative list-none p-0 m-0 space-y-4" aria-label="Form steps">
-                {/* Vertical Line Background */}
                 <div
                   className="absolute left-5 top-0 bottom-0 w-px dark:bg-neutral-800 bg-neutral-200"
                   aria-hidden="true"
@@ -150,13 +162,12 @@ export default function PublicGetInvolvedClient({ pageData }) {
                     <li key={step.id} className="relative">
                       <motion.button
                         type="button"
-                        onClick={() => handleNext()}
+                        onClick={() => goToStep(step.id)}
                         aria-current={isCurrent ? 'step' : undefined}
                         aria-label={`${step.name}${isCompleted ? ' (completed)' : isCurrent ? ' (current)' : ''}`}
                         className="relative flex items-center gap-4 group w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 rounded"
                         whileHover={{ x: 4 }}
                       >
-                        {/* Circle */}
                         <div
                           aria-hidden="true"
                           className={`w-11 h-11 rounded-full flex items-center justify-center font-semibold text-sm shrink-0 relative z-10 transition-all ${
@@ -168,7 +179,6 @@ export default function PublicGetInvolvedClient({ pageData }) {
                           }`}
                         >
                           {isCompleted ? (
-                            /* Checkmark for completed steps */
                             <svg
                               className="w-5 h-5"
                               fill="currentColor"
@@ -186,7 +196,6 @@ export default function PublicGetInvolvedClient({ pageData }) {
                             step.id
                           )}
                         </div>
-                        {/* Step Name */}
                         <span className="text-xs font-semibold dark:text-neutral-400 text-neutral-600 group-hover:dark:text-sky-400 group-hover:text-sky-600 transition-colors hidden sm:block">
                           {step.name}
                         </span>
@@ -200,7 +209,7 @@ export default function PublicGetInvolvedClient({ pageData }) {
 
           {/* Main Form Content */}
           <div className="lg:col-span-4 space-y-4 sm:space-y-6">
-            {/* Mobile Progress Bar - Visible only on Mobile */}
+            {/* Mobile Progress Bar */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="lg:hidden">
               <div className="mb-4 sm:mb-6 flex justify-between items-center">
                 <div aria-live="polite" aria-atomic="true">
@@ -213,7 +222,6 @@ export default function PublicGetInvolvedClient({ pageData }) {
                 </div>
               </div>
 
-              {/* Progress Bar */}
               <div
                 role="progressbar"
                 aria-valuenow={progress}
@@ -230,8 +238,7 @@ export default function PublicGetInvolvedClient({ pageData }) {
                 />
               </div>
 
-              {/* Step Indicators Mobile */}
-              <ol className="grid grid-cols-5 gap-1.5 sm:gap-2 list-none p-0 m-0" aria-label="Form steps">
+              <ol className="grid grid-cols-6 gap-1.5 sm:gap-2 list-none p-0 m-0" aria-label="Form steps">
                 {FORM_STEPS.map((step) => {
                   const isCompleted = step.id < currentStep
                   const isCurrent = step.id === currentStep
@@ -239,7 +246,7 @@ export default function PublicGetInvolvedClient({ pageData }) {
                     <li key={step.id}>
                       <button
                         type="button"
-                        onClick={() => handleNext()}
+                        onClick={() => goToStep(step.id)}
                         aria-current={isCurrent ? 'step' : undefined}
                         aria-label={`${step.name}${isCompleted ? ' (completed)' : isCurrent ? ' (current)' : ''}`}
                         className={`w-full h-8 sm:h-10 rounded-lg font-semibold text-xs sm:text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 ${
@@ -258,37 +265,43 @@ export default function PublicGetInvolvedClient({ pageData }) {
               </ol>
             </motion.div>
 
-            {/* Form Content */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStep}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 rounded-xl p-6 sm:p-8 md:p-12 space-y-4 sm:space-y-6 border"
-                role="region"
-                aria-label={`Step ${currentStep}: ${FORM_STEPS[currentStep - 1].name}`}
-                aria-live="polite"
+            {/* Steps — wrapped so every step can read the form via context */}
+            <FormProvider {...methods}>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentStep}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 rounded-xl p-6 sm:p-8 md:p-12 space-y-4 sm:space-y-6 border"
+                  role="region"
+                  aria-label={`Step ${currentStep}: ${FORM_STEPS[currentStep - 1].name}`}
+                  aria-live="polite"
+                >
+                  {currentStep === 1 && <Step1PositionBackground />}
+                  {currentStep === 2 && <Step2PersonalInfo />}
+                  {currentStep === 3 && <Step3References />}
+                  {currentStep === 4 && <Step4DrivingInfo />}
+                  {currentStep === 5 && <Step5Resume />}
+                  {currentStep === 6 && <Step6Certification />}
+                </motion.div>
+              </AnimatePresence>
+            </FormProvider>
+
+            {/* Submit error */}
+            {errors.root && (
+              <div
+                role="alert"
+                className="flex items-start gap-3 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
               >
-                {currentStep === 1 && (
-                  <Step1PositionBackground formData={formData} setFormData={setFormData} errors={errors} />
-                )}
-                {currentStep === 2 && (
-                  <Step2PersonalInfo formData={formData} setFormData={setFormData} errors={errors} />
-                )}
-                {currentStep === 3 && <Step3References formData={formData} setFormData={setFormData} errors={errors} />}
-                {currentStep === 4 && (
-                  <Step4DrivingInfo formData={formData} setFormData={setFormData} errors={errors} />
-                )}
-                {currentStep === 5 && (
-                  <Step5Resume formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} />
-                )}
-                {currentStep === 6 && (
-                  <Step6Certification formData={formData} setFormData={setFormData} errors={errors} />
-                )}
-              </motion.div>
-            </AnimatePresence>
+                <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-red-600 dark:text-red-400" aria-hidden="true" />
+                <div>
+                  <p className="text-sm font-semibold text-red-800 dark:text-red-300">Submission failed</p>
+                  <p className="text-sm text-red-700 dark:text-red-400">{errors.root.message}</p>
+                </div>
+              </div>
+            )}
 
             {/* Navigation Buttons */}
             <motion.div
@@ -299,8 +312,8 @@ export default function PublicGetInvolvedClient({ pageData }) {
               <button
                 type="button"
                 onClick={handleBack}
-                disabled={currentStep === 1}
-                aria-disabled={currentStep === 1}
+                disabled={currentStep === 1 || isSubmitting}
+                aria-disabled={currentStep === 1 || isSubmitting}
                 className="flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base dark:border-neutral-700 dark:hover:bg-neutral-800 dark:text-white border-neutral-300 hover:bg-neutral-100 text-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed font-semibold rounded-lg transition-colors border focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
               >
                 <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
@@ -310,20 +323,18 @@ export default function PublicGetInvolvedClient({ pageData }) {
               <button
                 type="button"
                 onClick={handleNext}
-                disabled={isLoading}
-                aria-disabled={isLoading}
-                aria-busy={isLoading}
+                disabled={isSubmitting}
+                aria-disabled={isSubmitting}
+                aria-busy={isSubmitting}
                 className="flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors ml-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {isLoading ? (
+                {isSubmitting ? (
                   <>
                     <div
                       className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border-2 border-white border-t-0 animate-spin"
                       aria-hidden="true"
                     />
-                    <span className="sr-only">
-                      {currentStep === FORM_STEPS.length ? 'Submitting…' : 'Loading next step…'}
-                    </span>
+                    <span className="sr-only">Submitting…</span>
                   </>
                 ) : (
                   <span>{currentStep === FORM_STEPS.length ? 'Submit' : 'Next'}</span>

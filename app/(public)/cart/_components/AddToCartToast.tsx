@@ -1,38 +1,42 @@
-import { setCloseAddToCartToast } from '@/lib/store/slices/cartSlice'
-import { store, useCartSelector, useUiSelector } from '@/lib/store/store'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ShoppingCart, X } from 'lucide-react'
 import { useCallback, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import useSoundEffect from '@/lib/hooks/useSoundEffect'
 import { GRADIENTS, SUITS } from '../../events/[eventId]/_components/casino/CasinoUiElements'
+import { useAddToCartToast } from '@/stores/useAddToCartToast'
+import { useCartCount } from '@/stores/useCartStore'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
 
 export default function AddToCartToast() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const { item, addToCartToast, items } = useCartSelector()
-  const { soundOn } = useUiSelector()
+
+  const isOpen = useAddToCartToast((s) => s.isOpen)
+  const ticket = useAddToCartToast((s) => s.ticket)
+  const quantity = useAddToCartToast((s) => s.quantity)
+  const hide = useAddToCartToast((s) => s.hide)
+
+  const cartCount = useCartCount()
+  const soundOn = usePreferencesStore((s) => s.soundOn)
+
   const { play: proceed } = useSoundEffect('/sound-effects/casino-15.wav', soundOn)
   const { play: viewCart } = useSoundEffect('/sound-effects/casino-15.wav', soundOn)
   const { play: close } = useSoundEffect('/sound-effects/casual-click-pop-ui.mp3', soundOn)
-  const onClose = useCallback(() => {
-    store.dispatch(setCloseAddToCartToast())
-  }, [])
-  const ticket = item?.ticket
-  const quantity = item?.quantity ?? 1
-  const cartCount = items?.reduce((sum, i) => sum + i.quantity, 0)
+
+  const onClose = useCallback(() => hide(), [hide])
 
   useEffect(() => {
-    if (addToCartToast) {
+    if (isOpen) {
       timerRef.current = setTimeout(() => onClose(), 4000)
     }
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current)
     }
-  }, [addToCartToast, item, onClose])
+  }, [isOpen, ticket, onClose])
 
   return (
     <AnimatePresence>
-      {addToCartToast && ticket && (
+      {isOpen && ticket && (
         <motion.div
           role="status"
           aria-live="polite"

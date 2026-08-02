@@ -1,18 +1,21 @@
-import { store, useCartSelector, useUiSelector } from '@/lib/store/store'
 import { signIn, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { LayoutDashboard, LogIn, ShoppingCart, User, Volume2, VolumeX, X } from 'lucide-react'
 import useSoundEffect from '@/lib/hooks/useSoundEffect'
-import { setOpenCartDropdown, setSoundOn } from '@/lib/store/slices/uiSlice'
 import { TCasinoWidgets } from '@/types/casino.types'
 import { MotionLink } from '@/components/_shared/MotionLink'
+import { useCartStore } from '@/stores/useCartStore'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
+import { useCartDropdown } from '@/stores/drawers'
 
 export function CasinoWidgets({ data }: TCasinoWidgets) {
   const [open, setOpen] = useState(false)
-  const { items } = useCartSelector()
-  const { soundOn } = useUiSelector()
+  const items = useCartStore((s) => s.items)
+  const soundOn = usePreferencesStore((s) => s.soundOn)
+  const setSoundOn = usePreferencesStore((s) => s.setSoundOn)
+  const {} = useCartDropdown()
   const session = useSession()
   const isAuthed = session.status === 'authenticated'
   const userEmail = session.data?.user?.email
@@ -28,14 +31,14 @@ export function CasinoWidgets({ data }: TCasinoWidgets) {
 
   const handleMute = () => {
     const next = !soundOn
-    store.dispatch(setSoundOn(next))
+    setSoundOn(next)
     if (next) volumeOn()
     else volumeOff()
   }
 
   const handleGoogle = () => {
     google()
-    setTimeout(() => signIn('google', { redirect: true, callbackUrl: `/events/${data.id}` }), 1000)
+    setTimeout(() => signIn('google', { redirect: true, redirectTo: `/events/${data.id}` }), 1000)
   }
 
   return (
@@ -49,8 +52,6 @@ export function CasinoWidgets({ data }: TCasinoWidgets) {
         className="fixed left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-4 z-50 flex items-center gap-1.5 md:gap-2"
         style={{ top: 'calc(1rem + env(safe-area-inset-top))' }}
       >
-        {/* Backdrop */}
-
         {/* Admin Dashboard */}
         {isAdmin && (
           <MotionLink
@@ -168,7 +169,7 @@ export function CasinoWidgets({ data }: TCasinoWidgets) {
           onClick={() => {
             setOpen((o) => !o)
             if (!open) openCartDropdown()
-            store.dispatch(setOpenCartDropdown())
+            useCartDropdown.getState().open()
           }}
           aria-label={`Open cart — ${count} item${count !== 1 ? 's' : ''}`}
           className="relative flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-4 py-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 shrink-0"

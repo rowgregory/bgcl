@@ -1,19 +1,19 @@
+'use client'
+
 import { certificationText } from '@/lib/constants/job-application.constants'
-import { Step5CertificationProps } from '@/types/entities/job-application'
-import { useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { motion } from 'framer-motion'
+import type { JobApplicationFormInput } from '@/lib/validations/job-application.validation'
 
-export function Step6Certification({ formData, setFormData, errors }: Step5CertificationProps) {
-  const [signatureInput, setSignatureInput] = useState(formData.signature || '')
-
-  const handleSignatureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSignatureInput(e.target.value)
-    setFormData({ ...formData, signature: e.target.value })
-  }
+export function Step6Certification() {
+  const {
+    register,
+    formState: { errors }
+  } = useFormContext<JobApplicationFormInput>()
 
   return (
     <div className="space-y-6">
-      {/* Certification Text */}
+      {/* Certification Text — unchanged */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -43,13 +43,11 @@ export function Step6Certification({ formData, setFormData, errors }: Step5Certi
         className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 rounded-lg p-8 space-y-6 border"
       >
         <div className="space-y-4">
-          {/* Certification Checkbox */}
           <div className="flex items-start gap-3">
             <input
               id="certify-information"
               type="checkbox"
-              checked={formData.certifyInformation || false}
-              onChange={(e) => setFormData({ ...formData, certifyInformation: e.target.checked })}
+              {...register('certifyInformation')}
               aria-required="true"
               aria-invalid={!!errors.certifyInformation}
               aria-describedby={errors.certifyInformation ? 'certify-information-error' : undefined}
@@ -69,7 +67,7 @@ export function Step6Certification({ formData, setFormData, errors }: Step5Certi
           </div>
           {errors.certifyInformation && (
             <p id="certify-information-error" role="alert" className="text-red-500 text-sm">
-              {errors.certifyInformation}
+              {errors.certifyInformation.message}
             </p>
           )}
         </div>
@@ -86,8 +84,7 @@ export function Step6Certification({ formData, setFormData, errors }: Step5Certi
           <input
             id="signature-input"
             type="text"
-            value={signatureInput}
-            onChange={handleSignatureChange}
+            {...register('signature')}
             placeholder="Type your full name as signature"
             autoComplete="name"
             aria-required="true"
@@ -100,13 +97,13 @@ export function Step6Certification({ formData, setFormData, errors }: Step5Certi
           </p>
           {errors.signature && (
             <p id="signature-error" role="alert" className="text-red-500 text-sm">
-              {errors.signature}
+              {errors.signature.message}
             </p>
           )}
         </div>
       </motion.div>
 
-      {/* Agreements Checkboxes */}
+      {/* Agreements — same pattern for the remaining three checkboxes */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -115,13 +112,11 @@ export function Step6Certification({ formData, setFormData, errors }: Step5Certi
         <fieldset className="space-y-4">
           <legend className="text-sm font-semibold dark:text-white text-neutral-900 mb-4">Required Agreements</legend>
 
-          {/* Agree to Terms */}
           <div className="flex items-start gap-3">
             <input
               id="agree-to-terms"
               type="checkbox"
-              checked={formData.agreeToTerms || false}
-              onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })}
+              {...register('agreeToTerms')}
               aria-required="true"
               aria-invalid={!!errors.agreeToTerms}
               aria-describedby={errors.agreeToTerms ? 'agree-to-terms-error' : undefined}
@@ -137,7 +132,7 @@ export function Step6Certification({ formData, setFormData, errors }: Step5Certi
           </div>
           {errors.agreeToTerms && (
             <p id="agree-to-terms-error" role="alert" className="text-red-500 text-sm">
-              {errors.agreeToTerms}
+              {errors.agreeToTerms.message}
             </p>
           )}
 
@@ -146,8 +141,7 @@ export function Step6Certification({ formData, setFormData, errors }: Step5Certi
             <input
               id="authorize-background"
               type="checkbox"
-              checked={formData.authorizeBackground || false}
-              onChange={(e) => setFormData({ ...formData, authorizeBackground: e.target.checked })}
+              {...register('authorizeBackground')}
               aria-required="true"
               aria-invalid={!!errors.authorizeBackground}
               aria-describedby={errors.authorizeBackground ? 'authorize-background-error' : undefined}
@@ -163,7 +157,7 @@ export function Step6Certification({ formData, setFormData, errors }: Step5Certi
           </div>
           {errors.authorizeBackground && (
             <p id="authorize-background-error" role="alert" className="text-red-500 text-sm">
-              {errors.authorizeBackground}
+              {errors.authorizeBackground.message}
             </p>
           )}
 
@@ -172,8 +166,7 @@ export function Step6Certification({ formData, setFormData, errors }: Step5Certi
             <input
               id="understand-active-status"
               type="checkbox"
-              checked={formData.understandActiveStatus || false}
-              onChange={(e) => setFormData({ ...formData, understandActiveStatus: e.target.checked })}
+              {...register('understandActiveStatus')}
               aria-required="true"
               aria-invalid={!!errors.understandActiveStatus}
               aria-describedby={errors.understandActiveStatus ? 'understand-active-status-error' : undefined}
@@ -192,7 +185,7 @@ export function Step6Certification({ formData, setFormData, errors }: Step5Certi
           </div>
           {errors.understandActiveStatus && (
             <p id="understand-active-status-error" role="alert" className="text-red-500 text-sm">
-              {errors.understandActiveStatus}
+              {errors.understandActiveStatus.message}
             </p>
           )}
         </fieldset>

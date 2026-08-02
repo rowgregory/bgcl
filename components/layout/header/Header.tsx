@@ -2,21 +2,23 @@ import Link from 'next/link'
 import { Menu, ShoppingCart, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
-import { store, useApplicationSelector, useCartSelector } from '@/lib/store/store'
-import { setOpenMobileNavigation } from '@/lib/store/slices/appSlice'
 import { motion } from 'framer-motion'
 import { useIsAtTop } from '@/lib/hooks/useIsAtTop'
 import GoogleTranslate from './GoogleTranslate'
 import { mainNavigationLinks } from '@/lib/constants/navigation.constants'
 import Picture from '@/components/_shared/Picture'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
+import { useNavigationStore } from '@/stores/useNavigationStore'
+import { useCartStore } from '@/stores/useCartStore'
 
 export default function Header() {
   const { data, status } = useSession()
   const pathname = usePathname()
   const router = useRouter()
   const isAtTop = useIsAtTop()
-  const { mobileNavigation, isSpanish } = useApplicationSelector()
-  const { items } = useCartSelector()
+  const isOpen = useNavigationStore((s) => s.mobileNavigation)
+  const { items } = useCartStore()
+  const isSpanish = usePreferencesStore((s) => s.isSpanish)
 
   const getLaunchPath = () => {
     if (status !== 'authenticated') return '/auth/login'
@@ -125,17 +127,13 @@ export default function Header() {
         <div className="max-w-375 mx-auto flex items-center justify-between relative">
           {/* Burger Menu Button */}
           <button
-            onClick={() => store.dispatch(setOpenMobileNavigation())}
+            onClick={() => useNavigationStore.getState().openMobileNavigation()}
             className="block 2xl:hidden dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
             aria-label="Toggle navigation menu"
-            aria-expanded={mobileNavigation}
+            aria-expanded={isOpen}
             aria-controls="mobile-navigation"
           >
-            {mobileNavigation ? (
-              <X className="w-6 h-6" aria-hidden="true" />
-            ) : (
-              <Menu className="w-6 h-6" aria-hidden="true" />
-            )}
+            {isOpen ? <X className="w-6 h-6" aria-hidden="true" /> : <Menu className="w-6 h-6" aria-hidden="true" />}
           </button>
 
           <Link

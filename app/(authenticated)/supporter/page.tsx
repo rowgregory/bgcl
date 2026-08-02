@@ -1,7 +1,7 @@
 'use client'
 
 import { UpdateAddressModal } from '@/components/modals/UpdateAddressModal'
-import CancelSubscriptionDrawer from '@/components/drawers/CancelSubscriptionDrawer'
+import CancelSubscriptionDrawer from '@/app/(authenticated)/supporter/_components/CancelSubscriptionDrawer'
 import { PaymentMethodModal } from '@/components/modals/PaymentMethodModal'
 import { SupporterHeader } from '@/app/(authenticated)/supporter/_components/SupporterHeader'
 

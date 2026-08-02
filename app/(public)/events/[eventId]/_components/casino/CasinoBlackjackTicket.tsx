@@ -1,32 +1,29 @@
 import { GRADIENTS, SectionHeading } from './CasinoUiElements'
 import { motion } from 'framer-motion'
-import { store, useCartSelector, useUiSelector } from '@/lib/store/store'
-import { addToCart, setOpenAddToCartToast } from '@/lib/store/slices/cartSlice'
 import useSoundEffect from '@/lib/hooks/useSoundEffect'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
 import { TCasinoSponsorTiers } from '@/types/casino.types'
+import { useCartStore } from '@/stores/useCartStore'
+import { useAddToCartToast } from '@/stores/useAddToCartToast'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
 
 export function CasinoBlackjackTicket({ data }: TCasinoSponsorTiers) {
-  const { items } = useCartSelector()
-  const { soundOn } = useUiSelector()
+  const addToCart = useCartStore((s) => s.addToCart)
+  const showToast = useAddToCartToast((s) => s.show)
+  const soundOn = usePreferencesStore((s) => s.soundOn)
   const { play } = useSoundEffect('/sound-effects/casino-6.wav', soundOn)
 
   const handleAddToCart = (ticket: any) => {
-    store.dispatch(
-      addToCart({
-        ticket: {
-          ...ticket,
-          eventId: data.id,
-          eventTitle: data.title,
-          ticketSalesEndDate: data.ticketSalesEndDate,
-          ticketSalesStartDate: data.ticketSalesStartDate
-        },
-        quantity: 1
-      })
-    )
-    store.dispatch(
-      setOpenAddToCartToast({ ticket: { ...ticket, eventId: data.id, eventTitle: data.title }, quantity: 1 })
-    )
+    const enriched = {
+      ...ticket,
+      eventId: data.id,
+      eventTitle: data.title,
+      ticketSalesStartDate: data.ticketSalesStartDate,
+      ticketSalesEndDate: data.ticketSalesEndDate
+    }
+
+    addToCart(enriched, 1)
+    showToast(enriched, 1)
     play()
   }
 
@@ -44,6 +41,7 @@ export function CasinoBlackjackTicket({ data }: TCasinoSponsorTiers) {
             const soldOut = t.totalQuantity - t.quantitySold - t.quantityReserved <= 0
             const available = !soldOut
             const message = soldOut ? 'Sold out' : 'Sales closed'
+            const items = useCartStore.getState().items
             const cartItem = items?.find((item: any) => item.ticketId === t.id)
             const cartQty = cartItem?.quantity ?? 0
             const grad = GRADIENTS.TOURNAMENT

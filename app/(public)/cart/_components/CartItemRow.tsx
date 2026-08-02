@@ -1,11 +1,8 @@
-import { CartItem, removeFromCart, updateQuantity } from '@/lib/store/slices/cartSlice'
-import { useAppDispatch } from '@/lib/store/store'
+import { CartItem, useCartStore } from '@/stores/useCartStore'
 import { motion } from 'framer-motion'
 import { Minus, Plus, Ticket, Trash2 } from 'lucide-react'
 
 export const CartItemRow = ({ item, index }: { item: CartItem; index: number }) => {
-  const dispatch = useAppDispatch()
-
   return (
     <motion.article
       layout
@@ -55,7 +52,7 @@ export const CartItemRow = ({ item, index }: { item: CartItem; index: number }) 
               {/* Quantity stepper */}
               <div role="group" aria-label={`Quantity for ${item.ticketName}`} className="flex items-center gap-2">
                 <button
-                  onClick={() => dispatch(updateQuantity({ ticketId: item.ticketId, quantity: item.quantity - 1 }))}
+                  onClick={() => useCartStore.getState().updateQuantity(item.ticketId, item.quantity - 1)}
                   disabled={item.quantity <= 1}
                   aria-label="Decrease quantity"
                   className="w-7 h-7 flex items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
@@ -73,7 +70,7 @@ export const CartItemRow = ({ item, index }: { item: CartItem; index: number }) 
                 </span>
 
                 <button
-                  onClick={() => dispatch(updateQuantity({ ticketId: item.ticketId, quantity: item.quantity + 1 }))}
+                  onClick={() => useCartStore.getState().updateQuantity(item.ticketId, item.quantity + 1)}
                   disabled={item.quantity >= item.maxAvailable}
                   aria-label="Increase quantity"
                   className="w-7 h-7 flex items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
@@ -88,7 +85,7 @@ export const CartItemRow = ({ item, index }: { item: CartItem; index: number }) 
 
               {/* Remove */}
               <button
-                onClick={() => dispatch(removeFromCart(item.ticketId))}
+                onClick={() => useCartStore.getState().removeFromCart(item.ticketId)}
                 aria-label={`Remove ${item.ticketName} from cart`}
                 className="flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded-md px-2 py-1"
               >

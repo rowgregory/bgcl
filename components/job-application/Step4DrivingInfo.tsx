@@ -1,6 +1,24 @@
-import { AnimatePresence, motion } from 'framer-motion'
+'use client'
 
-export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
+import { AnimatePresence, motion } from 'framer-motion'
+import { Controller, useFormContext } from 'react-hook-form'
+import type { JobApplicationFormInput } from '@/lib/validations/job-application.validation'
+
+export function Step4DrivingInfo() {
+  const {
+    control,
+    register,
+    watch,
+    formState: { errors }
+  } = useFormContext<JobApplicationFormInput>()
+
+  // Drive the conditional sections and the character counters
+  const hasValidDriverLicense = watch('hasValidDriverLicense')
+  const licenseSuspended = watch('licenseSuspended')
+  const noLicenseReason = watch('noLicenseReason') ?? ''
+  const suspensionExplanation = watch('suspensionExplanation') ?? ''
+  const trafficViolations = watch('trafficViolations') ?? ''
+
   return (
     <div className="space-y-8">
       <div>
@@ -13,45 +31,56 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
       {/* Valid Driver's License */}
       <fieldset className="space-y-3">
         <legend className="text-sm font-semibold dark:text-white text-neutral-900">
-          Do you have a valid driver's license?{' '}
+          Do you have a valid driver&apos;s license?{' '}
           <span aria-hidden="true" className="text-red-500">
             *
           </span>
           <span className="sr-only">(required)</span>
         </legend>
-        <div className="space-y-3 mt-2">
-          <label className="flex items-center space-x-3 cursor-pointer group">
-            <input
-              type="radio"
-              name="hasValidDriverLicense"
-              checked={formData.hasValidDriverLicense === false}
-              onChange={() => setFormData({ ...formData, hasValidDriverLicense: false })}
-              aria-describedby={errors.hasValidDriverLicense ? 'license-group-error' : undefined}
-              className="w-4 h-4 dark:border-neutral-600 dark:bg-neutral-800 dark:text-sky-500 border-neutral-300 bg-white text-sky-600 cursor-pointer focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
-            />
-            <span className="dark:text-white text-neutral-900 group-hover:dark:text-neutral-100 group-hover:text-neutral-800 transition-colors">
-              No
-            </span>
-          </label>
-          <label className="flex items-center space-x-3 cursor-pointer group">
-            <input
-              type="radio"
-              name="hasValidDriverLicense"
-              checked={formData.hasValidDriverLicense === true}
-              onChange={() => setFormData({ ...formData, hasValidDriverLicense: true })}
-              aria-describedby={errors.hasValidDriverLicense ? 'license-group-error' : undefined}
-              className="w-4 h-4 dark:border-neutral-600 dark:bg-neutral-800 dark:text-sky-500 border-neutral-300 bg-white text-sky-600 cursor-pointer focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
-            />
-            <span className="dark:text-white text-neutral-900 group-hover:dark:text-neutral-100 group-hover:text-neutral-800 transition-colors">
-              Yes
-            </span>
-          </label>
-        </div>
+
+        <Controller
+          control={control}
+          name="hasValidDriverLicense"
+          render={({ field: { value, onChange } }) => (
+            <div className="space-y-3 mt-2">
+              <label className="flex items-center space-x-3 cursor-pointer group">
+                <input
+                  type="radio"
+                  checked={value === false}
+                  onChange={() => onChange(false)}
+                  aria-describedby={errors.hasValidDriverLicense ? 'license-group-error' : undefined}
+                  className="w-4 h-4 dark:border-neutral-600 dark:bg-neutral-800 dark:text-sky-500 border-neutral-300 bg-white text-sky-600 cursor-pointer focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                />
+                <span className="dark:text-white text-neutral-900 group-hover:dark:text-neutral-100 group-hover:text-neutral-800 transition-colors">
+                  No
+                </span>
+              </label>
+              <label className="flex items-center space-x-3 cursor-pointer group">
+                <input
+                  type="radio"
+                  checked={value === true}
+                  onChange={() => onChange(true)}
+                  aria-describedby={errors.hasValidDriverLicense ? 'license-group-error' : undefined}
+                  className="w-4 h-4 dark:border-neutral-600 dark:bg-neutral-800 dark:text-sky-500 border-neutral-300 bg-white text-sky-600 cursor-pointer focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                />
+                <span className="dark:text-white text-neutral-900 group-hover:dark:text-neutral-100 group-hover:text-neutral-800 transition-colors">
+                  Yes
+                </span>
+              </label>
+            </div>
+          )}
+        />
+
+        {errors.hasValidDriverLicense && (
+          <p id="license-group-error" role="alert" className="text-red-500 text-sm">
+            {errors.hasValidDriverLicense.message}
+          </p>
+        )}
       </fieldset>
 
       {/* Conditional Fields Based on License Status */}
       <AnimatePresence mode="wait">
-        {formData.hasValidDriverLicense ? (
+        {hasValidDriverLicense ? (
           <motion.div
             key="license-info"
             initial={{ opacity: 0, y: 10 }}
@@ -76,8 +105,7 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
               <input
                 id="license-number"
                 type="text"
-                value={formData.licenseNumber || ''}
-                onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
+                {...register('licenseNumber')}
                 aria-required="true"
                 aria-invalid={!!errors.licenseNumber}
                 aria-describedby={errors.licenseNumber ? 'license-number-error' : undefined}
@@ -87,7 +115,7 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
               />
               {errors.licenseNumber && (
                 <p id="license-number-error" role="alert" className="text-red-500 text-sm mt-1">
-                  {errors.licenseNumber}
+                  {errors.licenseNumber.message}
                 </p>
               )}
             </div>
@@ -105,8 +133,7 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
               <input
                 id="license-expiration"
                 type="date"
-                value={formData.licenseExpiration || ''}
-                onChange={(e) => setFormData({ ...formData, licenseExpiration: e.target.value })}
+                {...register('licenseExpiration')}
                 aria-required="true"
                 aria-invalid={!!errors.licenseExpiration}
                 aria-describedby={errors.licenseExpiration ? 'license-expiration-error' : undefined}
@@ -114,7 +141,7 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
               />
               {errors.licenseExpiration && (
                 <p id="license-expiration-error" role="alert" className="text-red-500 text-sm mt-1">
-                  {errors.licenseExpiration}
+                  {errors.licenseExpiration.message}
                 </p>
               )}
             </div>
@@ -141,8 +168,7 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
             <input
               id="no-license-reason"
               type="text"
-              value={formData.noLicenseReason || ''}
-              onChange={(e) => setFormData({ ...formData, noLicenseReason: e.target.value })}
+              {...register('noLicenseReason')}
               aria-required="true"
               aria-invalid={!!errors.noLicenseReason}
               aria-describedby={errors.noLicenseReason ? 'no-license-reason-error' : undefined}
@@ -152,16 +178,14 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
             />
             <p
               className={`text-xs mt-1 text-right ${
-                (formData.noLicenseReason?.length || 0) >= 400
-                  ? 'text-red-500'
-                  : 'text-neutral-400 dark:text-neutral-500'
+                noLicenseReason.length >= 400 ? 'text-red-500' : 'text-neutral-400 dark:text-neutral-500'
               }`}
             >
-              {500 - (formData.noLicenseReason?.length || 0)} characters remaining
+              {500 - noLicenseReason.length} characters remaining
             </p>
             {errors.noLicenseReason && (
               <p id="no-license-reason-error" role="alert" className="text-red-500 text-sm mt-1">
-                {errors.noLicenseReason}
+                {errors.noLicenseReason.message}
               </p>
             )}
           </motion.div>
@@ -177,39 +201,49 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
           </span>
           <span className="sr-only">(required)</span>
         </legend>
-        <div className="space-y-3 mt-2">
-          <label className="flex items-center space-x-3 cursor-pointer group">
-            <input
-              type="radio"
-              name="licenseSuspended"
-              checked={formData.licenseSuspended === false}
-              onChange={() => setFormData({ ...formData, licenseSuspended: false })}
-              aria-describedby={errors.licenseSuspended ? 'suspension-group-error' : undefined}
-              className="w-4 h-4 dark:border-neutral-600 dark:bg-neutral-800 dark:text-sky-500 border-neutral-300 bg-white text-sky-600 cursor-pointer focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
-            />
-            <span className="dark:text-white text-neutral-900 group-hover:dark:text-neutral-100 group-hover:text-neutral-800 transition-colors">
-              No
-            </span>
-          </label>
-          <label className="flex items-center space-x-3 cursor-pointer group">
-            <input
-              type="radio"
-              name="licenseSuspended"
-              checked={formData.licenseSuspended === true}
-              onChange={() => setFormData({ ...formData, licenseSuspended: true })}
-              aria-describedby={errors.licenseSuspended ? 'suspension-group-error' : undefined}
-              className="w-4 h-4 dark:border-neutral-600 dark:bg-neutral-800 dark:text-sky-500 border-neutral-300 bg-white text-sky-600 cursor-pointer focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
-            />
-            <span className="dark:text-white text-neutral-900 group-hover:dark:text-neutral-100 group-hover:text-neutral-800 transition-colors">
-              Yes
-            </span>
-          </label>
-        </div>
+        <Controller
+          control={control}
+          name="licenseSuspended"
+          render={({ field: { value, onChange } }) => (
+            <div className="space-y-3 mt-2">
+              <label className="flex items-center space-x-3 cursor-pointer group">
+                <input
+                  type="radio"
+                  checked={value === false}
+                  onChange={() => onChange(false)}
+                  aria-describedby={errors.licenseSuspended ? 'suspension-group-error' : undefined}
+                  className="w-4 h-4 dark:border-neutral-600 dark:bg-neutral-800 dark:text-sky-500 border-neutral-300 bg-white text-sky-600 cursor-pointer focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                />
+                <span className="dark:text-white text-neutral-900 group-hover:dark:text-neutral-100 group-hover:text-neutral-800 transition-colors">
+                  No
+                </span>
+              </label>
+              <label className="flex items-center space-x-3 cursor-pointer group">
+                <input
+                  type="radio"
+                  value="true"
+                  checked={value === true}
+                  onChange={() => onChange(true)}
+                  aria-describedby={errors.licenseSuspended ? 'suspension-group-error' : undefined}
+                  className="w-4 h-4 dark:border-neutral-600 dark:bg-neutral-800 dark:text-sky-500 border-neutral-300 bg-white text-sky-600 cursor-pointer focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                />
+                <span className="dark:text-white text-neutral-900 group-hover:dark:text-neutral-100 group-hover:text-neutral-800 transition-colors">
+                  Yes
+                </span>
+              </label>
+            </div>
+          )}
+        />
+        {errors.licenseSuspended && (
+          <p id="suspension-group-error" role="alert" className="text-red-500 text-sm">
+            {errors.licenseSuspended.message}
+          </p>
+        )}
       </fieldset>
 
       {/* Suspension Explanation */}
       <AnimatePresence>
-        {formData.licenseSuspended && (
+        {licenseSuspended && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -231,8 +265,7 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
             </label>
             <textarea
               id="suspension-explanation"
-              value={formData.suspensionExplanation || ''}
-              onChange={(e) => setFormData({ ...formData, suspensionExplanation: e.target.value })}
+              {...register('suspensionExplanation')}
               aria-required="true"
               aria-invalid={!!errors.suspensionExplanation}
               aria-describedby={errors.suspensionExplanation ? 'suspension-explanation-error' : undefined}
@@ -242,16 +275,14 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
             />
             <p
               className={`text-xs mt-1 text-right ${
-                (formData.suspensionExplanation?.length || 0) >= 900
-                  ? 'text-red-500'
-                  : 'text-neutral-400 dark:text-neutral-500'
+                suspensionExplanation.length >= 900 ? 'text-red-500' : 'text-neutral-400 dark:text-neutral-500'
               }`}
             >
-              {1000 - (formData.suspensionExplanation?.length || 0)} characters remaining
+              {1000 - suspensionExplanation.length} characters remaining
             </p>
             {errors.suspensionExplanation && (
               <p id="suspension-explanation-error" role="alert" className="text-red-500 text-sm mt-1">
-                {errors.suspensionExplanation}
+                {errors.suspensionExplanation.message}
               </p>
             )}
           </motion.div>
@@ -275,8 +306,7 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
         </label>
         <textarea
           id="traffic-violations"
-          value={formData.trafficViolations || ''}
-          onChange={(e) => setFormData({ ...formData, trafficViolations: e.target.value })}
+          {...register('trafficViolations')}
           aria-required="true"
           aria-invalid={!!errors.trafficViolations}
           aria-describedby={errors.trafficViolations ? 'traffic-violations-error' : 'traffic-violations-hint'}
@@ -286,17 +316,17 @@ export function Step4DrivingInfo({ formData, setFormData, errors }: any) {
         />
         <p
           className={`text-xs mt-1 text-right ${
-            (formData.trafficViolations?.length || 0) >= 900 ? 'text-red-500' : 'text-neutral-400 dark:text-neutral-500'
+            trafficViolations.length >= 900 ? 'text-red-500' : 'text-neutral-400 dark:text-neutral-500'
           }`}
         >
-          {1000 - (formData.trafficViolations?.length || 0)} characters remaining
+          {1000 - trafficViolations.length} characters remaining
         </p>
         <p id="traffic-violations-hint" className="text-xs dark:text-neutral-500 text-neutral-500 mt-1">
-          Include offense, date, location, and any comments. Enter "None" if not applicable.
+          Include offense, date, location, and any comments. Enter &quot;None&quot; if not applicable.
         </p>
         {errors.trafficViolations && (
           <p id="traffic-violations-error" role="alert" className="text-red-500 text-sm mt-1">
-            {errors.trafficViolations}
+            {errors.trafficViolations.message}
           </p>
         )}
       </div>

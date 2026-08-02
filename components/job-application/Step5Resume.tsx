@@ -1,49 +1,62 @@
+'use client'
+
 import uploadFileToFirebase from '@/lib/utils/uploadFileToFirebase'
 import { useRef, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { motion } from 'framer-motion'
 import { ChevronRight } from 'lucide-react'
+import type { JobApplicationFormInput } from '@/lib/validations/job-application.validation'
 
-export function Step5Resume({ formData, setFormData, errors, setErrors }: any) {
+const MAX_SIZE = 10 * 1024 * 1024 // 10MB
+const VALID_TYPES = ['application/pdf']
+
+export function Step5Resume() {
+  const {
+    watch,
+    setValue,
+    setError,
+    clearErrors,
+    formState: { errors }
+  } = useFormContext<JobApplicationFormInput>()
+
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [dragActive, setDragActive] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Subscribe to the upload-related form values
+  const resumeUrl = watch('resumeUrl')
+  const resumeFileName = watch('resumeFileName')
+  const resumeFileSize = watch('resumeFileSize')
+
   const handleUpload = async (file: File) => {
-    // Validate file type
-    const validTypes = ['application/pdf']
-    if (!validTypes.includes(file.type)) {
-      setErrors({ ...errors, resume: 'Please upload a PDF' })
+    if (!VALID_TYPES.includes(file.type)) {
+      setError('resumeUrl', { message: 'Please upload a PDF' })
       return
     }
 
-    // Validate file size (10MB max)
-    const maxSize = 10 * 1024 * 1024
-    if (file.size > maxSize) {
-      setErrors({ ...errors, resume: 'File size must be less than 10MB' })
+    if (file.size > MAX_SIZE) {
+      setError('resumeUrl', { message: 'File size must be less than 10MB' })
       return
     }
 
     try {
       setUploading(true)
       setUploadProgress(0)
-      setErrors({ ...errors, resume: '' })
+      clearErrors('resumeUrl')
 
       const downloadUrl = await uploadFileToFirebase(file, (progress) => setUploadProgress(progress), 'document')
 
-      setFormData({
-        ...formData,
-        resumeUrl: downloadUrl,
-        resumeFileName: file.name,
-        resumeFileSize: file.size,
-        resumeUploadedAt: new Date().toISOString()
-      })
+      // shouldValidate so the step-level trigger sees the new value immediately
+      setValue('resumeUrl', downloadUrl, { shouldValidate: true, shouldDirty: true })
+      setValue('resumeFileName', file.name, { shouldDirty: true })
+      setValue('resumeFileSize', file.size, { shouldDirty: true })
+      setValue('resumeUploadedAt', new Date(), { shouldDirty: true })
 
       setUploadProgress(100)
     } catch (error) {
-      setErrors({
-        ...errors,
-        resume: error instanceof Error ? error.message : 'Failed to upload resume'
+      setError('resumeUrl', {
+        message: error instanceof Error ? error.message : 'Failed to upload resume'
       })
     } finally {
       setUploading(false)
@@ -67,30 +80,21 @@ export function Step5Resume({ formData, setFormData, errors, setErrors }: any) {
     setDragActive(false)
 
     const files = e.dataTransfer.files
-    if (files && files[0]) {
-      handleUpload(files[0])
-    }
+    if (files && files[0]) handleUpload(files[0])
   }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
-    if (files && files[0]) {
-      handleUpload(files[0])
-    }
+    if (files && files[0]) handleUpload(files[0])
   }
 
   const removeFile = () => {
-    setFormData({
-      ...formData,
-      resumeUrl: null,
-      resumeFileName: null,
-      resumeFileSize: null,
-      resumeUploadedAt: null
-    })
-    setErrors({ ...errors, resume: '' })
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
+    setValue('resumeUrl', '', { shouldValidate: true, shouldDirty: true })
+    setValue('resumeFileName', undefined, { shouldDirty: true })
+    setValue('resumeFileSize', undefined, { shouldDirty: true })
+    setValue('resumeUploadedAt', undefined, { shouldDirty: true })
+    clearErrors('resumeUrl')
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   return (
@@ -108,7 +112,7 @@ export function Step5Resume({ formData, setFormData, errors, setErrors }: any) {
       </div>
 
       {/* Upload Area */}
-      {!formData.resumeUrl ? (
+      {!resumeUrl ? (
         <motion.div
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -124,15 +128,14 @@ export function Step5Resume({ formData, setFormData, errors, setErrors }: any) {
           role="region"
           aria-label="Resume upload area"
         >
-          {/* Visually hidden but accessible file input */}
           <label htmlFor="resume-upload" className="sr-only">
-            Upload resume (PDF, DOC, or DOCX, max 10 MB)
+            Upload resume (PDF, max 10 MB)
           </label>
           <input
             id="resume-upload"
             ref={fileInputRef}
             type="file"
-            accept=".pdf,.doc,.docx"
+            accept=".pdf"
             onChange={handleFileSelect}
             disabled={uploading}
             aria-disabled={uploading}
@@ -140,7 +143,6 @@ export function Step5Resume({ formData, setFormData, errors, setErrors }: any) {
             className="sr-only"
           />
 
-          {/* Clickable / droppable zone — triggers file input */}
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
@@ -157,7 +159,7 @@ export function Step5Resume({ formData, setFormData, errors, setErrors }: any) {
                 {uploading ? 'Uploading…' : 'Drop your resume here or click to browse'}
               </p>
               <p id="resume-format-hint" className="dark:text-neutral-400 text-neutral-600 text-sm">
-                Supported formats: PDF, DOC, DOCX. Maximum file size: 10 MB.
+                Supported format: PDF. Maximum file size: 10 MB.
               </p>
             </div>
           </button>
@@ -212,31 +214,32 @@ export function Step5Resume({ formData, setFormData, errors, setErrors }: any) {
                 </p>
                 <p className="dark:text-emerald-400 text-emerald-700 text-sm mt-1">
                   <span className="sr-only">File name: </span>
-                  {formData.resumeFileName}
+                  {resumeFileName}
                 </p>
-                <p className="dark:text-neutral-400 text-neutral-600 text-xs mt-1">
-                  <span className="sr-only">File size: </span>
-                  {(formData.resumeFileSize / 1024 / 1024).toFixed(2)} MB
-                </p>
+                {resumeFileSize != null && (
+                  <p className="dark:text-neutral-400 text-neutral-600 text-xs mt-1">
+                    <span className="sr-only">File size: </span>
+                    {(resumeFileSize / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                )}
               </div>
             </div>
 
             <button
               type="button"
               onClick={removeFile}
-              aria-label={`Remove ${formData.resumeFileName}`}
+              aria-label={`Remove ${resumeFileName}`}
               className="dark:text-red-400 dark:hover:text-red-300 text-red-600 hover:text-red-700 font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 rounded"
             >
               Remove
             </button>
           </div>
 
-          {/* View Link */}
           <a
-            href={formData.resumeUrl}
+            href={resumeUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`View ${formData.resumeFileName} (opens in new tab)`}
+            aria-label={`View ${resumeFileName} (opens in new tab)`}
             className="inline-flex items-center gap-2 dark:text-sky-400 dark:hover:text-sky-300 text-sky-600 hover:text-sky-700 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 rounded"
           >
             View Resume
@@ -246,7 +249,7 @@ export function Step5Resume({ formData, setFormData, errors, setErrors }: any) {
       )}
 
       {/* Error Message */}
-      {errors.resume && (
+      {errors.resumeUrl && (
         <motion.div
           id="resume-error"
           role="alert"
@@ -255,7 +258,7 @@ export function Step5Resume({ formData, setFormData, errors, setErrors }: any) {
           animate={{ opacity: 1, y: 0 }}
           className="p-4 dark:bg-red-500/10 dark:border-red-500/30 bg-red-100 border-red-300 rounded-lg dark:text-red-400 text-red-700 text-sm border"
         >
-          {errors.resume}
+          {errors.resumeUrl.message}
         </motion.div>
       )}
 

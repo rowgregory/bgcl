@@ -1,7 +1,8 @@
 import { createPaymentMethod } from '@/lib/actions/stripe/createPaymentMethod'
 import { updateUserName } from '@/lib/actions/user/updateUserName'
 import useSoundEffect from '@/lib/hooks/useSoundEffect'
-import { useCartSelector, useUiSelector } from '@/lib/store/store'
+import { useCartStore } from '@/stores/useCartStore'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
 import { TCasinoSignInPrompt } from '@/types/casino.types'
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -20,8 +21,8 @@ export function CasinoSignInPrompt({ eventSlug, name, savedCards }: TCasinoSignI
   const [savingName, setSavingName] = useState(false)
   const session = useSession()
   const router = useRouter()
-  const { items } = useCartSelector()
-  const { soundOn } = useUiSelector()
+  const items = useCartStore((s) => s.items)
+  const soundOn = usePreferencesStore((s) => s.soundOn)
   const cartCount = items?.length
 
   const isAuthed = session.status === 'authenticated'

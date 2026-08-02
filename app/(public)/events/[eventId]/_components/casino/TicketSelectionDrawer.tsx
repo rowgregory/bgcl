@@ -6,11 +6,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Minus, Plus, X } from 'lucide-react'
 import { useState } from 'react'
 import Backdrop from '@/components/_shared/Backdrop'
-import { addToCart, setOpenAddToCartToast } from '@/lib/store/slices/cartSlice'
 import { drawerVariants } from '@/lib/constants/motion'
 import useSoundEffect from '@/lib/hooks/useSoundEffect'
 import Picture from '@/components/_shared/Picture'
 import { GRADIENTS, SUITS } from '@/app/(public)/events/[eventId]/_components/casino/CasinoUiElements'
+import { useCartStore } from '@/stores/useCartStore'
+import { useAddToCartToast } from '@/stores/useAddToCartToast'
 
 export function TicketSelectionDrawer() {
   const [quantity, setQuantity] = useState(1)
@@ -32,10 +33,10 @@ export function TicketSelectionDrawer() {
   }
 
   const handleAddToCart = () => {
-    store.dispatch(addToCart({ ticket, quantity }))
+    useCartStore.getState().addToCart(ticket, quantity)
     add()
     onClose()
-    store.dispatch(setOpenAddToCartToast({ ticket, quantity }))
+    useAddToCartToast.getState().show(ticket, quantity)
   }
 
   return (

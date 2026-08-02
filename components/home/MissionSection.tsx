@@ -1,8 +1,8 @@
 'use client'
 
-import { setOpenVolunteerDrawer } from '@/lib/store/slices/appSlice'
 import { setInputs } from '@/lib/store/slices/formSlice'
 import { store } from '@/lib/store/store'
+import { useVolunteerDrawer } from '@/stores/drawers'
 import { motion } from 'framer-motion'
 import { Heart } from 'lucide-react'
 import Link from 'next/link'
@@ -47,7 +47,7 @@ export const MissionSection = ({ mission }) => {
             >
               <button
                 onClick={() => {
-                  store.dispatch(setOpenVolunteerDrawer())
+                  useVolunteerDrawer.getState().open()
                   store.dispatch(setInputs({ formName: 'volunteerForm', data: { type: 'VOLUNTEER', subject: '' } }))
                 }}
                 aria-label={mission?.button1Text ?? 'Volunteer with us'}

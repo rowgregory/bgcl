@@ -1,15 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { X, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-react'
+import { X, AlertTriangle, CheckCircle, RefreshCw, AlertCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { store, useApplicationSelector, useFormSelector } from '@/lib/store/store'
-import { setCloseCancelSubscriptionDrawer } from '@/lib/store/slices/appSlice'
 import { formatDate } from '@/lib/utils/date-utils'
 import { cancelStripeSubscription } from '@/lib/actions/stripe/cancelStripeSubscription'
 import { useRouter } from 'next/navigation'
-import { showToast } from '@/lib/store/slices/toastSlice'
-import { setIsLoading } from '@/lib/store/slices/formSlice'
+import { formatCurrency } from '@/lib/utils/currency.utils'
+import { useCancelSubscriptionDrawer } from '@/stores/drawers'
 
 const cancellationReasons = [
   { value: 'too_expensive', label: 'Too expensive' },
@@ -22,66 +20,75 @@ const cancellationReasons = [
   { value: 'other', label: 'Other reason' }
 ]
 
-const formatCurrency = (amount: number, currency: string = 'usd') => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency.toUpperCase()
-  }).format(amount / 100)
-}
-
 export default function CancelSubscriptionDrawer() {
-  const { cancelSubscriptionDrawer, cancelSubscriptionDetails } = useApplicationSelector()
-  const [step, setStep] = useState<'confirm' | 'reason' | 'processing' | 'success'>(
-    cancelSubscriptionDrawer ? 'confirm' : 'confirm'
-  )
+  const open = useCancelSubscriptionDrawer((s) => s.isOpen)
+  const cancelSubscriptionDetails = useCancelSubscriptionDrawer((s) => s.data)
+  const onClose = useCancelSubscriptionDrawer((s) => s.close)
+
+  const [step, setStep] = useState<'confirm' | 'reason' | 'processing' | 'success'>('confirm')
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedReason, setSelectedReason] = useState<string>('')
   const [feedback, setFeedback] = useState<string>('')
-  const { isLoading } = useFormSelector()
-  const onClose = () => store.dispatch(setCloseCancelSubscriptionDrawer())
+  const [errorMsg, setErrorMsg] = useState<string>('')
   const router = useRouter()
+
+  const resetState = () => {
+    setStep('confirm')
+    setSelectedReason('')
+    setFeedback('')
+    setErrorMsg('')
+  }
 
   const handleClose = () => {
     if (!isLoading) {
-      setStep('confirm')
-      setSelectedReason('')
-      setFeedback('')
+      resetState()
       onClose()
     }
   }
 
+  // Closing from the success step also refreshes, so the parent list reflects
+  // the cancellation.
+  const handleDone = () => {
+    resetState()
+    onClose()
+    router.refresh()
+  }
+
   const handleContinueToReason = () => {
+    setErrorMsg('')
     setStep('reason')
   }
 
   const handleConfirmCancel = async () => {
     try {
-      store.dispatch(setIsLoading(true))
+      setIsLoading(true)
+      setErrorMsg('')
+      setStep('processing')
 
       await cancelStripeSubscription(cancelSubscriptionDetails.subscriptionId, selectedReason, feedback)
 
-      router.refresh()
-      setStep('confirm')
-      setSelectedReason('')
-      setFeedback('')
-      onClose()
-      store.dispatch(showToast({ message: 'Successfully canceled subscription' }))
+      setStep('success')
     } catch {
-      store.dispatch(showToast({ message: 'Failed to cancel subscription', type: 'error' }))
+      // stay in the drawer and surface the failure inline
+      setStep('reason')
+      setErrorMsg(
+        'We were unable to cancel your subscription. Please try again, or contact us if the problem continues.'
+      )
     } finally {
-      store.dispatch(setIsLoading(false))
+      setIsLoading(false)
     }
   }
 
   return (
     <AnimatePresence>
-      {cancelSubscriptionDrawer && (
+      {open && (
         <>
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={handleClose}
+            onClick={step === 'success' ? handleDone : handleClose}
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
           />
 
@@ -101,9 +108,11 @@ export default function CancelSubscriptionDrawer() {
                 {step === 'processing' && 'Cancelling...'}
                 {step === 'success' && 'Cancelled Successfully'}
               </h2>
-              {!isLoading && (
+
+              {step !== 'processing' && (
                 <button
-                  onClick={handleClose}
+                  onClick={step === 'success' ? handleDone : handleClose}
+                  aria-label="Close"
                   className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
                 >
                   <X className="w-5 h-5 dark:text-neutral-400 text-neutral-600" />
@@ -137,7 +146,7 @@ export default function CancelSubscriptionDrawer() {
                     <div className="p-4 dark:bg-neutral-800/50 bg-neutral-50 rounded-xl">
                       <p className="text-sm dark:text-neutral-500 text-neutral-600 mb-1">Next Billing Date</p>
                       <p className="text-lg font-semibold dark:text-white text-neutral-900">
-                        {formatDate(cancelSubscriptionDetails?.nextBillingDate)}
+                        {formatDate(new Date(cancelSubscriptionDetails?.nextBillingDate))}
                       </p>
                     </div>
 
@@ -154,7 +163,7 @@ export default function CancelSubscriptionDrawer() {
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-red-500 mt-0.5">•</span>
-                          <span>Your recurring donation will stop supporting Boys & Girls Club of Lynn</span>
+                          <span>Your recurring donation will stop supporting Boys &amp; Girls Club of Lynn</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-green-500 mt-0.5">•</span>
@@ -169,9 +178,29 @@ export default function CancelSubscriptionDrawer() {
               {/* Step 2: Reason & Feedback */}
               {step === 'reason' && (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                  {/* Inline error (replaces the failure toast) */}
+                  <AnimatePresence>
+                    {errorMsg && (
+                      <motion.div
+                        role="alert"
+                        aria-live="assertive"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+                          <p className="text-sm text-red-800 dark:text-red-300">{errorMsg}</p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   <div>
                     <p className="text-sm dark:text-neutral-400 text-neutral-600 mb-4">
-                      We're sorry to see you go. Please let us know why you're cancelling so we can improve.
+                      We&apos;re sorry to see you go. Please let us know why you&apos;re cancelling so we can improve.
                     </p>
 
                     <div className="space-y-3">
@@ -221,6 +250,8 @@ export default function CancelSubscriptionDrawer() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
+                  role="status"
+                  aria-live="polite"
                   className="flex flex-col items-center justify-center py-12"
                 >
                   <div className="w-16 h-16 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mb-4" />
@@ -231,11 +262,13 @@ export default function CancelSubscriptionDrawer() {
                 </motion.div>
               )}
 
-              {/* Step 4: Success */}
+              {/* Step 4: Success (replaces the success toast) */}
               {step === 'success' && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
+                  role="status"
+                  aria-live="polite"
                   className="flex flex-col items-center justify-center py-12"
                 >
                   <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
@@ -252,7 +285,7 @@ export default function CancelSubscriptionDrawer() {
             </div>
 
             {/* Footer Actions */}
-            {(step === 'confirm' || step === 'reason') && (
+            {step !== 'processing' && (
               <div className="p-6 border-t dark:border-neutral-800 border-neutral-200 space-y-3">
                 {step === 'confirm' && (
                   <>
@@ -295,6 +328,15 @@ export default function CancelSubscriptionDrawer() {
                       Go Back
                     </button>
                   </>
+                )}
+
+                {step === 'success' && (
+                  <button
+                    onClick={handleDone}
+                    className="w-full px-6 py-3 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg transition-colors"
+                  >
+                    Done
+                  </button>
                 )}
               </div>
             )}

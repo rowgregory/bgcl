@@ -1,36 +1,46 @@
 import { getTicketStatus } from '@/lib/utils/getTicketStatus'
 import { AnimatePresence, motion } from 'framer-motion'
 import { GRADIENTS, SUITS } from './CasinoUiElements'
-import { store, useCartSelector, useUiSelector } from '@/lib/store/store'
-import { addToCart, removeFromCart, updateQuantity } from '@/lib/store/slices/cartSlice'
 import { Minus, Plus, Trash2, X } from 'lucide-react'
 import Link from 'next/link'
 import useSoundEffect from '@/lib/hooks/useSoundEffect'
-import { setCloseCartDropdown } from '@/lib/store/slices/uiSlice'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
+import { useCartStore, useCartTotal } from '@/stores/useCartStore'
+import { useCartDropdown } from '@/stores/drawers'
 
 export function CasinoCartDropdown({ data }) {
-  const { soundOn, cartDropdown } = useUiSelector()
+  const soundOn = usePreferencesStore((s) => s.soundOn)
+
   const { play: decrease } = useSoundEffect('/sound-effects/casino-11.mp3', soundOn)
   const { play: increase } = useSoundEffect('/sound-effects/casino-16.mp3', soundOn)
   const { play: proceed } = useSoundEffect('/sound-effects/casino-17.mp3', soundOn)
   const { play: close } = useSoundEffect('/sound-effects/casual-click-pop-ui.mp3', soundOn)
   const { play: remove } = useSoundEffect('/sound-effects/casino-7.wav', soundOn)
-  const { items } = useCartSelector()
-  const total = items?.reduce((sum: number, i: any) => sum + i.price * i.quantity, 0)
+
+  const items = useCartStore((s) => s.items)
+  const addToCart = useCartStore((s) => s.addToCart)
+  const removeFromCart = useCartStore((s) => s.removeFromCart)
+  const updateQuantity = useCartStore((s) => s.updateQuantity)
+  const total = useCartTotal()
+
+  const isOpen = useCartDropdown((s) => s.isOpen)
+  const closeDropdown = useCartDropdown((s) => s.close)
+
+  const handleClose = () => {
+    closeDropdown()
+    close()
+  }
 
   return (
     <AnimatePresence>
-      {cartDropdown && (
+      {isOpen && (
         <>
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => {
-              store.dispatch(setCloseCartDropdown())
-              close()
-            }}
+            onClick={handleClose}
             className="fixed inset-0 z-40 backdrop-blur-sm"
             aria-hidden="true"
           />
@@ -66,10 +76,7 @@ export function CasinoCartDropdown({ data }) {
                 <p className="oswald text-sm font-black uppercase tracking-[0.15em] text-white/70">Your Cart</p>
               </div>
               <button
-                onClick={() => {
-                  store.dispatch(setCloseCartDropdown())
-                  close()
-                }}
+                onClick={handleClose}
                 aria-label="Close cart"
                 className="p-1.5 rounded-lg text-white/30 hover:text-white/70 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
               >
@@ -101,17 +108,15 @@ export function CasinoCartDropdown({ data }) {
                         <button
                           key={ticket.id}
                           onClick={() => {
-                            store.dispatch(
-                              addToCart({
-                                ticket: {
-                                  ...ticket,
-                                  eventId: data.id,
-                                  eventTitle: data.title,
-                                  ticketSalesEndDate: data.ticketSalesEndDate,
-                                  ticketSalesStartDate: data.ticketSalesStartDate
-                                },
-                                quantity: 1
-                              })
+                            addToCart(
+                              {
+                                ...ticket,
+                                eventId: data.id,
+                                eventTitle: data.title,
+                                ticketSalesStartDate: data.ticketSalesStartDate,
+                                ticketSalesEndDate: data.ticketSalesEndDate
+                              },
+                              1
                             )
                             increase()
                           }}
@@ -191,7 +196,7 @@ export function CasinoCartDropdown({ data }) {
                           </p>
                           <button
                             onClick={() => {
-                              store.dispatch(removeFromCart(item.ticketId))
+                              removeFromCart(item.ticketId)
                               remove()
                             }}
                             aria-label={`Remove ${item.ticketName} from cart`}
@@ -207,10 +212,10 @@ export function CasinoCartDropdown({ data }) {
                         <button
                           onClick={() => {
                             if (item.quantity <= 1) {
-                              store.dispatch(removeFromCart(item.ticketId))
+                              removeFromCart(item.ticketId)
                               remove()
                             } else {
-                              store.dispatch(updateQuantity({ ticketId: item.ticketId, quantity: item.quantity - 1 }))
+                              updateQuantity(item.ticketId, item.quantity - 1)
                               decrease()
                             }
                           }}
@@ -230,7 +235,7 @@ export function CasinoCartDropdown({ data }) {
 
                         <button
                           onClick={() => {
-                            store.dispatch(updateQuantity({ ticketId: item.ticketId, quantity: item.quantity + 1 }))
+                            updateQuantity(item.ticketId, item.quantity + 1)
                             increase()
                           }}
                           aria-label={`Increase quantity of ${item.ticketName}`}
@@ -263,7 +268,7 @@ export function CasinoCartDropdown({ data }) {
                 <Link
                   href="/checkout"
                   onClick={() => {
-                    store.dispatch(setCloseCartDropdown())
+                    closeDropdown()
                     proceed()
                   }}
                   className="oswald relative block w-full py-3 text-[13px] font-black uppercase tracking-widest text-white text-center overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 active:scale-[0.98] transition-transform"

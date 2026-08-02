@@ -1,11 +1,10 @@
 'use client'
 
-import { setCloseVolunteerDrawer } from '@/lib/store/slices/appSlice'
-import { store, useApplicationSelector } from '@/lib/store/store'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Heart, CheckCircle } from 'lucide-react'
 import VolunteerForm from '../forms/VolunteerForm'
 import { useState } from 'react'
+import { useVolunteerDrawer } from '@/stores/drawers'
 
 const benefits = [
   "Make a direct impact on young people's lives",
@@ -35,13 +34,13 @@ const steps = [
 ]
 
 export default function VolunteerDrawer({ programs }) {
-  const { volunteerDrawer } = useApplicationSelector()
-  const onClose = () => store.dispatch(setCloseVolunteerDrawer())
+  const { isOpen } = useVolunteerDrawer()
+  const onClose = () => useVolunteerDrawer.getState().close()
   const [activeTab, setActiveTab] = useState<'info' | 'form'>('info')
 
   return (
     <AnimatePresence>
-      {volunteerDrawer && (
+      {isOpen && (
         <>
           {/* Backdrop */}
           <motion.div

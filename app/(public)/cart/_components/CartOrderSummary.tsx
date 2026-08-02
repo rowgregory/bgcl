@@ -1,11 +1,8 @@
-import { CartItem, clearCart } from '@/lib/store/slices/cartSlice'
-import { useAppDispatch } from '@/lib/store/store'
+import { CartItem, useCartStore } from '@/stores/useCartStore'
 import { Lock, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
 
 export const CartOrderSummary = ({ items }: { items: CartItem[] }) => {
-  const dispatch = useAppDispatch()
-
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0)
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0)
 
@@ -69,7 +66,7 @@ export const CartOrderSummary = ({ items }: { items: CartItem[] }) => {
           </Link>
 
           <button
-            onClick={() => dispatch(clearCart())}
+            onClick={() => useCartStore.getState().clearCart()}
             aria-label="Clear all items from cart"
             className="w-full py-2 text-xs text-neutral-400 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 rounded-lg"
           >

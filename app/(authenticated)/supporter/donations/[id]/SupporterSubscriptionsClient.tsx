@@ -1,122 +1,14 @@
 'use client'
 
-import {
-  Calendar,
-  CreditCard,
-  XCircle,
-  CheckCircle,
-  RefreshCw,
-  AlertCircle,
-  Download,
-  FileText,
-  ArrowLeft
-} from 'lucide-react'
+import { Calendar, CreditCard, XCircle, CheckCircle, AlertCircle, Download, FileText, ArrowLeft } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { store } from '@/lib/store/store'
-import { setOpenCancelSubscriptionDrawer } from '@/lib/store/slices/appSlice'
+import { containerVariants, itemVariants } from '@/lib/constants/motion'
+import { SubscriptionClientProps } from '../../_types/subscription.types'
+import { formatCurrency } from '@/lib/utils/currency.utils'
+import { useCancelSubscriptionDrawer } from '@/stores/drawers'
 
 export const dynamic = 'force-dynamic'
-
-interface SubscriptionClientProps {
-  data: {
-    subscription: {
-      id: string
-      status: string
-      cancel_at_period_end: boolean
-      canceled_at: string | null
-      current_period_start: string | null
-      current_period_end: string | null
-      created: string | null
-      billing_cycle_anchor: string | null
-      days_until_due: number | null
-      collection_method: string
-      cancellation_details: {
-        comment: string | null
-        feedback: string | null
-        reason: string | null
-      } | null
-      items: Array<{
-        id: string
-        price: {
-          id: string
-          unit_amount: number
-          currency: string
-          recurring: {
-            interval: string
-            interval_count: number
-          }
-        }
-        quantity: number
-      }>
-      default_payment_method: {
-        id: string
-        type: string
-        card: {
-          brand: string
-          last4: string
-          exp_month: number
-          exp_year: number
-        } | null
-      } | null
-      latest_invoice: {
-        id: string
-        amount_due: number
-        amount_paid: number
-        status: string
-        created: string
-        hosted_invoice_url: string | null
-        invoice_pdf: string | null
-      } | null
-      trial_start: string | null
-      trial_end: string | null
-      metadata: Record<string, string>
-    }
-    order: {
-      id: string
-      type: string
-      status: string
-      totalAmount: number
-      customerName: string
-      customerEmail: string
-      customerPhone: string | null
-      recurringFrequency: string
-      paymentMethod: string
-      isRecurring: boolean
-      stripeSubscriptionId: string | null
-      paymentIntentId: string | null
-      nextBillingDate: string | null
-      paidAt: string | null
-      createdAt: string
-      updatedAt: string
-    } | null
-    isCancelled: boolean
-    willCancelAtPeriodEnd: boolean
-    currentPeriodEnd: string | null
-    isActive: boolean
-    isPastDue: boolean
-    isUnpaid: boolean
-  }
-}
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-}
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5 }
-  }
-}
 
 const formatDate = (dateString: string | null | undefined) => {
   if (!dateString || dateString === 'null' || dateString === 'undefined') return 'N/A'
@@ -131,35 +23,9 @@ const formatDate = (dateString: string | null | undefined) => {
   })
 }
 
-const formatCurrency = (amount: number, currency: string = 'usd') => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency.toUpperCase()
-  }).format(amount / 100)
-}
-
 export default function SupporterSubscriptionsClient({ data }: SubscriptionClientProps) {
+  const open = useCancelSubscriptionDrawer((s) => s.open)
   const { subscription, order, isCancelled, willCancelAtPeriodEnd, isActive, isPastDue, isUnpaid } = data
-
-  // const handleReactivateSubscription = async () => {
-  //   if (!confirm('Are you sure you want to reactivate your subscription?')) return
-
-  //   try {
-  //     setActionLoading(true)
-  //     const response = await fetch(`/api/subscriptions/${subscription.id}/reactivate`, {
-  //       method: 'POST'
-  //     })
-
-  //     if (!response.ok) throw new Error('Failed to reactivate subscription')
-
-  //     alert('Subscription reactivated successfully. Please refresh the page.')
-  //     window.location.reload()
-  //   } catch (err: any) {
-  //     alert('Error: ' + err.message)
-  //   } finally {
-  //     setActionLoading(false)
-  //   }
-  // }
 
   const getStatusBadge = () => {
     if (isCancelled) {
@@ -237,7 +103,7 @@ export default function SupporterSubscriptionsClient({ data }: SubscriptionClien
                 </div>
                 <div className="space-y-2">
                   <h1 className="text-4xl md:text-5xl font-black dark:text-white text-neutral-900 leading-tight">
-                    {formatCurrency(item?.price.unit_amount || amount * 100, item?.price.currency)}/
+                    {formatCurrency(item?.price.unit_amount || amount * 100)}/
                     {frequency === 'year' || frequency === 'yearly' ? 'year' : 'month'}
                   </h1>
                   <p className="dark:text-neutral-500 text-neutral-600 text-lg">
@@ -384,7 +250,7 @@ export default function SupporterSubscriptionsClient({ data }: SubscriptionClien
                 <div>
                   <p className="text-sm dark:text-neutral-500 text-neutral-600 mb-1">Amount</p>
                   <p className="text-2xl font-bold dark:text-white text-neutral-900">
-                    {formatCurrency(subscription.latest_invoice.amount_paid, item?.price.currency)}
+                    {formatCurrency(subscription.latest_invoice.amount_paid)}
                   </p>
                 </div>
                 <div>
@@ -473,15 +339,13 @@ export default function SupporterSubscriptionsClient({ data }: SubscriptionClien
               {!isCancelled && !willCancelAtPeriodEnd && (
                 <div className="flex justify-start">
                   <motion.button
-                    onClick={() =>
-                      store.dispatch(
-                        setOpenCancelSubscriptionDrawer({
-                          subscriptionAmount: data?.subscription?.items?.[0]?.price?.unit_amount,
-                          nextBillingDate: data.subscription.current_period_end,
-                          subscriptionId: subscription.id
-                        })
-                      )
-                    }
+                    onClick={() => {
+                      open({
+                        subscriptionAmount: data?.subscription?.items?.[0]?.price?.unit_amount,
+                        nextBillingDate: data.subscription.current_period_end,
+                        subscriptionId: subscription.id
+                      })
+                    }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className="px-6 py-2.5 bg-red-600 hover:bg-red-700 disabled:bg-neutral-400 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
@@ -491,33 +355,12 @@ export default function SupporterSubscriptionsClient({ data }: SubscriptionClien
                   </motion.button>
                 </div>
               )}
-
-              {willCancelAtPeriodEnd && !isCancelled && (
-                <motion.button
-                  // onClick={handleReactivateSubscription}
-                  // disabled={actionLoading}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-neutral-400 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
-                >
-                  <RefreshCw className="w-5 h-5" />
-                  Reactivate Subscription
-                </motion.button>
-              )}
-
               {isCancelled && (
                 <div className="text-center py-4 dark:text-neutral-500 text-neutral-600">
                   This subscription has been cancelled. Thank you for your support!
                 </div>
               )}
             </div>
-
-            {/* {actionLoading && (
-              <div className="mt-4 flex items-center justify-center gap-2 dark:text-neutral-500 text-neutral-600">
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                Processing...
-              </div>
-            )} */}
           </motion.div>
 
           {/* Support */}

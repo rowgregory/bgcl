@@ -1,27 +1,23 @@
 'use client'
 
 import { useEffect, ReactNode } from 'react'
-import { setIsDark } from '../store/slices/appSlice'
-import { store } from '../store/store'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // Check initial preference
     const checkTheme = () => {
       const dark =
         document.documentElement.classList.contains('dark') || window.matchMedia('(prefers-color-scheme: dark)').matches
-      store.dispatch(setIsDark(dark))
+      usePreferencesStore.getState().setIsDark(dark)
     }
 
     checkTheme()
 
-    // Listen for system preference changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = () => checkTheme()
 
     mediaQuery.addEventListener('change', handleChange)
 
-    // Listen for manual class changes (if you add toggle later)
     const observer = new MutationObserver(checkTheme)
     observer.observe(document.documentElement, {
       attributes: true,

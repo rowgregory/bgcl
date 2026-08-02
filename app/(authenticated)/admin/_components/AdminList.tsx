@@ -1,17 +1,14 @@
 'use client'
 
 import useGenericListReorder from '@/lib/hooks/useGenericListReorder'
-import { initialCampaignFormState } from '@/lib/initial-states/campaign'
-import { initialClosingFormState } from '@/lib/initial-states/closing'
-import { initialProgramFormState } from '@/lib/initial-states/program'
-import { setOpenCampaignDrawer } from '@/lib/store/slices/campaignSlice'
-import { setOpenClosingDrawer } from '@/lib/store/slices/closingSlice'
-import { setOpenClubResourceDrawer } from '@/lib/store/slices/clubResourceSlice'
-import { setInputs } from '@/lib/store/slices/formSlice'
-import { setOpenNewsletterDrawer } from '@/lib/store/slices/newsletterSlice'
-import { setOpenNewsDrawer } from '@/lib/store/slices/newsSlice'
-import { setOpenProgramDrawer } from '@/lib/store/slices/programSlice'
-import { store } from '@/lib/store/store'
+import {
+  useProgramDrawer,
+  useNewsDrawer,
+  useNewsletterDrawer,
+  useClubResourceDrawer,
+  useCampaignDrawer,
+  useClosingDrawer
+} from '@/stores/drawers'
 import { AlertCircle, Check, Plus } from 'lucide-react'
 import { useState } from 'react'
 import AdminListItem from './AdminListItem'
@@ -58,31 +55,28 @@ export function AdminListPage<T extends AdminListItem>({
     }
   }
 
-  const handleCreate = async () => {
+  const handleCreate = () => {
     switch (itemType) {
       case 'program':
-        store.dispatch(setOpenProgramDrawer())
-        store.dispatch(setInputs({ formName: 'programForm', data: initialProgramFormState }))
+        useProgramDrawer.getState().open()
         break
       case 'news':
-        store.dispatch(setOpenNewsDrawer())
+        useNewsDrawer.getState().open()
         break
       case 'newsletter':
-        store.dispatch(setOpenNewsletterDrawer())
+        useNewsletterDrawer.getState().open()
         break
       case 'club-resource':
-        store.dispatch(setOpenClubResourceDrawer())
+        useClubResourceDrawer.getState().open()
         break
       case 'campaign':
-        store.dispatch(setOpenCampaignDrawer())
-        store.dispatch(setInputs({ formName: 'campaignForm', data: initialCampaignFormState }))
+        useCampaignDrawer.getState().open()
         break
       case 'closing':
-        store.dispatch(setOpenClosingDrawer())
-        store.dispatch(setInputs({ formName: 'closingForm', data: initialClosingFormState }))
+        useClosingDrawer.getState().open()
         break
       case 'event':
-        router.push(`/admin/events/events/new`)
+        router.push('/admin/events/events/new')
         break
     }
   }

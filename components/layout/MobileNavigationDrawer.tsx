@@ -3,27 +3,26 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { store, useApplicationSelector } from '@/lib/store/store'
-import { setCloseMobileNavigation } from '@/lib/store/slices/appSlice'
 import Picture from '../_shared/Picture'
 import { X } from 'lucide-react'
 import { mainNavigationLinks } from '@/lib/constants/navigation.constants'
+import { useNavigationStore } from '@/stores/useNavigationStore'
 
 export default function MobileNavigationDrawer() {
   const pathname = usePathname()
-  const { mobileNavigation } = useApplicationSelector()
-  const handleClose = () => store.dispatch(setCloseMobileNavigation())
+  const isOpen = useNavigationStore((s) => s.mobileNavigation)
+  const onClose = () => useNavigationStore.getState().closeMobileNavigation()
 
   return (
     <AnimatePresence>
-      {mobileNavigation && (
+      {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
           className="fixed inset-0 z-120 2xl:hidden"
-          onClick={handleClose}
+          onClick={onClose}
         >
           {/* Backdrop */}
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" />
@@ -44,7 +43,7 @@ export default function MobileNavigationDrawer() {
               {/* Close button */}
               <div className="flex justify-end mb-4">
                 <button
-                  onClick={handleClose}
+                  onClick={onClose}
                   aria-label="Close navigation menu"
                   className="p-2 rounded-lg dark:text-neutral-400 text-neutral-500 dark:hover:bg-neutral-800 hover:bg-neutral-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                 >
@@ -74,7 +73,7 @@ export default function MobileNavigationDrawer() {
                   <li key={item.label}>
                     <Link
                       href={item.href}
-                      onClick={handleClose}
+                      onClick={onClose}
                       aria-current={item.href === pathname ? 'page' : undefined}
                       className={`block px-4 py-3 rounded-lg font-bold text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
                         item.href === pathname

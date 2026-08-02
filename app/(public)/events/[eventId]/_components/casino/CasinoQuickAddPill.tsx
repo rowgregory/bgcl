@@ -1,11 +1,20 @@
-import { store, useCartSelector } from '@/lib/store/store'
 import { getTicketStatus } from '@/lib/utils/getTicketStatus'
 import { ITicket } from '@/types/entities/ticket'
 import { motion } from 'framer-motion'
-import { addToCart, setOpenAddToCartToast } from '@/lib/store/slices/cartSlice'
 import { Plus } from 'lucide-react'
 import { GRADIENTS, SUITS } from './CasinoUiElements'
 import useSoundEffect from '@/lib/hooks/useSoundEffect'
+import { useCartStore } from '@/stores/useCartStore'
+import { useAddToCartToast } from '@/stores/useAddToCartToast'
+
+type Props = {
+  ticket: ITicket
+  eventId: string
+  eventTitle: string
+  ticketSalesStartDate: Date
+  ticketSalesEndDate: Date
+  soundOn: boolean
+}
 
 export function CasinoQuickAddPill({
   ticket,
@@ -14,15 +23,8 @@ export function CasinoQuickAddPill({
   ticketSalesStartDate,
   ticketSalesEndDate,
   soundOn
-}: {
-  ticket: ITicket
-  eventId: string
-  eventTitle: string
-  ticketSalesStartDate: Date
-  ticketSalesEndDate: Date
-  soundOn: boolean
-}) {
-  const { items } = useCartSelector()
+}: Props) {
+  const items = useCartStore((s) => s.items)
   const { available } = getTicketStatus(ticket)
   const cartItem = items.find((i: any) => i.ticketId === ticket.id)
   const cartQty = cartItem?.quantity ?? 0
@@ -31,13 +33,15 @@ export function CasinoQuickAddPill({
   const type = ticket.ticketType ?? 'GENERAL'
   const grad = GRADIENTS[type] ?? GRADIENTS.GENERAL
   const suit = SUITS[type] ?? '♥'
+  const addToCart = useCartStore((s) => s.addToCart)
+  const show = useAddToCartToast((s) => s.show)
 
   const handleAdd = () => {
     if (!available) return
-    store.dispatch(
-      addToCart({ ticket: { ...ticket, eventId, eventTitle, ticketSalesStartDate, ticketSalesEndDate }, quantity: 1 })
-    )
-    store.dispatch(setOpenAddToCartToast({ ticket: { ...ticket, eventId, eventTitle }, quantity: 1 }))
+
+    addToCart({ ...ticket, eventId, eventTitle, ticketSalesStartDate, ticketSalesEndDate }, 1)
+
+    show({ ...ticket, eventId, eventTitle }, 1)
     play()
   }
 

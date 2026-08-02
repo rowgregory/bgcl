@@ -1,32 +1,36 @@
 import { GRADIENTS, SectionHeading } from './CasinoUiElements'
 import { motion } from 'framer-motion'
-import { store, useCartSelector, useUiSelector } from '@/lib/store/store'
-import { addToCart, setOpenAddToCartToast } from '@/lib/store/slices/cartSlice'
 import useSoundEffect from '@/lib/hooks/useSoundEffect'
 import { Clock } from 'lucide-react'
 import { TCasinoSponsorTiers } from '@/types/casino.types'
+import { useCartStore } from '@/stores/useCartStore'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
+import { useAddToCartToast } from '@/stores/useAddToCartToast'
 
 export function CasinoSponsorTiers({ data }: TCasinoSponsorTiers) {
-  const { items } = useCartSelector()
-  const { soundOn } = useUiSelector()
+  const soundOn = usePreferencesStore((s) => s.soundOn)
+
+  const items = useCartStore((s) => s.items)
+  const addToCart = useCartStore((s) => s.addToCart)
+
+  const show = useAddToCartToast((s) => s.show)
+
   const { play } = useSoundEffect('/sound-effects/casino-6.wav', soundOn)
 
   const handleAddToCart = (ticket: any) => {
-    store.dispatch(
-      addToCart({
-        ticket: {
-          ...ticket,
-          eventId: data.id,
-          eventTitle: data.title,
-          ticketSalesEndDate: data.ticketSalesEndDate,
-          ticketSalesStartDate: data.ticketSalesStartDate
-        },
-        quantity: 1
-      })
+    addToCart(
+      {
+        ...ticket,
+        eventId: data.id,
+        eventTitle: data.title,
+        ticketSalesEndDate: data.ticketSalesEndDate,
+        ticketSalesStartDate: data.ticketSalesStartDate
+      },
+      1
     )
-    store.dispatch(
-      setOpenAddToCartToast({ ticket: { ...ticket, eventId: data.id, eventTitle: data.title }, quantity: 1 })
-    )
+
+    show({ ...ticket, eventId: data.id, eventTitle: data.title }, 1)
+
     play()
   }
 

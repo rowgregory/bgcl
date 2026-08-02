@@ -29,7 +29,6 @@ import { PartnerDrawer } from '../../../components/drawers/PartnerDrawer'
 import { ProgramDrawer } from '../../../components/drawers/ProgramDrawer'
 import { TeamMemberDrawer } from '../../../components/drawers/TeamMemberDrawer'
 import { TicketDrawer } from '../../../components/drawers/TicketDrawer'
-import { AdminTicketOrderDrawer } from '../../../components/drawers/AdminTicketOrderDrawer'
 import { UserDrawer } from '../../../components/drawers/UserDrawer'
 import { ContactSubmissionDrawer } from '../../../components/drawers/ContactSubmissionDrawer'
 import AdminSidebar from '@/app/(authenticated)/admin/sidebar'
@@ -63,7 +62,7 @@ export const AdminLayoutClient: FC<ILayout> = ({ children, themes, isModalEnable
       <ActionMenuDropdown actionItems={dropdownActionItems(isModalEnabled)} isModalEnabled={isModalEnabled} />
       <FailedPaymentsDrawer />
       <DonationDrawer />
-      <AdminTicketOrderDrawer />
+
       <PartnerDrawer />
       <ContactSubmissionDrawer />
 

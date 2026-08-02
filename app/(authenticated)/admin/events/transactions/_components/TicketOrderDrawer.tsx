@@ -1,9 +1,9 @@
 'use client'
 
-import { setCloseTicketOrderDrawer } from '@/lib/store/slices/adminSlice'
-import { store, useAdminSelector } from '@/lib/store/store'
+import { StatusBadge } from '@/app/(authenticated)/admin/_components/StatusBadge'
 import { formatCurrency } from '@/lib/utils/currency.utils'
 import { formatDate } from '@/lib/utils/date-utils'
+import { IOrder } from '@/types/entities/order'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Calendar, MapPin, Ticket, User, FileText, Hash, Receipt, DollarSign } from 'lucide-react'
 
@@ -32,37 +32,14 @@ const Field = ({ label, value, mono = false }: { label: string; value: React.Rea
   </div>
 )
 
-// ── Status badge ──────────────────────────────────────────────────────────────
-const StatusBadge = ({ status }: { status: string }) => {
-  const map: Record<string, string> = {
-    CONFIRMED: 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400',
-    PENDING: 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400',
-    CANCELLED: 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400',
-    REFUNDED: 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-400',
-    FAILED: 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'
-  }
-  return (
-    <span
-      role="status"
-      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${map[status] ?? map.PENDING}`}
-    >
-      {status.toLowerCase()}
-    </span>
-  )
-}
-
-// ── Drawer ────────────────────────────────────────────────────────────────────
-
-export const AdminTicketOrderDrawer = () => {
-  const { order } = useAdminSelector()
+export const TicketOrderDrawer = ({ order, open, onClose }: { order: IOrder; open: boolean; onClose: () => void }) => {
   const event = order?.event ?? order?.orderItems?.[0]?.ticket?.event ?? null
   const totalQuantity = order?.orderItems?.reduce((sum, item) => sum + item.quantity, 0) ?? 0
   const billingAddress = order?.billingAddress as Record<string, string> | null
-  const onClose = () => store.dispatch(setCloseTicketOrderDrawer())
 
   return (
     <AnimatePresence>
-      {order && (
+      {open && (
         <>
           {/* Backdrop */}
           <motion.div

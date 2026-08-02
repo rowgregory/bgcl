@@ -2,33 +2,38 @@
 
 import { updateJobApplicationStatus } from '@/lib/actions/job-application/updateJobApplicationStatus'
 import { POSITION_LABELS, STATUS_OPTIONS, STATUS_STYLES } from '@/lib/constants/job-application.constants'
-import { setIsLoading } from '@/lib/store/slices/formSlice'
-import { showToast } from '@/lib/store/slices/toastSlice'
-import { setCloseJobApplicationDrawer, setOpenJobApplicationDrawer } from '@/lib/store/slices/uiSlice'
-import { store, useFormSelector, useUiSelector } from '@/lib/store/store'
+import { useEscapeKey } from '@/lib/hooks/useEscapeKey'
+import { useLockBodyScroll } from '@/lib/hooks/useLockBodyScroll'
+import { useJobApplicationDrawer } from '@/stores/drawers'
 import { ApplicationStatus, PositionType } from '@prisma/client'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export function JobApplicationDrawer() {
-  const { jobApplicationDrawer, application } = useUiSelector()
+  const isOpen = useJobApplicationDrawer((s) => s.isOpen)
+  const application = useJobApplicationDrawer((s) => s.data)
+  const open = useJobApplicationDrawer((s) => s.open)
+  const close = useJobApplicationDrawer((s) => s.close)
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
   const overlayRef = useRef<HTMLDivElement>(null)
-  const onClose = () => store.dispatch(setCloseJobApplicationDrawer())
-  const { isLoading } = useFormSelector()
   const router = useRouter()
+
+  const onClose = useCallback(() => close(), [close])
 
   const updateStatus = async (id: string, status: ApplicationStatus) => {
     try {
-      store.dispatch(setIsLoading(true))
+      setIsLoading(true)
+      setErrorMsg('')
       await updateJobApplicationStatus(id, status)
+      open({ ...application, status })
       router.refresh()
-      store.dispatch(showToast({ message: `Successfully updated status to ${status}` }))
-      store.dispatch(setOpenJobApplicationDrawer({ ...application, status }))
     } catch {
-      store.dispatch(showToast({ message: `Failed to update status to ${status}` }))
+      setErrorMsg(`Failed to update status to ${status}`)
     } finally {
-      store.dispatch(setIsLoading(false))
+      setIsLoading(false)
     }
   }
 
@@ -38,20 +43,17 @@ export function JobApplicationDrawer() {
     }
     document.addEventListener('keydown', handleKey)
     return () => document.removeEventListener('keydown', handleKey)
-  }, [])
+  }, [onClose])
 
-  useEffect(() => {
-    document.body.style.overflow = jobApplicationDrawer ? 'hidden' : ''
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [jobApplicationDrawer])
+  useLockBodyScroll(isOpen)
+
+  useEscapeKey(onClose, isOpen)
 
   if (!application) return null
 
   return (
     <AnimatePresence>
-      {jobApplicationDrawer && (
+      {isOpen && (
         <>
           {/* Overlay */}
           <motion.div
@@ -121,9 +123,16 @@ export function JobApplicationDrawer() {
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                  Click a status above to update this application. The currently active status is highlighted.
-                </p>
+
+                {errorMsg ? (
+                  <p role="alert" className="text-xs font-medium text-red-600 dark:text-red-400">
+                    {errorMsg}
+                  </p>
+                ) : (
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500">
+                    Click a status above to update this application. The currently active status is highlighted.
+                  </p>
+                )}
               </div>
 
               {/* Position & Background */}

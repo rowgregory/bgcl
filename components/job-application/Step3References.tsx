@@ -1,14 +1,18 @@
-import { motion } from 'framer-motion'
+'use client'
 
-export function Step3References({ formData, setFormData, errors }: any) {
-  const updateReference = (index: number, field: string, value: any) => {
-    const updatedReference = [...(formData.references || [])]
-    if (!updatedReference[index]) {
-      updatedReference[index] = {}
-    }
-    updatedReference[index][field] = value
-    setFormData({ ...formData, references: updatedReference })
-  }
+import { motion } from 'framer-motion'
+import { useFormContext, useFieldArray } from 'react-hook-form'
+import type { JobApplicationFormInput } from '@/lib/validations/job-application.validation'
+
+export function Step3References() {
+  const {
+    control,
+    register,
+    watch,
+    formState: { errors }
+  } = useFormContext<JobApplicationFormInput>()
+
+  const { fields } = useFieldArray({ control, name: 'references' })
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -24,7 +28,7 @@ export function Step3References({ formData, setFormData, errors }: any) {
 
       {/* References */}
       <ol className="space-y-4 sm:space-y-6 list-none p-0 m-0" aria-label="Reference entries">
-        {[0, 1, 2].map((index) => {
+        {fields.map((field, index) => {
           const refNum = index + 1
           const nameId = `ref-${index}-name`
           const positionId = `ref-${index}-position`
@@ -32,10 +36,12 @@ export function Step3References({ formData, setFormData, errors }: any) {
           const phoneId = `ref-${index}-phone`
           const emailId = `ref-${index}-email`
 
-          const workRelationshipLength = formData.references?.[index]?.workRelationship?.length || 0
+          // Nested errors: errors.references?.[index]?.field
+          const refErrors = errors.references?.[index]
+          const workRelationshipLength = watch(`references.${index}.workRelationship`)?.length ?? 0
 
           return (
-            <li key={index}>
+            <li key={field.id}>
               <motion.fieldset
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -62,19 +68,18 @@ export function Step3References({ formData, setFormData, errors }: any) {
                     <input
                       id={nameId}
                       type="text"
-                      value={formData.references?.[index]?.name || ''}
-                      onChange={(e) => updateReference(index, 'name', e.target.value)}
+                      {...register(`references.${index}.name`)}
                       aria-required="true"
-                      aria-invalid={!!errors[`name_${index}`]}
-                      aria-describedby={errors[`name_${index}`] ? `${nameId}-error` : undefined}
+                      aria-invalid={!!refErrors?.name}
+                      aria-describedby={refErrors?.name ? `${nameId}-error` : undefined}
                       autoComplete="off"
                       maxLength={255}
                       className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
                       placeholder="John Smith"
                     />
-                    {errors[`name_${index}`] && (
+                    {refErrors?.name && (
                       <p id={`${nameId}-error`} role="alert" className="text-red-500 text-xs sm:text-sm mt-1">
-                        {errors[`name_${index}`]}
+                        {refErrors.name.message}
                       </p>
                     )}
                   </div>
@@ -94,19 +99,18 @@ export function Step3References({ formData, setFormData, errors }: any) {
                     <input
                       id={positionId}
                       type="text"
-                      value={formData.references?.[index]?.positionAndCompany || ''}
-                      onChange={(e) => updateReference(index, 'positionAndCompany', e.target.value)}
+                      {...register(`references.${index}.positionAndCompany`)}
                       aria-required="true"
-                      aria-invalid={!!errors[`positionAndCompany_${index}`]}
-                      aria-describedby={errors[`positionAndCompany_${index}`] ? `${positionId}-error` : undefined}
+                      aria-invalid={!!refErrors?.positionAndCompany}
+                      aria-describedby={refErrors?.positionAndCompany ? `${positionId}-error` : undefined}
                       autoComplete="off"
                       maxLength={500}
                       className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
                       placeholder="Manager at Tech Company Inc."
                     />
-                    {errors[`positionAndCompany_${index}`] && (
+                    {refErrors?.positionAndCompany && (
                       <p id={`${positionId}-error`} role="alert" className="text-red-500 text-xs sm:text-sm mt-1">
-                        {errors[`positionAndCompany_${index}`]}
+                        {refErrors.positionAndCompany.message}
                       </p>
                     )}
                   </div>
@@ -125,11 +129,10 @@ export function Step3References({ formData, setFormData, errors }: any) {
                     </label>
                     <textarea
                       id={relationshipId}
-                      value={formData.references?.[index]?.workRelationship || ''}
-                      onChange={(e) => updateReference(index, 'workRelationship', e.target.value)}
+                      {...register(`references.${index}.workRelationship`)}
                       aria-required="true"
-                      aria-invalid={!!errors[`workRelationship_${index}`]}
-                      aria-describedby={errors[`workRelationship_${index}`] ? `${relationshipId}-error` : undefined}
+                      aria-invalid={!!refErrors?.workRelationship}
+                      aria-describedby={refErrors?.workRelationship ? `${relationshipId}-error` : undefined}
                       maxLength={1000}
                       className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent min-h-24 transition-colors resize-none"
                       placeholder="Senior Software Engineer - Led team of 5, managed product roadmap, improved performance by 40%"
@@ -141,9 +144,9 @@ export function Step3References({ formData, setFormData, errors }: any) {
                     >
                       {1000 - workRelationshipLength} characters remaining
                     </p>
-                    {errors[`workRelationship_${index}`] && (
+                    {refErrors?.workRelationship && (
                       <p id={`${relationshipId}-error`} role="alert" className="text-red-500 text-xs sm:text-sm mt-1">
-                        {errors[`workRelationship_${index}`]}
+                        {refErrors.workRelationship.message}
                       </p>
                     )}
                   </div>
@@ -164,19 +167,18 @@ export function Step3References({ formData, setFormData, errors }: any) {
                       <input
                         id={phoneId}
                         type="tel"
-                        value={formData.references?.[index]?.phone || ''}
-                        onChange={(e) => updateReference(index, 'phone', e.target.value)}
+                        {...register(`references.${index}.phone`)}
                         aria-required="true"
-                        aria-invalid={!!errors[`phone_${index}`]}
-                        aria-describedby={errors[`phone_${index}`] ? `${phoneId}-error` : undefined}
+                        aria-invalid={!!refErrors?.phone}
+                        aria-describedby={refErrors?.phone ? `${phoneId}-error` : undefined}
                         autoComplete="off"
                         maxLength={20}
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
                         placeholder="(781) 593-1772"
                       />
-                      {errors[`phone_${index}`] && (
+                      {refErrors?.phone && (
                         <p id={`${phoneId}-error`} role="alert" className="text-red-500 text-xs sm:text-sm mt-1">
-                          {errors[`phone_${index}`]}
+                          {refErrors.phone.message}
                         </p>
                       )}
                     </div>
@@ -195,19 +197,18 @@ export function Step3References({ formData, setFormData, errors }: any) {
                       <input
                         id={emailId}
                         type="email"
-                        value={formData.references?.[index]?.email || ''}
-                        onChange={(e) => updateReference(index, 'email', e.target.value)}
+                        {...register(`references.${index}.email`)}
                         aria-required="true"
-                        aria-invalid={!!errors[`email_${index}`]}
-                        aria-describedby={errors[`email_${index}`] ? `${emailId}-error` : undefined}
+                        aria-invalid={!!refErrors?.email}
+                        aria-describedby={refErrors?.email ? `${emailId}-error` : undefined}
                         autoComplete="off"
                         maxLength={255}
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-700 dark:border-neutral-600 dark:text-white bg-white border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
                         placeholder="reference@example.com"
                       />
-                      {errors[`email_${index}`] && (
+                      {refErrors?.email && (
                         <p id={`${emailId}-error`} role="alert" className="text-red-500 text-xs sm:text-sm mt-1">
-                          {errors[`email_${index}`]}
+                          {refErrors.email.message}
                         </p>
                       )}
                     </div>
@@ -218,6 +219,13 @@ export function Step3References({ formData, setFormData, errors }: any) {
           )
         })}
       </ol>
+
+      {/* Array-level error (e.g. "3 references are required") */}
+      {errors.references?.root && (
+        <p role="alert" className="text-red-500 text-xs sm:text-sm">
+          {errors.references.root.message}
+        </p>
+      )}
 
       {/* Info Box */}
       <div

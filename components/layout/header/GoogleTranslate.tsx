@@ -3,8 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { Globe, ChevronDown } from 'lucide-react'
-import { store } from '@/lib/store/store'
-import { setIsNotSpanish, setIsSpanish } from '@/lib/store/slices/appSlice'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
 
 const LANGUAGES = [
   { code: 'en', name: 'English' },
@@ -42,13 +41,7 @@ export default function GoogleTranslate() {
   const syncLanguageState = useCallback(() => {
     const lang = getCurrentLanguage()
     setCurrentLang(lang)
-
-    // Update Redux state
-    if (lang === 'es') {
-      store.dispatch(setIsSpanish())
-    } else {
-      store.dispatch(setIsNotSpanish())
-    }
+    usePreferencesStore.getState().setIsSpanish(lang === 'es')
   }, [])
 
   useEffect(() => {
@@ -111,11 +104,7 @@ export default function GoogleTranslate() {
     setCurrentLang(langCode)
     setIsOpen(false)
 
-    if (langCode === 'es') {
-      store.dispatch(setIsSpanish())
-    } else {
-      store.dispatch(setIsNotSpanish())
-    }
+    usePreferencesStore.getState().setIsSpanish(langCode === 'es')
 
     // Retry mechanism with increasing delays
     const attemptTranslation = async (attempt: number = 0): Promise<boolean> => {

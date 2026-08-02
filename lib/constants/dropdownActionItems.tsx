@@ -15,10 +15,10 @@ import {
 import { setOpenProgramDrawer } from '@/lib/store/slices/programSlice'
 import { setOpenTeamMemberDrawer } from '../store/slices/teamMemberSlice'
 import { setOpenUserDrawer } from '../store/slices/userSlice'
-import { setOpenCampaignDrawer } from '../store/slices/campaignSlice'
 import { ActionCreatorWithoutPayload } from '@reduxjs/toolkit'
 import { setToggleModal } from '../actions/page/setToggleModal'
 import { setOpenEventDrawer } from '../store/slices/eventSlice'
+import { useCampaignDrawer } from '@/stores/drawers'
 
 type ActionHandler = ActionCreatorWithoutPayload | (() => void) | ((slug: string) => Promise<any>)
 
@@ -56,7 +56,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
     action: 'create-campaign',
     label: 'Initiate Campaign',
     icon: Fuel,
-    open: setOpenCampaignDrawer,
+    open: useCampaignDrawer.getState().open,
     isUnlocked: true,
     linkKey: '/admin/fuel-tank/overview'
   },
