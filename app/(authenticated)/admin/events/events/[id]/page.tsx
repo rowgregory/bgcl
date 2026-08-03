@@ -2,7 +2,7 @@ import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { redirect } from 'next/navigation'
 import { AdminEventDetailsClient } from './AdminEventDetailsClient'
-import { SerializedEvent } from '@/types/entities/event'
+import { SerializedEvent } from '@/types/event.types'
 
 interface Props {
   params: Promise<{ id: string }>

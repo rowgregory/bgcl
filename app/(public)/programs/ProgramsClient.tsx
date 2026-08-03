@@ -1,20 +1,20 @@
 'use client'
 
-import { IProgram } from '@/types/entities/program'
 import { motion } from 'framer-motion'
 import { ArrowRight, Download } from 'lucide-react'
 import Link from 'next/link'
 import Picture from '../../../components/_shared/Picture'
 import { containerVariants, itemVariants } from '@/lib/constants/motion'
-import { IClubResource } from '@/types/entities/club-resource'
+import { Resource } from '@/types/resource.types'
+import { Program } from '@prisma/client'
 
 export const ProgramsClient = ({
   programs,
   resources,
   pageData
 }: {
-  programs: IProgram[]
-  resources: IClubResource[]
+  programs: Program[]
+  resources: Resource[]
   pageData: any
 }) => {
   const t = pageData.sections.programs
@@ -51,7 +51,7 @@ export const ProgramsClient = ({
             aria-label="Available programs"
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 list-none p-0"
           >
-            {programs.map((program: IProgram, index: number) => (
+            {programs.map((program: Program, index: number) => (
               <motion.li
                 key={program.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -150,7 +150,7 @@ export const ProgramsClient = ({
             className="mb-12"
           >
             <h2 id="resources-heading" className="text-4xl font-black dark:text-white text-neutral-900 mb-4">
-              Club Resources
+              Resources
             </h2>
             <p className="text-lg dark:text-neutral-400 text-neutral-600">
               Access important documents, guides, and tools to make the most of your membership.
@@ -159,7 +159,7 @@ export const ProgramsClient = ({
 
           {/* Resources Grid */}
           <motion.ul
-            aria-label="Club resources"
+            aria-label="Resources"
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 list-none p-0"
             variants={containerVariants}
             initial="hidden"

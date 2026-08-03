@@ -12,13 +12,15 @@ import {
   ToggleRight,
   Trophy
 } from 'lucide-react'
-import { setOpenProgramDrawer } from '@/lib/store/slices/programSlice'
-import { setOpenTeamMemberDrawer } from '../store/slices/teamMemberSlice'
-import { setOpenUserDrawer } from '../store/slices/userSlice'
 import { ActionCreatorWithoutPayload } from '@reduxjs/toolkit'
 import { setToggleModal } from '../actions/page/setToggleModal'
-import { setOpenEventDrawer } from '../store/slices/eventSlice'
-import { useCampaignDrawer } from '@/stores/drawers'
+import {
+  useCampaignDrawer,
+  useEventDrawer,
+  useProgramDrawer,
+  useTeamMemberDrawer,
+  useUserDrawer
+} from '@/stores/drawers'
 
 type ActionHandler = ActionCreatorWithoutPayload | (() => void) | ((slug: string) => Promise<any>)
 
@@ -48,7 +50,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
     action: 'launch-program',
     label: 'Launch Program',
     icon: Rocket,
-    open: setOpenProgramDrawer,
+    open: useProgramDrawer.getState().open,
     isUnlocked: true,
     linkKey: ''
   },
@@ -71,7 +73,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
     action: 'create-event',
     label: 'Create Event',
     icon: Satellite,
-    open: setOpenEventDrawer,
+    open: useEventDrawer.getState().open,
     isUnlocked: true,
     linkKey: '/admin/events/overview'
   },
@@ -85,7 +87,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
         action: 'deploy-officer',
         label: 'Deploy Officer',
         icon: Crown,
-        open: setOpenTeamMemberDrawer,
+        open: useTeamMemberDrawer.getState().open,
         formName: 'teamMemberForm',
         initial: { role: 'officer' },
         isUnlocked: true
@@ -94,7 +96,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
         action: 'appoint-director',
         label: 'Appoint Director',
         icon: Crown,
-        open: setOpenTeamMemberDrawer,
+        open: useTeamMemberDrawer.getState().open,
         formName: 'teamMemberForm',
         initial: { role: 'director' },
         isUnlocked: true
@@ -103,7 +105,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
         action: 'station-corporator',
         label: 'Station Corporator',
         icon: Crown,
-        open: setOpenTeamMemberDrawer,
+        open: useTeamMemberDrawer.getState().open,
         formName: 'teamMemberForm',
         initial: { role: 'corporator' },
         isUnlocked: true
@@ -112,7 +114,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
         action: 'add-staff',
         label: 'Assign Admin Staff',
         icon: Radio,
-        open: setOpenTeamMemberDrawer,
+        open: useTeamMemberDrawer.getState().open,
         formName: 'teamMemberForm',
         initial: { role: 'admin_staff' },
         isUnlocked: true
@@ -121,7 +123,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
         action: 'dispatch-program-staff',
         label: 'Dispatch Program Staff',
         icon: Radio,
-        open: setOpenTeamMemberDrawer,
+        open: useTeamMemberDrawer.getState().open,
         formName: 'teamMemberForm',
         initial: { role: 'program_staff' },
         isUnlocked: true
@@ -130,7 +132,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
         action: 'mobilize-maintenance-staff',
         label: 'Mobilize Maintenance Staff',
         icon: Radio,
-        open: setOpenTeamMemberDrawer,
+        open: useTeamMemberDrawer.getState().open,
         formName: 'teamMemberForm',
         initial: { role: 'maintenance_staff' },
         isUnlocked: true
@@ -139,7 +141,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
         action: 'add-honoree',
         label: 'Induct Honoree',
         icon: Star,
-        open: setOpenTeamMemberDrawer,
+        open: useTeamMemberDrawer.getState().open,
         formName: 'teamMemberForm',
         initial: { role: 'honoree' },
         isUnlocked: true
@@ -148,7 +150,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
         action: 'add-youth-of-year',
         label: 'Crown Youth of Year',
         icon: Trophy,
-        open: setOpenTeamMemberDrawer,
+        open: useTeamMemberDrawer.getState().open,
         formName: 'teamMemberForm',
         initial: { role: 'youth' },
         isUnlocked: true
@@ -166,7 +168,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
         action: 'activate-admin',
         label: 'Activate Admin',
         icon: Crown,
-        open: setOpenUserDrawer,
+        open: useUserDrawer.getState().open,
         formName: 'userForm',
         initial: { role: 'ADMIN' },
         isUnlocked: true
@@ -175,7 +177,7 @@ const dropDownActionItems = (isModalEnabled: boolean): IActionItems[] => [
         action: 'activate-program',
         label: 'Create Program Staff',
         icon: Crown,
-        open: setOpenUserDrawer,
+        open: useUserDrawer.getState().open,
         formName: 'userForm',
         initial: { role: 'PROGRAM' },
         isUnlocked: true

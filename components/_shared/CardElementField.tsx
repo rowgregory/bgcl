@@ -1,13 +1,10 @@
 import { setInputs } from '@/lib/store/slices/formSlice'
-import { store, useApplicationSelector } from '@/lib/store/store'
+import { store } from '@/lib/store/store'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
 import { CardElement } from '@stripe/react-stripe-js'
 
-type Props = {
-  formName: string
-}
-
-export function CardElementField({ formName }: Props) {
-  const { isDark } = useApplicationSelector()
+export function CardElementField({ formName }: { formName: string }) {
+  const isDark = usePreferencesStore((s) => s.isDark)
 
   return (
     <div>

@@ -1,15 +1,16 @@
 'use client'
 
-import { IProgram } from '@/types/entities/program'
 import { motion } from 'framer-motion'
 import { ChevronLeft, Clock, Users, Calendar, MapPin, FileText, Stamp } from 'lucide-react'
 import Link from 'next/link'
 import FacilityClosings from '@/components/_shared/FacilityClosings'
-import { IClosing } from '@/types/entities/closing'
 import { useMemo } from 'react'
 import Picture from '@/components/_shared/Picture'
+import { Closing } from '@/types/closing.types'
+import { Program } from '@prisma/client'
+import { ProgramFormValues } from '@/lib/validations/program.validation'
 
-export const ProgramDetailsClient = ({ program, closings }: { program: IProgram; closings: IClosing[] }) => {
+export const ProgramDetailsClient = ({ program, closings }: { program: ProgramFormValues; closings: Closing[] }) => {
   const gradient = useMemo(() => {
     const gradients = [
       'from-sky-500 to-cyan-600',

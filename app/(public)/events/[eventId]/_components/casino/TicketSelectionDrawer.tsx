@@ -1,10 +1,8 @@
 'use client'
 
-import { setCloseTicketSelectionDrawer } from '@/lib/store/slices/ticketSlice'
-import { store, useTicketSelector } from '@/lib/store/store'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Minus, Plus, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Backdrop from '@/components/_shared/Backdrop'
 import { drawerVariants } from '@/lib/constants/motion'
 import useSoundEffect from '@/lib/hooks/useSoundEffect'
@@ -12,14 +10,21 @@ import Picture from '@/components/_shared/Picture'
 import { GRADIENTS, SUITS } from '@/app/(public)/events/[eventId]/_components/casino/CasinoUiElements'
 import { useCartStore } from '@/stores/useCartStore'
 import { useAddToCartToast } from '@/stores/useAddToCartToast'
+import { useTicketSelectionDrawer } from '@/stores/drawers'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
 
 export function TicketSelectionDrawer() {
   const [quantity, setQuantity] = useState(1)
-  const { ticket, ticketSelectionDrawer } = useTicketSelector()
-  const { play: increaseQuantity } = useSoundEffect('/sound-effects/casino-16.mp3', true)
-  const { play: decreaseQuantity } = useSoundEffect('/sound-effects/casino-11.mp3', true)
-  const { play: add } = useSoundEffect('/sound-effects/casino-14.wav', true)
-  const { play: close } = useSoundEffect('/sound-effects/casino-18.mp3', true)
+
+  const isOpen = useTicketSelectionDrawer((s) => s.isOpen)
+  const ticket = useTicketSelectionDrawer((s) => s.data)
+  const closeDrawer = useTicketSelectionDrawer((s) => s.close)
+
+  const soundOn = usePreferencesStore((s) => s.soundOn)
+  const { play: increaseQuantity } = useSoundEffect('/sound-effects/casino-16.mp3', soundOn)
+  const { play: decreaseQuantity } = useSoundEffect('/sound-effects/casino-11.mp3', soundOn)
+  const { play: add } = useSoundEffect('/sound-effects/casino-14.wav', soundOn)
+  const { play: close } = useSoundEffect('/sound-effects/casino-18.mp3', soundOn)
 
   const type = ticket?.ticketType ?? 'GENERAL'
   const grad = GRADIENTS[type] ?? GRADIENTS.GENERAL
@@ -28,20 +33,28 @@ export function TicketSelectionDrawer() {
   const maxAvailable = (ticket?.totalQuantity ?? 0) - (ticket?.quantitySold ?? 0)
   const canIncrease = quantity < maxAvailable
 
+  // Reset the quantity each time a new ticket is opened
+  useEffect(() => {
+    setQuantity(1)
+  }, [ticket])
+
   const onClose = () => {
-    store.dispatch(setCloseTicketSelectionDrawer())
+    closeDrawer()
+    close()
   }
 
   const handleAddToCart = () => {
+    if (!ticket) return
+
     useCartStore.getState().addToCart(ticket, quantity)
-    add()
-    onClose()
     useAddToCartToast.getState().show(ticket, quantity)
+    add()
+    closeDrawer()
   }
 
   return (
     <AnimatePresence>
-      {ticketSelectionDrawer && (
+      {isOpen && (
         <>
           <Backdrop
             onClose={() => {

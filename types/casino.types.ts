@@ -1,7 +1,7 @@
-import { CartItem } from '@/lib/store/slices/cartSlice'
 import { IPaymentMethod } from './entities/payment-method'
-import { ITicket } from './entities/ticket'
 import { IAddress } from './entities/address.types'
+import { CartItem } from '@/stores/useCartStore'
+import { Ticket } from '@prisma/client'
 
 export type TPublicEventDetailsClient = {
   data: any
@@ -11,7 +11,7 @@ export type TPublicEventDetailsClient = {
 }
 
 export type TCasinoEnhancedTickets = {
-  tickets: ITicket[]
+  tickets: Ticket[]
   id: string
   title: string
   ticketSalesEndDate: string
@@ -42,7 +42,7 @@ export type TCasinoHero = {
 }
 
 export type TCasinoTicketMarquee = {
-  tickets: ITicket[]
+  tickets: Ticket[]
   eventId: string
   eventTitle: string
   ticketSalesStartDate: Date

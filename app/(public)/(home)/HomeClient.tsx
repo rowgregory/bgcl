@@ -1,15 +1,15 @@
 'use client'
 
-import { IProgram } from '@/types/entities/program'
 import { Hero } from './_components/Hero'
 import { HomePrograms } from './_components/HomePrograms'
 import { MissionSection } from '../../../components/home/MissionSection'
 import FacilitySection from '../../../components/home/FacilitySection'
 import { IHero } from '@/types/entities/hero'
+import { Program } from '@prisma/client'
 
 interface HomeClientProps {
   initialPageData?: any
-  programs: IProgram[]
+  programs: Program[]
   hero: IHero
 }
 

@@ -13,14 +13,13 @@ import {
   STEP_FIELDS
 } from '@/lib/validations/job-application.validation'
 import { FORM_STEPS } from '@/lib/constants/job-application.constants'
-import { Step1PositionBackground } from '@/components/job-application/Step1PositionBackground'
-import { Step2PersonalInfo } from '@/components/job-application/Step2PersonalInfo'
-import { Step3References } from '@/components/job-application/Step3References'
-import { Step4DrivingInfo } from '@/components/job-application/Step4DrivingInfo'
-import { Step5Resume } from '@/components/job-application/Step5Resume'
-import { Step6Certification } from '@/components/job-application/Step6Certification'
+import { Step1PositionBackground } from '@/app/(public)/get-involved/_components/Step1PositionBackground'
+import { Step2PersonalInfo } from '@/app/(public)/get-involved/_components/Step2PersonalInfo'
+import { Step3References } from '@/app/(public)/get-involved/_components/Step3References'
+import { Step4DrivingInfo } from '@/app/(public)/get-involved/_components/Step4DrivingInfo'
+import { Step5Resume } from '@/app/(public)/get-involved/_components/Step5Resume'
+import { Step6Certification } from '@/app/(public)/get-involved/_components/Step6Certification'
 import { createJobApplication } from '@/lib/actions/job-application/createJobApplication'
-import { CreateJobApplicationInput } from '@/types/entities/job-application'
 import z from 'zod'
 
 const DEFAULT_VALUES: Partial<JobApplicationFormInput> = {
@@ -57,7 +56,7 @@ export default function PublicGetInvolvedClient({ pageData }) {
   } = methods
 
   const submit = handleSubmit(async (values) => {
-    const result = await createJobApplication(values as unknown as CreateJobApplicationInput)
+    const result = await createJobApplication(values)
 
     if (!result.success || !result.jobApplicationId) {
       setError('root', { message: result.error ?? 'Something went wrong. Please try again.' })

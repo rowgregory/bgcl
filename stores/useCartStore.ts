@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { ITicket } from '@/types/entities/ticket'
-import { TicketType } from '@prisma/client'
+import { Ticket, TicketType } from '@prisma/client'
 
 export interface CartItem {
   ticketId: string
@@ -19,12 +18,18 @@ export interface CartItem {
   guestCount: number
 }
 
+type AddToCartTicket = Ticket & {
+  eventTitle: string
+  ticketSalesStartDate: Date | null
+  ticketSalesEndDate: Date | null
+}
+
 interface CartState {
   items: CartItem[]
   isCheckingOut: boolean
   lastUpdated: string | null
 
-  addToCart: (ticket: ITicket, quantity: number) => void
+  addToCart: (ticket: AddToCartTicket, quantity: number) => void
   removeFromCart: (ticketId: string) => void
   updateQuantity: (ticketId: string, quantity: number) => void
   clearCart: () => void

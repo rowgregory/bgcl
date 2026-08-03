@@ -3,12 +3,10 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2, AlertCircle, Dice5 } from 'lucide-react'
-import { ITicket } from '@/types/entities/ticket'
 import { getTicketStatus } from '@/lib/utils/getTicketStatus'
-import { store } from '@/lib/store/store'
-import { hydrateTicket, setOpenTicketSelectionDrawer } from '@/lib/store/slices/ticketSlice'
-import { setSelectedEvent } from '@/lib/store/slices/eventSlice'
-import { IEvent } from '@/types/entities/event'
+import { EventWithTickets } from '@/types/event.types'
+import { useTicketSelectionDrawer } from '@/stores/drawers'
+import { SelectableTicket } from '@/types/ticket.types'
 
 // ── Per-type visual config ────────────────────────────────────────────────────
 const TYPE_THEME: Record<
@@ -62,9 +60,10 @@ const TYPE_THEME: Record<
 }
 
 // ── Single ticket card ─────────────────────────────────────────────────────────
-export function CasinoTicketCard({ ticket }: { ticket: ITicket & { eventId: string; eventTitle: string } }) {
+export function CasinoTicketCard({ ticket }: { ticket: SelectableTicket }) {
   const [hovered, setHovered] = useState(false)
   const { available, message } = getTicketStatus(ticket)
+  const open = useTicketSelectionDrawer((s) => s.open)
 
   const isSponsorship = ticket.ticketType === 'SPONSORSHIP'
   const isRaffle = ticket.ticketType === 'RAFFLE'
@@ -77,9 +76,7 @@ export function CasinoTicketCard({ ticket }: { ticket: ITicket & { eventId: stri
 
   const handleSelect = () => {
     if (!available) return
-    store.dispatch(hydrateTicket(ticket))
-    store.dispatch(setSelectedEvent(ticket.eventId))
-    store.dispatch(setOpenTicketSelectionDrawer())
+    open(ticket)
   }
 
   return (
@@ -441,12 +438,12 @@ export function CasinoTicketCard({ ticket }: { ticket: ITicket & { eventId: stri
 }
 
 // ── All tickets grid (no tabs — all visible) ──────────────────────────────────
-export function CasinoTicketGrid({ data, items }: { data: IEvent; items: any[] }) {
+export function CasinoTicketGrid({ data }: { data: EventWithTickets }) {
   const tickets = [
-    ...data.tickets.filter((t: ITicket) => t.ticketType === 'RAFFLE'),
-    ...data.tickets.filter((t: ITicket) => t.ticketType === 'TOURNAMENT'),
-    ...data.tickets.filter((t: ITicket) => !t.ticketType || t.ticketType === 'GENERAL'),
-    ...data.tickets.filter((t: ITicket) => t.ticketType === 'SPONSORSHIP')
+    ...data.tickets.filter((t) => t.ticketType === 'RAFFLE'),
+    ...data.tickets.filter((t) => t.ticketType === 'TOURNAMENT'),
+    ...data.tickets.filter((t) => !t.ticketType || t.ticketType === 'GENERAL'),
+    ...data.tickets.filter((t) => t.ticketType === 'SPONSORSHIP')
   ]
 
   return (
@@ -470,7 +467,7 @@ export function CasinoTicketGrid({ data, items }: { data: IEvent; items: any[] }
           gap: 24
         }}
       >
-        {tickets.map((ticket: ITicket) => (
+        {tickets.map((ticket: SelectableTicket) => (
           <CasinoTicketCard key={ticket.id} ticket={{ ...ticket, eventId: data.id, eventTitle: data.title }} />
         ))}
       </div>

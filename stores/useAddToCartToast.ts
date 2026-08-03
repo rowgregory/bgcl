@@ -1,11 +1,13 @@
 import { create } from 'zustand'
-import { ITicket } from '@/types/entities/ticket'
+import type { Ticket } from '@prisma/client'
+
+type ToastTicket = Ticket & { eventTitle?: string }
 
 interface AddToCartToastState {
   isOpen: boolean
-  ticket: ITicket | null
+  ticket: ToastTicket | null
   quantity: number
-  show: (ticket: ITicket, quantity: number) => void
+  show: (ticket: ToastTicket, quantity: number) => void
   hide: () => void
 }
 

@@ -2,60 +2,72 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
-import { CreateNewsletterInput } from '@/types/entities/newsletter'
 import { revalidatePath } from 'next/cache'
+import { newsletterSchema } from '@/lib/validations/newsletter.validation'
 
-export async function getNextNewsletterOrder(): Promise<number> {
-  try {
-    const lastNewsletter = await prisma.newsletter.findFirst({
-      orderBy: { order: 'desc' },
-      select: { order: true }
-    })
+export async function createNewsletter(input: unknown) {
+  const parsed = newsletterSchema.safeParse(input)
 
-    return (lastNewsletter?.order ?? 0) + 1
-  } catch (error) {
-    return 0
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0]
+    return {
+      success: false,
+      error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid newsletter data'
+    }
   }
-}
 
-export async function createNewsletter(data: CreateNewsletterInput) {
+  const data = parsed.data
+
   try {
-    const order = await getNextNewsletterOrder()
-
-    // Check if newsletter already exists for this month/year
-    const existingNewsletter = await prisma.newsletter.findUnique({
-      where: {
-        month_year: {
-          month: data.month,
-          year: Number(data.year)
-        }
-      }
+    const existing = await prisma.newsletter.findUnique({
+      where: { month_year: { month: data.month, year: data.year } },
+      select: { id: true }
     })
 
-    if (existingNewsletter) {
+    if (existing) {
       return {
         success: false,
         error: `Newsletter for ${data.month} ${data.year} already exists`
       }
     }
 
-    await prisma.newsletter.create({
+    // Place new newsletters at the end of the list
+    const lastNewsletter = await prisma.newsletter.findFirst({
+      orderBy: { order: 'desc' },
+      select: { order: true }
+    })
+
+    const newsletter = await prisma.newsletter.create({
       data: {
         month: data.month,
-        year: Number(data.year),
+        year: data.year,
         pdfUrl: data.pdfUrl,
-        order
+        order: (lastNewsletter?.order ?? -1) + 1
       }
     })
 
     revalidatePath('/', 'layout')
 
-    return { success: true }
+    await createLog('info', 'Newsletter created', {
+      newsletterId: newsletter.id,
+      month: newsletter.month,
+      year: newsletter.year
+    })
+
+    return { success: true, data: newsletter }
   } catch (error) {
+    // month_year is @@unique — covers the race with the check above
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
+      return {
+        success: false,
+        error: `Newsletter for ${data.month} ${data.year} already exists`
+      }
+    }
+
     await createLog('error', 'Failed to create newsletter', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      month: data.month,
       year: data.year,
-      month: data.month
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
     return {

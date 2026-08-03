@@ -1,4 +1,3 @@
-// src/store/slices/toastSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface ToastState {

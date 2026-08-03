@@ -1,24 +1,35 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { trimAndTransformData } from '../../utils/trimAndTransformData'
 import { createLog } from '../log/createLog'
-import { CreateCampaignInput } from '@/types/entities/campaign'
 import { getActor } from '../user/getActor'
 import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
 import { revalidatePath } from 'next/cache'
+import { campaignSchema } from '@/lib/validations/campaign.validation'
 
-export async function createCampaign(data: CreateCampaignInput) {
+export async function createCampaign(input: unknown) {
+  // Validate on the server too — never trust the client
+  const parsed = campaignSchema.safeParse(input)
+
+  console.log('PARSED: ', parsed)
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: parsed.error.issues[0]?.message ?? 'Invalid campaign data'
+    }
+  }
+
+  const v = parsed.data
+
   try {
-    const processedData = trimAndTransformData(data, {
-      dateFields: ['startDate', 'endDate'],
-      numberFields: ['goalAmount', 'currentAmount'],
-      nullableFields: ['image', 'externalLink', 'endDate'],
-      ignoreFields: ['id', 'createdAt', 'updatedAt']
-    })
-
     const campaign = await prisma.campaign.create({
-      data: processedData
+      data: {
+        ...v,
+        startDate: new Date(v.startDate),
+        endDate: v.endDate ? new Date(v.endDate) : null,
+        externalLink: v.externalLink || null
+      }
     })
 
     const [actor, context] = await Promise.all([getActor(), getRequestContext()])
@@ -37,7 +48,7 @@ export async function createCampaign(data: CreateCampaignInput) {
   } catch (error) {
     await createLog('error', 'Failed to create campaign', {
       error: error instanceof Error ? error.message : 'Unknown error',
-      name: data.name
+      name: v.name
     })
 
     return {

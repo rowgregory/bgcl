@@ -1,53 +1,58 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { trimAndTransformData } from '../../utils/trimAndTransformData'
 import { createLog } from '../log/createLog'
-import { UpdateCampaignInput } from '@/types/entities/campaign'
+import { getActor } from '../user/getActor'
+import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
 import { revalidatePath } from 'next/cache'
+import { campaignSchema } from '@/lib/validations/campaign.validation'
 
-export async function updateCampaign(data: UpdateCampaignInput) {
-  try {
-    const campaignId = data.id
+export async function updateCampaign(id: string, input: unknown) {
+  if (!id) {
+    return { success: false, error: 'Campaign ID is required.' }
+  }
 
-    if (!campaignId) {
-      return {
-        success: false,
-        error: 'Campaign ID is required.'
-      }
+  // Validate on the server too — never trust the client
+  const parsed = campaignSchema.safeParse(input)
+
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0]
+    return {
+      success: false,
+      error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid campaign data'
     }
+  }
 
-    // Process and trim data
-    const processedData = trimAndTransformData(data, {
-      dateFields: ['startDate', 'endDate'],
-      numberFields: ['goalAmount', 'currentAmount'],
-      nullableFields: ['image', 'externalLink', 'endDate'],
-      ignoreFields: ['id', 'createdAt', 'updatedAt', 'isUpdating']
+  const v = parsed.data
+
+  try {
+    const campaign = await prisma.campaign.update({
+      where: { id },
+      data: {
+        ...v,
+        startDate: new Date(v.startDate),
+        endDate: v.endDate ? new Date(v.endDate) : null,
+        externalLink: v.externalLink || null
+      }
     })
 
-    // Filter out empty values
-    const cleanData = Object.entries(processedData).reduce((acc, [key, value]) => {
-      if (value !== null && value !== undefined && value !== '') {
-        acc[key] = value
-      }
-      return acc
-    }, {} as any)
+    const [actor, context] = await Promise.all([getActor(), getRequestContext()])
+    const message = await buildLogMessage('updated a campaign', actor, context)
 
-    if (Object.keys(cleanData).length === 0) {
-      throw new Error('No valid data to update')
-    }
-
-    await prisma.campaign.update({
-      where: { id: campaignId },
-      data: cleanData
+    await createLog('info', message, {
+      campaignId: campaign.id,
+      name: campaign.name,
+      goalAmount: campaign.goalAmount,
+      ...context
     })
 
     revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {
-    await createLog('error', 'Failed to update update', {
-      error: error instanceof Error ? error.message : 'Failed to update campaign'
+    await createLog('error', 'Failed to update campaign', {
+      campaignId: id,
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
     return {

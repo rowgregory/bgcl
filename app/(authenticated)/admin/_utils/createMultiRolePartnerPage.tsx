@@ -1,8 +1,13 @@
 import { getPartnersByTier } from '@/lib/actions/partner/getPartnerByTier'
 import { PartnerTier } from '@prisma/client'
-import { PartnerList } from '@/app/(authenticated)/admin/_components/PartnerList'
+import { PartnerList } from '@/app/(authenticated)/admin/the-library/_components/PartnerList'
 
-export function createMultiRolePartnerPage(tiers: Array<{ id: PartnerTier; label: string }>, pageTitle: string) {
+interface TierGroup {
+  id: PartnerTier
+  label: string
+}
+
+export function createMultiRolePartnerPage(tiers: TierGroup[], pageTitle: string) {
   return {
     metadata: { title: `${pageTitle} - Admin` },
     default: async function Page() {

@@ -1,19 +1,26 @@
 'use client'
 
-import { store } from '@/lib/store/store'
-import { setOpenDonationDrawer } from '@/lib/store/slices/dashboardSlice'
 import { motion } from 'framer-motion'
 import { User, Mail, Calendar, CreditCard, RefreshCw, AlertCircle, Check, Tag } from 'lucide-react'
 import { formatDate } from '@/lib/utils/date-utils'
-import { IOrder } from '@/types/entities/order'
+import { useDonationDrawer } from '@/stores/drawers'
+import { DonationWithRelations } from '../_types/donation.types'
 
-export default function DonationsTransactionOrderRow({ order, index }: { order: IOrder; index: number }) {
+export default function DonationsTransactionOrderRow({
+  order,
+  index
+}: {
+  order: DonationWithRelations
+  index: number
+}) {
   const isFailed = order?.status === 'FAILED'
   const isCancelled = order?.status === 'CANCELLED'
 
+  const open = useDonationDrawer((s) => s.open)
+
   return (
     <motion.tr
-      onClick={() => store.dispatch(setOpenDonationDrawer(order))}
+      onClick={() => open(order)}
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}

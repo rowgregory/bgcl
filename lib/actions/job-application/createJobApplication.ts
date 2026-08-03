@@ -1,23 +1,24 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { CreateJobApplicationInput } from '@/types/entities/job-application'
 import { createLog } from '../log/createLog'
 import sendAdminNotification from '../../utils/sendAdminNotification'
 import { resend } from '../../resend/resend'
 import { jobApplicationConfirmationEmail } from '../../email-templates/job-applicant.template'
+import { JobApplicationFormValues } from '@/lib/validations/job-application.validation'
 
-export const createJobApplication = async (data: CreateJobApplicationInput) => {
+export const createJobApplication = async (data: JobApplicationFormValues) => {
   try {
-    const { references, ...applicationData } = data
+    const { references, languages, licenseExpiration, resumeUploadedAt, ...applicationData } = data
 
     const jobApplication = await prisma.jobApplication.create({
       data: {
         ...applicationData,
+        languages: Array.isArray(languages) ? languages.join(', ') : languages,
+        licenseExpiration: licenseExpiration ? new Date(licenseExpiration) : null,
+        resumeUploadedAt: resumeUploadedAt ? new Date(resumeUploadedAt) : null,
         submissionStatus: 'COMPLETE',
-        references: {
-          create: references
-        }
+        references: { create: references }
       },
       include: {
         references: true

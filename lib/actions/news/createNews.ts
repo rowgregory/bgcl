@@ -2,11 +2,26 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
-import { CreateNewsInput } from '@/types/entities/news'
 import { revalidatePath } from 'next/cache'
+import { newsSchema } from '@/lib/validations/news.validation'
 
-export async function createNews(data: CreateNewsInput) {
+export async function createNews(input: unknown) {
+  const parsed = newsSchema.safeParse(input)
+
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0]
+    return {
+      success: false,
+      error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid news data'
+    }
+  }
+
+  const data = parsed.data
+
   try {
+    // Place new items at the end of the list
+    const lastNews = await prisma.news.findFirst({ orderBy: { order: 'desc' } })
+
     const news = await prisma.news.create({
       data: {
         title: data.title,
@@ -14,8 +29,8 @@ export async function createNews(data: CreateNewsInput) {
         paragraph1: data.paragraph1 || null,
         paragraph2: data.paragraph2 || null,
         paragraph3: data.paragraph3 || null,
-        order: data.order ?? 0,
-        externalLink: data.externalLink || null
+        externalLink: data.externalLink || null,
+        order: (lastNews?.order ?? -1) + 1
       }
     })
 

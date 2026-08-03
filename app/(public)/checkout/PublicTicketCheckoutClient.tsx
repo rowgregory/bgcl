@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { store, useCartSelector, useFormSelector } from '@/lib/store/store'
+import { store, useFormSelector } from '@/lib/store/store'
 import { TicketCheckoutForm } from '@/app/(public)/checkout/_components/TicketCheckoutForm'
 import { useSession } from 'next-auth/react'
 import { IPaymentMethod } from '@/types/entities/payment-method'
@@ -17,6 +17,7 @@ import { TicketCheckoutOrderSummary } from './_components/TicketCheckoutOrderSum
 import { CheckoutStep1 } from '@/components/public/checkout/CheckoutStep1'
 import { CheckoutStepIndicator } from '@/components/public/checkout/CheckoutStepIndicator'
 import { CheckoutStep2 } from '@/components/public/checkout/CheckoutStep2'
+import { useCartStore } from '@/stores/useCartStore'
 
 type IPublicCheckoutClient = {
   savedCards: IPaymentMethod[]
@@ -30,7 +31,7 @@ export function PublicTicketCheckoutClient({ savedCards, userAddress, userName }
   const router = useRouter()
 
   // ── Store ─────────────────────────────────────────────────────────────────
-  const { items } = useCartSelector()
+  const items = useCartStore((s) => s.items)
   const session = useSession()
   const isAuthed = session.status === 'authenticated'
   const { forms } = useFormSelector()

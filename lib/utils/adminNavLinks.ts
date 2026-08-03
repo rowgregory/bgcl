@@ -62,7 +62,7 @@ export const adminNavigationLinkData = (
       icon: Library,
       label: 'The Library',
       path: '/admin/the-library/programs',
-      description: 'Newsletters & Club Resources',
+      description: 'Newsletters & Resources',
       active: isStringInPath(path, 'the-library')
     }
   ]

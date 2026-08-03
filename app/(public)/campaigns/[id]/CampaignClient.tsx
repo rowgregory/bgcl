@@ -1,15 +1,15 @@
 'use client'
 
-import { ICampaign } from '@/types/entities/campaign'
 import { motion } from 'framer-motion'
 import { Heart, Users, Target, Calendar, Share2, ArrowLeft, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import Picture from '@/components/_shared/Picture'
 import { formatDate } from '@/lib/utils/date-utils'
 import { MotionLink } from '@/components/_shared/MotionLink'
+import { CampaignWithCount } from '@/types/campaign.types'
 
 interface CampaignPageProps {
-  campaign: ICampaign
+  campaign: CampaignWithCount
 }
 
 export function CampaignClient({ campaign }: CampaignPageProps) {

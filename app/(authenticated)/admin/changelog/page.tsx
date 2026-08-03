@@ -1979,7 +1979,7 @@ const changelogData: ChangelogEntry[] = [
         type: 'feature' as ChangeType,
         title: 'Server Actions for CRUD Operations',
         description:
-          'Added server actions to create, update, and delete News, Newsletters, Contact Submissions (Volunteer & Contact Form), Club Resources, and Job Applications, streamlining backend operations and improving admin workflow.',
+          'Added server actions to create, update, and delete News, Newsletters, Contact Submissions (Volunteer & Contact Form), Resources, and Job Applications, streamlining backend operations and improving admin workflow.',
         impact: 'high' as ImpactLevel
       },
       {

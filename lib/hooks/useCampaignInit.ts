@@ -1,8 +1,8 @@
-import { ICampaign } from '@/types/entities/campaign'
 import { useEffect } from 'react'
 import { setDonateCheckoutForm as setForm } from '../utils/setDonateCheckoutForm'
+import { CampaignWithCount } from '@/types/campaign.types'
 
-export function useCampaignInit(campaignName: string | undefined, campaigns: ICampaign[]) {
+export function useCampaignInit(campaignName: string | undefined, campaigns: CampaignWithCount[]) {
   useEffect(() => {
     if (!campaigns?.length) return
 

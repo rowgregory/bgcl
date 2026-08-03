@@ -3,14 +3,14 @@
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, DollarSign, Tag } from 'lucide-react'
-import StatChip from '../../../../../components/_shared/StatChip'
+import StatChip from '@/components/_shared/StatChip'
 import DonationsTransactionOrderRow from '../_components/DonationsTransactionOrderRow'
-import { IOrder } from '@/types/entities/order'
 import { formatCurrency } from '@/lib/utils/currency.utils'
+import { DonationWithRelations } from '../_types/donation.types'
 
 type FrequencyFilter = 'all' | 'one_time' | 'monthly' | 'yearly'
 
-export default function DonationsTransactionsClient({ data }: { data: IOrder[] }) {
+export default function DonationsTransactionsClient({ data }: { data: DonationWithRelations[] }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [frequencyFilter, setFrequencyFilter] = useState<FrequencyFilter>('all')
   const [campaignFilter, setCampaignFilter] = useState<string>('all')

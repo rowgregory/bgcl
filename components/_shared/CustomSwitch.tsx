@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { CreditCard, Eye, PersonStanding, Ticket, Zap } from 'lucide-react'
 
-interface CustomSwitchProps {
+export interface CustomSwitchProps {
   checked: boolean
   onChange: (checked: boolean) => void
   label: string

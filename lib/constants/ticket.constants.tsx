@@ -1,8 +1,6 @@
-import { TicketTemplate } from '@/types/entities/ticket'
+import { TicketTemplate } from '@/types/ticket.types'
 import { Users, Crown, Zap, Ticket, TrendingUp, Radio, Spade } from 'lucide-react'
 export const ticketTemplates: TicketTemplate[] = [
-  // ── Cash Madness 2026 ──────────────────────────────────────────────────────
-
   {
     id: 'cash-madness-raffle',
     name: 'Cash Madness Raffle Ticket',
@@ -15,7 +13,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 100,
       totalQuantity: 500,
       isPublished: true,
-      sortOrder: 0,
+
       ticketType: 'RAFFLE',
       isRaffleTicket: true,
       guestCount: 1
@@ -32,7 +30,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 50,
       totalQuantity: 50,
       isPublished: true,
-      sortOrder: 1,
+
       ticketType: 'TOURNAMENT',
       isRaffleTicket: false,
       guestCount: 1
@@ -49,7 +47,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 3000,
       totalQuantity: 6,
       isPublished: true,
-      sortOrder: 2,
+
       ticketType: 'SPONSORSHIP',
       isRaffleTicket: false,
       sponsorImpact:
@@ -76,7 +74,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 1500,
       totalQuantity: 8,
       isPublished: true,
-      sortOrder: 3,
+
       ticketType: 'SPONSORSHIP',
       isRaffleTicket: false,
       sponsorImpact: 'Provides 4 campers a full week of camp to enjoy all camp activities and forming friendships.',
@@ -100,7 +98,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 500,
       totalQuantity: 10,
       isPublished: true,
-      sortOrder: 4,
+
       ticketType: 'SPONSORSHIP',
       isRaffleTicket: false,
       sponsorImpact:
@@ -124,7 +122,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 250,
       totalQuantity: 10,
       isPublished: true,
-      sortOrder: 5,
+
       ticketType: 'SPONSORSHIP',
       isRaffleTicket: false,
       sponsorImpact: 'Helps support 1 camper to enjoy a full week of swimming, basketball, fishing, and more.',
@@ -146,7 +144,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 30,
       totalQuantity: 100,
       isPublished: true,
-      sortOrder: 0,
+
       ticketType: 'GENERAL',
       isRaffleTicket: false,
       guestCount: 1
@@ -163,7 +161,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 150,
       totalQuantity: 25,
       isPublished: true,
-      sortOrder: 1,
+
       ticketType: 'GENERAL',
       isRaffleTicket: false,
       guestCount: 1
@@ -180,7 +178,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 50,
       totalQuantity: 50,
       isPublished: true,
-      sortOrder: 2,
+
       ticketType: 'GENERAL',
       isRaffleTicket: false,
       guestCount: 1
@@ -197,7 +195,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 800,
       totalQuantity: 20,
       isPublished: true,
-      sortOrder: 3,
+
       ticketType: 'GENERAL',
       isRaffleTicket: false,
       guestCount: 1
@@ -214,7 +212,7 @@ export const ticketTemplates: TicketTemplate[] = [
       price: 0,
       totalQuantity: 50,
       isPublished: true,
-      sortOrder: 4,
+
       ticketType: 'GENERAL',
       isRaffleTicket: false,
       guestCount: 1

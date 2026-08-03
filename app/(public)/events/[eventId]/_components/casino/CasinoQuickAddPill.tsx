@@ -1,14 +1,14 @@
 import { getTicketStatus } from '@/lib/utils/getTicketStatus'
-import { ITicket } from '@/types/entities/ticket'
 import { motion } from 'framer-motion'
 import { Plus } from 'lucide-react'
 import { GRADIENTS, SUITS } from './CasinoUiElements'
 import useSoundEffect from '@/lib/hooks/useSoundEffect'
 import { useCartStore } from '@/stores/useCartStore'
 import { useAddToCartToast } from '@/stores/useAddToCartToast'
+import { Ticket } from '@prisma/client'
 
 type Props = {
-  ticket: ITicket
+  ticket: Ticket
   eventId: string
   eventTitle: string
   ticketSalesStartDate: Date

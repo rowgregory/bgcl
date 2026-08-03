@@ -1,12 +1,5 @@
-import { ChangeEvent, ReactNode } from 'react'
+import { ChangeEvent } from 'react'
 import { Errors, Inputs } from '@/lib/store/slices/formSlice'
-import { ITheme } from './entities/theme'
-
-export interface ILayout {
-  children: ReactNode
-  themes?: ITheme[]
-  isModalEnabled?: boolean
-}
 
 export interface IForm {
   errors: Errors

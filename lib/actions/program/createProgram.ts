@@ -2,53 +2,48 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
-import { CreateProgramInputs } from '@/types/entities/program'
 import { revalidatePath } from 'next/cache'
+import { programSchema, PROGRAM_NULLABLE_FIELDS } from '@/lib/validations/program.validation'
+import { emptyToNull } from '@/lib/utils/emptyToNull'
 
-export async function createProgram(data: CreateProgramInputs) {
-  try {
-    const createData: any = {
-      name: data.name,
-      frequency: 'Daily'
+export async function createProgram(input: unknown) {
+  const parsed = programSchema.safeParse(input)
+
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0]
+    return {
+      success: false,
+      error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid program data'
     }
+  }
 
-    // Add optional descriptions if they exist
-    if (data.ageGroup) createData.ageGroup = data.ageGroup
-    if (data.location) createData.location = data.location
-    if (data.dropOffEnd) createData.dropOffEnd = data.dropOffEnd
-    if (data.pickUpStart) createData.pickUpStart = data.pickUpStart
-    if (data.pickUpEnd) createData.pickUpEnd = data.pickUpEnd
-    if (data.datesAvailable) createData.datesAvailable = data.datesAvailable
-    if (data.license) createData.license = data.license
-    if (data.dropOffStart) createData.dropOffStart = data.dropOffStart
-    if (data.image) createData.image = data.image
-    if (data.imageTwo) createData.imageTwo = data.imageTwo
-    if (data.showAgeGroup) createData.showAgeGroup = data.showAgeGroup
-    if (data.additionalDetails) createData.additionalDetails = data.additionalDetails
-    if (data.showThemes) createData.showThemes = data.showThemes
-    if (data.themes) createData.themes = data.themes
-    if (data.descriptions) createData.descriptions = data.descriptions
-    if (data.externalLink) createData.externalLink = data.externalLink
-    if (data.isListed) createData.isListed = data.isListed
-    if (data.pdfLink) createData.pdfLink = data.pdfLink
-    if (data.pdfDescription) createData.pdfDescription = data.pdfDescription
+  const data = parsed.data
+
+  try {
+    const lastProgram = await prisma.program.findFirst({
+      orderBy: { order: 'desc' },
+      select: { order: true }
+    })
 
     const program = await prisma.program.create({
-      data: createData
+      data: {
+        ...emptyToNull(data, PROGRAM_NULLABLE_FIELDS),
+        order: (lastProgram?.order ?? -1) + 1
+      }
     })
+
+    revalidatePath('/', 'layout')
 
     await createLog('info', 'Program created successfully', {
       programId: program.id,
       name: program.name
     })
 
-    revalidatePath('/', 'layout')
-
-    return { success: true }
+    return { success: true, data: program }
   } catch (error) {
     await createLog('error', 'Failed to create program', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      name: data.name
+      name: data.name,
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
     return {

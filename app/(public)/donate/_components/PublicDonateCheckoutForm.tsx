@@ -18,7 +18,6 @@ import { useCampaignInit } from '@/lib/hooks/useCampaignInit'
 import { Step3DonationAmountSection } from '@/app/(public)/donate/_components/Step3DonationAmountSection'
 
 export function PublicDonateCheckoutForm({ campaignName, campaigns, savedCards, inputs, setStep }) {
-  // ── Store ─────────────────────────────────────────────────────────────────
   const session = useSession()
   const isAuthed = session.status === 'authenticated'
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { store, useCartSelector } from '@/lib/store/store'
+import { store } from '@/lib/store/store'
 import { motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import { IPaymentMethod } from '@/types/entities/payment-method'
@@ -19,6 +19,7 @@ import { setHideConfetti, setShowConfetti } from '@/lib/store/slices/uiSlice'
 import { TicketCheckoutSalesWindowNotice } from './TicketCheckoutSalesWindowNotice'
 import CustomSwitch from '@/components/_shared/CustomSwitch'
 import { setInputs } from '@/lib/store/slices/formSlice'
+import { useCartStore } from '@/stores/useCartStore'
 
 interface ICheckoutForm {
   savedCards: IPaymentMethod[]
@@ -27,7 +28,7 @@ interface ICheckoutForm {
 }
 
 export function TicketCheckoutForm({ savedCards, inputs, setStep }: ICheckoutForm) {
-  const { items } = useCartSelector()
+  const items = useCartStore((s) => s.items)
   const session = useSession()
   const isAuthed = session.status === 'authenticated'
 
@@ -56,8 +57,6 @@ export function TicketCheckoutForm({ savedCards, inputs, setStep }: ICheckoutFor
   const finalAmountDisplay = (amountInCents / 100).toFixed(2)
 
   const { handleSubmit } = useTicketCheckoutSubmit({ inputs, amountInCents, processingFee, usingSavedCard, fullName })
-
-  // const salesStartDate = new Date(Date.now() + 10000).toISOString()
 
   const salesStartDate = items[0]?.ticketSalesStartDate
   const salesEndDate = items[0]?.ticketSalesEndDate

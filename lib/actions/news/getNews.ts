@@ -1,8 +1,8 @@
 import prisma from '@/prisma/client'
-import { INews } from '@/types/entities/news'
 import { createLog } from '../log/createLog'
+import { News } from '@prisma/client'
 
-export const getNews = async (): Promise<INews[]> => {
+export const getNews = async (): Promise<News[]> => {
   try {
     const news = await prisma.news.findMany({
       orderBy: { order: 'asc' }

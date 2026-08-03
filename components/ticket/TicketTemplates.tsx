@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { motion } from 'framer-motion'
-import { TicketTemplate } from '@/types/entities/ticket'
+import { TicketTemplate } from '@/types/ticket.types'
 import { ticketTemplates } from '@/lib/constants/ticket.constants'
 
 export interface TicketTemplatesProps {

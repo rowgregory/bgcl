@@ -6,12 +6,12 @@ import { Briefcase, Heart, Trophy } from 'lucide-react'
 import { containerVariants, itemVariants } from '@/lib/constants/motion'
 import Picture from '@/components/_shared/Picture'
 import { store } from '@/lib/store/store'
-import { setOpenVolunteerDrawer } from '@/lib/store/slices/appSlice'
 import YouthOfTheYearSection from '@/app/(public)/award-winners/_components/YouthOfTheYearSection'
+import { useVolunteerDrawer } from '@/stores/drawers'
 
 const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
   const t = pageData?.sections?.awards
-
+  const open = useVolunteerDrawer((s) => open)
   return (
     <>
       <a
@@ -257,7 +257,7 @@ const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
                   type="button"
-                  onClick={() => store.dispatch(setOpenVolunteerDrawer())}
+                  onClick={open}
                   className="cursor-pointer px-8 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg transition-colors focus:outline-none focus:ring-4 focus:ring-sky-400 focus:ring-offset-2"
                 >
                   Volunteer

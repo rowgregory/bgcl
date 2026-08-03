@@ -1,5 +1,5 @@
 import { LucideIcon } from 'lucide-react'
-import { IUser } from './entities/user'
+import { UserWithAddress } from './user.types'
 
 export interface INavigationLink {
   id: string
@@ -14,5 +14,5 @@ export interface IAdminSidebar {
   setIsNavigationCollapsed: (isNavigationCollapsed: boolean) => void
   selectedPage: string
   links: INavigationLink[]
-  user: IUser | null
+  user: UserWithAddress | null
 }

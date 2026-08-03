@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
-import { ICampaign } from '@/types/entities/campaign'
 import { IAddress } from '@/types/entities/address.types'
 import { IPaymentMethod } from '@/types/entities/payment-method'
 import { useEffect, useState } from 'react'
@@ -18,9 +17,10 @@ import { PublicDonateCheckoutForm } from '@/app/(public)/donate/_components/Publ
 import { DonationFormLeftColumn } from '@/app/(public)/donate/_components/DonationFormLeftColumn'
 import { DonationFormHeader } from '@/app/(public)/donate/_components/DonationFormHeader'
 import { updatePhoneNumber } from '@/lib/actions/user/updatePhoneNumber'
+import { CampaignWithCount } from '@/types/campaign.types'
 
 type IPublicDonateClient = {
-  campaigns: ICampaign[]
+  campaigns: CampaignWithCount[]
   name: { firstName: string; lastName: string }
   phone: string
   address: IAddress

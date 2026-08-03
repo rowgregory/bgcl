@@ -1,16 +1,16 @@
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { useSession } from 'next-auth/react'
-import { useCartSelector } from '../store/store'
 import { usePaymentProcessor } from './usePaymentProcessor'
 import { setTicketCheckoutForm as setForm } from '../utils/setTicketCheckoutForm'
 import { createPaymentIntentForTicketCheckout } from '../actions/stripe/createPaymentIntentForTicketCheckout'
+import { useCartStore } from '@/stores/useCartStore'
 
 export function useTicketCheckoutSubmit({ inputs, amountInCents, processingFee, usingSavedCard, fullName }) {
   const stripe = useStripe()
   const elements = useElements()
   const session = useSession()
   const userEmail = session.data?.user?.email
-  const { items } = useCartSelector()
+  const items = useCartStore((s) => s.items)
   const { setupPusherListenerOneTime, getPaymentMethodId } = usePaymentProcessor()
 
   const pusherCallbacks = [

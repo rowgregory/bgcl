@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { eventTemplates } from '@/lib/constants/events.constants'
 import { motion } from 'framer-motion'
-import { EventTemplate } from '@/types/entities/event'
+import { EventTemplate } from '@/types/event.types'
 
 export interface EventTemplatesProps {
   onSelectTemplate: (templateData: EventTemplate['data']) => void

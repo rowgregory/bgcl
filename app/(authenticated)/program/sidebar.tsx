@@ -5,16 +5,16 @@ import { store } from '@/lib/store/store'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { signOut } from 'next-auth/react'
-import { setCloseProgramSidebar } from '@/lib/store/slices/dashboardSlice'
 import { setIsLoading } from '@/lib/store/slices/formSlice'
 import { showToast } from '@/lib/store/slices/toastSlice'
 import { programNavigationLinkData } from '@/lib/constants/programNavLinks'
+import { useProgramDrawer } from '@/stores/drawers'
 
 export const ProgramSidebar = () => {
   const pathname = usePathname()
   const session = useSession()
   const router = useRouter()
-  const onClose = () => store.dispatch(setCloseProgramSidebar())
+  const onClose = useProgramDrawer((s) => s.close)
 
   const handleLogout = async (e: { preventDefault: () => void }) => {
     e.preventDefault()

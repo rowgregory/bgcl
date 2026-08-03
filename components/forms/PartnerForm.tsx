@@ -95,70 +95,8 @@ export default function PartnerForm({ inputs, errors, isUpdating, onClose, handl
                   </p>
                 )}
               </div>
-
-              {/* External Link */}
-              {/* <div>
-                <label htmlFor="partner-link" className={labelClass}>
-                  Website URL
-                </label>
-                <input
-                  id="partner-link"
-                  type="url"
-                  name="externalLink"
-                  value={(inputs.externalLink as string) || ''}
-                  onChange={handleInput}
-                  placeholder="https://example.com"
-                  aria-describedby={errors?.externalLink ? 'link-error' : undefined}
-                  className={inputClass}
-                />
-                {errors?.externalLink && (
-                  <p id="link-error" role="alert" className="mt-2 text-sm text-red-500 dark:text-red-400">
-                    {errors.externalLink}
-                  </p>
-                )}
-              </div> */}
-
-              {/* Description */}
-              {/* <div>
-                <label htmlFor="partner-description" className={labelClass}>
-                  Description
-                </label>
-                <textarea
-                  id="partner-description"
-                  name="description"
-                  value={(inputs.description as string) || ''}
-                  onChange={handleInput}
-                  placeholder="Brief description of the partner and their contributions"
-                  rows={3}
-                  aria-describedby={errors?.description ? 'description-error' : undefined}
-                  className={`${inputClass} resize-none`}
-                />
-                {errors?.description && (
-                  <p id="description-error" role="alert" className="mt-2 text-sm text-red-500 dark:text-red-400">
-                    {errors.description}
-                  </p>
-                )}
-              </div> */}
             </div>
           </section>
-
-          {/* Media & Display */}
-          {/* <section>
-            <div className="mb-8">
-              <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-4"> Media &amp; Display</h3>
-              <div className="grid grid-cols-2 gap-6">
-                <ImageUpload
-                  errors={errors}
-                  formName="partnerForm"
-                  inputs={inputs}
-                  isLoading={isLoading}
-                  fieldName="image"
-                />
-              </div>
-            </div>
-          </section> */}
-
-          {/* Visibility */}
           <section>
             <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-4">Visibility</h3>
             <div className="space-y-3">
@@ -192,37 +130,6 @@ export default function PartnerForm({ inputs, errors, isUpdating, onClose, handl
                   />
                 </button>
               </div>
-
-              {/* isFeatured */}
-              {/* <div className="flex items-center justify-between bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg px-4 py-3">
-                <div>
-                  <p className="text-sm font-medium text-neutral-900 dark:text-white">Featured</p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                    Highlight this partner in the featured spotlight section
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={inputs.isFeatured as boolean}
-                  onClick={() =>
-                    store.dispatch(
-                      setInputs({ formName: 'partnerForm', data: { ...inputs, isFeatured: !inputs?.isFeatured } })
-                    )
-                  }
-                  className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-800 ${
-                    inputs.isFeatured ? 'bg-sky-600' : 'bg-neutral-300 dark:bg-neutral-600'
-                  }`}
-                >
-                  <span className="sr-only">Toggle featured status</span>
-                  <span
-                    aria-hidden="true"
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-                      inputs.isFeatured ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div> */}
             </div>
           </section>
         </div>

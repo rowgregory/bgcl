@@ -78,3 +78,9 @@ export type SubscriptionClientProps = {
     isUnpaid: boolean
   }
 }
+
+export interface CancelSubscriptionDetails {
+  subscriptionId: string
+  subscriptionAmount: number
+  nextBillingDate: string
+}

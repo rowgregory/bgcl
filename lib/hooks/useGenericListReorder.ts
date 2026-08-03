@@ -5,7 +5,7 @@ import { store } from '../store/store'
 import { showToast } from '../store/slices/toastSlice'
 import { reorderNews } from '../actions/news/reorderNews'
 import { reorderNewsletters } from '../actions/newsletter/reorderNewsletters'
-import { reorderClubResources } from '../actions/club-resource/reorderClubResources'
+import { reorderResources } from '../actions/resource/reorderResources'
 import { reorderCampaigns } from '../actions/campaign/reorderCampaigns'
 import { reorderClosings } from '../actions/closing/reorderClosings'
 import { reorderEvents } from '../actions/event/reorderEvents'
@@ -15,13 +15,13 @@ interface ReorderItem {
   [key: string]: any
 }
 
-type ItemType = 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign' | 'closing' | 'event'
+type ItemType = 'program' | 'news' | 'newsletter' | 'resource' | 'campaign' | 'closing' | 'event'
 
 const actionMap: Record<ItemType, (items: any[]) => Promise<any>> = {
   program: async (items) => await reorderPrograms(items),
   news: async (items) => await reorderNews(items),
   newsletter: async (items) => await reorderNewsletters(items),
-  'club-resource': async (items) => await reorderClubResources(items),
+  resource: async (items) => await reorderResources(items),
   campaign: async (items) => await reorderCampaigns(items),
   closing: async (items) => await reorderClosings(items),
   event: async (items) => await reorderEvents(items)

@@ -1,7 +1,13 @@
-import { TeamMemberList } from '@/app/(authenticated)/admin/_components/TeamMemberList'
+import { TeamMemberList } from '@/app/(authenticated)/admin/the-library/_components/TeamMemberList'
 import { getTeamMembersByRole } from '@/lib/actions/team-member/getTeamMembersByRole'
+import { TeamMemberRole } from '@/lib/validations/team-member.validation'
 
-export function createMultiRoleAdminPage(roles: Array<{ id: string; label: string }>, pageTitle: string) {
+interface RoleGroup {
+  id: TeamMemberRole
+  label: string
+}
+
+export function createMultiRoleAdminPage(roles: RoleGroup[], pageTitle: string) {
   return {
     metadata: { title: `${pageTitle} - Admin` },
     default: async function Page() {

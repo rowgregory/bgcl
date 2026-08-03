@@ -12,11 +12,7 @@ export const referenceSchema = z.object({
     .trim()
     .min(1, { error: 'Phone number is required' })
     .regex(phoneRegex, { error: 'Invalid phone number' }),
-  email: z
-    .string()
-    .trim()
-    .min(1, { error: 'Email is required' })
-    .pipe(z.email({ error: 'Invalid email format' }))
+  email: z.email({ error: 'Enter a valid email address' })
 })
 
 // ── Per-step schemas (used to validate as the user advances) ──────────────────
@@ -30,14 +26,10 @@ export const step1Schema = z.object({
 
 export const step2Schema = z.object({
   applicantName: z.string().trim().min(1, { error: 'Name is required' }),
-  email: z
-    .string()
-    .trim()
-    .min(1, { error: 'Email is required' })
-    .pipe(z.email({ error: 'Invalid email format' })),
+  email: z.email({ error: 'Enter a valid email address' }),
   employmentType: z.enum(EmploymentType, { error: 'Employment type is required' }),
   hoursAvailable: z.string().trim().min(1, { error: 'Hours available is required' }),
-  languages: z.array(z.string()).transform((arr) => arr.join(', '))
+  languages: z.array(z.string()).default([])
 })
 
 export const step3Schema = z.object({
@@ -48,7 +40,7 @@ export const step4Schema = z
   .object({
     hasValidDriverLicense: z.boolean({ error: "Please indicate if you have a valid driver's license" }),
     licenseNumber: z.string().trim().optional(),
-    licenseExpiration: z.coerce.date().optional(),
+    licenseExpiration: z.string().trim().optional(),
     noLicenseReason: z.string().trim().optional(),
     licenseSuspended: z.boolean().default(false),
     suspensionExplanation: z.string().trim().optional(),
@@ -65,7 +57,7 @@ export const step4Schema = z
           path: ['licenseExpiration'],
           message: 'License expiration date is required'
         })
-      } else if (data.licenseExpiration < new Date()) {
+      } else if (new Date(data.licenseExpiration) < new Date()) {
         ctx.addIssue({ code: 'custom', path: ['licenseExpiration'], message: 'License is expired' })
       }
     } else {
@@ -91,7 +83,7 @@ export const step5Schema = z.object({
   resumeUrl: z.string().min(1, { error: 'Resume is required' }),
   resumeFileName: z.string().optional(),
   resumeFileSize: z.number().optional(),
-  resumeUploadedAt: z.coerce.date().optional()
+  resumeUploadedAt: z.string().trim().optional()
 })
 
 export const step6Schema = z.object({

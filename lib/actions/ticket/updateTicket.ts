@@ -2,50 +2,57 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
-import { UpdateTicketData } from '@/types/entities/ticket'
+import { revalidatePath } from 'next/cache'
+import { ticketSchema } from '@/lib/validations/ticket.validation'
 
-export async function updateTicket(id: string, body: UpdateTicketData) {
+export async function updateTicket(id: string, input: unknown) {
+  if (!id) {
+    return { success: false, error: 'Ticket ID is required.' }
+  }
+
+  const parsed = ticketSchema.safeParse(input)
+
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0]
+    return {
+      success: false,
+      error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid ticket data'
+    }
+  }
+
+  const data = parsed.data
+
   try {
-    const existingEventTicket = await prisma.ticket.findUnique({
-      where: { id }
-    })
+    const existingTicket = await prisma.ticket.findUnique({ where: { id } })
 
-    if (!existingEventTicket) {
-      await createLog('warn', 'Event ticket not found for update', {
-        ticketId: id
-      })
-      return { success: false, error: 'Event ticket not found', status: 404 }
+    if (!existingTicket) {
+      await createLog('warn', 'Ticket not found for update', { ticketId: id })
+      return { success: false, error: 'Ticket not found', status: 404 }
     }
 
-    const { totalQuantity, price, sortOrder, guestCount, ...rest } = body
-
-    const totalQuantityNumber = Number(body.totalQuantity)
-    const priceNumber = Number(body.price)
-    const sortOrderNumber = Number(body.sortOrder)
-    const guestCountNumer = Number(body.guestCount)
-
+    // `sortOrder`, `quantitySold`, and `quantityReserved` are managed elsewhere
+    // and deliberately left untouched.
     const ticket = await prisma.ticket.update({
       where: { id },
       data: {
-        totalQuantity: totalQuantityNumber,
-        price: priceNumber,
-        sortOrder: sortOrderNumber,
-        guestCount: guestCountNumer,
-        ...rest
+        ...data,
+        description: data.description || null,
+        sponsorImpact: data.sponsorImpact || null
       }
     })
 
-    await createLog('info', 'Event ticket updated successfully', {
+    revalidatePath('/', 'layout')
+
+    await createLog('info', 'Ticket updated successfully', {
       ticketId: ticket.id,
-      ticketName: ticket.name,
-      updatedFields: Object.keys(body)
+      ticketName: ticket.name
     })
 
-    return { success: true }
+    return { success: true, data: ticket }
   } catch (error) {
-    await createLog('error', 'Failed to update event ticket', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      ticketId: id
+    await createLog('error', 'Failed to update ticket', {
+      ticketId: id,
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
     return {

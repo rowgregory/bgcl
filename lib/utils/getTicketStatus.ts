@@ -1,6 +1,6 @@
-import { ITicket } from '@/types/entities/ticket'
+import { Ticket } from '@prisma/client'
 
-export function getTicketStatus(ticket: ITicket): {
+export function getTicketStatus(ticket: Ticket): {
   available: boolean
   message: string
 } {

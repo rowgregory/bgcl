@@ -1,9 +1,9 @@
 import { FC } from 'react'
 import { Calendar, Clock, MapPin } from 'lucide-react'
 import { formatDate, splitUTCToDateTime } from '@/lib/utils/date-utils'
-import { IEvent } from '@/types/entities/event'
+import { Event } from '@prisma/client'
 
-export const KeyEventInfo: FC<{ event: IEvent }> = ({ event }) => {
+export const KeyEventInfo: FC<{ event: Event }> = ({ event }) => {
   const { timeString } = splitUTCToDateTime(event?.date)
 
   const items = [

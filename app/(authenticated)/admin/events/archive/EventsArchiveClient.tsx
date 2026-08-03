@@ -3,16 +3,16 @@
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Archive, Calendar, MapPin, Ticket, Users } from 'lucide-react'
-import { IEvent } from '@/types/entities/event'
 import { formatCurrency } from '@/lib/utils/currency.utils'
-import StatChip from '../../../../../components/_shared/StatChip'
+import StatChip from '@/components/_shared/StatChip'
+import { Event } from '@prisma/client'
 
 type ArchivedEventOrder = {
   totalAmount: number
   orderItems: { quantity: number }[]
 }
 
-export type ArchivedEvent = Omit<IEvent, 'orders'> & {
+export type ArchivedEvent = Omit<Event, 'orders'> & {
   orders: ArchivedEventOrder[]
   _count: { attendees: number }
 }

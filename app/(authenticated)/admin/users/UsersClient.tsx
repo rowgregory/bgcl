@@ -19,10 +19,7 @@ import {
   Building2,
   Badge
 } from 'lucide-react'
-import { IUser } from '@/types/entities/user'
-import { store } from '@/lib/store/store'
-import { setOpenUserDrawer } from '@/lib/store/slices/userSlice'
-import { setInputs } from '@/lib/store/slices/formSlice'
+import { UserWithAddress } from '@/types/user.types'
 
 const TABS = ['All', 'Super User', 'Admin', 'Program', 'Supporters'] as const
 type TabType = (typeof TABS)[number]
@@ -65,7 +62,7 @@ const STATUS_COLORS: Record<string, string> = {
 const PAGE_SIZE = 50
 
 // ─── User Detail Drawer ────────────────────────────────────────────────────────
-function UserDetailDrawer({ user, onClose }: { user: IUser | null; onClose: () => void }) {
+function UserDetailDrawer({ user, onClose }: { user: UserWithAddress | null; onClose: () => void }) {
   const orders: any[] = (user as any)?.orders ?? []
 
   const totalSpent = orders.filter((o) => o.status === 'CONFIRMED').reduce((s, o) => s + o.totalAmount, 0)
@@ -335,22 +332,22 @@ function UserDetailDrawer({ user, onClose }: { user: IUser | null; onClose: () =
 }
 
 // ─── Main Component ────────────────────────────────────────────────────────────
-export const UsersClient = ({ users }: { users: IUser[] }) => {
+export const UsersClient = ({ users }: { users: UserWithAddress[] }) => {
   const [activeTab, setActiveTab] = useState<TabType>('All')
   const [searchQuery, setSearchQuery] = useState('')
   const [page, setPage] = useState(1)
-  const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
+  const [selectedUser, setSelectedUser] = useState<UserWithAddress | null>(null)
 
   const session = useSession()
 
-  const canManage = (user: IUser) =>
+  const canManage = (user: UserWithAddress) =>
     session?.data?.user?.email === process.env.NEXT_PUBLIC_SUPER_USER_EMAIL ||
     (session?.data?.user?.role === 'ADMIN' && user?.email !== process.env.NEXT_PUBLIC_SUPER_USER_EMAIL)
 
-  const handleEditUser = (e: React.MouseEvent, user: IUser) => {
+  const handleEditUser = (e: React.MouseEvent, user: UserWithAddress) => {
     e.stopPropagation()
-    store.dispatch(setOpenUserDrawer())
-    store.dispatch(setInputs({ formName: 'userForm', data: { ...user, isUpdating: true } }))
+    // store.dispatch(setOpenUserDrawer())
+    // store.dispatch(setInputs({ formName: 'userForm', data: { ...user, isUpdating: true } }))
   }
 
   const filteredUsers =

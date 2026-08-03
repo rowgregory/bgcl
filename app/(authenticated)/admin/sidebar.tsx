@@ -5,15 +5,15 @@ import { store } from '@/lib/store/store'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { signOut } from 'next-auth/react'
-import { setCloseAdminSidebar } from '@/lib/store/slices/dashboardSlice'
 import { setIsLoading } from '@/lib/store/slices/formSlice'
 import { showToast } from '@/lib/store/slices/toastSlice'
 import { adminNavigationLinkData } from '@/lib/utils/adminNavLinks'
+import { useSidebarStore } from '@/stores/useSidebarStore'
 
-const AdminSidebar = () => {
+export default function AdminSidebar() {
   const pathname = usePathname()
   const session = useSession()
-  const onClose = () => store.dispatch(setCloseAdminSidebar())
+  const onClose = useSidebarStore((s) => s.closeAdminSidebar)
 
   const handleLogout = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -126,5 +126,3 @@ const AdminSidebar = () => {
     </aside>
   )
 }
-
-export default AdminSidebar

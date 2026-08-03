@@ -1,10 +1,11 @@
 import prisma from '@/prisma/client'
-import { ICampaign } from '@/types/entities/campaign'
+import { CampaignWithCount } from '@/types/campaign.types'
 
-export const getCampaigns = async (isListed?: boolean): Promise<ICampaign[]> => {
+export const getCampaigns = async (isPublic?: boolean): Promise<CampaignWithCount[]> => {
   try {
     const campaigns = await prisma.campaign.findMany({
-      where: isListed !== undefined ? { isListed } : undefined,
+      where: isPublic ? { isListed: true } : undefined,
+      include: { _count: { select: { orders: true } } },
       orderBy: { order: 'asc' }
     })
 

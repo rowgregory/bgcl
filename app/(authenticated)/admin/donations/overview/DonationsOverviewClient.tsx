@@ -1,8 +1,10 @@
 'use client'
 
 import { generateDonationReport } from '@/lib/actions/exports/generateDonationsReport'
-import { setOpenFailedPaymentDrawer } from '@/lib/store/slices/dashboardSlice'
-import { store, useApplicationSelector } from '@/lib/store/store'
+import { containerVariants, itemVariants } from '@/lib/constants/motion'
+import { formatCurrency } from '@/lib/utils/currency.utils'
+import { useDonationDrawer } from '@/stores/drawers'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
 import { motion } from 'framer-motion'
 import { Heart, TrendingUp, Users, Calendar, Download, Zap } from 'lucide-react'
 import { useState } from 'react'
@@ -23,29 +25,10 @@ import {
 
 const COLORS = ['#0EA5E9', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#6366F1']
 
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD'
-  }).format(amount)
-}
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.05, delayChildren: 0.1 }
-  }
-}
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-}
-
 export default function DonationsOverviewClient({ stats }: { stats: any }) {
   const [chartType, setChartType] = useState<'line' | 'bar'>('line')
-  const { isDark } = useApplicationSelector()
+  const isDark = usePreferencesStore((s) => s.isDark)
+  const open = useDonationDrawer((s) => s.open)
 
   const [loading, setLoading] = useState(false)
 
@@ -90,7 +73,8 @@ export default function DonationsOverviewClient({ stats }: { stats: any }) {
           <button
             onClick={(e) => {
               e.stopPropagation()
-              store.dispatch(setOpenFailedPaymentDrawer(stats.failedOrders))
+
+              open(stats.failedOrders)
             }}
             className="text-red-600 dark:text-red-400 hover:underline font-semibold"
           >

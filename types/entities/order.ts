@@ -1,8 +1,7 @@
 import { JsonValue } from '@prisma/client/runtime/library'
-import { ICampaign } from './campaign'
-import { IUser } from './user'
-import { IEvent } from './event'
 import { IOrderItem } from './order-item'
+import { Campaign, Event } from '@prisma/client'
+import { UserWithAddress } from '../user.types'
 
 export type OrderType = 'ONE_TIME_DONATION' | 'RECURRING_DONATION' | 'TICKET_PURCHASE'
 export type OrderStatus =
@@ -55,13 +54,13 @@ export interface IOrder {
 
   // Relations
   userId: string | null
-  user?: IUser
+  user?: UserWithAddress
 
   eventId?: string | null
-  event?: IEvent
+  event?: Event
 
   campaignId?: string | null
-  campaign?: ICampaign
+  campaign?: Campaign
 
   orderItems?: IOrderItem[]
 }

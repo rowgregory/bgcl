@@ -1,55 +1,53 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { CreateTeamMemberInput } from '@/types/entities/team-member'
 import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
+import { teamMemberSchema, TEAM_MEMBER_NULLABLE_FIELDS } from '@/lib/validations/team-member.validation'
+import { emptyToNull } from '@/lib/utils/emptyToNull'
 
-export async function createTeamMember(data: CreateTeamMemberInput) {
-  try {
-    if (!data.name) {
-      throw new Error('Missing required fields: name')
+export async function createTeamMember(input: unknown) {
+  const parsed = teamMemberSchema.safeParse(input)
+
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0]
+    return {
+      success: false,
+      error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid team member data'
     }
+  }
 
+  const data = parsed.data
+
+  try {
+    // Place new members at the end of their role group
     const lastMember = await prisma.teamMember.findFirst({
       where: { role: data.role },
-      orderBy: { order: 'desc' }
+      orderBy: { order: 'desc' },
+      select: { order: true }
     })
 
-    const nextOrder = (lastMember?.order || 0) + 1
-
-    const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
-      if (value !== null && value !== undefined && key !== 'name') {
-        if (key === 'year' && value) {
-          acc[key] = Number(value)
-        } else {
-          acc[key] = value
-        }
-      }
-      return acc
-    }, {} as any)
-
-    const newTeamMember = await prisma.teamMember.create({
+    const teamMember = await prisma.teamMember.create({
       data: {
-        name: data.name,
-        role: data.role,
-        order: nextOrder,
-        ...cleanData
+        ...emptyToNull(data, TEAM_MEMBER_NULLABLE_FIELDS),
+        year: data.year ?? null,
+        order: (lastMember?.order ?? -1) + 1
       }
     })
 
     revalidatePath('/', 'layout')
 
-    await createLog('info', 'Team member created successfully', {
-      teamMemberId: newTeamMember.id,
-      teamMemberName: newTeamMember.name
+    await createLog('info', 'Team member created', {
+      teamMemberId: teamMember.id,
+      name: teamMember.name,
+      role: teamMember.role
     })
 
-    return { success: true }
+    return { success: true, data: teamMember }
   } catch (error) {
     await createLog('error', 'Failed to create team member', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      name: data.name
+      name: data.name,
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
     return {

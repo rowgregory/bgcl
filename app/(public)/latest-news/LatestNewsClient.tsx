@@ -7,21 +7,21 @@ import { createSubscriber } from '@/lib/actions/subscriber/createSubscriber'
 import { setIsLoading } from '@/lib/store/slices/formSlice'
 import { showToast } from '@/lib/store/slices/toastSlice'
 import { store, useFormSelector } from '@/lib/store/store'
-import { INewsletter } from '@/types/entities/newsletter'
+import { Newsletter } from '@/types/newsletter.types'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Mail, Download, Calendar, ArrowRight } from 'lucide-react'
 import Picture from '../../../components/_shared/Picture'
 import { formatDate } from '@/lib/utils/date-utils'
-import { INews } from '@/types/entities/news'
 import { containerVariants, itemVariants } from '@/lib/constants/motion'
+import { News } from '@prisma/client'
 
 export default function LatestNewsClient({
   newsletters,
   news,
   pageData
 }: {
-  newsletters: INewsletter[]
-  news: INews[]
+  newsletters: Newsletter[]
+  news: News[]
   pageData: any
 }) {
   const t = pageData.sections.news

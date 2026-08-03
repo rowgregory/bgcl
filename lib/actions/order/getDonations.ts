@@ -2,8 +2,9 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
+import { BillingAddress, DonationWithRelations } from '@/app/(authenticated)/admin/donations/_types/donation.types'
 
-export const getDonations = async () => {
+export const getDonations = async (): Promise<DonationWithRelations[]> => {
   try {
     const donations = await prisma.order.findMany({
       where: {
@@ -20,7 +21,8 @@ export const getDonations = async () => {
     return donations.map((donation) => ({
       ...donation,
       totalAmount: Number(donation.totalAmount),
-      feesCovered: Number(donation.feesCovered)
+      feesCovered: Number(donation.feesCovered),
+      billingAddress: (donation.billingAddress as BillingAddress | null) ?? null
     }))
   } catch (error) {
     await createLog('error', 'Failed to fetch donations', {

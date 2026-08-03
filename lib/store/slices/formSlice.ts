@@ -1,15 +1,6 @@
-import { initialEventFormState } from '@/lib/initial-states/event'
 import { initialTicketFormState } from '@/lib/initial-states/ticket'
-import { initialProgramFormState } from '@/lib/initial-states/program'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { initialUserFormState } from '../../initial-states/user'
-import { initialTeamMemberFormState } from '../../initial-states/team-member'
 import { initialContactSubmissionFormState } from '../../initial-states/contact-submission'
-import { initialNewsFormState } from '../../initial-states/news'
-import { initialNewsletterFormState } from '../../initial-states/newsletter'
-import { initialClubResourceFormState } from '../../initial-states/club-resource'
-import { initialCampaignFormState } from '../../initial-states/campaign'
-import { initialClosingFormState } from '../../initial-states/closing'
 import { initialPartnerFormState } from '../../initial-states/partner'
 import { initialDonateCheckoutFormState } from '../../initial-states/donate-checkout.initial-state'
 
@@ -53,18 +44,9 @@ const formInitialState: InitialFormState = {
   progress: 0,
   isLoading: false,
   forms: {
-    eventForm: { inputs: initialEventFormState, errors: {} },
     ticketForm: { inputs: initialTicketFormState, errors: {} },
-    programForm: { inputs: initialProgramFormState, errors: {} },
-    userForm: { inputs: initialUserFormState, errors: {} },
-    teamMemberForm: { inputs: initialTeamMemberFormState, errors: {} },
     volunteerForm: { inputs: initialContactSubmissionFormState, errors: {} },
-    newsForm: { inputs: initialNewsFormState, errors: {} },
-    newsletterForm: { inputs: initialNewsletterFormState, errors: {} },
-    clubResourceForm: { inputs: initialClubResourceFormState, errors: {} },
     contactForm: { inputs: initialContactSubmissionFormState, errors: {} },
-    campaignForm: { inputs: initialCampaignFormState, errors: {} },
-    closingForm: { inputs: initialClosingFormState, errors: {} },
     partnerForm: { inputs: initialPartnerFormState, errors: {} },
     ticketCheckoutForm: { inputs: { attendingEvent: true }, errors: {} },
     paymentMethodForm: { inputs: { isDefault: false }, errors: {} },

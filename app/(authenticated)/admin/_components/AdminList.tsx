@@ -5,7 +5,7 @@ import {
   useProgramDrawer,
   useNewsDrawer,
   useNewsletterDrawer,
-  useClubResourceDrawer,
+  useResourceDrawer,
   useCampaignDrawer,
   useClosingDrawer
 } from '@/stores/drawers'
@@ -23,7 +23,7 @@ interface AdminListItem {
 interface AdminListPageProps<T extends AdminListItem> {
   data: T[] | any
   pageTitle: string
-  itemType: 'program' | 'news' | 'newsletter' | 'club-resource' | 'campaign' | 'closing' | 'event'
+  itemType: 'program' | 'news' | 'newsletter' | 'resource' | 'campaign' | 'closing' | 'event'
   emptyMessage?: string
 }
 
@@ -66,8 +66,8 @@ export function AdminListPage<T extends AdminListItem>({
       case 'newsletter':
         useNewsletterDrawer.getState().open()
         break
-      case 'club-resource':
-        useClubResourceDrawer.getState().open()
+      case 'resource':
+        useResourceDrawer.getState().open()
         break
       case 'campaign':
         useCampaignDrawer.getState().open()

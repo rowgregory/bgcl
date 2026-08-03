@@ -1,11 +1,10 @@
 'use client'
 
 import Picture from '@/components/_shared/Picture'
-import { generateTicketPDF } from '@/lib/pdf/generateTicketPDF'
-import { clearCart } from '@/lib/store/slices/cartSlice'
 import { setHideConfetti } from '@/lib/store/slices/uiSlice'
 import { store } from '@/lib/store/store'
 import { formatEnumLabel } from '@/lib/utils/formatEnumLabel'
+import { useCartStore } from '@/stores/useCartStore'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Calendar, ArrowLeft, Download, User, MapPin, Mail } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -18,6 +17,7 @@ export default function OrderConfirmationClient({ order }) {
   const isTicket = order?.type === 'TICKET_PURCHASE'
   const session = useSession()
   const [isExpanded, setIsExpanded] = useState(false)
+  const clear = useCartStore((s) => s.clearCart)
 
   const maxLength = 80
   const shouldTruncate = order.campaign?.description && order.campaign?.description?.length > maxLength
@@ -25,39 +25,39 @@ export default function OrderConfirmationClient({ order }) {
 
   useEffect(() => {
     window.scrollTo(0, 0)
-    store.dispatch(clearCart())
+    clear()
     store.dispatch(setHideConfetti())
-  }, [])
+  }, [clear])
 
-  const handleGenerateTicketPDF = () => {
-    generateTicketPDF({
-      order: {
-        id: order.id,
-        customerName: order.customerName,
-        customerEmail: order.customerEmail,
-        paidAt: order.paidAt!,
-        totalAmount: order.totalAmount
-      },
-      event: {
-        title: order.event.title,
-        subtitle: order.event.subtitle,
-        date: order.event.date,
-        location: order.event.location,
-        address: order.event.address,
-        raffleTerms: order.event.raffleTerms,
-        raffleDrawDate: order.event.raffleDrawDate
-      },
-      items: order.orderItems.map((i) => ({
-        ticketName: i.ticketName,
-        ticketDescription: i.ticketDescription,
-        pricePerUnit: i.pricePerUnit,
-        totalPrice: i.totalPrice,
-        quantity: i.quantity,
-        raffleTicketNumber: order.event.showRaffleTicketNumbers ? i.raffleTicketNumber : null,
-        raffleTicketCode: order.event.showRaffleTicketNumbers ? i.raffleTicketCode : null
-      }))
-    })
-  }
+  // const handleGenerateTicketPDF = () => {
+  //   generateTicketPDF({
+  //     order: {
+  //       id: order.id,
+  //       customerName: order.customerName,
+  //       customerEmail: order.customerEmail,
+  //       paidAt: order.paidAt!,
+  //       totalAmount: order.totalAmount
+  //     },
+  //     event: {
+  //       title: order.event.title,
+  //       subtitle: order.event.subtitle,
+  //       date: order.event.date,
+  //       location: order.event.location,
+  //       address: order.event.address,
+  //       raffleTerms: order.event.raffleTerms,
+  //       raffleDrawDate: order.event.raffleDrawDate
+  //     },
+  //     items: order.orderItems.map((i) => ({
+  //       ticketName: i.ticketName,
+  //       ticketDescription: i.ticketDescription,
+  //       pricePerUnit: i.pricePerUnit,
+  //       totalPrice: i.totalPrice,
+  //       quantity: i.quantity,
+  //       raffleTicketNumber: order.event.showRaffleTicketNumbers ? i.raffleTicketNumber : null,
+  //       raffleTicketCode: order.event.showRaffleTicketNumbers ? i.raffleTicketCode : null
+  //     }))
+  //   })
+  // }
 
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-900">

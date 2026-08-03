@@ -2,26 +2,57 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
-import { UpdateNewsletterInput } from '@/types/entities/newsletter'
 import { revalidatePath } from 'next/cache'
+import { newsletterSchema } from '@/lib/validations/newsletter.validation'
 
-export async function updateNewsletter(data: UpdateNewsletterInput) {
+export async function updateNewsletter(id: string, input: unknown) {
+  if (!id) {
+    return { success: false, error: 'Newsletter ID is required.' }
+  }
+
+  const parsed = newsletterSchema.safeParse(input)
+
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0]
+    return {
+      success: false,
+      error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid newsletter data'
+    }
+  }
+
+  const data = parsed.data
+
   try {
-    await prisma.newsletter.update({
-      where: { id: data.id },
+    // `order` is managed by drag-to-reorder, so it isn't touched here
+    const newsletter = await prisma.newsletter.update({
+      where: { id },
       data: {
         month: data.month,
-        year: Number(data.year),
-        pdfUrl: data.pdfUrl,
-        order: data.order
+        year: data.year,
+        pdfUrl: data.pdfUrl
       }
     })
 
     revalidatePath('/', 'layout')
 
-    return { success: true }
+    await createLog('info', 'Newsletter updated', {
+      newsletterId: newsletter.id,
+      month: newsletter.month,
+      year: newsletter.year
+    })
+
+    return { success: true, data: newsletter }
   } catch (error) {
+    // month_year is @@unique
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
+      return {
+        success: false,
+        error: `Newsletter for ${data.month} ${data.year} already exists`
+      }
+    }
+
     await createLog('error', 'Failed to update newsletter', {
+      newsletterId: id,
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 

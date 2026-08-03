@@ -1,9 +1,9 @@
 'use client'
 
-import { IClosing } from '@/types/entities/closing'
+import { Closing } from '@/types/closing.types'
 import { motion } from 'framer-motion'
 
-const FacilityClosings = ({ closings }: { closings: IClosing[] }) => {
+export default function FacilityClosings({ closings }: { closings: Closing[] }) {
   return (
     <section
       aria-labelledby="facility-closings-heading"
@@ -58,5 +58,3 @@ const FacilityClosings = ({ closings }: { closings: IClosing[] }) => {
     </section>
   )
 }
-
-export default FacilityClosings

@@ -3,13 +3,13 @@ import { MotionLink } from '@/components/_shared/MotionLink'
 import Picture from '@/components/_shared/Picture'
 import { Rocket, ShoppingCart } from 'lucide-react'
 import LogoutButton from '@/components/ui/buttons/LogoutButton'
-import { useCartSelector } from '@/lib/store/store'
+import { useCartStore } from '@/stores/useCartStore'
 
 export function SupporterHeader() {
   const session = useSession()
   const role = session?.data?.user?.role
   const email = session.data?.user?.email
-  const { items } = useCartSelector()
+  const items = useCartStore((s) => s.items)
   const cartCount = items.reduce((sum, i) => sum + i.quantity, 0)
 
   return (
@@ -50,7 +50,7 @@ export function SupporterHeader() {
                 {(email?.[0] ?? '?').toUpperCase()}
               </span>
             </div>
-            <p className="text-xs font-medium dark:text-neutral-400 text-neutral-600 truncate max-w-[80px] sm:max-w-[120px] lg:max-w-[160px] hidden xs:block">
+            <p className="text-xs font-medium dark:text-neutral-400 text-neutral-600 truncate max-w-20 sm:max-w-30 lg:max-w-40 hidden xs:block">
               {email}
             </p>
           </div>

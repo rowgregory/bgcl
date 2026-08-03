@@ -2,9 +2,9 @@
 
 import FacilityClosings from '@/components/_shared/FacilityClosings'
 import ContactForm from '@/components/forms/ContactForm'
-import { setOpenVolunteerDrawer } from '@/lib/store/slices/appSlice'
 import { setInputs } from '@/lib/store/slices/formSlice'
 import { store } from '@/lib/store/store'
+import { useVolunteerDrawer } from '@/stores/drawers'
 import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, Clock, Heart, ArrowRight, Briefcase } from 'lucide-react'
 import Link from 'next/link'
@@ -15,6 +15,7 @@ export default function ContactUsClient({ closings, pageData }) {
   const t = pageData?.sections?.contact
   const searchParams = useSearchParams()
   const subjectParam = searchParams.get('subject')
+  const open = useVolunteerDrawer((s) => open)
 
   useEffect(() => {
     if (subjectParam) {
@@ -153,7 +154,7 @@ export default function ContactUsClient({ closings, pageData }) {
                   <div className="space-y-2 sm:space-y-3">
                     <button
                       type="button"
-                      onClick={() => store.dispatch(setOpenVolunteerDrawer())}
+                      onClick={open}
                       className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg dark:bg-sky-500/10 bg-sky-50 dark:hover:bg-sky-500/20 hover:bg-sky-100 transition-colors group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                     >
                       <Heart className="w-4 h-4 sm:w-5 sm:h-5 dark:text-sky-400 text-sky-600" aria-hidden="true" />

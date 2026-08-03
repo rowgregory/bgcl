@@ -1,62 +1,59 @@
 'use client'
 
-import { FC } from 'react'
+import { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { Menu } from 'lucide-react'
 import { usePathname } from 'next/navigation'
-
-import { ILayout } from '@/types/common.types'
-
-import { store, useDashboardSelector } from '@/lib/store/store'
-import { setCloseAdminSidebar, setToggleAdminSidebar } from '@/lib/store/slices/dashboardSlice'
 import { adminNavigationLinkData } from '@/lib/utils/adminNavLinks'
 import dropdownActionItems from '@/lib/constants/dropdownActionItems'
 import { getCurrentPageId } from '@/lib/utils/getCurrentPageId'
-
-import ActionMenuButton from '../../../components/ui/buttons/ActionMenuButton'
-import LogoutButton from '../../../components/ui/buttons/LogoutButton'
-import MobileMenuButton from '../../../components/ui/buttons/MobileMenuButton'
-
-import { CampaignDrawer } from '../../../components/drawers/CampaignDrawer'
-import { ClubResourceDrawer } from '../../../components/drawers/ClubResourceDrawer'
-import { ClosingDrawer } from '../../../components/drawers/ClosingDrawer'
-import { DonationDrawer } from '../../../components/drawers/DonationDrawer'
-import { EventDrawer } from '../../../components/drawers/EventDrawer'
-import { FailedPaymentsDrawer } from '../../../components/drawers/FailedPaymentDrawer'
-import { NewsDrawer } from '../../../components/drawers/NewsDrawer'
-import { NewsletterDrawer } from '../../../components/drawers/NewsletterDrawer'
-import { PartnerDrawer } from '../../../components/drawers/PartnerDrawer'
-import { ProgramDrawer } from '../../../components/drawers/ProgramDrawer'
-import { TeamMemberDrawer } from '../../../components/drawers/TeamMemberDrawer'
-import { TicketDrawer } from '../../../components/drawers/TicketDrawer'
-import { UserDrawer } from '../../../components/drawers/UserDrawer'
-import { ContactSubmissionDrawer } from '../../../components/drawers/ContactSubmissionDrawer'
+import ActionMenuButton from '@/components/ui/buttons/ActionMenuButton'
+import LogoutButton from '@/components/ui/buttons/LogoutButton'
+import MobileMenuButton from '@/components/ui/buttons/MobileMenuButton'
+import { CampaignDrawer } from './donations/_components/CampaignDrawer'
+import ResourceDrawer from '@/app/(authenticated)/admin/the-library/resources/_components/ResourceDrawer'
+import { DonationDrawer } from '@/app/(authenticated)/admin/donations/_components/DonationDrawer'
+import { FailedPaymentsDrawer } from '@/components/drawers/FailedPaymentDrawer'
+import { NewsDrawer } from '@/app/(authenticated)/admin/the-library/news/_components/NewsDrawer'
+import { PartnerDrawer } from '@/components/drawers/PartnerDrawer'
+import ProgramDrawer from '@/app/(authenticated)/admin/the-library/programs/_components/ProgramDrawer'
+import { TeamMemberDrawer } from '@/app/(authenticated)/admin/the-library/_components/TeamMemberDrawer'
+import { ContactSubmissionDrawer } from '@/components/drawers/ContactSubmissionDrawer'
 import AdminSidebar from '@/app/(authenticated)/admin/sidebar'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import ActionMenuDropdown from '@/app/(authenticated)/admin/_components/ActionMenuDropdown'
+import ClosingDrawer from '@/app/(authenticated)/admin/the-library/closings/_components/ClosingDrawer'
+import { useSidebarStore } from '@/stores/useSidebarStore'
+import UserDrawer from '@/app/(authenticated)/admin/users/_components/UserDrawer'
+import NewsletterDrawer from '@/app/(authenticated)/admin/the-library/newsletters/_components/NewsletterDrawer'
+import { Theme } from '@prisma/client'
 
-export const AdminLayoutClient: FC<ILayout> = ({ children, themes, isModalEnabled }) => {
+type Props = {
+  children: ReactNode
+  themes?: Theme[]
+  isModalEnabled?: boolean
+}
+
+export default function AdminLayoutClient({ children, themes, isModalEnabled }: Props) {
   const pathname = usePathname()
   const navigationGroups = adminNavigationLinkData(pathname)
   const selectedPage = getCurrentPageId(pathname, navigationGroups)
-  const { adminSidebar } = useDashboardSelector()
-  const onClose = () => store.dispatch(setCloseAdminSidebar())
+  const adminSidebar = useSidebarStore((s) => s.adminSidebar)
+  const toggleAdminSidebar = useSidebarStore((s) => s.toggleAdminSidebar)
+  const onClose = useSidebarStore((s) => s.closeAdminSidebar)
   const session = useSession()
 
   const isEventDetailsPage = pathname.includes('/admin/events/events/')
 
   return (
     <>
-      {/* ── Drawers & overlays ── */}
-      <EventDrawer />
-      <TicketDrawer />
       <ProgramDrawer themes={themes} />
       <UserDrawer />
       <TeamMemberDrawer />
       <NewsDrawer />
       <NewsletterDrawer />
-      <ClubResourceDrawer />
+      <ResourceDrawer />
       <CampaignDrawer />
       <ClosingDrawer />
       <ActionMenuDropdown actionItems={dropdownActionItems(isModalEnabled)} isModalEnabled={isModalEnabled} />
@@ -127,7 +124,7 @@ export const AdminLayoutClient: FC<ILayout> = ({ children, themes, isModalEnable
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => store.dispatch(setToggleAdminSidebar(adminSidebar))}
+                onClick={() => toggleAdminSidebar()}
                 className="p-2 dark:hover:bg-neutral-950 hover:bg-neutral-100 rounded-lg transition-colors"
                 aria-label="Toggle sidebar"
               >

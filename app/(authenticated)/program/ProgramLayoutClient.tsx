@@ -3,22 +3,24 @@
 import { FC } from 'react'
 import { getCurrentPageId } from '@/lib/utils/getCurrentPageId'
 import { AnimatePresence, motion } from 'framer-motion'
-import { store, useDashboardSelector } from '@/lib/store/store'
-import { ILayout } from '@/types/common.types'
-import { setCloseProgramSidebar, setToggleProgramSidebar } from '@/lib/store/slices/dashboardSlice'
 import { usePathname } from 'next/navigation'
 import { Menu } from 'lucide-react'
 import MobileMenuButton from '../../../components/ui/buttons/MobileMenuButton'
 import LogoutButton from '../../../components/ui/buttons/LogoutButton'
 import { programNavigationLinkData } from '@/lib/constants/programNavLinks'
 import { ProgramSidebar } from '@/app/(authenticated)/program/sidebar'
+import { useSidebarStore } from '@/stores/useSidebarStore'
+import { useEscapeKey } from '@/lib/hooks/useEscapeKey'
 
-export const ProgramLayoutClient: FC<ILayout> = ({ children }) => {
+export default function ProgramLayoutClient({ children }) {
   const pathname = usePathname()
   const navigationGroups = programNavigationLinkData(pathname)
   const selectedPage = getCurrentPageId(pathname, navigationGroups)
-  const { programSidebar } = useDashboardSelector()
-  const onClose = () => store.dispatch(setCloseProgramSidebar())
+  const onClose = useSidebarStore((s) => s.closeProgramSidebar)
+  const programSidebar = useSidebarStore((s) => s.programSidebar)
+  const toggle = useSidebarStore((s) => s.toggleProgramSidebar)
+
+  useEscapeKey(onClose, programSidebar)
 
   return (
     <>
@@ -88,7 +90,7 @@ export const ProgramLayoutClient: FC<ILayout> = ({ children }) => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => store.dispatch(setToggleProgramSidebar(programSidebar))}
+              onClick={toggle}
               aria-label={programSidebar ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={programSidebar}
               aria-controls="mobile-program-sidebar"

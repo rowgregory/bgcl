@@ -2,47 +2,73 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
-import { UpdateEventInput } from '@/types/entities/event'
 import { revalidatePath } from 'next/cache'
+import { eventSchema } from '@/lib/validations/event.validation'
 
-export async function updateEvent(body: UpdateEventInput) {
+const toDate = (v: string | null | undefined) => (v ? new Date(v) : null)
+
+export async function updateEvent(id: string, input: unknown) {
+  if (!id) {
+    return { success: false, error: 'Event ID is required.' }
+  }
+
+  const parsed = eventSchema.safeParse(input)
+
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0]
+    return {
+      success: false,
+      error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid event data'
+    }
+  }
+
+  const v = parsed.data
+
   try {
-    const existingEvent = await prisma.event.findUnique({
-      where: { id: body.id }
-    })
+    const existingEvent = await prisma.event.findUnique({ where: { id } })
 
     if (!existingEvent) {
       await createLog('warn', 'Event not found for update', {
         source: 'updateEvent',
-        eventId: body.id
+        eventId: id
       })
       return { success: false, error: 'Event not found', status: 404 }
     }
 
-    const {
-      date,
-      time,
-      registrationDeadline,
-      ticketSalesStartDate,
-      ticketSalesEndDate,
-      isUpdating,
-      tickets,
-      ...restBody
-    } = body
-
+    // `order`, `attendeeCount`, and `guestCount` are managed elsewhere and
+    // deliberately left untouched.
     const event = await prisma.event.update({
-      where: { id: body.id },
+      where: { id },
       data: {
-        ...restBody,
-        date: date ? new Date(date) : undefined,
-        maxAttendees: body.maxAttendees ? Number(body.maxAttendees) : undefined,
-        registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : undefined,
-        ticketSalesStartDate: ticketSalesStartDate ? new Date(ticketSalesStartDate) : null,
-        ticketSalesEndDate: ticketSalesEndDate ? new Date(ticketSalesEndDate) : null
-      },
-      include: {
-        tickets: true,
-        orders: true
+        ...v,
+        date: new Date(v.date),
+        registrationDeadline: toDate(v.registrationDeadline) ?? existingEvent.registrationDeadline,
+        rsvpDeadline: toDate(v.rsvpDeadline) ?? existingEvent.rsvpDeadline,
+        salesStartDate: toDate(v.salesStartDate),
+        salesEndDate: toDate(v.salesEndDate),
+        ticketSalesStartDate: toDate(v.ticketSalesStartDate),
+        ticketSalesEndDate: toDate(v.ticketSalesEndDate),
+        raffleDrawDate: toDate(v.raffleDrawDate),
+        maxAttendees: v.maxAttendees || null,
+        description: v.description || null,
+        host: v.host || null,
+        dresscode: v.dresscode || null,
+        requirements: v.requirements || null,
+        materials: v.materials || null,
+        meetingUrl: v.meetingUrl || null,
+        registrationUrl: v.registrationUrl || null,
+        raffleTerms: v.raffleTerms || null,
+        raffleTicketPrice: v.raffleTicketPrice || null,
+        raffleGrandPrizeLabel: v.raffleGrandPrizeLabel || null,
+        raffleOddsLabel: v.raffleOddsLabel || null,
+        subtitle: v.subtitle || null,
+        tagline: v.tagline || null,
+        address: v.address || null,
+        website: v.website || null,
+        missionStatement: v.missionStatement || null,
+        dressCodeHeadline: v.dressCodeHeadline || null,
+        dressCodeNote: v.dressCodeNote || null,
+        bestDressedPrizes: v.bestDressedPrizes || null
       }
     })
 
@@ -50,20 +76,14 @@ export async function updateEvent(body: UpdateEventInput) {
 
     await createLog('info', 'Event updated successfully', {
       eventId: event.id,
-      eventTitle: event.title,
-      updatedFields: Object.keys(body)
+      eventTitle: event.title
     })
 
     return { success: true }
   } catch (error) {
     await createLog('error', 'Failed to update event', {
-      error: error instanceof Error ? error.message : 'Failed to update event',
-      inputData: {
-        eventId: body.id,
-        title: body.title,
-        type: body.type,
-        category: body.category
-      }
+      eventId: id,
+      error: error instanceof Error ? error.message : 'Failed to update event'
     })
 
     return { success: false, error: 'Failed to update event. Please try again.' }

@@ -1,62 +1,68 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { EventType } from '@prisma/client'
-import { CreateEventInput } from '@/types/entities/event'
 import { revalidatePath } from 'next/cache'
 import { createLog } from '../log/createLog'
+import { eventSchema } from '@/lib/validations/event.validation'
+import { emptyToNull } from '@/lib/utils/emptyToNull'
 
-export async function createEvent(data: CreateEventInput) {
+const toDate = (v: string | null | undefined) => (v ? new Date(v) : null)
+
+export async function createEvent(input: unknown) {
+  const parsed = eventSchema.safeParse(input)
+
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0]
+    return {
+      success: false,
+      error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid event data'
+    }
+  }
+
+  const v = parsed.data
+
   try {
-    const eventType =
-      data.type && Object.values(EventType).includes(data.type as EventType) ? (data.type as EventType) : 'IN_PERSON'
+    // Place new events at the end of the list
+    const lastEvent = await prisma.event.findFirst({ orderBy: { order: 'desc' } })
+
+    const NULLABLE_FIELDS = [
+      'description',
+      'host',
+      'dresscode',
+      'requirements',
+      'materials',
+      'meetingUrl',
+      'registrationUrl',
+      'raffleTerms',
+      'raffleTicketPrice',
+      'raffleGrandPrizeLabel',
+      'raffleOddsLabel',
+      'subtitle',
+      'tagline',
+      'address',
+      'website',
+      'missionStatement',
+      'dressCodeHeadline',
+      'dressCodeNote',
+      'bestDressedPrizes'
+    ] as const
 
     const event = await prisma.event.create({
       data: {
-        title: data.title || 'Untitled Event',
-        description: data.description || null,
-        category: data.category || 'Other',
-        type: eventType,
-        dresscode: data.dresscode || null,
-        date: data.date ? new Date(data.date) : new Date(),
-        duration: data.duration || '',
-        location: data.location || '',
-        maxAttendees: data.maxAttendees ? Number(data.maxAttendees) : null,
-        host: data.host || null,
-        requirements: data.requirements || null,
-        materials: data.materials || null,
-        registrationUrl: data.registrationUrl || null,
-        meetingUrl: data.meetingUrl || null,
-        isPublic: data.isPublic ?? true,
-        registrationDeadline: data.registrationDeadline ? new Date(data.registrationDeadline) : new Date(),
-        capacity: data.capacity ? Number(data.capacity) : 200,
-        order: data.order ?? 0,
+        ...emptyToNull(v, NULLABLE_FIELDS),
 
-        // Raffle
-        isRaffle: data.isRaffle ?? false,
-        raffleDrawDate: data.raffleDrawDate ? new Date(data.raffleDrawDate) : null,
-        raffleTerms: data.raffleTerms || null,
-        raffleTicketsPerOrder: data.raffleTicketsPerOrder ? Number(data.raffleTicketsPerOrder) : 1,
-        subtitle: data.subtitle || null,
-        tagline: data.tagline || null,
-        address: data.address || null,
-        website: data.website || null,
-        missionStatement: data.missionStatement || null,
-        raffleTicketPrice: data.raffleTicketPrice || null,
-        raffleGrandPrizeLabel: data.raffleGrandPrizeLabel || null,
-        raffleOddsLabel: data.raffleOddsLabel || null,
-        rafflePrizes: data.rafflePrizes ?? undefined,
-        raffleSchedule: data.raffleSchedule ?? undefined,
+        order: (lastEvent?.order ?? -1) + 1,
 
-        ticketSalesStartDate: data.ticketSalesStartDate ? new Date(data.ticketSalesStartDate) : null,
-        ticketSalesEndDate: data.ticketSalesEndDate ? new Date(data.ticketSalesEndDate) : null,
-        dressCodeHeadline: data.dressCodeHeadline || null,
-        dressCodeNote: data.dressCodeNote || null,
-        bestDressedPrizes: data.bestDressedPrizes || null,
-        dressCodeItems: data.dressCodeItems?.length ? data.dressCodeItems : undefined,
-
-        showTicketMarquee: data.showTicketMarquee,
-        showRaffleTicketNumbers: data.showRaffleTicketNumbers
+        // Dates
+        date: new Date(v.date),
+        registrationDeadline: toDate(v.registrationDeadline) ?? new Date(),
+        rsvpDeadline: toDate(v.rsvpDeadline) ?? new Date(),
+        salesStartDate: toDate(v.salesStartDate),
+        salesEndDate: toDate(v.salesEndDate),
+        ticketSalesStartDate: toDate(v.ticketSalesStartDate),
+        ticketSalesEndDate: toDate(v.ticketSalesEndDate),
+        raffleDrawDate: toDate(v.raffleDrawDate),
+        maxAttendees: v.maxAttendees || null
       }
     })
 
@@ -68,11 +74,11 @@ export async function createEvent(data: CreateEventInput) {
       type: event.type
     })
 
-    return { success: true }
+    return { success: true, data: { id: event.id } }
   } catch (error) {
     await createLog('error', 'Failed to create event', {
       error: error instanceof Error ? error.message : 'Unknown error',
-      title: data.title
+      title: v.title
     })
 
     return {

@@ -3,18 +3,22 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Search, Briefcase } from 'lucide-react'
-import { IJobApplication } from '@/types/entities/job-application'
 import { PositionType } from '@prisma/client'
 import { POSITION_LABELS, TAB_TO_STATUS, TABS } from '@/lib/constants/job-application.constants'
 import { getJobApplicationStatusBadge } from '@/lib/utils/getJobApplicationStatusBadge'
-import { store } from '@/lib/store/store'
-import { setOpenJobApplicationDrawer } from '@/lib/store/slices/uiSlice'
 import { exportApplicationsAction } from '@/lib/actions/exports/generateJobApplicationsPDF'
+import { JobApplicationWithReferences } from '@/types/job-application.types'
+import { useJobApplicationDrawer } from '@/stores/drawers'
 
-export default function AdminJobApplicationsClient({ jobApplications }: { jobApplications: IJobApplication[] }) {
+export default function AdminJobApplicationsClient({
+  jobApplications
+}: {
+  jobApplications: JobApplicationWithReferences[]
+}) {
   const [activeTab, setActiveTab] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(false)
+  const open = useJobApplicationDrawer((s) => s.open)
 
   const filterByTab = (tab: string) => setActiveTab(tab)
 
@@ -184,7 +188,7 @@ export default function AdminJobApplicationsClient({ jobApplications }: { jobApp
                 <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
                   {filteredApplications.map((application, index) => (
                     <motion.tr
-                      onClick={() => store.dispatch(setOpenJobApplicationDrawer(application))}
+                      onClick={() => open(application)}
                       key={application.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}

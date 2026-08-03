@@ -1,8 +1,9 @@
 import { ProgramDetailsClient } from '@/app/(public)/programs/[id]/ProgramDetailsClient'
 import { getClosings } from '@/lib/actions/closing/getClosings'
 import { getProgramById } from '@/lib/actions/program/getProgramById'
+import { ProgramFormValues } from '@/lib/validations/program.validation'
 import prisma from '@/prisma/client'
-import { IProgram } from '@/types/entities/program'
+import { Program } from '@prisma/client'
 import { redirect } from 'next/navigation'
 
 export default async function ProgramDetailsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -30,7 +31,7 @@ export default async function ProgramDetailsPage({ params }: { params: Promise<{
     }
   }
 
-  const normalizedProgram: IProgram = {
+  const normalizedProgram: ProgramFormValues = {
     ...program,
     ...(program?.descriptions && {
       descriptions: Array.isArray(program?.descriptions) ? (program?.descriptions as string[]) : []

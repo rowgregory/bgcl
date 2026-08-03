@@ -1,5 +1,5 @@
 import { IOrder } from './order'
-import { ITicket } from './ticket'
+import { TicketWithEvent } from '../ticket.types'
 
 export interface IOrderItem {
   id: string
@@ -19,5 +19,5 @@ export interface IOrderItem {
   order?: IOrder
 
   ticketId: string
-  ticket?: ITicket
+  ticket?: TicketWithEvent
 }

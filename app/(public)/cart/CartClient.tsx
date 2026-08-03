@@ -44,7 +44,7 @@ export default function CartClient() {
               <ul role="list" aria-label="Items in your cart" className="space-y-3 list-none p-0 m-0">
                 {items.map((item, index) => (
                   <li key={item.ticketId}>
-                    <CartItemRow item={item} index={index} />
+                    <CartItemRow key={index} item={item} index={index} />
                   </li>
                 ))}
               </ul>

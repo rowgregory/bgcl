@@ -1,4 +1,4 @@
-import { ICampaign } from '@/types/entities/campaign'
+import { CampaignWithCount } from '@/types/campaign.types'
 
 export const DonationCheckoutStep3CampaignSelectionAndNotes = ({
   campaign,
@@ -17,7 +17,7 @@ export const DonationCheckoutStep3CampaignSelectionAndNotes = ({
         <select
           value={campaign?.id ?? campaigns[0]?.id ?? ''}
           onChange={(e) => {
-            const selectedCampaign = campaigns?.find((c: ICampaign) => c.id === e.target.value)
+            const selectedCampaign = campaigns?.find((c: CampaignWithCount) => c.id === e.target.value)
             setCampaign(selectedCampaign || null)
           }}
           className="w-full px-4 py-2.5 border dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-sky-500 border-neutral-200 bg-neutral-50 rounded-lg text-neutral-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
@@ -25,7 +25,7 @@ export const DonationCheckoutStep3CampaignSelectionAndNotes = ({
           <option value="" disabled>
             Select a campaign
           </option>
-          {campaigns?.map((c: ICampaign) => (
+          {campaigns?.map((c: CampaignWithCount) => (
             <option key={c.id} value={c.id}>
               {c.name}
             </option>

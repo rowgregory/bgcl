@@ -1,13 +1,13 @@
 'use client'
 
+import Picture from '@/components/_shared/Picture'
+import { Program } from '@prisma/client'
 import { motion } from 'framer-motion'
-import { IProgram } from '@/types/entities/program'
-import Picture from '../../../../components/_shared/Picture'
 import Link from 'next/link'
 
 interface CarouselProps {
   programText?: any
-  programs?: IProgram[]
+  programs?: Program[]
 }
 
 export const HomePrograms: React.FC<CarouselProps> = ({ programText, programs }) => {

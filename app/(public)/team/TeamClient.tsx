@@ -2,10 +2,10 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { ITeamMember } from '@/types/entities/team-member'
 import { Mail, Phone } from 'lucide-react'
-import Picture from '../../../components/_shared/Picture'
-import SqyshCard from '../../../components/public/team/SqyshCard'
+import Picture from '@/components/_shared/Picture'
+import SqyshCard from '@/components/public/team/SqyshCard'
+import { TeamMemberRecord } from '@/types/team-member.types'
 
 type TTabButton = {
   active: boolean
@@ -32,7 +32,7 @@ const TabButton = ({ active, onClick, children, id, controls }: TTabButton) => (
   </button>
 )
 
-const TeamMemberCard = ({ member }: { member: ITeamMember }) => {
+const TeamMemberCard = ({ member }: { member: TeamMemberRecord }) => {
   const isStaffWithContact =
     member.role === 'program_staff' || member.role === 'admin_staff' || member.email || member.phone
 
@@ -59,11 +59,7 @@ const TeamMemberCard = ({ member }: { member: ITeamMember }) => {
 
       <div className={`p-4 grow flex flex-col ${isStaffWithContact ? 'justify-between' : ''}`}>
         <div>
-          <h3
-            className={`text-lg font-bold dark:text-white text-neutral-900 ${member?.isSqysh ? 'sqysh-gradient' : ''}`}
-          >
-            {member.name}
-          </h3>
+          <h3 className="text-lg font-bold dark:text-white text-neutral-900">{member.name}</h3>
           {member.title && <p className="dark:text-sky-400 text-sky-600 font-semibold text-sm mt-1">{member.title}</p>}
           {member.company && <p className="dark:text-neutral-100 text-neutral-600 text-sm">{member.company}</p>}
         </div>
