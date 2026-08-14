@@ -1,6 +1,6 @@
 import { getPartnersByTier } from '@/lib/actions/partner/getPartnerByTier'
 import { PartnerTier } from '@prisma/client'
-import { PartnerList } from '@/app/(authenticated)/admin/the-library/_components/PartnerList'
+import PartnerList from '../the-library/_components/PartnerList'
 
 interface TierGroup {
   id: PartnerTier

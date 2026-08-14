@@ -1,108 +1,127 @@
+'use client'
+
+import { useCallback, useState } from 'react'
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { useSession } from 'next-auth/react'
-import { usePaymentProcessor } from './usePaymentProcessor'
-import { setTicketCheckoutForm as setForm } from '../utils/setTicketCheckoutForm'
+import { useFormContext } from 'react-hook-form'
+
 import { createPaymentIntentForTicketCheckout } from '../actions/stripe/createPaymentIntentForTicketCheckout'
 import { useCartStore } from '@/stores/useCartStore'
+import { usePaymentProcessor } from './usePaymentProcessor'
+import { TicketCheckoutFormInput, TicketCheckoutFormValues } from '../validations/ticket-checkout.validation'
 
-export function useTicketCheckoutSubmit({ inputs, amountInCents, processingFee, usingSavedCard, fullName }) {
+type ProcessingStatus = 'idle' | 'processing' | 'success' | 'failed'
+
+type Args = {
+  amountInCents: number
+  processingFee: number
+  usingSavedCard: boolean
+  fullName: string
+}
+
+export function useTicketCheckoutSubmit({ amountInCents, processingFee, usingSavedCard, fullName }: Args) {
   const stripe = useStripe()
   const elements = useElements()
-  const session = useSession()
-  const userEmail = session.data?.user?.email
+  const { data: session } = useSession()
   const items = useCartStore((s) => s.items)
+
+  const { setError } = useFormContext<TicketCheckoutFormInput>()
   const { setupPusherListenerOneTime, getPaymentMethodId } = usePaymentProcessor()
 
+  const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>('idle')
+  const isProcessing = processingStatus === 'processing'
+
+  const userId = session?.user?.id
+  const userEmail = session?.user?.email
+
+  const fail = useCallback(
+    (message: string) => {
+      setError('root', { message })
+      setProcessingStatus('failed')
+    },
+    [setError]
+  )
+
+  // The listener still takes callbacks: error, status, and a loading reset
   const pusherCallbacks = [
-    (value: string) => setForm({ error: value }),
-    (value: string) => setForm({ processingStatus: value }),
-    () => setForm({ loading: false })
+    (value: string) => setError('root', { message: value }),
+    (value: string) => setProcessingStatus(value as ProcessingStatus),
+    () => setProcessingStatus((current) => (current === 'processing' ? 'idle' : current))
   ] as const
 
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
-    e.preventDefault()
+  const submitCheckout = async (values: TicketCheckoutFormValues) => {
+    if (!stripe || !elements) {
+      fail('Payments are still loading. Try again in a moment.')
+      return
+    }
 
-    if (!stripe || !elements) return setForm({ error: 'Stripe not loaded' })
+    if (!userEmail) {
+      fail('Your session expired. Please sign in and try again.')
+      return
+    }
 
-    setForm({ loading: true, error: null, processingStatus: 'processing' })
+    setProcessingStatus('processing')
 
     try {
-      const ticketData = items.map((item) => ({
-        ticketId: item.ticketId,
-        quantity: item.quantity,
-        pricePerUnit: item.price,
-        ticketName: item.ticketName,
-        ticketType: item.ticketType ?? 'GENERAL',
-        guestCount: item.guestCount ?? 1
-      }))
-
       const intentResult = await createPaymentIntentForTicketCheckout({
-        userId: session?.data?.user?.id,
+        userId,
         name: fullName,
         email: userEmail,
         amount: amountInCents,
         description: `Order for ${fullName}`,
-        saveCard: inputs?.saveCard,
-        coverFees: inputs?.coverFees,
-        feesCovered: inputs?.coverFees ? processingFee : 0,
+        saveCard: values.saveCard,
+        coverFees: values.coverFees,
+        feesCovered: values.coverFees ? processingFee : 0,
         address: {
-          addressLine1: inputs?.addressLine1,
-          addressLine2: inputs?.addressLine2,
-          city: inputs?.city,
-          state: inputs?.state,
-          zipPostalCode: inputs?.zipPostalCode,
-          country: inputs?.country
+          addressLine1: values.addressLine1,
+          addressLine2: values.addressLine2,
+          city: values.city,
+          state: values.state,
+          zipPostalCode: values.zipPostalCode
         },
-        savedCardId: usingSavedCard ? inputs?.selectedCardId : undefined,
-        tickets: JSON.stringify(
-          ticketData.map((item) => ({
-            i: item.ticketId, // shortened key
-            q: item.quantity // shortened key
-          }))
-        ),
+        savedCardId: usingSavedCard ? values.selectedCardId : undefined,
+        // Stripe metadata caps at 500 chars, so keys are shortened here
+        tickets: JSON.stringify(items.map((item) => ({ i: item.ticketId, q: item.quantity }))),
         eventId: items[0]?.eventId,
-        attendingEvent: inputs.attendingEvent
+        attendingEvent: values.attendingEvent
       })
 
-      if (!intentResult.success) throw new Error(intentResult.error || 'Failed to create payment intent')
+      if (!intentResult.success) {
+        fail(intentResult.error || 'Failed to start checkout. Please try again.')
+        return
+      }
 
       if (usingSavedCard) {
-        setupPusherListenerOneTime(
-          intentResult.paymentIntentId!,
-          false,
-          inputs?.selectedCardId,
-          inputs?.processingStatus,
-          ...pusherCallbacks
-        )
+        setupPusherListenerOneTime(false, undefined, ...pusherCallbacks)
         return
       }
 
       const cardElement = elements.getElement(CardElement)
-      if (!cardElement) throw new Error('Card element not found')
+
+      if (!cardElement) {
+        fail('Card details are unavailable. Please refresh and try again.')
+        return
+      }
 
       const { error, paymentIntent } = await stripe.confirmCardPayment(intentResult.clientSecret!, {
         payment_method: { card: cardElement, billing_details: { name: fullName, email: userEmail } }
       })
 
       if (error) {
-        setForm({ processingStatus: 'failed', error: error.message || 'Payment failed' })
-      } else if (paymentIntent?.status === 'succeeded') {
-        setupPusherListenerOneTime(
-          paymentIntent.id,
-          inputs?.saveCard,
-          getPaymentMethodId(paymentIntent.payment_method),
-          inputs?.processingStatus,
-          ...pusherCallbacks
-        )
+        fail(error.message || 'Payment failed. Please try a different card.')
+        return
       }
+
+      if (paymentIntent?.status !== 'succeeded') {
+        fail('This payment needs another step to complete. Please try again or use a different card.')
+        return
+      }
+
+      setupPusherListenerOneTime(values.saveCard, getPaymentMethodId(paymentIntent.payment_method), ...pusherCallbacks)
     } catch (err) {
-      setForm({
-        loading: false,
-        error: err instanceof Error ? err.message : 'Something went wrong. Please try again.',
-        processingStatus: 'failed'
-      })
+      fail(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     }
   }
 
-  return { handleSubmit }
+  return { submitCheckout, isProcessing }
 }

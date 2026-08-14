@@ -3,14 +3,14 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Picture from '@/components/_shared/Picture'
 import { ArrowLeft, User } from 'lucide-react'
-import { useUiSelector } from '@/lib/store/store'
 import useSoundEffect from '@/lib/hooks/useSoundEffect'
 import { useCartStore } from '@/stores/useCartStore'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
 
 export function TicketCheckoutHeader() {
   const session = useSession()
   const items = useCartStore((s) => s.items)
-  const { soundOn } = useUiSelector()
+  const soundOn = usePreferencesStore((s) => s.soundOn)
   const eventId = items?.[0]?.eventId ?? null
   const { play } = useSoundEffect('/sound-effects/casino-1.mp3', soundOn)
 

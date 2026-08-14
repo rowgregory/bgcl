@@ -7,7 +7,6 @@ import { formReducer } from './slices/formSlice'
 import { toastReduer } from './slices/toastSlice'
 import { persistStore, persistReducer } from 'redux-persist'
 import { PersistPartial } from 'redux-persist/es/persistReducer'
-import { uiReducer } from './slices/uiSlice'
 
 // Create a noop storage for SSR
 const createNoopStorage = () => {
@@ -55,8 +54,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   form: formReducer,
-  toast: toastReduer,
-  ui: uiReducer
+  toast: toastReduer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -86,4 +84,3 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
 export const useToastSelector = () => useAppSelector((state) => state.toast)
 export const useFormSelector = () => useAppSelector((state) => state.form)
-export const useUiSelector = () => useAppSelector((state) => state.ui)

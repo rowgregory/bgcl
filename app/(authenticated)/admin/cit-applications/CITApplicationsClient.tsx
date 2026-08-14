@@ -7,7 +7,7 @@ import { Tab } from '@/types/entities/cit-application.types'
 import { CITApplication } from '@prisma/client'
 import { TAB_LABELS, TABS } from '@/lib/constants/cit-application.constants'
 import { formatDate } from '@/lib/utils/date-utils'
-import { CITApplicationDrawer } from '@/components/drawers/CITApplicationDrawer'
+import { CITApplicationDrawer } from '@/app/(public)/cit/_components/CITApplicationDrawer'
 import { StatusBadge } from './CITCAdmin.subcomponents'
 import { exportCITApplicationsAction } from '@/lib/actions/exports/generateCITApplicationsPDF'
 

@@ -1,8 +1,4 @@
-import { initialTicketFormState } from '@/lib/initial-states/ticket'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { initialContactSubmissionFormState } from '../../initial-states/contact-submission'
-import { initialPartnerFormState } from '../../initial-states/partner'
-import { initialDonateCheckoutFormState } from '../../initial-states/donate-checkout.initial-state'
 
 export type Inputs = {
   [key: string]: any
@@ -44,13 +40,7 @@ const formInitialState: InitialFormState = {
   progress: 0,
   isLoading: false,
   forms: {
-    ticketForm: { inputs: initialTicketFormState, errors: {} },
-    volunteerForm: { inputs: initialContactSubmissionFormState, errors: {} },
-    contactForm: { inputs: initialContactSubmissionFormState, errors: {} },
-    partnerForm: { inputs: initialPartnerFormState, errors: {} },
-    ticketCheckoutForm: { inputs: { attendingEvent: true }, errors: {} },
-    paymentMethodForm: { inputs: { isDefault: false }, errors: {} },
-    donateCheckoutForm: { inputs: initialDonateCheckoutFormState, errors: {} }
+    ticketCheckoutForm: { inputs: { attendingEvent: true }, errors: {} }
   }
 }
 

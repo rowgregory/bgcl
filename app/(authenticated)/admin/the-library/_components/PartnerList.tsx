@@ -1,29 +1,41 @@
 'use client'
 
-import { FC, useState } from 'react'
-import { GripVertical, Check, AlertCircle, Edit2, Plus, Trash2 } from 'lucide-react'
-import { store } from '@/lib/store/store'
-import { setInputs } from '@/lib/store/slices/formSlice'
-import { showToast } from '@/lib/store/slices/toastSlice'
+import { useState } from 'react'
+import { GripVertical, Check, AlertCircle, Edit2, Loader2, Plus, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { PartnerTier } from '@prisma/client'
-import { setOpenPartnerDrawer } from '@/lib/store/slices/uiSlice'
+import type { Partner, PartnerTier } from '@prisma/client'
+
 import usePartnerList from '@/lib/hooks/usePartnerList'
 import { deletePartner } from '@/lib/actions/partner/deletePartner'
+import { usePartnerDrawer } from '@/stores/drawers'
 
 interface PartnerListProps {
-  data: any
+  data: Partner[]
   tier: PartnerTier
   tierLabel: string
 }
 
-export const PartnerList: FC<PartnerListProps> = ({ data, tier, tierLabel }) => {
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle')
-  const [errorMessage, setErrorMessage] = useState<string>('')
+type SaveStatus = 'idle' | 'saving' | 'success' | 'error'
+
+export default function PartnerList({ data, tier, tierLabel }: PartnerListProps) {
   const router = useRouter()
 
-  const { draggedOver, dragPosition, handleDragStart, handleDragOver, handleDragLeave, handleDrop, handleDragEnd } =
-    usePartnerList(data, tier)
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  const openDrawer = usePartnerDrawer((s) => s.open)
+
+  const { draggedOver, handleDragStart, handleDragOver, handleDragLeave, handleDrop, handleDragEnd } = usePartnerList(
+    data,
+    tier
+  )
+
+  const flash = (status: Exclude<SaveStatus, 'saving'>, message = '') => {
+    setSaveStatus(status)
+    setErrorMessage(message)
+    setTimeout(() => setSaveStatus('idle'), status === 'error' ? 3000 : 2000)
+  }
 
   const handleDropWithFeedback = async (e: React.DragEvent, targetId: string) => {
     setSaveStatus('saving')
@@ -31,34 +43,30 @@ export const PartnerList: FC<PartnerListProps> = ({ data, tier, tierLabel }) => 
 
     try {
       await handleDrop(e, targetId)
-      setSaveStatus('success')
-      setTimeout(() => setSaveStatus('idle'), 2000)
+      flash('success')
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Failed to save partner')
-      setSaveStatus('error')
-      setTimeout(() => setSaveStatus('idle'), 3000)
+      flash('error', error instanceof Error ? error.message : 'Failed to save partner order')
     }
   }
 
-  const handleEditPartner = (partner) => {
-    store.dispatch(setInputs({ formName: 'partnerForm', data: { ...partner, isUpdating: true } }))
-    store.dispatch(setOpenPartnerDrawer())
-  }
-
   const handleDeletePartner = async (partnerId: string) => {
+    setDeletingId(partnerId)
+    setErrorMessage('')
+
     try {
-      await deletePartner(partnerId)
+      const res = await deletePartner(partnerId)
+
+      if (!res.success) {
+        flash('error', res.error)
+        return
+      }
+
       router.refresh()
-      store.dispatch(showToast({ message: 'Successfully deleted partner' }))
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
-      store.dispatch(
-        showToast({
-          message: 'Failed to delete partner',
-          description: errorMessage,
-          type: 'error'
-        })
-      )
+      flash('success')
+    } catch {
+      flash('error', 'Something went wrong. Please try again.')
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -75,49 +83,42 @@ export const PartnerList: FC<PartnerListProps> = ({ data, tier, tierLabel }) => 
               </p>
             </div>
             <button
-              onClick={() => {
-                store.dispatch(setOpenPartnerDrawer())
-                store.dispatch(
-                  setInputs({
-                    formName: 'partnerForm',
-                    data: {
-                      tier,
-                      isActive: true
-                    }
-                  })
-                )
-              }}
+              type="button"
+              onClick={() => openDrawer({ tier })}
               className="p-1.5 dark:hover:bg-neutral-800 hover:bg-neutral-100 rounded transition-colors shrink-0"
+              aria-label={`Add ${tierLabel.toLowerCase()}`}
               title="Add partner"
             >
-              <Plus className="w-4 h-4 dark:text-neutral-500 text-neutral-500" />
+              <Plus className="w-4 h-4 dark:text-neutral-500 text-neutral-500" aria-hidden="true" />
             </button>
           </div>
         </div>
 
         {/* Status Messages */}
-        {saveStatus === 'success' && (
-          <div className="mb-6 flex items-center gap-3 rounded-lg dark:bg-sky-950/40 dark:border-sky-800/50 dark:text-sky-200 bg-sky-100/50 border-sky-300/50 text-sky-900 px-4 py-3 border">
-            <Check className="h-5 w-5 dark:text-sky-400 text-sky-600" />
-            <span className="text-sm">Saved successfully</span>
-          </div>
-        )}
+        <div role="status" aria-live="polite">
+          {saveStatus === 'success' && (
+            <div className="mb-6 flex items-center gap-3 rounded-lg dark:bg-sky-950/40 dark:border-sky-800/50 dark:text-sky-200 bg-sky-100/50 border-sky-300/50 text-sky-900 px-4 py-3 border">
+              <Check className="h-5 w-5 dark:text-sky-400 text-sky-600" aria-hidden="true" />
+              <span className="text-sm">Saved successfully</span>
+            </div>
+          )}
 
-        {saveStatus === 'error' && (
-          <div className="mb-6 flex items-center gap-3 rounded-lg dark:bg-red-950/40 dark:border-red-800/50 dark:text-red-200 bg-red-100/50 border-red-300/50 text-red-900 px-4 py-3 border">
-            <AlertCircle className="h-5 w-5 dark:text-red-400 text-red-600" />
-            <span className="text-sm">{errorMessage || 'Failed to save'}</span>
-          </div>
-        )}
+          {saveStatus === 'error' && (
+            <div className="mb-6 flex items-center gap-3 rounded-lg dark:bg-red-950/40 dark:border-red-800/50 dark:text-red-200 bg-red-100/50 border-red-300/50 text-red-900 px-4 py-3 border">
+              <AlertCircle className="h-5 w-5 dark:text-red-400 text-red-600" aria-hidden="true" />
+              <span className="text-sm">{errorMessage || 'Failed to save'}</span>
+            </div>
+          )}
+        </div>
 
         {/* List Container */}
         <div className="space-y-2">
-          {data?.length === 0 ? (
+          {data.length === 0 ? (
             <div className="rounded-lg dark:bg-neutral-900 dark:text-neutral-400 bg-neutral-100 text-neutral-600 px-6 py-12 text-center">
               <p className="text-sm">No {tierLabel.toLowerCase()} added yet</p>
             </div>
           ) : (
-            data?.map((partner, index: number) => (
+            data.map((partner, index) => (
               <div
                 key={partner.id}
                 draggable
@@ -128,15 +129,13 @@ export const PartnerList: FC<PartnerListProps> = ({ data, tier, tierLabel }) => 
                 onDragEnd={handleDragEnd}
                 className={`group relative flex items-center gap-4 rounded-lg border transition-all duration-200 ${
                   draggedOver === partner.id
-                    ? dragPosition === 'top'
-                      ? 'dark:border-sky-500/50 dark:bg-sky-950/20 border-sky-400/50 bg-sky-100/30'
-                      : 'dark:border-sky-500/50 dark:bg-sky-950/20 border-sky-400/50 bg-sky-100/30'
+                    ? 'dark:border-sky-500/50 dark:bg-sky-950/20 border-sky-400/50 bg-sky-100/30'
                     : 'dark:border-neutral-800/50 dark:bg-neutral-900/50 dark:hover:border-neutral-700/50 border-neutral-300/50 bg-neutral-50 hover:border-neutral-400/50'
                 } cursor-move px-4 py-4 md:px-6`}
               >
                 {/* Drag Handle */}
                 <div className="shrink-0 dark:text-neutral-600 dark:group-hover:text-sky-400 text-neutral-400 group-hover:text-sky-600 transition-colors">
-                  <GripVertical className="h-5 w-5" />
+                  <GripVertical className="h-5 w-5" aria-hidden="true" />
                 </div>
 
                 {/* Order Number */}
@@ -151,27 +150,33 @@ export const PartnerList: FC<PartnerListProps> = ({ data, tier, tierLabel }) => 
                   <h3 className="text-sm font-medium dark:text-neutral-100 text-neutral-900 truncate">
                     {partner.name}
                   </h3>
-                  <p className="text-xs dark:text-neutral-500 text-neutral-600 truncate">{partner.title}</p>
                 </div>
 
                 {/* Edit Button */}
                 <button
                   type="button"
-                  onClick={() => handleEditPartner(partner)}
+                  onClick={() => openDrawer({ tier, partner })}
                   className="shrink-0 p-2 dark:text-neutral-600 dark:hover:text-sky-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-sky-600 hover:bg-neutral-200 rounded-lg transition-colors"
+                  aria-label={`Edit ${partner.name}`}
                   title="Edit partner"
                 >
-                  <Edit2 className="h-4 w-4" />
+                  <Edit2 className="h-4 w-4" aria-hidden="true" />
                 </button>
 
                 {/* Delete Button */}
                 <button
                   type="button"
                   onClick={() => handleDeletePartner(partner.id)}
-                  className="shrink-0 p-2 dark:text-neutral-600 dark:hover:text-red-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-red-600 hover:bg-neutral-200 rounded-lg transition-colors"
+                  disabled={deletingId === partner.id}
+                  className="shrink-0 p-2 dark:text-neutral-600 dark:hover:text-red-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-red-600 hover:bg-neutral-200 rounded-lg transition-colors disabled:opacity-50"
+                  aria-label={`Delete ${partner.name}`}
                   title="Delete partner"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  {deletingId === partner.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
+                  )}
                 </button>
 
                 {/* Status Indicator */}
@@ -188,7 +193,7 @@ export const PartnerList: FC<PartnerListProps> = ({ data, tier, tierLabel }) => 
         </div>
 
         {/* Footer Info */}
-        {data?.length > 0 && (
+        {data.length > 0 && (
           <div className="mt-8 text-xs dark:text-neutral-500 text-neutral-600">
             <p>
               Total: {data.length} {tierLabel}

@@ -1,8 +1,8 @@
 'use client'
 
-import { UpdateAddressModal } from '@/components/modals/UpdateAddressModal'
+import { UpdateAddressModal } from '@/app/(authenticated)/supporter/_components/UpdateAddressModal'
 import CancelSubscriptionDrawer from '@/app/(authenticated)/supporter/_components/CancelSubscriptionDrawer'
-import { PaymentMethodModal } from '@/components/modals/PaymentMethodModal'
+import PaymentMethodModal from '@/app/(authenticated)/supporter/_components/PaymentMethodModal'
 import { SupporterHeader } from '@/app/(authenticated)/supporter/_components/SupporterHeader'
 
 export default function SupporterPage({ children }) {

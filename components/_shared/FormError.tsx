@@ -1,17 +1,17 @@
-import { useFormSelector } from '@/lib/store/store'
-import { motion, AnimatePresence } from 'framer-motion'
+'use client'
 
-type Props = {
-  formName: string
-}
+import { AnimatePresence, motion } from 'framer-motion'
+import { AlertCircle } from 'lucide-react'
+import { useFormContext } from 'react-hook-form'
 
-export function FormError({ formName }: Props) {
-  const { forms } = useFormSelector()
-  const inputs = forms?.[formName]?.inputs
+export default function FormError() {
+  const {
+    formState: { errors }
+  } = useFormContext()
 
   return (
     <AnimatePresence>
-      {inputs?.error && (
+      {errors.root && (
         <motion.p
           key="error"
           initial={{ opacity: 0, y: -6 }}
@@ -21,10 +21,8 @@ export function FormError({ formName }: Props) {
           aria-live="assertive"
           className="text-xs text-red-500 dark:text-red-400 font-mono flex items-start gap-2"
         >
-          <span aria-hidden="true" className="shrink-0 mt-0.5">
-            ✕
-          </span>
-          {inputs.error}
+          <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" aria-hidden="true" />
+          {errors.root.message}
         </motion.p>
       )}
     </AnimatePresence>

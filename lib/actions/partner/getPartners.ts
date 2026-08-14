@@ -1,22 +1,15 @@
 import prisma from '@/prisma/client'
-import { IPartner } from '@/types/entities/partner'
+import { createLog } from '@/lib/actions/log/createLog'
+import type { Partner } from '@prisma/client'
 
-export const getPartners = async (): Promise<IPartner[]> => {
+export const getPartners = async (): Promise<Partner[]> => {
   try {
-    const partners = await prisma.partner.findMany({
+    return await prisma.partner.findMany({
       orderBy: { order: 'asc' }
     })
-
-    return partners
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to fetch partners',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error'
-        })
-      }
+    await createLog('error', 'Failed to fetch partners', {
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
     return []

@@ -1,5 +1,5 @@
 import { formatPhone } from '@/lib/utils/phone.utils'
-import { IAddress } from '@/types/entities/address.types'
+import { Address } from '@prisma/client'
 import { motion } from 'framer-motion'
 import { signOut, useSession } from 'next-auth/react'
 import { useState } from 'react'
@@ -11,7 +11,7 @@ export function CheckoutStep3UserInfo({
   phone
 }: {
   name: string | null
-  address: Partial<IAddress> | null
+  address: Partial<Address> | null
   setStep: (step: number) => void
   phone?: string
 }) {

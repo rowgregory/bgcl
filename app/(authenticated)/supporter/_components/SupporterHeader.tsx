@@ -2,8 +2,8 @@ import { useSession } from 'next-auth/react'
 import { MotionLink } from '@/components/_shared/MotionLink'
 import Picture from '@/components/_shared/Picture'
 import { Rocket, ShoppingCart } from 'lucide-react'
-import LogoutButton from '@/components/ui/buttons/LogoutButton'
 import { useCartStore } from '@/stores/useCartStore'
+import LogoutButton from '@/components/_shared/LogoutButton'
 
 export function SupporterHeader() {
   const session = useSession()

@@ -1,18 +1,12 @@
 'use client'
 
-import { IPartner } from '@/types/entities/partner'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { PartnerTier } from '@prisma/client'
+import { Partner } from '@prisma/client'
+import { PARTNER_TIERS } from '@/lib/validations/partner.validation'
 
-export default function PublicPartnersClient({ partners, pageData }: { partners: IPartner[]; pageData: any }) {
+export default function PublicPartnersClient({ partners, pageData }: { partners: Partner[]; pageData: any }) {
   const t = pageData?.sections?.partners
-  const tiers: { key: PartnerTier; label: string }[] = [
-    { key: 'FOUNDATION', label: 'Foundation' },
-    { key: 'CORPORATE_BUSINESS', label: 'Corporate & Business' },
-    { key: 'GOVERNMENT_PUBLIC', label: 'Government & Public' },
-    { key: 'COMMUNITY_PROGRAM', label: 'Community & Program' }
-  ]
 
   return (
     <>
@@ -60,13 +54,13 @@ export default function PublicPartnersClient({ partners, pageData }: { partners:
         {/* ── Tiers ── */}
         <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12" aria-label="Partners by tier">
           <div className="max-w-334 mx-auto space-y-16">
-            {tiers.map(({ key, label }) => {
-              const tierPartners = partners.filter((p) => p.isActive && p.tier === key)
+            {PARTNER_TIERS.map(({ value, label }) => {
+              const tierPartners = partners.filter((p) => p.isActive && p.tier === value)
               if (tierPartners.length === 0) return null
 
               return (
                 <motion.div
-                  key={key}
+                  key={value}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}

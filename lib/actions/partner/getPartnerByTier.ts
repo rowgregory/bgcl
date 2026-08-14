@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import type { PartnerTier } from '@prisma/client'
+import type { Partner, PartnerTier } from '@prisma/client'
 import { createLog } from '../log/createLog'
 
 export const getPartnersByTier = async (tier: PartnerTier) => {
@@ -11,12 +11,12 @@ export const getPartnersByTier = async (tier: PartnerTier) => {
       orderBy: { order: 'asc' }
     })
 
-    return partners
+    return partners as Partner[]
   } catch (error) {
     await createLog('error', 'Failed to fetch partners by tier', {
       tier,
       error: error instanceof Error ? error.message : 'Unknown error'
     })
-    return { success: false, data: [] }
+    throw error
   }
 }

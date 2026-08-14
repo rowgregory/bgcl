@@ -14,6 +14,7 @@ import Picture from '../../../components/_shared/Picture'
 import { formatDate } from '@/lib/utils/date-utils'
 import { containerVariants, itemVariants } from '@/lib/constants/motion'
 import { News } from '@prisma/client'
+import { isValidEmail } from '@/lib/utils/regex'
 
 export default function LatestNewsClient({
   newsletters,
@@ -44,7 +45,7 @@ export default function LatestNewsClient({
       setError(true)
       setTimeout(() => setError(false), 5000)
       return
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    } else if (!isValidEmail(email)) {
       setError(true)
       setTimeout(() => setError(false), 5000)
       return

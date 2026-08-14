@@ -1,10 +1,9 @@
 'use client'
 
 import Picture from '@/components/_shared/Picture'
-import { setHideConfetti } from '@/lib/store/slices/uiSlice'
-import { store } from '@/lib/store/store'
 import { formatEnumLabel } from '@/lib/utils/formatEnumLabel'
 import { useCartStore } from '@/stores/useCartStore'
+import { useConfettiStore } from '@/stores/useConfettiStore'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Calendar, ArrowLeft, Download, User, MapPin, Mail } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -18,6 +17,7 @@ export default function OrderConfirmationClient({ order }) {
   const session = useSession()
   const [isExpanded, setIsExpanded] = useState(false)
   const clear = useCartStore((s) => s.clearCart)
+  const hide = useConfettiStore((s) => s.hide)
 
   const maxLength = 80
   const shouldTruncate = order.campaign?.description && order.campaign?.description?.length > maxLength
@@ -26,8 +26,8 @@ export default function OrderConfirmationClient({ order }) {
   useEffect(() => {
     window.scrollTo(0, 0)
     clear()
-    store.dispatch(setHideConfetti())
-  }, [clear])
+    hide()
+  }, [clear, hide])
 
   // const handleGenerateTicketPDF = () => {
   //   generateTicketPDF({

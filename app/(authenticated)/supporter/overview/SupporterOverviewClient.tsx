@@ -18,16 +18,14 @@ import {
   Ticket,
   Trash2,
   TrendingUp,
-  User,
-  X
+  User
 } from 'lucide-react'
-import { MotionLink } from '../../../../components/_shared/MotionLink'
+import { MotionLink } from '@/components/_shared/MotionLink'
 import { useState } from 'react'
 import { updateUserName } from '@/lib/actions/user/updateUserName'
 import { useRouter } from 'next/navigation'
 import { store } from '@/lib/store/store'
 import { showToast } from '@/lib/store/slices/toastSlice'
-import { setOpenPaymentMethodModal, setOpenUpdateAddressModal } from '@/lib/store/slices/uiSlice'
 import { deleteAddress } from '@/lib/actions/address/deleteAddress'
 import { setDefaultPaymentMethod } from '@/lib/actions/stripe/setDefaultPaymentMethod'
 import { deletePaymentMethod } from '@/lib/actions/stripe/deletePaymentMethod'
@@ -35,6 +33,7 @@ import extractErrorMessage from '@/lib/utils/extractErrorMessage'
 import { containerVariants, itemVariants } from '@/lib/constants/motion'
 import { updatePhoneNumber } from '@/lib/actions/user/updatePhoneNumber'
 import { formatPhone } from '@/lib/utils/phone.utils'
+import { useAddressModal, usePaymentMethodModal } from '@/stores/drawers'
 
 function SupporterOverviewFooter() {
   return (
@@ -84,6 +83,9 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards, phone }
 
   const [deletingPaymentMethod, setDeletingPaymentMethod] = useState<string | null>(null)
   const [settingDefault, setSettingDefault] = useState<string | null>(null)
+
+  const open = usePaymentMethodModal((s) => s.open)
+  const openAddessModal = useAddressModal((s) => s.open)
 
   async function handleSaveName() {
     if (!firstName.trim() && !lastName.trim()) return
@@ -920,7 +922,7 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards, phone }
                 </p>
               </div>
               <button
-                onClick={() => store.dispatch(setOpenPaymentMethodModal())}
+                onClick={() => open()}
                 className="flex items-center gap-1.5 text-xs font-medium dark:text-sky-400 text-sky-600 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:rounded"
                 aria-label="Add new payment method"
               >
@@ -1017,7 +1019,7 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards, phone }
                   </div>
                 </div>
                 <button
-                  onClick={() => store.dispatch(setOpenPaymentMethodModal())}
+                  onClick={() => open()}
                   className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-950"
                 >
                   <Plus className="w-3.5 h-3.5" aria-hidden="true" />
@@ -1071,7 +1073,7 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards, phone }
                 {/* Actions */}
                 <div className="flex items-center gap-3 mt-3 sm:mt-0 pt-3 sm:pt-0 border-t sm:border-0 dark:border-neutral-800 border-neutral-200">
                   <button
-                    onClick={() => store.dispatch(setOpenUpdateAddressModal(address))}
+                    onClick={() => openAddessModal(address)}
                     aria-label="Edit mailing address"
                     className="flex items-center gap-1.5 text-xs font-medium dark:text-neutral-500 text-neutral-400 dark:hover:text-neutral-300 hover:text-neutral-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
                   >
@@ -1118,7 +1120,7 @@ const SupporterOverviewClient = ({ dashboard, address, name, savedCards, phone }
                     </div>
                   </div>
                   <button
-                    onClick={() => store.dispatch(setOpenUpdateAddressModal({}))}
+                    onClick={() => openAddessModal()}
                     aria-label="Add mailing address"
                     className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 w-full sm:w-auto justify-center"
                   >

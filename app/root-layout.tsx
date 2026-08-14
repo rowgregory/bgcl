@@ -18,7 +18,7 @@ import { ThemeProvider } from '@/lib/providers/theme.provider'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import WelcomeAnimation from '@/components/layout/WelcomeAnimation'
-import { Confetti3D } from '@/components/layout/Confetti3D'
+import Confetti3D from '@/components/layout/Confetti3D'
 import { AnnouncementStrip } from '@/components/layout/AnnouncementStrip'
 import { JobApplicationDrawer } from '@/components/drawers/JobApplicationDrawer'
 
