@@ -15,8 +15,9 @@ import { ProgramRecord } from '@/types/program.types'
 import { TeamMemberRecord } from '@/types/team-member.types'
 import { Address, ContactSubmission } from '@prisma/client'
 import { PartnerDrawerPayload } from '@/types/partner.types'
+import { VolunteerDrawerPayload } from '@/types/contact-submission.types'
 
-export const useVolunteerDrawer = createDrawerStore()
+export const useVolunteerDrawer = createDrawerStore<VolunteerDrawerPayload>()
 export const useCampaignDrawer = createDrawerStore<CampaignWithCount>()
 export const useProgramDrawer = createDrawerStore<ProgramRecord>()
 export const useNewsDrawer = createDrawerStore<News>()

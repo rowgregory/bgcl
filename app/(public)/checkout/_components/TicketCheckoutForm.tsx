@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import { Controller, useFormContext } from 'react-hook-form'
 import type { PaymentMethod } from '@prisma/client'
-
 import { calculateStripeFees } from '@/lib/utils/calculateStripeFees'
 import { useDefaultCard } from '@/lib/hooks/useDefaultCard'
 import { useTicketCheckoutSubmit } from '@/lib/hooks/useTicketCheckoutSubmit'

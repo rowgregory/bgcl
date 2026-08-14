@@ -21,6 +21,47 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.22.0',
+    date: '2026-08-14',
+    changes: [
+      {
+        type: 'performance',
+        title: 'Removed Redux from the application',
+        description:
+          'The last of the Redux code is gone, along with Redux Toolkit and redux-persist. Four packages leave the client bundle, which means less JavaScript to download and parse on every page. Cart contents are unaffected and still saved between visits.',
+        impact: 'medium'
+      },
+      {
+        type: 'bug',
+        title: 'Fixed a crash on first page load',
+        description:
+          'The welcome animation referenced the browser window while the page was still being rendered on the server, which could fail the render before anything appeared. It now waits until the page is running in the browser.',
+        impact: 'high'
+      },
+      {
+        type: 'bug',
+        title: 'Ticket sale dates survive a page refresh',
+        description:
+          'Tickets held in the cart lost their sale start and end dates when the cart was restored on a later visit, so anything checking those dates was working from bad data. The dates are now restored correctly.',
+        impact: 'high'
+      },
+      {
+        type: 'fix',
+        title: 'Returning visitors no longer see a flash of the wrong content',
+        description:
+          'Screens that depend on saved browser state, including the cart and the welcome animation, briefly rendered as though the visitor were new before correcting themselves. They now wait for saved state before drawing.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Smoother welcome animation',
+        description:
+          'The falling-text animation regenerated itself on every render, which caused columns to reshuffle mid-animation. It is now generated once and adapts if the window is resized or a phone is rotated.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.21.0',
     date: '2026-08-14',
     changes: [

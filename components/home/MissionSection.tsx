@@ -1,13 +1,12 @@
 'use client'
 
-import { setInputs } from '@/lib/store/slices/formSlice'
-import { store } from '@/lib/store/store'
 import { useVolunteerDrawer } from '@/stores/drawers'
 import { motion } from 'framer-motion'
 import { Heart } from 'lucide-react'
 import Link from 'next/link'
 
 export const MissionSection = ({ mission }) => {
+  const open = useVolunteerDrawer((s) => s.open)
   return (
     <section aria-labelledby="mission-heading" className="py-12 sm:py-16 md:py-20 dark:bg-neutral-950 bg-white">
       <div className="max-w-334 mx-auto">
@@ -46,10 +45,7 @@ export const MissionSection = ({ mission }) => {
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2 sm:pt-4"
             >
               <button
-                onClick={() => {
-                  useVolunteerDrawer.getState().open()
-                  store.dispatch(setInputs({ formName: 'volunteerForm', data: { type: 'VOLUNTEER', subject: '' } }))
-                }}
+                onClick={() => open({ type: 'VOLUNTEER', subject: '' })}
                 aria-label={mission?.button1Text ?? 'Volunteer with us'}
                 className="relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-linear-to-r from-sky-500 to-sky-600 text-white font-semibold rounded-2xl transition-all overflow-hidden h-15 cursor-pointer hover:from-sky-600 hover:to-sky-700 duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
               >

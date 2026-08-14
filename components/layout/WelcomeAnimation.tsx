@@ -1,27 +1,40 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Picture from '../_shared/Picture'
 
+const COLUMN_COUNT = 40
+
 export default function WelcomeAnimation() {
-  const [isVisible, setIsVisible] = useState(() => {
-    // Check localStorage on initial render
-    if (typeof window !== 'undefined') {
-      return !localStorage.getItem('hasSeenWelcome')
-    }
-    return true
-  })
+  // Nothing renders until after mount: localStorage, Math.random, and window
+  // are all client-only, and reading them during render breaks hydration
+  const [mounted, setMounted] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
   const [showLogo, setShowLogo] = useState(false)
+  const [viewportHeight, setViewportHeight] = useState(0)
 
   useEffect(() => {
-    if (!isVisible) return // Already hidden, no need to run timers
+    localStorage.removeItem('persist:root')
+    setMounted(true)
+    setViewportHeight(window.innerHeight)
+    setIsVisible(!localStorage.getItem('hasSeenWelcome'))
+  }, [])
+
+  useEffect(() => {
+    if (!isVisible) return
+
+    const onResize = () => setViewportHeight(window.innerHeight)
+    window.addEventListener('resize', onResize)
+
+    return () => window.removeEventListener('resize', onResize)
+  }, [isVisible])
+
+  useEffect(() => {
+    if (!isVisible) return
 
     const logoTimer = setTimeout(() => setShowLogo(true), 800)
-    const exitTimer = setTimeout(() => {
-      setIsVisible(false)
-      localStorage.setItem('hasSeenWelcome', 'true')
-    }, 4000)
+    const exitTimer = setTimeout(() => dismiss(), 4000)
 
     return () => {
       clearTimeout(logoTimer)
@@ -29,28 +42,36 @@ export default function WelcomeAnimation() {
     }
   }, [isVisible])
 
-  // Boys & Girls Club colors
-  const colors = [
-    { base: 'rgb(34, 197, 94)', light: 'rgb(134, 239, 172)', name: 'green' }, // green-500, green-300
-    { base: 'rgb(59, 130, 246)', light: 'rgb(147, 197, 253)', name: 'blue' }, // blue-500, blue-300
-    { base: 'rgb(168, 85, 247)', light: 'rgb(216, 180, 254)', name: 'purple' }, // purple-500, purple-300
-    { base: 'rgb(249, 115, 22)', light: 'rgb(253, 186, 116)', name: 'orange' } // orange-500, orange-300
-  ]
+  const dismiss = () => {
+    setIsVisible(false)
+    localStorage.setItem('hasSeenWelcome', 'true')
+  }
 
-  // Generate matrix columns with characters and random colors
-  const columns = Array.from({ length: 40 }, (_, i) => {
-    const colorScheme = colors[Math.floor(Math.random() * colors.length)]
+  // Boys & Girls Club colors
+  const colors = useMemo(
+    () => [
+      { base: 'rgb(34, 197, 94)', light: 'rgb(134, 239, 172)', name: 'green' }, // green-500, green-300
+      { base: 'rgb(59, 130, 246)', light: 'rgb(147, 197, 253)', name: 'blue' }, // blue-500, blue-300
+      { base: 'rgb(168, 85, 247)', light: 'rgb(216, 180, 254)', name: 'purple' }, // purple-500, purple-300
+      { base: 'rgb(249, 115, 22)', light: 'rgb(253, 186, 116)', name: 'orange' } // orange-500, orange-300
+    ],
+    []
+  )
+
+  // Generated once rather than on every render, so the rain doesn't reshuffle
+  const columns = useMemo(() => {
     const text = 'Boys & Girls Club of Lynn'
 
-    return {
+    return Array.from({ length: COLUMN_COUNT }, (_, i) => ({
       id: i,
       delay: Math.random() * 2,
       duration: 2 + Math.random() * 2,
-      color: colorScheme,
-      // Repeat the text to fill the column
+      color: colors[Math.floor(Math.random() * colors.length)],
       chars: Array.from({ length: 15 }, (_, idx) => text[idx % text.length])
-    }
-  })
+    }))
+  }, [colors])
+
+  if (!mounted) return null
 
   return (
     <AnimatePresence>
@@ -66,10 +87,10 @@ export default function WelcomeAnimation() {
         >
           {/* Screen reader narrative */}
           <div aria-live="polite" aria-atomic="false" className="sr-only">
-            {isVisible && !showLogo && (
+            {!showLogo && (
               <p>
                 Welcome screen loading. A digital rain animation is falling across the screen in Boys and Girls Club
-                colors — blue, green, orange, and purple.
+                colors, blue, green, orange, and purple.
               </p>
             )}
             {showLogo && (
@@ -82,13 +103,14 @@ export default function WelcomeAnimation() {
               </>
             )}
           </div>
+
           {/* Digital rain — decorative, hidden from screen readers */}
           <div aria-hidden="true">
             {columns.map((col) => (
               <motion.div
                 key={col.id}
                 initial={{ y: -500 }}
-                animate={{ y: window.innerHeight + 100 }}
+                animate={{ y: viewportHeight + 100 }}
                 transition={{
                   duration: col.duration,
                   delay: col.delay,
@@ -96,7 +118,7 @@ export default function WelcomeAnimation() {
                   ease: 'linear'
                 }}
                 className="absolute top-0 flex flex-col gap-1 font-mono text-lg sm:text-xl font-bold"
-                style={{ left: `${(col.id / 40) * 100}%` }}
+                style={{ left: `${(col.id / COLUMN_COUNT) * 100}%` }}
               >
                 {col.chars.map((char, idx) => (
                   <motion.span
@@ -202,10 +224,7 @@ export default function WelcomeAnimation() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            onClick={() => {
-              setIsVisible(false)
-              localStorage.setItem('hasSeenWelcome', 'true')
-            }}
+            onClick={dismiss}
             aria-label="Skip welcome screen"
             className="absolute top-8 right-8 text-white/80 hover:text-white text-sm font-mono font-semibold px-4 py-2 border border-white/30 rounded hover:bg-white/10 transition-all z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           >

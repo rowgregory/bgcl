@@ -111,7 +111,7 @@ export const adminNavigationLinkData = (
       label: 'Job Applications',
       path: '/admin/job-applications',
       description: 'Pending Job Applications',
-      active: isStringInPath(path, 'airlock')
+      active: isStringInPath(path, 'job-applications')
     },
     {
       icon: FileText,

@@ -147,18 +147,18 @@ export function CITClient({ t }: CITApplicationFormProps) {
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.25 }}
-                className="space-y-4 sm:space-y-6"
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 rounded-xl p-6 sm:p-8 md:p-12 space-y-4 sm:space-y-6 border"
+                role="region"
+                aria-label={`Step ${currentStep}: ${FORM_STEPS[currentStep - 1].name}`}
+                aria-live="polite"
               >
                 {currentStep === 1 && <CITStep1 data={data} errors={errors} update={update} />}
-
                 {currentStep === 2 && <CITStep2 data={data} errors={errors} update={update} />}
-
                 {currentStep === 3 && <CITStep3 data={data} errors={errors} toggleWeek={toggleWeek} />}
-
                 {currentStep === 4 && <CITStep4 data={data} errors={errors} update={update} />}
               </motion.div>
             </AnimatePresence>

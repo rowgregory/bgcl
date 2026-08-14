@@ -17,3 +17,5 @@ export type ContactSubmissionListItem = Pick<
   ContactSubmission,
   'id' | 'firstName' | 'lastName' | 'email' | 'type' | 'status' | 'createdAt'
 >
+
+export type VolunteerDrawerPayload = Partial<ContactSubmission> & Pick<ContactSubmission, 'type'>

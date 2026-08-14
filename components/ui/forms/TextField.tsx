@@ -36,7 +36,7 @@ export function TextField({
         aria-describedby={
           [hint ? `${id}-hint` : null, error ? `${id}-error` : null].filter(Boolean).join(' ') || undefined
         }
-        className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg dark:bg-neutral-900 bg-white dark:text-white text-neutral-900 dark:placeholder:text-neutral-600 placeholder:text-neutral-400 border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-950 ${
+        className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-100 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors ${
           error
             ? 'dark:border-red-500/60 border-red-400'
             : 'dark:border-neutral-800 border-neutral-300 dark:hover:border-neutral-700 hover:border-neutral-400'
