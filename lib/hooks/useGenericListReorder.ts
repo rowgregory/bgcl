@@ -1,14 +1,14 @@
 import { useRouter } from 'next/navigation'
-import { startTransition, useState } from 'react'
+import { startTransition, useCallback, useState } from 'react'
 import { reorderPrograms } from '../actions/program/reorderPrograms'
-import { store } from '../store/store'
-import { showToast } from '../store/slices/toastSlice'
 import { reorderNews } from '../actions/news/reorderNews'
 import { reorderNewsletters } from '../actions/newsletter/reorderNewsletters'
 import { reorderResources } from '../actions/resource/reorderResources'
 import { reorderCampaigns } from '../actions/campaign/reorderCampaigns'
 import { reorderClosings } from '../actions/closing/reorderClosings'
 import { reorderEvents } from '../actions/event/reorderEvents'
+import { InlineMessageState } from '@/components/_shared/InlineMessage'
+import extractErrorMessage from '@/lib/utils/extractErrorMessage'
 
 interface ReorderItem {
   id: string
@@ -27,11 +27,24 @@ const actionMap: Record<ItemType, (items: any[]) => Promise<any>> = {
   event: async (items) => await reorderEvents(items)
 }
 
+const LABELS: Record<ItemType, string> = {
+  program: 'Programs',
+  news: 'News',
+  newsletter: 'Newsletters',
+  resource: 'Resources',
+  campaign: 'Campaigns',
+  closing: 'Closings',
+  event: 'Events'
+}
+
 export default function useGenericListReorder<T extends ReorderItem>(data: T[], itemType: ItemType) {
   const router = useRouter()
   const [draggedItem, setDraggedItem] = useState<string | null>(null)
   const [draggedOver, setDraggedOver] = useState<string | null>(null)
   const [dragPosition, setDragPosition] = useState<'top' | 'bottom' | null>(null)
+  const [message, setMessage] = useState<InlineMessageState | null>(null)
+
+  const dismissMessage = useCallback(() => setMessage(null), [])
 
   const handleDragStart = (e: React.DragEvent, id: string) => {
     setDraggedItem(id)
@@ -82,33 +95,35 @@ export default function useGenericListReorder<T extends ReorderItem>(data: T[], 
       order: index + 1
     }))
 
+    setMessage(null)
+
     // Save to backend
     startTransition(async () => {
       try {
         const action = actionMap[itemType]
         const result = await action(updatedList)
 
-        if (!result.success) {
-          throw new Error(result.error || 'Failed to reorder items')
+        if (!result?.success) {
+          setMessage({
+            type: 'error',
+            message: `Could not reorder ${LABELS[itemType].toLowerCase()}`,
+            description: extractErrorMessage(result)
+          })
+          return
         }
 
         router.refresh()
 
-        store.dispatch(
-          showToast({
-            message: `${itemType} updated successfully!`,
-            type: 'success'
-          })
-        )
+        setMessage({
+          type: 'success',
+          message: `${LABELS[itemType]} reordered successfully`
+        })
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : `Failed to update ${itemType}`
-
-        store.dispatch(
-          showToast({
-            message: errorMessage,
-            type: 'error'
-          })
-        )
+        setMessage({
+          type: 'error',
+          message: `Could not reorder ${LABELS[itemType].toLowerCase()}`,
+          description: extractErrorMessage(error)
+        })
       }
     })
 
@@ -128,6 +143,8 @@ export default function useGenericListReorder<T extends ReorderItem>(data: T[], 
   return {
     draggedOver,
     dragPosition,
+    message,
+    dismissMessage,
     handleDragStart,
     handleDragOver,
     handleDragLeave,

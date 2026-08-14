@@ -4,14 +4,17 @@ import { PageField } from '@/types/common.types'
 import { RightPanel } from '@/app/(authenticated)/admin/_components/RightPanel'
 import { Section } from './Section'
 import { Field } from './Field'
+import { InlineMessage, InlineMessageState } from '@/components/_shared/InlineMessage'
 
 type Props = {
   fields: PageField[]
-  onSave: any
+  onSave: (content: PageField[]) => Promise<void> | void
   isLoading: boolean
+  message?: InlineMessageState | null
+  onDismissMessage?: () => void
 }
 
-export function PageContentEditor({ fields, onSave, isLoading }: Props) {
+export function PageContentEditor({ fields, onSave, isLoading, message, onDismissMessage }: Props) {
   const [content, setContent] = useState(fields)
   const [isPreviewVisible, setIsPreviewVisible] = useState(true)
 
@@ -52,6 +55,8 @@ export function PageContentEditor({ fields, onSave, isLoading }: Props) {
 
         {/* Footer - Fixed at Bottom */}
         <div className="shrink-0 bg-neutral-100 dark:bg-neutral-900 border-t dark:border-neutral-800 border-neutral-200 px-6 py-4">
+          <InlineMessage state={message ?? null} onDismiss={onDismissMessage} className="mb-3" />
+
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:justify-end">
             <button
               onClick={() => setIsPreviewVisible(!isPreviewVisible)}

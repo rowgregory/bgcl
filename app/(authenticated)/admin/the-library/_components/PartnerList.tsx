@@ -1,13 +1,15 @@
 'use client'
 
-import { useState } from 'react'
-import { GripVertical, Check, AlertCircle, Edit2, Loader2, Plus, Trash2 } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import { GripVertical, Edit2, Loader2, Plus, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { Partner, PartnerTier } from '@prisma/client'
 
 import usePartnerList from '@/lib/hooks/usePartnerList'
 import { deletePartner } from '@/lib/actions/partner/deletePartner'
 import { usePartnerDrawer } from '@/stores/drawers'
+import { InlineMessage, InlineMessageState } from '@/components/_shared/InlineMessage'
+import extractErrorMessage from '@/lib/utils/extractErrorMessage'
 
 interface PartnerListProps {
   data: Partner[]
@@ -15,56 +17,67 @@ interface PartnerListProps {
   tierLabel: string
 }
 
-type SaveStatus = 'idle' | 'saving' | 'success' | 'error'
-
 export default function PartnerList({ data, tier, tierLabel }: PartnerListProps) {
   const router = useRouter()
 
-  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
-  const [errorMessage, setErrorMessage] = useState('')
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [deleteMessage, setDeleteMessage] = useState<InlineMessageState | null>(null)
 
   const openDrawer = usePartnerDrawer((s) => s.open)
 
-  const { draggedOver, handleDragStart, handleDragOver, handleDragLeave, handleDrop, handleDragEnd } = usePartnerList(
-    data,
-    tier
-  )
+  const {
+    draggedOver,
+    message: reorderMessage,
+    dismissMessage: dismissReorderMessage,
+    handleDragStart,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleDragEnd
+  } = usePartnerList(data, tier)
 
-  const flash = (status: Exclude<SaveStatus, 'saving'>, message = '') => {
-    setSaveStatus(status)
-    setErrorMessage(message)
-    setTimeout(() => setSaveStatus('idle'), status === 'error' ? 3000 : 2000)
-  }
+  // A message from either action; the most recent one wins
+  const message = deleteMessage ?? reorderMessage
 
-  const handleDropWithFeedback = async (e: React.DragEvent, targetId: string) => {
-    setSaveStatus('saving')
-    setErrorMessage('')
+  const dismissMessage = useCallback(() => {
+    setDeleteMessage(null)
+    dismissReorderMessage()
+  }, [dismissReorderMessage])
 
-    try {
-      await handleDrop(e, targetId)
-      flash('success')
-    } catch (error) {
-      flash('error', error instanceof Error ? error.message : 'Failed to save partner order')
-    }
-  }
+  // Clear a success message on its own; errors stay until dismissed or the next action
+  useEffect(() => {
+    if (message?.type !== 'success') return
+
+    const timer = setTimeout(() => dismissMessage(), 2500)
+    return () => clearTimeout(timer)
+  }, [message, dismissMessage])
 
   const handleDeletePartner = async (partnerId: string) => {
+    setDeleteMessage(null)
+    dismissReorderMessage()
     setDeletingId(partnerId)
-    setErrorMessage('')
 
     try {
       const res = await deletePartner(partnerId)
 
-      if (!res.success) {
-        flash('error', res.error)
+      if (!res?.success) {
+        setDeleteMessage({
+          type: 'error',
+          message: 'Could not delete partner',
+          description: extractErrorMessage(res)
+        })
         return
       }
 
       router.refresh()
-      flash('success')
-    } catch {
-      flash('error', 'Something went wrong. Please try again.')
+
+      setDeleteMessage({ type: 'success', message: 'Partner deleted' })
+    } catch (error) {
+      setDeleteMessage({
+        type: 'error',
+        message: 'Could not delete partner',
+        description: extractErrorMessage(error)
+      })
     } finally {
       setDeletingId(null)
     }
@@ -94,22 +107,7 @@ export default function PartnerList({ data, tier, tierLabel }: PartnerListProps)
           </div>
         </div>
 
-        {/* Status Messages */}
-        <div role="status" aria-live="polite">
-          {saveStatus === 'success' && (
-            <div className="mb-6 flex items-center gap-3 rounded-lg dark:bg-sky-950/40 dark:border-sky-800/50 dark:text-sky-200 bg-sky-100/50 border-sky-300/50 text-sky-900 px-4 py-3 border">
-              <Check className="h-5 w-5 dark:text-sky-400 text-sky-600" aria-hidden="true" />
-              <span className="text-sm">Saved successfully</span>
-            </div>
-          )}
-
-          {saveStatus === 'error' && (
-            <div className="mb-6 flex items-center gap-3 rounded-lg dark:bg-red-950/40 dark:border-red-800/50 dark:text-red-200 bg-red-100/50 border-red-300/50 text-red-900 px-4 py-3 border">
-              <AlertCircle className="h-5 w-5 dark:text-red-400 text-red-600" aria-hidden="true" />
-              <span className="text-sm">{errorMessage || 'Failed to save'}</span>
-            </div>
-          )}
-        </div>
+        <InlineMessage state={message} onDismiss={dismissMessage} className="mb-6" />
 
         {/* List Container */}
         <div className="space-y-2">
@@ -125,7 +123,7 @@ export default function PartnerList({ data, tier, tierLabel }: PartnerListProps)
                 onDragStart={(e) => handleDragStart(e, partner.id)}
                 onDragOver={(e) => handleDragOver(e, partner.id)}
                 onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDropWithFeedback(e, partner.id)}
+                onDrop={(e) => handleDrop(e, partner.id)}
                 onDragEnd={handleDragEnd}
                 className={`group relative flex items-center gap-4 rounded-lg border transition-all duration-200 ${
                   draggedOver === partner.id
@@ -156,7 +154,8 @@ export default function PartnerList({ data, tier, tierLabel }: PartnerListProps)
                 <button
                   type="button"
                   onClick={() => openDrawer({ tier, partner })}
-                  className="shrink-0 p-2 dark:text-neutral-600 dark:hover:text-sky-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-sky-600 hover:bg-neutral-200 rounded-lg transition-colors"
+                  disabled={deletingId === partner.id}
+                  className="shrink-0 p-2 dark:text-neutral-600 dark:hover:text-sky-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-sky-600 hover:bg-neutral-200 rounded-lg transition-colors disabled:opacity-50"
                   aria-label={`Edit ${partner.name}`}
                   title="Edit partner"
                 >
@@ -178,15 +177,6 @@ export default function PartnerList({ data, tier, tierLabel }: PartnerListProps)
                     <Trash2 className="h-4 w-4" aria-hidden="true" />
                   )}
                 </button>
-
-                {/* Status Indicator */}
-                {saveStatus === 'saving' && draggedOver === partner.id && (
-                  <div className="shrink-0">
-                    <div className="inline-flex items-center justify-center h-4 w-4">
-                      <div className="h-2 w-2 rounded-full dark:bg-sky-400 bg-sky-600 animate-pulse" />
-                    </div>
-                  </div>
-                )}
               </div>
             ))
           )}

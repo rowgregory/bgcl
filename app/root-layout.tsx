@@ -2,7 +2,6 @@
 
 import { Provider } from 'react-redux'
 import { persistor, store } from '@/lib/store/store'
-import Toast from '@/components/_shared/Toast'
 import { TicketSelectionDrawer } from './(public)/events/[eventId]/_components/casino/TicketSelectionDrawer'
 import { PersistGate } from 'redux-persist/integration/react'
 import Header from '@/components/layout/header/Header'
@@ -33,7 +32,6 @@ export default function RootLayoutWrapper({ children, programs, pageContent, cap
       <PersistGate loading={null} persistor={persistor}>
         <Elements stripe={stripePromise}>
           <ThemeProvider>
-            <Toast />
             <TicketSelectionDrawer />
             <DonationNotification donations={donations} />
             <VolunteerDrawer programs={programs} />

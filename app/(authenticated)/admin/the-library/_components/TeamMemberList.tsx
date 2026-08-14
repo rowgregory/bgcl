@@ -1,13 +1,15 @@
 'use client'
 
-import { FC, useState } from 'react'
-import { GripVertical, Check, AlertCircle, Edit2, Plus, Trash2 } from 'lucide-react'
+import { FC, useCallback, useEffect, useState } from 'react'
+import { GripVertical, Edit2, Loader2, Plus, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import useTeamMemberList from '@/lib/hooks/useTeamMemberList'
 import { deleteTeamMember } from '@/lib/actions/team-member/deleteTeamMember'
 import { useTeamMemberDrawer } from '@/stores/drawers'
 import type { TeamMemberRole } from '@/lib/validations/team-member.validation'
 import { TeamMemberRecord } from '@/types/team-member.types'
+import { InlineMessage, InlineMessageState } from '@/components/_shared/InlineMessage'
+import extractErrorMessage from '@/lib/utils/extractErrorMessage'
 
 interface TeamMemberListProps {
   data: TeamMemberRecord[]
@@ -16,54 +18,79 @@ interface TeamMemberListProps {
 }
 
 export const TeamMemberList: FC<TeamMemberListProps> = ({ data, role, roleLabel }) => {
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle')
-  const [errorMessage, setErrorMessage] = useState('')
   const router = useRouter()
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [deleteMessage, setDeleteMessage] = useState<InlineMessageState | null>(null)
 
   const openDrawer = useTeamMemberDrawer((s) => s.open)
 
-  const { draggedOver, handleDragStart, handleDragOver, handleDragLeave, handleDrop, handleDragEnd } =
-    useTeamMemberList(data, role)
+  const {
+    draggedOver,
+    message: reorderMessage,
+    dismissMessage: dismissReorderMessage,
+    handleDragStart,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleDragEnd
+  } = useTeamMemberList(data, role)
 
-  const flashError = (message: string) => {
-    setErrorMessage(message)
-    setSaveStatus('error')
-    setTimeout(() => setSaveStatus('idle'), 3000)
-  }
+  // A message from either action; the most recent one wins
+  const message = deleteMessage ?? reorderMessage
 
-  const handleDropWithFeedback = async (e: React.DragEvent, targetId: string) => {
-    setSaveStatus('saving')
-    setErrorMessage('')
+  const dismissMessage = useCallback(() => {
+    setDeleteMessage(null)
+    dismissReorderMessage()
+  }, [dismissReorderMessage])
 
-    try {
-      await handleDrop(e, targetId)
-      setSaveStatus('success')
-      setTimeout(() => setSaveStatus('idle'), 2000)
-    } catch (error) {
-      flashError(error instanceof Error ? error.message : 'Failed to save team member')
-    }
-  }
+  // Clear a success message on its own; errors stay until dismissed or the next action
+  useEffect(() => {
+    if (message?.type !== 'success') return
+
+    const timer = setTimeout(() => dismissMessage(), 2500)
+    return () => clearTimeout(timer)
+  }, [message, dismissMessage])
 
   // Editing carries the member as the drawer's payload
-  const handleEdit = (member: TeamMemberRecord) => openDrawer(member)
+  const handleEdit = (member: TeamMemberRecord) => {
+    dismissMessage()
+    openDrawer(member)
+  }
 
   // Creating opens the drawer with just the role pre-selected
-  const handleCreate = () => openDrawer({ role } as TeamMemberRecord)
+  const handleCreate = () => {
+    dismissMessage()
+    openDrawer({ role } as TeamMemberRecord)
+  }
 
   const handleDelete = async (memberId: string) => {
-    setErrorMessage('')
+    setDeleteMessage(null)
+    dismissReorderMessage()
+    setDeletingId(memberId)
 
     try {
       const result = await deleteTeamMember(memberId)
 
-      if (!result.success) {
-        flashError(result.error ?? 'Failed to delete team member')
+      if (!result?.success) {
+        setDeleteMessage({
+          type: 'error',
+          message: 'Could not delete team member',
+          description: extractErrorMessage(result)
+        })
         return
       }
 
       router.refresh()
+
+      setDeleteMessage({ type: 'success', message: 'Team member deleted' })
     } catch (error) {
-      flashError(error instanceof Error ? error.message : 'Failed to delete team member')
+      setDeleteMessage({
+        type: 'error',
+        message: 'Could not delete team member',
+        description: extractErrorMessage(error)
+      })
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -91,26 +118,7 @@ export const TeamMemberList: FC<TeamMemberListProps> = ({ data, role, roleLabel 
           </div>
         </div>
 
-        {/* Status Messages */}
-        {saveStatus === 'success' && (
-          <div
-            role="status"
-            className="mb-6 flex items-center gap-3 rounded-lg dark:bg-sky-950/40 dark:border-sky-800/50 dark:text-sky-200 bg-sky-100/50 border-sky-300/50 text-sky-900 px-4 py-3 border"
-          >
-            <Check className="h-5 w-5 dark:text-sky-400 text-sky-600" aria-hidden="true" />
-            <span className="text-sm">Saved successfully</span>
-          </div>
-        )}
-
-        {saveStatus === 'error' && (
-          <div
-            role="alert"
-            className="mb-6 flex items-center gap-3 rounded-lg dark:bg-red-950/40 dark:border-red-800/50 dark:text-red-200 bg-red-100/50 border-red-300/50 text-red-900 px-4 py-3 border"
-          >
-            <AlertCircle className="h-5 w-5 dark:text-red-400 text-red-600" aria-hidden="true" />
-            <span className="text-sm">{errorMessage || 'Failed to save'}</span>
-          </div>
-        )}
+        <InlineMessage state={message} onDismiss={dismissMessage} className="mb-6" />
 
         {/* List Container */}
         <div className="space-y-2">
@@ -126,7 +134,7 @@ export const TeamMemberList: FC<TeamMemberListProps> = ({ data, role, roleLabel 
                 onDragStart={(e) => handleDragStart(e, member.id)}
                 onDragOver={(e) => handleDragOver(e, member.id)}
                 onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDropWithFeedback(e, member.id)}
+                onDrop={(e) => handleDrop(e, member.id)}
                 onDragEnd={handleDragEnd}
                 className={`group relative flex items-center gap-4 rounded-lg border transition-all duration-200 ${
                   draggedOver === member.id
@@ -158,7 +166,8 @@ export const TeamMemberList: FC<TeamMemberListProps> = ({ data, role, roleLabel 
                 <button
                   type="button"
                   onClick={() => handleEdit(member)}
-                  className="shrink-0 p-2 dark:text-neutral-600 dark:hover:text-sky-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-sky-600 hover:bg-neutral-200 rounded-lg transition-colors"
+                  disabled={deletingId === member.id}
+                  className="shrink-0 p-2 dark:text-neutral-600 dark:hover:text-sky-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-sky-600 hover:bg-neutral-200 rounded-lg transition-colors disabled:opacity-50"
                   title="Edit member"
                   aria-label={`Edit ${member.name}`}
                 >
@@ -169,21 +178,17 @@ export const TeamMemberList: FC<TeamMemberListProps> = ({ data, role, roleLabel 
                 <button
                   type="button"
                   onClick={() => handleDelete(member.id)}
-                  className="shrink-0 p-2 dark:text-neutral-600 dark:hover:text-red-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-red-600 hover:bg-neutral-200 rounded-lg transition-colors"
+                  disabled={deletingId === member.id}
+                  className="shrink-0 p-2 dark:text-neutral-600 dark:hover:text-red-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-red-600 hover:bg-neutral-200 rounded-lg transition-colors disabled:opacity-50"
                   title="Delete member"
                   aria-label={`Delete ${member.name}`}
                 >
-                  <Trash2 className="h-4 w-4" aria-hidden="true" />
+                  {deletingId === member.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
+                  )}
                 </button>
-
-                {/* Saving indicator */}
-                {saveStatus === 'saving' && draggedOver === member.id && (
-                  <div className="shrink-0">
-                    <div className="inline-flex items-center justify-center h-4 w-4">
-                      <div className="h-2 w-2 rounded-full dark:bg-sky-400 bg-sky-600 animate-pulse" />
-                    </div>
-                  </div>
-                )}
               </div>
             ))
           )}

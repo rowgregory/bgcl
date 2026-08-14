@@ -1,14 +1,17 @@
 import { useRouter } from 'next/navigation'
-import { startTransition, useState } from 'react'
-import { store } from '../store/store'
-import { showToast } from '../store/slices/toastSlice'
+import { startTransition, useCallback, useState } from 'react'
 import { reorderTeamMembers } from '../actions/team-member/reorderTeamMembers'
+import { InlineMessageState } from '@/components/_shared/InlineMessage'
+import extractErrorMessage from '@/lib/utils/extractErrorMessage'
 
 export default function useTeamMemberList(data: any, role: string) {
   const router = useRouter()
   const [draggedItem, setDraggedItem] = useState<string | null>(null)
   const [draggedOver, setDraggedOver] = useState<string | null>(null)
   const [dragPosition, setDragPosition] = useState<'top' | 'bottom' | null>(null)
+  const [message, setMessage] = useState<InlineMessageState | null>(null)
+
+  const dismissMessage = useCallback(() => setMessage(null), [])
 
   const handleDragStart = (e: React.DragEvent, id: string) => {
     setDraggedItem(id)
@@ -59,25 +62,34 @@ export default function useTeamMemberList(data: any, role: string) {
       displayOrder: index + 1
     }))
 
+    setMessage(null)
+
     // Save to backend
     startTransition(async () => {
       try {
-        await reorderTeamMembers(role, updatedList)
+        const result = await reorderTeamMembers(role, updatedList)
+
+        if (result && result.success === false) {
+          setMessage({
+            type: 'error',
+            message: 'Could not reorder team members',
+            description: extractErrorMessage(result)
+          })
+          return
+        }
 
         router.refresh()
-        store.dispatch(
-          showToast({
-            message: 'Team members order updated successfully!',
-            type: 'success'
-          })
-        )
+
+        setMessage({
+          type: 'success',
+          message: 'Team member order updated successfully'
+        })
       } catch (error) {
-        store.dispatch(
-          showToast({
-            message: error instanceof Error ? error.message : 'Failed to update team member',
-            type: 'error'
-          })
-        )
+        setMessage({
+          type: 'error',
+          message: 'Could not reorder team members',
+          description: extractErrorMessage(error)
+        })
       }
     })
 
@@ -94,5 +106,15 @@ export default function useTeamMemberList(data: any, role: string) {
     setDragPosition(null)
   }
 
-  return { draggedOver, dragPosition, handleDragStart, handleDragOver, handleDragLeave, handleDrop, handleDragEnd }
+  return {
+    draggedOver,
+    dragPosition,
+    message,
+    dismissMessage,
+    handleDragStart,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleDragEnd
+  }
 }

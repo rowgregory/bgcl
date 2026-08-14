@@ -4,7 +4,6 @@ import { combineReducers, Reducer } from 'redux'
 import { configureStore } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { formReducer } from './slices/formSlice'
-import { toastReduer } from './slices/toastSlice'
 import { persistStore, persistReducer } from 'redux-persist'
 import { PersistPartial } from 'redux-persist/es/persistReducer'
 
@@ -53,8 +52,7 @@ const persistConfig = {
 }
 
 const rootReducer = combineReducers({
-  form: formReducer,
-  toast: toastReduer
+  form: formReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -82,5 +80,4 @@ export const useAppDispatch: () => AppDispatch = useDispatch
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
-export const useToastSelector = () => useAppSelector((state) => state.toast)
 export const useFormSelector = () => useAppSelector((state) => state.form)

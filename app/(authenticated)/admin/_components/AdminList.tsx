@@ -9,10 +9,11 @@ import {
   useCampaignDrawer,
   useClosingDrawer
 } from '@/stores/drawers'
-import { AlertCircle, Check, Plus } from 'lucide-react'
-import { useState } from 'react'
+import { Plus } from 'lucide-react'
+import { useEffect } from 'react'
 import AdminListItem from './AdminListItem'
 import { useRouter } from 'next/navigation'
+import { InlineMessage } from '@/components/_shared/InlineMessage'
 
 interface AdminListItem {
   id: string
@@ -33,27 +34,27 @@ export function AdminListPage<T extends AdminListItem>({
   itemType,
   emptyMessage = 'No items added yet'
 }: AdminListPageProps<T>) {
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle')
-  const [errorMessage, setErrorMessage] = useState<string>('')
   const router = useRouter()
 
-  const { draggedOver, dragPosition, handleDragStart, handleDragOver, handleDragLeave, handleDrop, handleDragEnd } =
-    useGenericListReorder(data, itemType)
+  const {
+    draggedOver,
+    dragPosition,
+    message,
+    dismissMessage,
+    handleDragStart,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleDragEnd
+  } = useGenericListReorder(data, itemType)
 
-  const handleDropWithFeedback = async (e: React.DragEvent, targetId: string) => {
-    setSaveStatus('saving')
-    setErrorMessage('')
+  // Clear a success message on its own; errors stay until dismissed or the next drop
+  useEffect(() => {
+    if (message?.type !== 'success') return
 
-    try {
-      await handleDrop(e, targetId)
-      setSaveStatus('success')
-      setTimeout(() => setSaveStatus('idle'), 2000)
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Failed to save order')
-      setSaveStatus('error')
-      setTimeout(() => setSaveStatus('idle'), 3000)
-    }
-  }
+    const timer = setTimeout(() => dismissMessage(), 2500)
+    return () => clearTimeout(timer)
+  }, [message, dismissMessage])
 
   const handleCreate = () => {
     switch (itemType) {
@@ -103,20 +104,7 @@ export function AdminListPage<T extends AdminListItem>({
           </div>
         </div>
 
-        {/* Status Messages */}
-        {saveStatus === 'success' && (
-          <div className="mb-6 flex items-center gap-3 rounded-lg dark:bg-sky-950/40 dark:border-sky-800/50 dark:text-sky-200 bg-sky-100/50 border-sky-300/50 text-sky-900 px-4 py-3 border">
-            <Check className="h-5 w-5 dark:text-sky-400 text-sky-600" />
-            <span className="text-sm">Saved successfully</span>
-          </div>
-        )}
-
-        {saveStatus === 'error' && (
-          <div className="mb-6 flex items-center gap-3 rounded-lg dark:bg-red-950/40 dark:border-red-800/50 dark:text-red-200 bg-red-100/50 border-red-300/50 text-red-900 px-4 py-3 border">
-            <AlertCircle className="h-5 w-5 dark:text-red-400 text-red-600" />
-            <span className="text-sm">{errorMessage || 'Failed to save'}</span>
-          </div>
-        )}
+        <InlineMessage state={message} onDismiss={dismissMessage} className="mb-6" />
 
         <div className="space-y-2">
           {data?.length === 0 ? (
@@ -126,14 +114,14 @@ export function AdminListPage<T extends AdminListItem>({
           ) : (
             data?.map((item, index) => (
               <AdminListItem
-                key={index}
+                key={item.id ?? index}
                 dragPosition={dragPosition}
                 draggedOver={draggedOver}
                 handleDragEnd={handleDragEnd}
                 handleDragLeave={handleDragLeave}
                 handleDragOver={handleDragOver}
                 handleDragStart={handleDragStart}
-                handleDropWithFeedback={handleDropWithFeedback}
+                handleDropWithFeedback={handleDrop}
                 index={index}
                 item={item}
                 itemType={itemType}

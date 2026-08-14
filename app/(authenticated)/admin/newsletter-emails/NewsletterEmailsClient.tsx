@@ -5,8 +5,8 @@ import { motion } from 'framer-motion'
 import { Trash2, Mail, Search } from 'lucide-react'
 import { deleteSubscriber } from '@/lib/actions/subscriber/deleteSubscriber'
 import { useRouter } from 'next/navigation'
-import { store } from '@/lib/store/store'
-import { showToast } from '@/lib/store/slices/toastSlice'
+import extractErrorMessage from '@/lib/utils/extractErrorMessage'
+import { InlineMessage, InlineMessageState } from '@/components/_shared/InlineMessage'
 
 const TABS = ['All', 'Members', 'Non-Members', 'Donors'] as const
 type TabType = (typeof TABS)[number]
@@ -21,6 +21,7 @@ const TAB_TO_TYPE = {
 export default function NewsletterEmailsClient({ subscribers }) {
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [message, setMessage] = useState<InlineMessageState | null>(null)
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<TabType>('All')
   const [searchQuery, setSearchQuery] = useState('')
@@ -30,14 +31,25 @@ export default function NewsletterEmailsClient({ subscribers }) {
   }
 
   const handleDelete = async (id: string) => {
+    setMessage(null)
+    setDeleteId(id)
+    setDeleting(true)
+
     try {
-      setDeleting(true)
-      await deleteSubscriber(id)
+      const res = await deleteSubscriber(id)
+
+      if (res && res.success === false) {
+        setMessage({ type: 'error', message: 'Failed to delete subscriber.', description: extractErrorMessage(res) })
+        return
+      }
+
       router.refresh()
+      setMessage({ type: 'success', message: 'Subscriber deleted successfully.' })
+    } catch (error: unknown) {
+      setMessage({ type: 'error', message: 'Failed to delete subscriber.', description: extractErrorMessage(error) })
+    } finally {
+      setDeleting(false)
       setDeleteId(null)
-      store.dispatch(showToast({ message: 'Subscriber deleted successfully!' }))
-    } catch {
-      store.dispatch(showToast({ message: 'Failed to delete subscriber.', type: 'error' }))
     }
   }
 
@@ -93,32 +105,14 @@ export default function NewsletterEmailsClient({ subscribers }) {
               className="w-full pl-9 pr-3 py-1.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
             />
           </div>
-
-          {/* <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={copyEmails}
-            disabled={subscribers?.length === 0}
-            className="flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 disabled:bg-neutral-400 dark:disabled:bg-neutral-700 text-white text-sm font-semibold rounded-lg transition-colors shrink-0"
-          >
-            {copied ? (
-              <>
-                <Check className="w-4 h-4" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <Copy className="w-4 h-4" />
-                Copy
-              </>
-            )}
-          </motion.button> */}
         </div>
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-8 pb-6 pt-36 lg:pt-17">
         <div className="mx-auto">
+          <InlineMessage state={message} onDismiss={() => setMessage(null)} className="mb-4" />
+
           {filteredSubscribers?.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-neutral-500 dark:text-neutral-400">
               <Mail className="w-12 h-12 mb-3 opacity-30" />
@@ -157,13 +151,12 @@ export default function NewsletterEmailsClient({ subscribers }) {
                     </div>
 
                     <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        handleDelete(subscriber.id)
-                        setDeleteId(subscriber.id)
-                      }}
-                      className="shrink-0 text-neutral-400 hover:text-red-600 dark:hover:text-red-400 transition-all p-2"
+                      whileHover={{ scale: deleting ? 1 : 1.1 }}
+                      whileTap={{ scale: deleting ? 1 : 0.95 }}
+                      onClick={() => handleDelete(subscriber.id)}
+                      disabled={deleting}
+                      aria-label={`Delete ${subscriber.email}`}
+                      className="shrink-0 text-neutral-400 hover:text-red-600 dark:hover:text-red-400 transition-all p-2 disabled:cursor-not-allowed"
                     >
                       {deleting && deleteId === subscriber.id ? (
                         <div className="w-4 h-4 rounded-full border-2 border-neutral-300 dark:border-neutral-600 border-t-red-600 dark:border-t-red-400 animate-spin" />
