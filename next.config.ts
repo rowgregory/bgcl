@@ -41,6 +41,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   // Don't advertise the framework version
   poweredByHeader: false,
+  // next.config.ts
+  productionBrowserSourceMaps: true,
 
   images: {
     remotePatterns: [
