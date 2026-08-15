@@ -19,14 +19,14 @@ const TAB_TO_TYPE = {
   Supporters: 'SUPPORTER' as const
 }
 
-export const ROLE_COLORS: Record<string, string> = {
+const ROLE_COLORS: Record<string, string> = {
   SUPERUSER: 'bg-lime-100 dark:bg-lime-900/30 text-lime-700 dark:text-lime-300',
   ADMIN: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300',
   SUPPORTER: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300',
   PROGRAM: 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300'
 }
 
-export const ROLE_LABEL: Record<string, string> = {
+const ROLE_LABEL: Record<string, string> = {
   SUPERUSER: 'Super User',
   ADMIN: 'Admin',
   PROGRAM: 'Program',

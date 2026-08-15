@@ -1,7 +1,7 @@
-import { JsonValue } from '@prisma/client/runtime/library'
-import { IOrderItem } from './order-item'
-import { Campaign, Event } from '@prisma/client'
-import { UserWithAddress } from '../user.types'
+import type { JsonValue } from '@prisma/client/runtime/library'
+import type { IOrderItem } from './order-item'
+import type { Campaign, Event } from '@prisma/client'
+import type { UserWithAddress } from '../user.types'
 
 export type OrderType = 'ONE_TIME_DONATION' | 'RECURRING_DONATION' | 'TICKET_PURCHASE'
 export type OrderStatus =

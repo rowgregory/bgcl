@@ -1,4 +1,4 @@
-import { CITFormData, Tab } from '@/types/entities/cit-application.types'
+import type { CITFormData, Tab } from '@/types/entities/cit-application.types'
 import { CITApplicationStatus } from '@prisma/client'
 
 export const WEEK_OPTIONS = [

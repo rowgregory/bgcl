@@ -1,5 +1,5 @@
-import { IOrder } from './order'
-import { TicketWithEvent } from '../ticket.types'
+import type { IOrder } from './order'
+import type { TicketWithEvent } from '../ticket.types'
 
 export interface IOrderItem {
   id: string

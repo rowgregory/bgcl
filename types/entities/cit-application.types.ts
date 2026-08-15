@@ -1,4 +1,4 @@
-import { TABS } from '@/lib/constants/cit-application.constants'
+import type { TABS } from '@/lib/constants/cit-application.constants'
 import { CITApplicationStatus } from '@prisma/client'
 
 export interface CITFormData {
