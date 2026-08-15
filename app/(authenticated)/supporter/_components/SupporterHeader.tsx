@@ -2,15 +2,20 @@ import { useSession } from 'next-auth/react'
 import { MotionLink } from '@/components/_shared/MotionLink'
 import Picture from '@/components/_shared/Picture'
 import { Rocket, ShoppingCart } from 'lucide-react'
-import LogoutButton from '@/components/ui/buttons/LogoutButton'
-import { useCartStore } from '@/stores/useCartStore'
+import { useCartStore, useCartCount, useCartHasHydrated } from '@/stores/useCartStore'
+import LogoutButton from '@/components/_shared/LogoutButton'
 
 export function SupporterHeader() {
   const session = useSession()
   const role = session?.data?.user?.role
   const email = session.data?.user?.email
-  const items = useCartStore((s) => s.items)
-  const cartCount = items.reduce((sum, i) => sum + i.quantity, 0)
+  const hasItems = useCartStore((s) => s.items.length > 0)
+  const storedCount = useCartCount()
+  const hasHydrated = useCartHasHydrated()
+
+  // The server has no access to the stored cart, so render it empty until
+  // rehydration lands rather than flashing the wrong count
+  const cartCount = hasHydrated ? storedCount : 0
 
   return (
     <header className="px-4 sm:px-6 md:px-8 lg:px-12 pb-4 pt-4 sm:pt-6 md:pt-8 dark:border-neutral-800 border-neutral-200 border-b">
@@ -18,7 +23,7 @@ export function SupporterHeader() {
         {/* Logo */}
         <MotionLink
           href="/"
-          aria-label="Boys & Girls Club of Lynn — home"
+          aria-label="Boys &amp; Girls Club of Lynn, home"
           className="flex shrink-0 w-20 sm:w-28 h-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
         >
           <Picture
@@ -57,8 +62,8 @@ export function SupporterHeader() {
 
           {/* Cart */}
           <MotionLink
-            href={items?.length > 0 ? '/checkout' : '/cart'}
-            aria-label={`View cart — ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}
+            href={hasHydrated && hasItems ? '/checkout' : '/cart'}
+            aria-label={`View cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="relative p-2 dark:bg-neutral-800 dark:border-neutral-700 dark:hover:bg-neutral-700 bg-neutral-100 border-neutral-200 hover:bg-neutral-200 border rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 shrink-0"
@@ -66,8 +71,8 @@ export function SupporterHeader() {
             <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 dark:text-neutral-400 text-neutral-600" aria-hidden="true" />
             {cartCount > 0 && (
               <span
+                aria-hidden="true"
                 className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-sky-600 text-white text-[10px] font-black rounded-full flex items-center justify-center leading-none"
-                aria-label={`${cartCount} items in cart`}
               >
                 {cartCount > 9 ? '9+' : cartCount}
               </span>

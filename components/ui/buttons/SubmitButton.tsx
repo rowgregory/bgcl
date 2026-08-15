@@ -1,18 +1,16 @@
-import { useFormSelector } from '@/lib/store/store'
+'use client'
+
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 
 type Props = {
-  formName: string
-  isValid: boolean
   label: string
+  isSubmitting: boolean
+  isValid?: boolean
 }
 
-export function SubmitButton({ formName, isValid, label }: Props) {
-  const { forms } = useFormSelector()
-  const inputs = forms?.[formName]?.inputs
-  const loading = !!inputs?.loading
-  const ready = isValid && !loading
+export function SubmitButton({ label, isSubmitting, isValid = true }: Props) {
+  const ready = isValid && !isSubmitting
 
   return (
     <motion.button
@@ -27,8 +25,8 @@ export function SubmitButton({ formName, isValid, label }: Props) {
           : 'dark:bg-neutral-800 bg-neutral-100 dark:text-neutral-600 text-neutral-400 dark:border-neutral-700 border-neutral-200 border cursor-not-allowed'
       }`}
     >
-      {loading ? (
-        <span className="flex items-center gap-2" aria-live="polite">
+      {isSubmitting ? (
+        <span className="flex itemsy-center gap-2" aria-live="polite">
           <motion.span
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}

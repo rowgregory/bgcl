@@ -3,13 +3,14 @@
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { MessageSquare, Search, Heart } from 'lucide-react'
-import { store } from '@/lib/store/store'
 import { formatDate } from '@/lib/utils/date-utils'
-import { setOpenContactSubmissionDrawer } from '@/lib/store/slices/uiSlice'
+import { useContactSubmissionDrawer } from '@/stores/drawers'
+import { ContactSubmission } from '@prisma/client'
 
-export default function ContactSubmissionsClient({ contactSubmissions }: { contactSubmissions: IContactSubmission[] }) {
+export default function ContactSubmissionsClient({ contactSubmissions }: { contactSubmissions: ContactSubmission[] }) {
   const [activeTab, setActiveTab] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
+  const open = useContactSubmissionDrawer((s) => s.open)
 
   const filtered = useMemo(() => {
     return contactSubmissions
@@ -130,7 +131,7 @@ export default function ContactSubmissionsClient({ contactSubmissions }: { conta
                   <tbody>
                     {filtered.map((t, i) => (
                       <motion.tr
-                        onClick={() => store.dispatch(setOpenContactSubmissionDrawer(t))}
+                        onClick={() => open(t)}
                         key={t.id}
                         initial={{ opacity: 0, y: 4 }}
                         animate={{ opacity: 1, y: 0 }}

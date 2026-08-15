@@ -1,94 +1,110 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { store, useFormSelector } from '@/lib/store/store'
-import { TicketCheckoutForm } from '@/app/(public)/checkout/_components/TicketCheckoutForm'
-import { useSession } from 'next-auth/react'
-import { IPaymentMethod } from '@/types/entities/payment-method'
 import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { IAddress } from '@/types/entities/address.types'
-import { createFormActions, setInputs } from '@/lib/store/slices/formSlice'
+import { FormProvider, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { Address, PaymentMethod } from '@prisma/client'
+
 import { updateUserName } from '@/lib/actions/user/updateUserName'
 import { updateAddress } from '@/lib/actions/address/updateAddress'
+import { TicketCheckoutForm } from '@/app/(public)/checkout/_components/TicketCheckoutForm'
+import { CheckoutStep1 } from '@/components/public/checkout/CheckoutStep1'
+import { CheckoutStep2 } from '@/components/public/checkout/CheckoutStep2'
+import { CheckoutStepIndicator } from '@/components/public/checkout/CheckoutStepIndicator'
+import { useCartStore } from '@/stores/useCartStore'
 import { TicketCheckoutHeader } from './_components/TicketCheckoutHeader'
 import { EmptyState } from './_components/TicketCheckoutEmptyState'
 import { TicketCheckoutOrderSummary } from './_components/TicketCheckoutOrderSummary'
-import { CheckoutStep1 } from '@/components/public/checkout/CheckoutStep1'
-import { CheckoutStepIndicator } from '@/components/public/checkout/CheckoutStepIndicator'
-import { CheckoutStep2 } from '@/components/public/checkout/CheckoutStep2'
-import { useCartStore } from '@/stores/useCartStore'
+import {
+  EMPTY_TICKET_CHECKOUT,
+  TicketCheckoutFormInput,
+  TicketCheckoutFormValues,
+  ticketCheckoutSchema
+} from '@/lib/validations/ticket-checkout.validation'
 
-type IPublicCheckoutClient = {
-  savedCards: IPaymentMethod[]
-  userAddress: IAddress
-  userName: { firstName: string; lastName: string }
+type Props = {
+  savedCards: PaymentMethod[]
+  userAddress: Address | null
+  userName: { firstName: string; lastName: string } | null
 }
 
 const ticketCheckoutStepLabels = ['Sign In', 'User Info', 'Payment']
 
-export function PublicTicketCheckoutClient({ savedCards, userAddress, userName }: IPublicCheckoutClient) {
+// Fields step 2 collects, validated before advancing
+const STEP_2_FIELDS = ['firstName', 'lastName', 'addressLine1', 'city', 'state', 'zipPostalCode'] as const
+
+export function PublicTicketCheckoutClient({ savedCards, userAddress, userName }: Props) {
   const router = useRouter()
-
-  // ── Store ─────────────────────────────────────────────────────────────────
-  const items = useCartStore((s) => s.items)
-  const session = useSession()
-  const isAuthed = session.status === 'authenticated'
-  const { forms } = useFormSelector()
-  const { handleInput, setErrors } = createFormActions('ticketCheckoutForm', store.dispatch)
-
-  // ── Derived ───────────────────────────────────────────────────────────────
-  const inputs = forms?.ticketCheckoutForm?.inputs
-  const errors = forms?.ticketCheckoutForm?.errors
-  const hasUserInfo = !!(userName && userAddress)
-
-  // ── UI state ──────────────────────────────────────────────────────────────
   const params = useSearchParams()
+
+  const items = useCartStore((s) => s.items)
+  const { data: session, status } = useSession()
+  const isAuthed = status === 'authenticated'
+
+  const hasUserInfo = Boolean(userName && userAddress)
+
+  const methods = useForm<TicketCheckoutFormInput, unknown, TicketCheckoutFormValues>({
+    resolver: zodResolver(ticketCheckoutSchema),
+    mode: 'onTouched',
+    defaultValues: {
+      ...EMPTY_TICKET_CHECKOUT,
+      firstName: userName?.firstName ?? '',
+      lastName: userName?.lastName ?? '',
+      addressLine1: userAddress?.addressLine1 ?? '',
+      addressLine2: userAddress?.addressLine2 ?? '',
+      city: userAddress?.city ?? '',
+      state: userAddress?.state ?? '',
+      zipPostalCode: userAddress?.zipPostalCode ?? '',
+      coverFees: true,
+      useNewCard: savedCards.length === 0
+    }
+  })
+
+  const { watch, setValue, trigger, getValues } = methods
+
+  const coverFees = watch('coverFees')
+
   const stepFromUrl = params.get('step')
   const [step, setStep] = useState(() => {
     if (!isAuthed) return 1
-    if (hasUserInfo) return 3
-    return 2
+    return hasUserInfo ? 3 : 2
   })
 
-  // ── Effects ───────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!stepFromUrl) return
     setStep(hasUserInfo ? 3 : 2)
   }, [stepFromUrl, hasUserInfo])
 
+  // Session resolves after first render, so seed the email once it lands
   useEffect(() => {
-    store.dispatch(
-      setInputs({
-        formName: 'ticketCheckoutForm',
-        data: {
-          ...userName,
-          ...userAddress,
-          ...(step === 3 && { coverFees: true, loading: false, useNewCard: savedCards?.length === 0 ? true : false })
-        }
-      })
-    )
-  }, [savedCards?.length, step, userAddress, userName])
+    const email = session?.user?.email
+    if (email && !getValues('email')) setValue('email', email)
+  }, [session?.user?.email, getValues, setValue])
 
   const handleStep2 = async () => {
-    if (inputs?.firstName && inputs?.lastName) {
-      await updateUserName({ firstName: inputs.firstName, lastName: inputs.lastName })
-    }
-    if (inputs?.addressLine1) {
-      await updateAddress({
-        addressLine1: inputs.addressLine1,
-        addressLine2: inputs.addressLine2,
-        city: inputs.city,
-        state: inputs.state,
-        zipPostalCode: inputs.zipPostalCode,
-        country: 'US'
-      })
-    }
+    const valid = await trigger(STEP_2_FIELDS)
+    if (!valid) return
+
+    const values = getValues()
+
+    await updateUserName({ firstName: values.firstName, lastName: values.lastName })
+    await updateAddress({
+      addressLine1: values.addressLine1,
+      addressLine2: values.addressLine2,
+      city: values.city,
+      state: values.state,
+      zipPostalCode: values.zipPostalCode,
+      country: 'US'
+    })
+
     router.refresh()
     setStep(3)
   }
 
-  if (items?.length === 0) return <EmptyState />
+  if (items.length === 0) return <EmptyState />
 
   return (
     <div className="pb-20 sm:pb-0">
@@ -97,7 +113,7 @@ export function PublicTicketCheckoutClient({ savedCards, userAddress, userName }
       <div className="px-4 sm:px-6 md:px-12">
         <div className="max-w-4xl mx-auto py-8 sm:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
-            <TicketCheckoutOrderSummary items={items} coverFees={inputs?.coverFees} />
+            <TicketCheckoutOrderSummary items={items} coverFees={coverFees} />
 
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="lg:col-span-2">
               <CheckoutStepIndicator
@@ -106,20 +122,13 @@ export function PublicTicketCheckoutClient({ savedCards, userAddress, userName }
                 labels={ticketCheckoutStepLabels}
               />
 
-              {step === 1 && <CheckoutStep1 redirectTo="/checkout?step=2" />}
+              <FormProvider {...methods}>
+                {step === 1 && <CheckoutStep1 redirectTo="/checkout?step=2" />}
 
-              {step === 2 && (
-                <CheckoutStep2
-                  onSubmit={handleStep2}
-                  isLoading={false}
-                  errors={errors}
-                  handleInput={handleInput}
-                  inputs={inputs}
-                  setErrors={setErrors}
-                />
-              )}
+                {step === 2 && <CheckoutStep2 onSubmit={handleStep2} />}
 
-              {step === 3 && <TicketCheckoutForm savedCards={savedCards} inputs={inputs} setStep={setStep} />}
+                {step === 3 && <TicketCheckoutForm savedCards={savedCards} setStep={setStep} />}
+              </FormProvider>
             </motion.div>
           </div>
         </div>

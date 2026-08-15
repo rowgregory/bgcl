@@ -1,16 +1,15 @@
 'use client'
 
-import { FC } from 'react'
 import { getCurrentPageId } from '@/lib/utils/getCurrentPageId'
 import { AnimatePresence, motion } from 'framer-motion'
 import { usePathname } from 'next/navigation'
 import { Menu } from 'lucide-react'
 import MobileMenuButton from '../../../components/ui/buttons/MobileMenuButton'
-import LogoutButton from '../../../components/ui/buttons/LogoutButton'
 import { programNavigationLinkData } from '@/lib/constants/programNavLinks'
 import { ProgramSidebar } from '@/app/(authenticated)/program/sidebar'
 import { useSidebarStore } from '@/stores/useSidebarStore'
 import { useEscapeKey } from '@/lib/hooks/useEscapeKey'
+import LogoutButton from '@/components/_shared/LogoutButton'
 
 export default function ProgramLayoutClient({ children }) {
   const pathname = usePathname()

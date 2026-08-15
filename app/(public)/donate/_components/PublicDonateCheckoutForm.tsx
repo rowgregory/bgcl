@@ -1,80 +1,113 @@
-import { useCallback } from 'react'
+'use client'
+
+import { useCallback, useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useFormContext } from 'react-hook-form'
+import type { PaymentMethod } from '@prisma/client'
+
 import { calculateStripeFees } from '@/lib/utils/calculateStripeFees'
+import { getDonateCheckoutAmount } from '@/lib/utils/getDonateCheckoutAmount'
 import { useDefaultCard } from '@/lib/hooks/useDefaultCard'
-import { useInitializeForm } from '@/lib/hooks/useInitializeForm'
+import { useDonationSubmit } from '@/lib/hooks/useDonationSubmit'
 import { SavedCardSelector } from '@/components/_shared/SavedCardSelector'
 import { CardElementField } from '@/components/_shared/CardElementField'
 import { SaveCardToggle } from '@/components/_shared/SaveCardToggle'
 import { CoverFeesToggle } from '@/components/_shared/CoverFeesToggle'
 import { SubmitButton } from '@/components/ui/buttons/SubmitButton'
-import { FormError } from '@/components/_shared/FormError'
-import { setDonateCheckoutForm as setForm } from '@/lib/utils/setDonateCheckoutForm'
-import { getDonateCheckoutAmount } from '@/lib/utils/getDonateCheckoutAmount'
-import { useDonationSubmit } from '@/lib/hooks/useDonationSubmit'
+import FormError from '@/components/_shared/FormError'
 import { CheckoutStep3UserInfo } from '@/components/_shared/CheckoutStep3UserInfo'
+import type { DonationFormInput } from '@/lib/validations/donation.validation'
 import { DonationCheckoutStep3CampaignSelectionAndNotes } from './DonationCheckoutStep3CampaignSelectionAndNotes'
-import { useCampaignInit } from '@/lib/hooks/useCampaignInit'
 import { Step3DonationAmountSection } from '@/app/(public)/donate/_components/Step3DonationAmountSection'
+import { CampaignWithCount } from '@/types/campaign.types'
 
-export function PublicDonateCheckoutForm({ campaignName, campaigns, savedCards, inputs, setStep }) {
-  const session = useSession()
-  const isAuthed = session.status === 'authenticated'
+type Props = {
+  campaignName?: string | null
+  campaigns: CampaignWithCount[]
+  savedCards: PaymentMethod[]
+  setStep: (step: number) => void
+}
+
+export function PublicDonateCheckoutForm({ campaignName, campaigns, savedCards, setStep }: Props) {
+  const { status } = useSession()
+  const isAuthed = status === 'authenticated'
+
+  const {
+    watch,
+    setValue,
+    handleSubmit,
+    formState: { isSubmitting }
+  } = useFormContext<DonationFormInput>()
+
+  // Stripe Elements owns card validity, so it stays out of the form
+  const [cardComplete, setCardComplete] = useState(false)
+
+  const values = watch()
 
   // ── Derived ───────────────────────────────────────────────────────────────
-  const baseAmount = getDonateCheckoutAmount(inputs)
-  const processingFee = Math.round(calculateStripeFees(baseAmount) * 100) / 100
-  const finalAmount = Math.round((inputs?.coverFees ? baseAmount + calculateStripeFees(baseAmount) : baseAmount) * 100)
+  const baseAmount = getDonateCheckoutAmount(values)
+  const rawFee = calculateStripeFees(baseAmount)
+  const processingFee = Math.round(rawFee * 100) / 100
+  const feesCovered = values.coverFees ? rawFee : 0
+  const finalAmount = Math.round((baseAmount + feesCovered) * 100)
   const finalAmountDisplay = (finalAmount / 100).toFixed(2)
-  const feesCovered = inputs?.coverFees ? calculateStripeFees(baseAmount) : 0
-  const usingSavedCard = !!(inputs?.selectedCardId && !inputs?.useNewCard)
-  const fullName = `${inputs?.firstName?.trim() ?? ''} ${inputs?.lastName?.trim() ?? ''}`.trim()
-  const phone = inputs.phone
 
-  const derivedName =
-    inputs?.firstName || inputs?.lastName ? { firstName: inputs.firstName, lastName: inputs.lastName } : null
+  const usingSavedCard = Boolean(values.selectedCardId && !values.useNewCard)
+  const fullName = `${values.firstName?.trim() ?? ''} ${values.lastName?.trim() ?? ''}`.trim()
 
-  const derivedAddress = inputs?.addressLine1
+  const hasName = Boolean(values.firstName || values.lastName)
+  const hasAddress = Boolean(values.addressLine1)
+
+  const derivedAddress = hasAddress
     ? {
-        addressLine1: inputs.addressLine1,
-        addressLine2: inputs.addressLine2,
-        city: inputs.city,
-        state: inputs.state,
-        zipPostalCode: inputs.zipPostalCode
+        addressLine1: values.addressLine1,
+        addressLine2: values.addressLine2,
+        city: values.city,
+        state: values.state,
+        zipPostalCode: values.zipPostalCode
       }
     : null
 
-  const isValid = (usingSavedCard ? true : inputs?.cardComplete) && !!derivedName && !!derivedAddress
+  const isValid = (usingSavedCard || cardComplete) && hasName && hasAddress
 
-  const setDefaultCard = useCallback((value: string) => setForm({ selectedCardId: value }), [])
-
+  const setDefaultCard = useCallback(
+    (value: string) => setValue('selectedCardId', value, { shouldDirty: true }),
+    [setValue]
+  )
   useDefaultCard(savedCards, setDefaultCard)
-  useInitializeForm({ savedCards, ...{ selectedPlan: 'once_friend', amount: 50, donationType: 'once' } })
-  useCampaignInit(campaignName, campaigns)
+
+  // Preselect the campaign the visitor arrived from
+  useEffect(() => {
+    if (!campaignName) return
+
+    const match = campaigns.find((campaign) => campaign.name === campaignName)
+    if (match) setValue('campaignId', match.id)
+  }, [campaignName, campaigns, setValue])
 
   // ── Submit ─────────────────────────────────────────────────────────────────
-  const { handleSubmit } = useDonationSubmit({ inputs, finalAmount, feesCovered, usingSavedCard, fullName })
+  const { submitDonation, isProcessing } = useDonationSubmit({
+    finalAmount,
+    feesCovered,
+    usingSavedCard,
+    fullName
+  })
+
+  const onSubmit = handleSubmit(submitDonation)
 
   return (
     <div className="dark:bg-zinc-900 dark:border-zinc-800 bg-neutral-100 border-neutral-200 rounded-lg border p-4 sm:p-6 md:p-8 shadow-sm">
       <h2 className="text-xl sm:text-2xl font-bold dark:text-white text-neutral-900 mb-4 sm:mb-6">
         Make Your Donation
       </h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-y-8">
+      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-y-8">
         {/* ── Donation type + amount ── */}
-        <Step3DonationAmountSection inputs={inputs} />
+        <Step3DonationAmountSection />
 
         {/* ── User info ── */}
-        <CheckoutStep3UserInfo address={derivedAddress} name={fullName} setStep={setStep} phone={phone} />
+        <CheckoutStep3UserInfo address={derivedAddress} name={fullName} setStep={setStep} phone={values.phone} />
 
         {/* ── Campaign + notes ── */}
-        <DonationCheckoutStep3CampaignSelectionAndNotes
-          campaign={inputs?.campaign}
-          campaigns={campaigns}
-          notes={inputs?.notes}
-          setCampaign={(value) => setForm({ campaign: value })}
-          setNotes={(value) => setForm({ notes: value })}
-        />
+        <DonationCheckoutStep3CampaignSelectionAndNotes campaigns={campaigns} />
 
         {/* ── Payment ── */}
         <fieldset className="border-0 p-0 m-0">
@@ -85,33 +118,38 @@ export function PublicDonateCheckoutForm({ campaignName, campaigns, savedCards, 
             {isAuthed && (
               <SavedCardSelector
                 savedCards={savedCards}
-                selectedCardId={inputs?.selectedCardId}
-                useNewCard={inputs?.useNewCard}
-                onSelectCard={(id) => setForm({ selectedCardId: id })}
-                onUseNewCard={() => setForm({ useNewCard: true, selectedCardId: null })}
-                onUseSavedCard={() =>
-                  setForm({
-                    useNewCard: false,
-                    selectedCardId: savedCards[0]?.stripePaymentId ?? null,
-                    saveCard: false
-                  })
-                }
+                selectedCardId={values.selectedCardId}
+                useNewCard={values.useNewCard}
+                onSelectCard={(id) => setValue('selectedCardId', id, { shouldDirty: true })}
+                onUseNewCard={() => {
+                  setValue('useNewCard', true, { shouldDirty: true })
+                  setValue('selectedCardId', '', { shouldDirty: true })
+                }}
+                onUseSavedCard={() => {
+                  setValue('useNewCard', false, { shouldDirty: true })
+                  setValue('selectedCardId', savedCards[0]?.stripePaymentId ?? '', { shouldDirty: true })
+                  setValue('saveCard', false, { shouldDirty: true })
+                }}
               />
             )}
 
-            {(!isAuthed || savedCards.length === 0 || inputs?.useNewCard) && (
-              <CardElementField formName="donateCheckoutForm" />
+            {(!isAuthed || savedCards.length === 0 || values.useNewCard) && (
+              <CardElementField onChange={setCardComplete} />
             )}
 
-            <SaveCardToggle formName="donateCheckoutForm" />
-            <CoverFeesToggle formName="donateCheckoutForm" processingFee={processingFee} />
+            <SaveCardToggle />
+            <CoverFeesToggle processingFee={processingFee} />
           </div>
         </fieldset>
 
         {/* ── Error ── */}
-        <FormError formName="donateCheckoutForm" />
+        <FormError />
 
-        <SubmitButton formName="donateCheckoutForm" isValid={isValid} label={`Donate $${finalAmountDisplay}`} />
+        <SubmitButton
+          isSubmitting={isSubmitting || isProcessing}
+          isValid={isValid}
+          label={`Donate $${finalAmountDisplay}`}
+        />
 
         <p className="text-xs dark:text-zinc-500 text-neutral-600 text-center">
           Secured by Stripe · Powered by{' '}

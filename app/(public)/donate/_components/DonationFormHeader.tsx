@@ -1,7 +1,7 @@
 import { useSession } from 'next-auth/react'
 import { motion } from 'framer-motion'
-import { MotionLink } from '../../../../components/_shared/MotionLink'
-import Picture from '../../../../components/_shared/Picture'
+import { MotionLink } from '@/components/_shared/MotionLink'
+import Picture from '@/components/_shared/Picture'
 import Link from 'next/link'
 import { User } from 'lucide-react'
 

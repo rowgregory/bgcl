@@ -4,11 +4,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, Heart } from 'lucide-react'
 import { SupporterDonationRow } from '../_components/SupporterDonationRow'
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.08 } }
-}
+import { containerVariants } from '@/lib/constants/motion'
 
 export default function SupporterDonationsClient({ donations }) {
   return (

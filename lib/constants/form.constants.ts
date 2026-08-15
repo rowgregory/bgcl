@@ -19,3 +19,14 @@ export const detailInputCls =
 export const detailLabelCls = 'block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1'
 
 export const subLabelCls = 'block text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1.5'
+
+// Public-facing forms: larger touch targets, fields sit on a card
+export const publicInputCls =
+  'w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder:text-neutral-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors'
+
+export const publicLabelCls = 'block text-xs sm:text-sm font-semibold text-neutral-900 dark:text-white mb-1.5 sm:mb-2'
+
+export const errorCls = 'mt-1.5 text-xs sm:text-sm text-red-500 dark:text-red-400'
+
+export const errorBannerCls =
+  'rounded-lg border px-4 py-3 text-sm bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/30 dark:text-red-300'

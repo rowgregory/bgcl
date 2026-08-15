@@ -1,86 +1,120 @@
+'use client'
+
+import { useCallback, useState } from 'react'
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
+import type { Stripe, StripeElements } from '@stripe/stripe-js'
 import { useSession } from 'next-auth/react'
-import { setDonateCheckoutForm as setForm } from '../utils/setDonateCheckoutForm'
-import { getDonateCheckoutAmount } from '../utils/getDonateCheckoutAmount'
+import { useFormContext } from 'react-hook-form'
+
 import { createPaymentIntentForCheckout } from '../actions/stripe/createPaymentIntentForCheckout'
-import { createSubscriptionWithSavedCard } from '../actions/stripe/createSubscriptionWithSavedCard'
 import { createSetupIntentForSubscription } from '../actions/stripe/createSetupIntentForSubscription'
 import { createSubscriptionAfterSetup } from '../actions/stripe/createSubscriptionAfterSetup'
+import { createSubscriptionWithSavedCard } from '../actions/stripe/createSubscriptionWithSavedCard'
+import type { DonationFormInput, DonationFormValues } from '@/lib/validations/donation.validation'
 import { usePaymentProcessor } from './usePaymentProcessor'
 
-export function useDonationSubmit({ inputs, finalAmount, feesCovered, usingSavedCard, fullName }) {
+type ProcessingStatus = 'idle' | 'processing' | 'success' | 'failed'
+
+type Args = {
+  finalAmount: number
+  feesCovered: number
+  usingSavedCard: boolean
+  fullName: string
+}
+
+type PusherCallbacks = readonly [(value: string) => void, (value: string) => void, () => void]
+
+export function useDonationSubmit({ finalAmount, feesCovered, usingSavedCard, fullName }: Args) {
   const stripe = useStripe()
   const elements = useElements()
-  const session = useSession()
-  const userId = session.data?.user?.id
-  const userEmail = session.data?.user?.email
+  const { data: session } = useSession()
+
+  const { setError } = useFormContext<DonationFormInput>()
   const { setupPusherListenerOneTime, getPaymentMethodId, setupPusherListenerRecurring } = usePaymentProcessor()
 
-  const pusherCallbacks = [
-    (value: string) => setForm({ error: value }),
-    (value: string) => setForm({ processingStatus: value }),
-    () => setForm({ loading: false })
-  ] as const
+  const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>('idle')
+  const isProcessing = processingStatus === 'processing'
 
-  const addressParams = {
-    address: {
-      addressLine1: inputs?.addressLine1,
-      addressLine2: inputs?.addressLine2,
-      city: inputs?.city,
-      state: inputs?.state,
-      zipPostalCode: inputs?.zipPostalCode
+  const userId = session?.user?.id
+  const userEmail = session?.user?.email
+
+  const fail = useCallback(
+    (message: string) => {
+      setError('root', { message })
+      setProcessingStatus('failed')
+    },
+    [setError]
+  )
+
+  const pusherCallbacks: PusherCallbacks = [
+    (value: string) => setError('root', { message: value }),
+    (value: string) => setProcessingStatus(value as ProcessingStatus),
+    () => setProcessingStatus((current) => (current === 'processing' ? 'idle' : current))
+  ]
+
+  const submitDonation = async (values: DonationFormValues) => {
+    if (!stripe || !elements) {
+      fail('Payments are still loading. Try again in a moment.')
+      return
     }
-  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!stripe || !elements) return
-    if (getDonateCheckoutAmount(inputs) < 5) return setForm({ error: 'Minimum donation is $5' })
-    setForm({ loading: true, error: null, processingStatus: 'processing' })
+    if (!userEmail) {
+      fail('Your session expired. Please sign in and try again.')
+      return
+    }
+
+    setProcessingStatus('processing')
+
+    const shared = {
+      stripe,
+      elements,
+      userId,
+      userEmail,
+      values,
+      finalAmount,
+      feesCovered,
+      usingSavedCard,
+      fullName,
+      addressParams: {
+        address: {
+          addressLine1: values.addressLine1,
+          addressLine2: values.addressLine2,
+          city: values.city,
+          state: values.state,
+          zipPostalCode: values.zipPostalCode
+        }
+      },
+      pusherCallbacks,
+      fail
+    }
 
     try {
-      if (inputs?.donationType === 'once') {
-        await handleOneTimeDonation({
-          stripe,
-          elements,
-          userId,
-          userEmail,
-          inputs,
-          finalAmount,
-          feesCovered,
-          usingSavedCard,
-          fullName,
-          addressParams,
-          pusherCallbacks,
-          setupPusherListenerOneTime,
-          getPaymentMethodId
-        })
+      if (values.donationType === 'once') {
+        await handleOneTimeDonation({ ...shared, setupPusherListenerOneTime, getPaymentMethodId })
       } else {
-        await handleRecurringDonation({
-          stripe,
-          elements,
-          userId,
-          userEmail,
-          inputs,
-          finalAmount,
-          feesCovered,
-          usingSavedCard,
-          fullName,
-          addressParams,
-          pusherCallbacks,
-          setupPusherListenerRecurring
-        })
+        await handleRecurringDonation({ ...shared, setupPusherListenerRecurring })
       }
     } catch (err) {
-      setForm({
-        loading: false,
-        error: err instanceof Error ? err.message : 'Something went wrong. Please try again.',
-        processingStatus: 'failed'
-      })
+      fail(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     }
   }
 
-  return { handleSubmit }
+  return { submitDonation, isProcessing }
+}
+
+type SharedArgs = {
+  stripe: Stripe
+  elements: StripeElements
+  userId?: string
+  userEmail: string
+  values: DonationFormValues
+  finalAmount: number
+  feesCovered: number
+  usingSavedCard: boolean
+  fullName: string
+  addressParams: { address: Record<string, string | null | undefined> }
+  pusherCallbacks: PusherCallbacks
+  fail: (message: string) => void
 }
 
 async function handleOneTimeDonation({
@@ -88,15 +122,19 @@ async function handleOneTimeDonation({
   elements,
   userId,
   userEmail,
-  inputs,
+  values,
   finalAmount,
   feesCovered,
   usingSavedCard,
   fullName,
   addressParams,
   pusherCallbacks,
+  fail,
   setupPusherListenerOneTime,
   getPaymentMethodId
+}: SharedArgs & {
+  setupPusherListenerOneTime: ReturnType<typeof usePaymentProcessor>['setupPusherListenerOneTime']
+  getPaymentMethodId: ReturnType<typeof usePaymentProcessor>['getPaymentMethodId']
 }) {
   const intentResult = await createPaymentIntentForCheckout({
     userId,
@@ -105,46 +143,48 @@ async function handleOneTimeDonation({
     amount: finalAmount,
     orderType: 'ONE_TIME_DONATION',
     description: `One-time donation from ${fullName}`,
-    saveCard: inputs?.saveCard,
-    coverFees: inputs?.coverFees,
+    saveCard: values.saveCard,
+    coverFees: values.coverFees,
     feesCovered,
     ...addressParams,
-    savedCardId: usingSavedCard ? inputs?.selectedCardId : undefined,
-    campaignId: inputs?.campaign?.id,
-    notes: inputs?.notes,
-    phone: inputs?.phone
+    savedCardId: usingSavedCard ? values.selectedCardId : undefined,
+    campaignId: values.campaignId,
+    notes: values.notes,
+    phone: values.phone
   })
 
-  if (!intentResult.success) throw new Error(intentResult.error || 'Failed to create payment intent')
+  if (!intentResult.success) {
+    fail(intentResult.error || 'Failed to start the donation. Please try again.')
+    return
+  }
 
   if (usingSavedCard) {
-    setupPusherListenerOneTime(
-      intentResult.paymentIntentId!,
-      false,
-      inputs?.selectedCardId,
-      inputs?.processingStatus,
-      ...pusherCallbacks
-    )
+    setupPusherListenerOneTime(false, undefined, ...pusherCallbacks)
     return
   }
 
   const cardElement = elements.getElement(CardElement)
-  if (!cardElement) throw new Error('Card element not found')
+
+  if (!cardElement) {
+    fail('Card details are unavailable. Please refresh and try again.')
+    return
+  }
 
   const { error, paymentIntent } = await stripe.confirmCardPayment(intentResult.clientSecret!, {
     payment_method: { card: cardElement, billing_details: { name: fullName, email: userEmail } }
   })
 
-  if (error) throw new Error(error.message || 'Payment failed')
-  if (paymentIntent?.status === 'succeeded') {
-    setupPusherListenerOneTime(
-      paymentIntent.id,
-      inputs?.saveCard,
-      getPaymentMethodId(paymentIntent.payment_method),
-      inputs?.processingStatus,
-      ...pusherCallbacks
-    )
+  if (error) {
+    fail(error.message || 'Payment failed. Please try a different card.')
+    return
   }
+
+  if (paymentIntent?.status !== 'succeeded') {
+    fail('This payment needs another step to complete. Please try again or use a different card.')
+    return
+  }
+
+  setupPusherListenerOneTime(values.saveCard, getPaymentMethodId(paymentIntent.payment_method), ...pusherCallbacks)
 }
 
 async function handleRecurringDonation({
@@ -152,34 +192,46 @@ async function handleRecurringDonation({
   elements,
   userId,
   userEmail,
-  inputs,
+  values,
   finalAmount,
   feesCovered,
   usingSavedCard,
   fullName,
   addressParams,
   pusherCallbacks,
+  fail,
   setupPusherListenerRecurring
+}: SharedArgs & {
+  setupPusherListenerRecurring: ReturnType<typeof usePaymentProcessor>['setupPusherListenerRecurring']
 }) {
-  const frequency = inputs?.donationType === 'monthly' ? 'monthly' : ('yearly' as 'monthly' | 'yearly')
+  const frequency: 'monthly' | 'yearly' = values.donationType === 'monthly' ? 'monthly' : 'yearly'
+
   const recurringBase = {
     userId,
     email: userEmail,
     name: fullName,
     amount: finalAmount,
     frequency,
-    coverFees: inputs?.coverFees,
+    coverFees: values.coverFees,
     feesCovered,
     ...addressParams,
-    notes: inputs?.notes,
-    campaignId: inputs?.campaign?.id,
-    phone: inputs?.phone
+    notes: values.notes,
+    campaignId: values.campaignId,
+    phone: values.phone
   }
 
   if (usingSavedCard) {
-    const result = await createSubscriptionWithSavedCard({ ...recurringBase, savedCardId: inputs?.selectedCardId })
-    if (!result.success) throw new Error(result.error || 'Failed to create subscription')
-    setupPusherListenerRecurring(result, inputs?.processingStatus, ...pusherCallbacks)
+    const result = await createSubscriptionWithSavedCard({
+      ...recurringBase,
+      savedCardId: values.selectedCardId
+    })
+
+    if (!result.success) {
+      fail(result.error || 'Failed to create the subscription. Please try again.')
+      return
+    }
+
+    setupPusherListenerRecurring(result, ...pusherCallbacks)
     return
   }
 
@@ -189,21 +241,31 @@ async function handleRecurringDonation({
     name: fullName,
     amount: finalAmount,
     frequency,
-    coverFees: inputs?.coverFees,
+    coverFees: values.coverFees,
     feesCovered,
-    phone: inputs?.phone
+    phone: values.phone
   })
 
-  if (!setupResult.success) throw new Error(setupResult.error || 'Failed to create setup intent')
+  if (!setupResult.success) {
+    fail(setupResult.error || 'Failed to start the subscription. Please try again.')
+    return
+  }
 
   const cardElement = elements.getElement(CardElement)
-  if (!cardElement) throw new Error('Card element not found')
+
+  if (!cardElement) {
+    fail('Card details are unavailable. Please refresh and try again.')
+    return
+  }
 
   const { error } = await stripe.confirmCardSetup(setupResult.clientSecret, {
     payment_method: { card: cardElement, billing_details: { name: fullName, email: userEmail } }
   })
 
-  if (error) throw new Error(error.message || 'Card confirmation failed')
+  if (error) {
+    fail(error.message || 'Card confirmation failed. Please try a different card.')
+    return
+  }
 
   const subscriptionResult = await createSubscriptionAfterSetup({
     setupIntentId: setupResult.setupIntentId,
@@ -211,14 +273,18 @@ async function handleRecurringDonation({
     name: fullName,
     frequency,
     amount: finalAmount,
-    coverFees: inputs?.coverFees,
+    coverFees: values.coverFees,
     feesCovered,
     ...addressParams,
-    notes: inputs?.notes,
-    campaignId: inputs?.campaign?.id,
-    phone: inputs?.phone
+    notes: values.notes,
+    campaignId: values.campaignId,
+    phone: values.phone
   })
 
-  if (!subscriptionResult.success) throw new Error(subscriptionResult.error || 'Failed to create subscription')
-  setupPusherListenerRecurring(subscriptionResult, inputs?.processingStatus, ...pusherCallbacks)
+  if (!subscriptionResult.success) {
+    fail(subscriptionResult.error || 'Failed to create the subscription. Please try again.')
+    return
+  }
+
+  setupPusherListenerRecurring(subscriptionResult, ...pusherCallbacks)
 }

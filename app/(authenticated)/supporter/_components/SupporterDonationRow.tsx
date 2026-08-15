@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Calendar, ChevronRight, RefreshCw, Zap } from 'lucide-react'
+import { ChevronRight, RefreshCw, Zap } from 'lucide-react'
 import { formatDate } from '@/lib/utils/date-utils'
 import { formatCurrency } from '@/lib/utils/currency.utils'
 

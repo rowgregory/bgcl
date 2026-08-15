@@ -1,14 +1,17 @@
 import { useRouter } from 'next/navigation'
-import { startTransition, useState } from 'react'
-import { store } from '../store/store'
-import { showToast } from '../store/slices/toastSlice'
+import { startTransition, useCallback, useState } from 'react'
 import { reorderPartners } from '../actions/partner/reorderPartners'
+import { InlineMessageState } from '@/components/_shared/InlineMessage'
+import extractErrorMessage from '@/lib/utils/extractErrorMessage'
 
 export default function usePartnerList(data: any, tier: string) {
   const router = useRouter()
   const [draggedItem, setDraggedItem] = useState<string | null>(null)
   const [draggedOver, setDraggedOver] = useState<string | null>(null)
   const [dragPosition, setDragPosition] = useState<'top' | 'bottom' | null>(null)
+  const [message, setMessage] = useState<InlineMessageState | null>(null)
+
+  const dismissMessage = useCallback(() => setMessage(null), [])
 
   const handleDragStart = (e: React.DragEvent, id: string) => {
     setDraggedItem(id)
@@ -40,8 +43,8 @@ export default function usePartnerList(data: any, tier: string) {
       return
     }
 
-    const draggedIndex = data.findIndex((tier) => tier.id === draggedItem)
-    const targetIndex = data.findIndex((tier) => tier.id === targetId)
+    const draggedIndex = data.findIndex((partner) => partner.id === draggedItem)
+    const targetIndex = data.findIndex((partner) => partner.id === targetId)
 
     if (draggedIndex === -1 || targetIndex === -1) {
       resetDragState()
@@ -54,30 +57,39 @@ export default function usePartnerList(data: any, tier: string) {
     newList.splice(targetIndex, 0, movedItem)
 
     // Update display order
-    const updatedList = newList.map((tier, index) => ({
-      ...tier,
+    const updatedList = newList.map((partner, index) => ({
+      ...partner,
       order: index + 1
     }))
+
+    setMessage(null)
 
     // Save to backend
     startTransition(async () => {
       try {
-        await reorderPartners(tier, updatedList)
+        const result = await reorderPartners(tier, updatedList)
+
+        if (result && result.success === false) {
+          setMessage({
+            type: 'error',
+            message: 'Could not reorder partners',
+            description: extractErrorMessage(result)
+          })
+          return
+        }
 
         router.refresh()
-        store.dispatch(
-          showToast({
-            message: 'Partner tiers order updated successfully!',
-            type: 'success'
-          })
-        )
+
+        setMessage({
+          type: 'success',
+          message: 'Partner order updated successfully'
+        })
       } catch (error) {
-        store.dispatch(
-          showToast({
-            message: error instanceof Error ? error.message : 'Failed to update tier',
-            type: 'error'
-          })
-        )
+        setMessage({
+          type: 'error',
+          message: 'Could not reorder partners',
+          description: extractErrorMessage(error)
+        })
       }
     })
 
@@ -94,5 +106,15 @@ export default function usePartnerList(data: any, tier: string) {
     setDragPosition(null)
   }
 
-  return { draggedOver, dragPosition, handleDragStart, handleDragOver, handleDragLeave, handleDrop, handleDragEnd }
+  return {
+    draggedOver,
+    dragPosition,
+    message,
+    dismissMessage,
+    handleDragStart,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleDragEnd
+  }
 }

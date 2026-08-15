@@ -1,74 +1,73 @@
 'use client'
 
+import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Mail, Share2 } from 'lucide-react'
-import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { AlertCircle, ArrowLeft, Calendar, CheckCircle2, Mail, Share2 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { News } from '@prisma/client'
+
 import Picture from '@/components/_shared/Picture'
 import { formatDate } from '@/lib/utils/date-utils'
-import { store, useFormSelector } from '@/lib/store/store'
-import { useRouter } from 'next/navigation'
-import { setIsLoading } from '@/lib/store/slices/formSlice'
 import { createSubscriber } from '@/lib/actions/subscriber/createSubscriber'
-import { showToast } from '@/lib/store/slices/toastSlice'
+import {
+  EMPTY_SUBSCRIBER,
+  subscriberSchema,
+  type SubscriberFormInput,
+  type SubscriberFormValues
+} from '@/lib/validations/subscriber.validation'
+import { SUBSCRIBER_TYPE_OPTIONS } from '@/lib/constants/subscriber.constants'
 
-const NewsClient = ({ news }) => {
+export default function NewsClient({ news }: { news: News }) {
   const router = useRouter()
-  const [email, setEmail] = useState('')
   const [copied, setCopied] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState(false)
-  const { isLoading } = useFormSelector()
-  const [memberType, setMemberType] = useState<'member' | 'donor' | 'non-member'>('member')
+  const [subscribed, setSubscribed] = useState(false)
 
-  const handleSubscribe = async (e: { preventDefault: () => void }) => {
-    e.preventDefault()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors, isSubmitting }
+  } = useForm<SubscriberFormInput, unknown, SubscriberFormValues>({
+    resolver: zodResolver(subscriberSchema),
+    defaultValues: EMPTY_SUBSCRIBER,
+    mode: 'onTouched'
+  })
 
-    if (!email) {
-      setError(true)
-      setTimeout(() => setError(false), 5000)
-      return
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError(true)
-      setTimeout(() => setError(false), 5000)
-      return
-    }
-
+  const handleSubscribe = handleSubmit(async (values) => {
     try {
-      store.dispatch(setIsLoading(true))
-      const res = await createSubscriber({ email, type: memberType })
+      const res = await createSubscriber(values)
+
       if (!res.success) {
-        store.dispatch(showToast({ message: 'Failed to create subscriber', type: 'error' }))
+        setError('root', { message: res.error })
         return
       }
 
-      setSuccess(true)
-      setTimeout(() => setSuccess(false), 5000)
-
+      reset(EMPTY_SUBSCRIBER)
+      setSubscribed(true)
       router.refresh()
-      setEmail('')
-      setMemberType('member')
-    } catch (err) {
-      setError(true)
-      setTimeout(() => setError(false), 5000)
-    } finally {
-      store.dispatch(setIsLoading(false))
+    } catch {
+      setError('root', { message: 'Something went wrong. Please try again.' })
     }
-  }
+  })
 
   const handleShare = async () => {
-    const url = typeof window !== 'undefined' ? window.location.href : ''
+    const url = window.location.href
 
-    if (navigator.share) {
-      await navigator.share({
-        title: news?.title,
-        text: news?.paragraph1,
-        url: url
-      })
-    } else {
-      navigator.clipboard.writeText(url)
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: news.title, text: news.paragraph1, url })
+        return
+      }
+
+      await navigator.clipboard.writeText(url)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // User dismissed the share sheet, or the clipboard was blocked
     }
   }
 
@@ -158,55 +157,36 @@ const NewsClient = ({ news }) => {
 
                 {/* Error Banner */}
                 <AnimatePresence>
-                  {error && (
+                  {errors.root && (
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.5, ease: 'easeOut' }}
+                      role="alert"
                       className="mb-8 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3"
                     >
-                      <div className="shrink-0">
-                        <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-red-800 dark:text-red-200">Error!</p>
-                        <p className="text-xs text-red-700 dark:text-red-300">
-                          Please enter a{!email ? 'n' : ' valid'} email
-                        </p>
-                      </div>
+                      <AlertCircle className="w-5 h-5 shrink-0 text-red-600 dark:text-red-400" aria-hidden="true" />
+                      <p className="text-sm text-red-800 dark:text-red-200">{errors.root.message}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
+
                 {/* Success Banner */}
                 <AnimatePresence>
-                  {success && (
+                  {subscribed && (
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.5, ease: 'easeOut' }}
+                      role="status"
                       className="mb-8 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-center gap-3"
                     >
-                      <div className="shrink-0">
-                        <svg
-                          className="w-5 h-5 text-green-600 dark:text-green-400"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
+                      <CheckCircle2
+                        className="w-5 h-5 shrink-0 text-green-600 dark:text-green-400"
+                        aria-hidden="true"
+                      />
                       <div>
                         <p className="text-sm font-semibold text-green-800 dark:text-green-200">
                           Thanks for subscribing!
@@ -216,78 +196,68 @@ const NewsClient = ({ news }) => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-                <form onSubmit={handleSubscribe} className="space-y-4">
+
+                <form onSubmit={handleSubscribe} noValidate className="space-y-4">
                   {/* Email Input */}
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 dark:text-neutral-500 text-neutral-400 pointer-events-none" />
-                    <input
-                      type="text"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-3 py-2.5 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:placeholder-neutral-600 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:ring-sky-600 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
-                    />
+                  <div>
+                    <label htmlFor="subscriberEmail" className="sr-only">
+                      Email address
+                    </label>
+                    <div className="relative">
+                      <Mail
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 dark:text-neutral-500 text-neutral-400 pointer-events-none"
+                        aria-hidden="true"
+                      />
+                      <input
+                        id="subscriberEmail"
+                        type="email"
+                        autoComplete="email"
+                        placeholder="Enter your email"
+                        aria-invalid={!!errors.email}
+                        className="w-full pl-10 pr-3 py-2.5 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:placeholder-neutral-600 dark:focus:ring-sky-500 bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:ring-sky-600 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all"
+                        {...register('email')}
+                      />
+                    </div>
+                    {errors.email && (
+                      <p role="alert" className="mt-1.5 text-xs text-red-500 dark:text-red-400">
+                        {errors.email.message}
+                      </p>
+                    )}
                   </div>
 
                   {/* Membership Type */}
                   <div className="space-y-3">
-                    <p className="text-xs font-medium dark:text-neutral-400 text-neutral-600 uppercase tracking-wide">
+                    <p
+                      id="subscriberTypeLabel"
+                      className="text-xs font-medium dark:text-neutral-400 text-neutral-600 uppercase tracking-wide"
+                    >
                       I am a:
                     </p>
-                    <div className="space-y-2">
-                      <label className="flex items-center gap-2.5 cursor-pointer group">
-                        <input
-                          type="radio"
-                          name="memberType"
-                          value="member"
-                          defaultChecked
-                          className="sr-only peer"
-                          onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
-                        />
-                        <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-sky-600 dark:peer-checked:bg-sky-500 peer-checked:border-sky-600 dark:peer-checked:border-sky-500 transition-all" />
-                        <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
-                          Member/Parent
-                        </span>
-                      </label>
-
-                      <label className="flex items-center gap-2.5 cursor-pointer group">
-                        <input
-                          type="radio"
-                          name="memberType"
-                          value="non-member"
-                          className="sr-only peer"
-                          onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
-                        />
-                        <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-sky-600 dark:peer-checked:bg-sky-500 peer-checked:border-sky-600 dark:peer-checked:border-sky-500 transition-all" />
-                        <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
-                          Non-Member
-                        </span>
-                      </label>
-
-                      <label className="flex items-center gap-2.5 cursor-pointer group">
-                        <input
-                          type="radio"
-                          name="memberType"
-                          value="donor"
-                          className="sr-only peer"
-                          onChange={(e) => setMemberType(e.target.value as 'member' | 'donor' | 'non-member')}
-                        />
-                        <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-sky-600 dark:peer-checked:bg-sky-500 peer-checked:border-sky-600 dark:peer-checked:border-sky-500 transition-all" />
-                        <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
-                          Donor
-                        </span>
-                      </label>
+                    <div role="radiogroup" aria-labelledby="subscriberTypeLabel" className="space-y-2">
+                      {SUBSCRIBER_TYPE_OPTIONS.map((option) => (
+                        <label key={option.value} className="flex items-center gap-2.5 cursor-pointer group">
+                          <input type="radio" value={option.value} className="sr-only peer" {...register('type')} />
+                          <div className="w-5 h-5 rounded-full border-2 border-neutral-300 dark:border-neutral-600 peer-checked:bg-sky-600 dark:peer-checked:bg-sky-500 peer-checked:border-sky-600 dark:peer-checked:border-sky-500 transition-all" />
+                          <span className="text-sm dark:text-neutral-400 text-neutral-600 group-hover:dark:text-neutral-300 group-hover:text-neutral-900 transition-colors">
+                            {option.label}
+                          </span>
+                        </label>
+                      ))}
                     </div>
                   </div>
 
                   {/* Subscribe Button */}
                   <button
                     type="submit"
-                    className="gap-x-2 flex items-center px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors whitespace-nowrap cursor-pointer"
+                    disabled={isSubmitting}
+                    className="gap-x-2 flex items-center px-6 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors whitespace-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isLoading && (
-                      <div className="w-4 h-4 rounded-full border-2 border-white border-t-0 animate-spin" />
-                    )}{' '}
+                    {isSubmitting && (
+                      <div
+                        className="w-4 h-4 rounded-full border-2 border-white border-t-0 animate-spin"
+                        aria-hidden="true"
+                      />
+                    )}
                     Subscribe
                   </button>
                 </form>
@@ -325,5 +295,3 @@ const NewsClient = ({ news }) => {
     </div>
   )
 }
-
-export default NewsClient

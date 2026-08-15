@@ -1,13 +1,11 @@
-import { IPaymentMethod } from './entities/payment-method'
-import { IAddress } from './entities/address.types'
 import { CartItem } from '@/stores/useCartStore'
-import { Ticket } from '@prisma/client'
+import { Address, PaymentMethod, Ticket } from '@prisma/client'
 
 export type TPublicEventDetailsClient = {
   data: any
   name: { firstName: string; lastName: string }
-  savedCards: IPaymentMethod[]
-  address: IAddress
+  savedCards: PaymentMethod[]
+  address: Address
 }
 
 export type TCasinoEnhancedTickets = {
@@ -52,7 +50,7 @@ export type TCasinoTicketMarquee = {
 export type TCasinoSignInPrompt = {
   eventSlug: string
   name: { firstName: string; lastName: string } | null
-  savedCards: IPaymentMethod[]
+  savedCards: PaymentMethod[]
 }
 
 export type TCasinoSponsorTiers = {

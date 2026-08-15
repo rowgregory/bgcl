@@ -1,11 +1,10 @@
 import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Ticket } from '@prisma/client'
-import { Inputs } from '@/lib/store/slices/formSlice'
 
 export interface TicketListProps {
   onSelectTicket: (ticket: Ticket & { isUpdating: boolean }) => void
-  inputs: Inputs
+  inputs: { tickets: Ticket[]; id: string }
 }
 
 export const CreatedTicketsList: FC<TicketListProps> = ({ onSelectTicket, inputs }) => {

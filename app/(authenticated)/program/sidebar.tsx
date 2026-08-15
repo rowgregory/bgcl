@@ -1,43 +1,42 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { LogOut, X } from 'lucide-react'
 import Link from 'next/link'
-import { store } from '@/lib/store/store'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { signOut } from 'next-auth/react'
-import { setIsLoading } from '@/lib/store/slices/formSlice'
-import { showToast } from '@/lib/store/slices/toastSlice'
 import { programNavigationLinkData } from '@/lib/constants/programNavLinks'
 import { useProgramDrawer } from '@/stores/drawers'
+import { InlineMessage, InlineMessageState } from '@/components/_shared/InlineMessage'
+import extractErrorMessage from '@/lib/utils/extractErrorMessage'
 
 export const ProgramSidebar = () => {
   const pathname = usePathname()
   const session = useSession()
   const router = useRouter()
   const onClose = useProgramDrawer((s) => s.close)
+  const [message, setMessage] = useState<InlineMessageState | null>(null)
+  const [isSigningOut, setIsSigningOut] = useState(false)
 
   const handleLogout = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
+    setMessage(null)
+    setIsSigningOut(true)
 
     try {
-      store.dispatch(setIsLoading(true))
       await signOut({
         redirect: false,
-        callbackUrl: '/auth/login'
+        redirectTo: '/auth/login'
       })
 
       router.push('/auth/login')
-      setIsLoading(false)
     } catch (error: unknown) {
-      store.dispatch(
-        showToast({
-          type: 'error',
-          message: 'Logout Fail',
-          description: error instanceof Error ? error.message : 'An error occurred'
-        })
-      )
-    } finally {
-      store.dispatch(setIsLoading(true))
+      setMessage({
+        type: 'error',
+        message: 'Logout failed',
+        description: extractErrorMessage(error)
+      })
+      setIsSigningOut(false)
     }
   }
 
@@ -47,7 +46,7 @@ export const ProgramSidebar = () => {
       <div className="dark:border-neutral-800 border-neutral-200 border-b shrink-0">
         <div className="flex items-center justify-between py-4 px-6">
           <Link href="/" className="text-lg font-bold dark:text-neutral-100 text-neutral-900">
-            Boys & Girls Club
+            Boys &amp; Girls Club
           </Link>
           {onClose && (
             <motion.button
@@ -133,14 +132,18 @@ export const ProgramSidebar = () => {
             <p className="text-xs dark:text-neutral-400 text-neutral-500 truncate">{session.data?.user?.email}</p>
           </div>
         </div>
+
+        <InlineMessage state={message} onDismiss={() => setMessage(null)} className="mb-3" />
+
         <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: isSigningOut ? 1 : 1.02 }}
+          whileTap={{ scale: isSigningOut ? 1 : 0.98 }}
           onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium dark:text-red-400 text-red-600 dark:bg-red-900/20 bg-red-50 dark:hover:bg-red-900/30 hover:bg-red-100 rounded-lg transition-colors"
+          disabled={isSigningOut}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium dark:text-red-400 text-red-600 dark:bg-red-900/20 bg-red-50 dark:hover:bg-red-900/30 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
           <LogOut className="w-4 h-4" />
-          Sign Out
+          {isSigningOut ? 'Signing out...' : 'Sign Out'}
         </motion.button>
       </div>
     </aside>

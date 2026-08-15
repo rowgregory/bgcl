@@ -1,76 +1,85 @@
 'use server'
 
+import type { ContactSubmissionType, Prisma } from '@prisma/client'
+
 import prisma from '@/prisma/client'
-import { isValidEmail } from '../../utils/regex'
-import { getActor } from '../user/getActor'
 import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
-import { createLog } from '../log/createLog'
 import sendAdminNotification from '../../utils/sendAdminNotification'
+import { createLog } from '../log/createLog'
+import { getActor } from '../user/getActor'
+import {
+  CONTACT_SUBMISSION_NULLABLE_FIELDS,
+  contactSubmissionSchema,
+  VOLUNTEER_SUBMISSION_NULLABLE_FIELDS,
+  volunteerSubmissionSchema
+} from '@/lib/validations/contact-submission.validation'
+import { emptyToNull } from '@/lib/utils/emptyToNull'
 
-export const createContactSubmission = async (data: Omit<IContactSubmission, 'id' | 'createdAt'>) => {
+export const createContactSubmission = async (type: ContactSubmissionType, input: unknown) => {
+  const parsed =
+    type === 'VOLUNTEER' ? volunteerSubmissionSchema.safeParse(input) : contactSubmissionSchema.safeParse(input)
+
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0]
+    return {
+      success: false,
+      error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid submission data'
+    }
+  }
+
+  const data = parsed.data
+
+  // The volunteer branch carries the extra columns. `status` defaults to NEW in Prisma.
+  const createData: Prisma.ContactSubmissionUncheckedCreateInput =
+    'availabilityDays' in data
+      ? {
+          ...emptyToNull(data, VOLUNTEER_SUBMISSION_NULLABLE_FIELDS),
+          type,
+          availabilityDays: data.availabilityDays.join(','),
+          programInterests: data.programInterests.join(','),
+          yearsExperience: data.yearsExperience ? Number(data.yearsExperience) : null
+        }
+      : {
+          ...emptyToNull(data, CONTACT_SUBMISSION_NULLABLE_FIELDS),
+          type
+        }
+
   try {
-    if (!data.firstName?.trim() || !data.lastName?.trim() || !data.email?.trim() || !data.phone?.trim()) {
-      return { success: false, error: 'Missing required fields', data: null }
-    }
-
-    if (!isValidEmail(data.email)) {
-      return { success: false, error: 'Invalid email format', data: null }
-    }
-
-    const submissionData: any = {
-      firstName: data.firstName.trim(),
-      lastName: data.lastName.trim(),
-      email: data.email.trim(),
-      phone: data.phone.trim(),
-      type: data.type
-    }
-
-    if (data.subject?.trim()) submissionData.subject = data.subject.trim()
-    if (data.message?.trim()) submissionData.message = data.message.trim()
-    if (data.availabilityDays) submissionData.availabilityDays = data.availabilityDays
-    if (data.availabilityHours) submissionData.availabilityHours = data.availabilityHours
-    if (data.programInterests) submissionData.programInterests = data.programInterests
-    if (data.yearsExperience != null) submissionData.yearsExperience = data.yearsExperience
-    if (data.backgroundCheckAck != null) submissionData.backgroundCheckAck = data.backgroundCheckAck
-    if (data.additionalInfo?.trim()) submissionData.additionalInfo = data.additionalInfo.trim()
-
-    await prisma.contactSubmission.create({ data: submissionData })
+    const submission = await prisma.contactSubmission.create({ data: createData })
 
     const [actor, context] = await Promise.all([getActor(), getRequestContext()])
     const message = await buildLogMessage('submitted a contact form', actor, context)
 
     await createLog('info', message, {
-      type: data.type,
-      email: data.email.trim(),
-      firstName: data.firstName.trim(),
-      lastName: data.lastName.trim(),
+      submissionId: submission.id,
+      type,
+      email: submission.email,
       ...context
     })
 
+    // A failed notification shouldn't fail the submission
     try {
-      const notificationType = data.type === 'VOLUNTEER' ? 'VOLUNTEER_FORM' : 'CONTACT_FORM'
-      await sendAdminNotification(notificationType, {
-        firstName: data.firstName.trim(),
-        lastName: data.lastName.trim(),
-        email: data.email.trim()
+      await sendAdminNotification(type === 'VOLUNTEER' ? 'VOLUNTEER_FORM' : 'CONTACT_FORM', {
+        firstName: submission.firstName,
+        lastName: submission.lastName,
+        email: submission.email
       })
     } catch (emailError) {
       await createLog('error', 'Failed to send admin notification', {
-        type: data.type,
-        email: data.email,
+        submissionId: submission.id,
+        type,
         error: emailError instanceof Error ? emailError.message : 'Unknown error'
       })
     }
 
-    return { success: true }
+    return { success: true, data: submission }
   } catch (error) {
     await createLog('error', 'Failed to create contact submission', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email
+      type,
+      email: data.email,
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    return { success: false, error: 'Failed to create contact submission. Please try again.' }
+    return { success: false, error: 'Failed to submit. Please try again.' }
   }
 }

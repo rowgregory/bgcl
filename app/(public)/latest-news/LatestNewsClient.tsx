@@ -4,16 +4,16 @@ import { useId, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createSubscriber } from '@/lib/actions/subscriber/createSubscriber'
-import { setIsLoading } from '@/lib/store/slices/formSlice'
-import { showToast } from '@/lib/store/slices/toastSlice'
-import { store, useFormSelector } from '@/lib/store/store'
 import { Newsletter } from '@/types/newsletter.types'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Mail, Download, Calendar, ArrowRight } from 'lucide-react'
 import Picture from '../../../components/_shared/Picture'
 import { formatDate } from '@/lib/utils/date-utils'
 import { containerVariants, itemVariants } from '@/lib/constants/motion'
 import { News } from '@prisma/client'
+import { isValidEmail } from '@/lib/utils/regex'
+import { InlineMessage, InlineMessageState } from '@/components/_shared/InlineMessage'
+import extractErrorMessage from '@/lib/utils/extractErrorMessage'
 
 export default function LatestNewsClient({
   newsletters,
@@ -27,48 +27,60 @@ export default function LatestNewsClient({
   const t = pageData.sections.news
   const router = useRouter()
   const [email, setEmail] = useState('')
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState(false)
   const [memberType, setMemberType] = useState<'member' | 'donor' | 'non-member'>('member')
-  const { isLoading } = useFormSelector()
+  const [isLoading, setIsLoading] = useState(false)
+  const [message, setMessage] = useState<InlineMessageState | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const emailInputId = useId()
-  const errorId = useId()
-  const successId = useId()
-  const statusRegionRef = useRef<HTMLDivElement>(null)
+  const messageId = useId()
+
+  const hasError = message?.type === 'error'
 
   const handleSubscribe = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
+    setMessage(null)
 
     if (!email) {
-      setError(true)
-      setTimeout(() => setError(false), 5000)
-      return
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError(true)
-      setTimeout(() => setError(false), 5000)
+      setMessage({ type: 'error', message: 'Enter your email address to subscribe.' })
       return
     }
 
+    if (!isValidEmail(email)) {
+      setMessage({ type: 'error', message: 'That email address does not look right.' })
+      return
+    }
+
+    setIsLoading(true)
+
     try {
-      store.dispatch(setIsLoading(true))
       const res = await createSubscriber({ email, type: memberType })
-      if (!res.success) {
-        store.dispatch(showToast({ message: 'Failed to create subscriber', type: 'error' }))
+
+      if (!res?.success) {
+        setMessage({
+          type: 'error',
+          message: 'Could not complete your subscription',
+          description: extractErrorMessage(res)
+        })
         return
       }
 
-      setSuccess(true)
-      setTimeout(() => setSuccess(false), 5000)
+      setMessage({
+        type: 'success',
+        message: 'Thanks for subscribing',
+        description: 'Check your email for updates.'
+      })
 
-      router.refresh()
       setEmail('')
       setMemberType('member')
-    } catch (err) {
-      setError(true)
-      setTimeout(() => setError(false), 5000)
+      router.refresh()
+    } catch (error: unknown) {
+      setMessage({
+        type: 'error',
+        message: 'Could not complete your subscription',
+        description: extractErrorMessage(error)
+      })
     } finally {
-      store.dispatch(setIsLoading(false))
+      setIsLoading(false)
     }
   }
 
@@ -82,8 +94,8 @@ export default function LatestNewsClient({
         Skip to main content
       </a>
 
-      {/* Hero Section */}
       <main id="main-content">
+        {/* Hero Section */}
         <section aria-labelledby="latest-news-heading" className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12">
           <div className="max-w-334 mx-auto">
             <motion.div
@@ -96,7 +108,10 @@ export default function LatestNewsClient({
                 <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
                   {t.eyebrow}
                 </p>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
+                <h1
+                  id="latest-news-heading"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight"
+                >
                   {t.heading}
                 </h1>
                 <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t.subheading}</p>
@@ -200,19 +215,12 @@ export default function LatestNewsClient({
               </motion.ul>
             </section>
 
-            {/* Live region for form status announcements */}
-            <div ref={statusRegionRef} aria-live="polite" aria-atomic="true" className="sr-only">
-              {success && 'Successfully subscribed! Check your email for updates.'}
-              {error && `Error: Please enter a${!email ? 'n' : ' valid'} email address.`}
-            </div>
-
             {/* Newsletter Subscription */}
             <section aria-labelledby="subscribe-heading">
               <motion.form
                 ref={formRef}
                 onSubmit={handleSubscribe}
                 noValidate
-                aria-describedby={error ? errorId : success ? successId : undefined}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
@@ -228,83 +236,9 @@ export default function LatestNewsClient({
                   {t.subscribe_subheading}
                 </p>
 
-                {/* Error Banner */}
-                <AnimatePresence>
-                  {error && (
-                    <motion.div
-                      id={errorId}
-                      role="alert"
-                      aria-live="assertive"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.5, ease: 'easeOut' }}
-                      className="mb-6 sm:mb-8 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-3 sm:p-4 flex items-center gap-2 sm:gap-3"
-                    >
-                      <div className="shrink-0" aria-hidden="true">
-                        <svg
-                          className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-400"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-xs sm:text-sm font-semibold text-red-800 dark:text-red-200">Error</p>
-                        <p className="text-[10px] sm:text-xs text-red-700 dark:text-red-300">
-                          Please enter a{!email ? 'n' : ' valid'} email address.
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Success Banner */}
-                <AnimatePresence>
-                  {success && (
-                    <motion.div
-                      id={successId}
-                      role="status"
-                      aria-live="polite"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.5, ease: 'easeOut' }}
-                      className="mb-6 sm:mb-8 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3 sm:p-4 flex items-center gap-2 sm:gap-3"
-                    >
-                      <div className="shrink-0" aria-hidden="true">
-                        <svg
-                          className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-xs sm:text-sm font-semibold text-green-800 dark:text-green-200">
-                          Thanks for subscribing!
-                        </p>
-                        <p className="text-[10px] sm:text-xs text-green-700 dark:text-green-300">
-                          Check your email for updates.
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <div id={messageId}>
+                  <InlineMessage state={message} onDismiss={() => setMessage(null)} className="mb-6 sm:mb-8" />
+                </div>
 
                 {/* Membership Type */}
                 <fieldset className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 border-0 p-0 m-0">
@@ -366,8 +300,8 @@ export default function LatestNewsClient({
                       placeholder="you@example.com"
                       autoComplete="email"
                       aria-required="true"
-                      aria-invalid={error ? 'true' : 'false'}
-                      aria-describedby={error ? errorId : undefined}
+                      aria-invalid={hasError ? 'true' : 'false'}
+                      aria-describedby={hasError ? messageId : undefined}
                       className="px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base dark:bg-neutral-800 dark:border-neutral-700 dark:text-white bg-neutral-50 border-neutral-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
                     />
                   </div>
@@ -449,7 +383,7 @@ export default function LatestNewsClient({
                     viewport={{ once: true }}
                   >
                     {items.map((newsletter, n) => (
-                      <motion.li key={n} variants={itemVariants}>
+                      <motion.li key={newsletter.id ?? n} variants={itemVariants}>
                         <div className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 border rounded-xl p-6 hover:border-sky-500/50 focus-within:border-sky-500/50 transition-colors group">
                           <div className="flex items-start justify-between mb-4">
                             <Mail className="w-6 h-6 dark:text-sky-400 text-sky-600 shrink-0" aria-hidden="true" />

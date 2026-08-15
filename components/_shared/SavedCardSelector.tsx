@@ -1,9 +1,9 @@
-import { IPaymentMethod } from '@/types/entities/payment-method'
 import { ArrowLeft, Plus } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { PaymentMethod } from '@prisma/client'
 
 type Props = {
-  savedCards: IPaymentMethod[]
+  savedCards: PaymentMethod[]
   selectedCardId: string | null
   useNewCard: boolean
   onSelectCard: (stripePaymentId: string) => void

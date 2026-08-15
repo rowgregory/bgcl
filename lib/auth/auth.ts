@@ -9,6 +9,7 @@ import { handleMagicLinkCallback } from './callbacks/magic-link.callback'
 import { handleGoogleCallback } from './callbacks/google.callback'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   debug: false,
   session: {
     strategy: 'jwt',

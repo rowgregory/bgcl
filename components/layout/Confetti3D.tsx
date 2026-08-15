@@ -1,243 +1,173 @@
 'use client'
 
-import { useUiSelector } from '@/lib/store/store'
-import React, { useRef, useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
+import { useConfettiStore } from '@/stores/useConfettiStore'
 
-interface Confetti3DProps {
-  trigger?: boolean
+interface ConfettiProps {
   duration?: number
+  particleCount?: number
 }
 
-interface ConfettiUserData {
-  velocity: {
-    x: number
-    y: number
-    z: number
-  }
-  rotationSpeed: {
-    x: number
-    y: number
-    z: number
-  }
-  gravity: number
-  life: number
-  fadeSpeed: number
-}
+export default function Confetti3D({ duration = 5000, particleCount = 200 }: ConfettiProps) {
+  const isActive = useConfettiStore((s) => s.isActive)
+  const hide = useConfettiStore((s) => s.hide)
 
-export const Confetti3D: React.FC<Confetti3DProps> = () => {
-  const { confetti: trigger } = useUiSelector()
   const mountRef = useRef<HTMLDivElement>(null)
-  const sceneRef = useRef<THREE.Scene | null>(null)
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
-  const animationIdRef = useRef<number | null>(null)
-  const confettiPiecesRef = useRef<THREE.Mesh[]>([])
-  const isActiveRef = useRef(false)
-  const duration = 3000
-
-  // Helper function to create confetti (moved outside useEffect for reuse)
-  const createConfetti = (count: number = 100): THREE.Mesh[] => {
-    if (!sceneRef.current) return []
-
-    const scene = sceneRef.current
-    // const colors: number[] = [0xff0080, 0x00ff80, 0x8000ff, 0xff8000, 0x0080ff, 0xff0040, 0x40ff00, 0x8040ff, 0xff4080, 0x80ff40, 0x4080ff, 0xff8040]
-    const colors: number[] = [
-      0x0891b2, // primary teal
-      0xa78bfa, // primary dark purple
-      0xf472b6, // secondary dark pink
-      0x0e7490, // secondary teal
-      0x38bdf8, // sky blue
-      0xc084fc, // violet
-      0xfb7185, // rose
-      0x34d399, // emerald
-      0x22d3ee, // cyan
-      0xe879f9, // fuchsia
-      0x818cf8, // indigo
-      0xf9a8d4 // light pink
-    ]
-
-    const confettiPieces: THREE.Mesh[] = []
-
-    for (let i = 0; i < count; i++) {
-      const geometry = new THREE.PlaneGeometry(0.15, 0.08)
-      const material = new THREE.MeshBasicMaterial({
-        color: colors[Math.floor(Math.random() * colors?.length)],
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 1.0
-      })
-
-      const confetti = new THREE.Mesh(geometry, material)
-
-      // Random initial position
-      confetti.position.x = (Math.random() - 0.5) * 12
-      confetti.position.y = 6 + Math.random() * 3
-      confetti.position.z = (Math.random() - 0.5) * 4
-
-      // Random rotation
-      confetti.rotation.x = Math.random() * Math.PI * 2
-      confetti.rotation.y = Math.random() * Math.PI * 2
-      confetti.rotation.z = Math.random() * Math.PI * 2
-
-      // Physics properties
-      const userData: ConfettiUserData = {
-        velocity: {
-          x: (Math.random() - 0.5) * 0.04,
-          y: -0.03 - Math.random() * 0.02,
-          z: (Math.random() - 0.5) * 0.03
-        },
-        rotationSpeed: {
-          x: (Math.random() - 0.5) * 0.2,
-          y: (Math.random() - 0.5) * 0.2,
-          z: (Math.random() - 0.5) * 0.2
-        },
-        gravity: -0.0012,
-        life: 1.0,
-        fadeSpeed: 0.005
-      }
-
-      confetti.userData = userData
-      scene.add(confetti)
-      confettiPieces.push(confetti)
-    }
-
-    return confettiPieces
-  }
+  const sceneRef = useRef<{
+    scene: THREE.Scene
+    camera: THREE.PerspectiveCamera
+    renderer: THREE.WebGLRenderer
+    particles: THREE.Mesh[]
+    animationId: number
+  } | null>(null)
 
   useEffect(() => {
-    const mountElement = mountRef.current // Capture the ref value
-    if (!mountElement) return
+    if (!isActive || !mountRef.current) return
 
-    // Scene setup
+    const mount = mountRef.current
+
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
 
     renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.setClearColor(0x000000, 0)
-    mountElement.appendChild(renderer.domElement)
+    mountRef.current.appendChild(renderer.domElement)
 
-    sceneRef.current = scene
-    rendererRef.current = renderer
-    camera.position.set(0, 0, 5)
+    mount.appendChild(renderer.domElement)
 
-    // Animation loop
-    const animate = (): void => {
-      animationIdRef.current = requestAnimationFrame(animate)
+    camera.position.z = 30
 
-      // Update confetti pieces
-      confettiPiecesRef.current.forEach((piece, index) => {
-        const userData = piece.userData as ConfettiUserData
-        if (!userData) return
+    const colors = [0x0ea5e9, 0x38bdf8, 0x7dd3fc, 0xfbbf24, 0xf59e0b, 0x10b981, 0x34d399, 0xf43f5e, 0xfb7185]
 
-        // Apply physics
-        userData.velocity.y += userData.gravity
+    const particles: THREE.Mesh[] = []
+    const geometries = [
+      new THREE.PlaneGeometry(0.4, 0.6),
+      new THREE.CircleGeometry(0.25, 8),
+      new THREE.PlaneGeometry(0.3, 0.3)
+    ]
 
-        // Update position
-        piece.position.x += userData.velocity.x
-        piece.position.y += userData.velocity.y
-        piece.position.z += userData.velocity.z
+    for (let i = 0; i < particleCount; i++) {
+      const geometry = geometries[Math.floor(Math.random() * geometries.length)]
+      const material = new THREE.MeshBasicMaterial({
+        color: colors[Math.floor(Math.random() * colors.length)],
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 1
+      })
 
-        // Update rotation
-        piece.rotation.x += userData.rotationSpeed.x
-        piece.rotation.y += userData.rotationSpeed.y
-        piece.rotation.z += userData.rotationSpeed.z
+      const particle = new THREE.Mesh(geometry, material)
 
-        // Add some air resistance and wobble
-        userData.velocity.x *= 0.998
-        userData.velocity.z *= 0.998
-        piece.position.x += Math.sin(Date.now() * 0.001 + index) * 0.002
+      particle.position.x = (Math.random() - 0.5) * 60
+      particle.position.y = Math.random() * 40 + 20
+      particle.position.z = (Math.random() - 0.5) * 20
 
-        // Fade out over time
-        userData.life -= userData.fadeSpeed
-        const material = piece.material as THREE.MeshBasicMaterial
-        material.opacity = Math.max(0, userData.life)
+      particle.rotation.x = Math.random() * Math.PI
+      particle.rotation.y = Math.random() * Math.PI
+      particle.rotation.z = Math.random() * Math.PI
 
-        // Remove when off screen or faded
-        if (piece.position.y < -8 || userData.life <= 0) {
-          scene.remove(piece)
-          confettiPiecesRef.current.splice(index, 1)
+      particle.userData = {
+        velocityY: -(Math.random() * 0.15 + 0.1),
+        velocityX: (Math.random() - 0.5) * 0.1,
+        rotationSpeedX: (Math.random() - 0.5) * 0.1,
+        rotationSpeedY: (Math.random() - 0.5) * 0.1,
+        rotationSpeedZ: (Math.random() - 0.5) * 0.1,
+        swayAmount: Math.random() * 0.02,
+        swayOffset: Math.random() * Math.PI * 2
+      }
+
+      scene.add(particle)
+      particles.push(particle)
+    }
+
+    let time = 0
+
+    const animate = () => {
+      const animationId = requestAnimationFrame(animate)
+      time += 0.016
+
+      particles.forEach((particle) => {
+        const data = particle.userData
+
+        particle.position.y += data.velocityY
+        particle.position.x += data.velocityX + Math.sin(time + data.swayOffset) * data.swayAmount
+
+        particle.rotation.x += data.rotationSpeedX
+        particle.rotation.y += data.rotationSpeedY
+        particle.rotation.z += data.rotationSpeedZ
+
+        // Recycle particles that fall past the bottom
+        if (particle.position.y < -30) {
+          particle.position.y = Math.random() * 20 + 30
+          particle.position.x = (Math.random() - 0.5) * 60
         }
       })
 
       renderer.render(scene, camera)
+
+      if (sceneRef.current) {
+        sceneRef.current.animationId = animationId
+      }
     }
 
-    // Handle window resize
-    const handleResize = (): void => {
+    sceneRef.current = { scene, camera, renderer, particles, animationId: 0 }
+    animate()
+
+    const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight
       camera.updateProjectionMatrix()
       renderer.setSize(window.innerWidth, window.innerHeight)
     }
 
     window.addEventListener('resize', handleResize)
-    animate()
 
-    // Cleanup function
+    // Fade out, then clear the flag so the component unmounts
+    const fadeTimeout = setTimeout(() => {
+      const fadeInterval = setInterval(() => {
+        let allFaded = true
+
+        particles.forEach((particle) => {
+          const material = particle.material as THREE.MeshBasicMaterial
+          if (material.opacity > 0) {
+            material.opacity -= 0.02
+            allFaded = false
+          }
+        })
+
+        if (allFaded) {
+          clearInterval(fadeInterval)
+          hide()
+        }
+      }, 16)
+    }, duration - 1000)
+
     return () => {
+      clearTimeout(fadeTimeout)
       window.removeEventListener('resize', handleResize)
 
-      if (animationIdRef.current) {
-        cancelAnimationFrame(animationIdRef.current)
+      if (sceneRef.current) {
+        cancelAnimationFrame(sceneRef.current.animationId)
       }
 
-      // Clean up confetti pieces
-      confettiPiecesRef.current.forEach((piece) => {
-        if (scene) scene.remove(piece)
-        piece.geometry.dispose()
-        ;(piece.material as THREE.Material).dispose()
+      particles.forEach((particle) => {
+        scene.remove(particle)
+        particle.geometry.dispose()
+        ;(particle.material as THREE.Material).dispose()
       })
-      confettiPiecesRef.current = []
 
-      if (mountElement && renderer.domElement && mountElement.contains(renderer.domElement)) {
-        mountElement.removeChild(renderer.domElement)
-      }
-
+      geometries.forEach((geometry) => geometry.dispose())
       renderer.dispose()
-    }
-  }, []) // Empty dependency array - setup only once
 
-  useEffect(() => {
-    if (trigger && !isActiveRef.current && sceneRef.current) {
-      isActiveRef.current = true
-
-      const newConfetti = createConfetti(150)
-      confettiPiecesRef.current.push(...newConfetti)
-
-      const timeout1 = setTimeout(() => {
-        const burst1 = createConfetti(100)
-        confettiPiecesRef.current.push(...burst1)
-      }, 200)
-
-      const timeout2 = setTimeout(() => {
-        const burst2 = createConfetti(80)
-        confettiPiecesRef.current.push(...burst2)
-      }, 400)
-
-      const resetTimeout = setTimeout(() => {
-        isActiveRef.current = false
-      }, duration)
-
-      return () => {
-        clearTimeout(timeout1)
-        clearTimeout(timeout2)
-        clearTimeout(resetTimeout)
+      if (renderer.domElement.parentNode === mount) {
+        mount.removeChild(renderer.domElement)
       }
-    }
-  }, [trigger, duration])
 
-  return (
-    <div
-      ref={mountRef}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        pointerEvents: 'none',
-        zIndex: 9999
-      }}
-    />
-  )
+      sceneRef.current = null
+    }
+  }, [isActive, duration, particleCount, hide])
+
+  if (!isActive) return null
+
+  return <div ref={mountRef} className="fixed inset-0 pointer-events-none z-9999" aria-hidden="true" />
 }

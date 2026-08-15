@@ -3,6 +3,6 @@ import { getSubscriptionDetails } from '@/lib/actions/stripe/getSubscriptionDeta
 
 export default async function SupporterSubscriptionsPage({ params }) {
   const { id } = await params
-  const data = await getSubscriptionDetails(id)
-  return <SupporterSubscriptionsClient data={data} />
+  const result = await getSubscriptionDetails(id)
+  return <SupporterSubscriptionsClient data={result} />
 }

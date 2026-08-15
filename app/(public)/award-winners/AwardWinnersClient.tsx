@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { Briefcase, Heart, Trophy } from 'lucide-react'
 import { containerVariants, itemVariants } from '@/lib/constants/motion'
 import Picture from '@/components/_shared/Picture'
-import { store } from '@/lib/store/store'
 import YouthOfTheYearSection from '@/app/(public)/award-winners/_components/YouthOfTheYearSection'
 import { useVolunteerDrawer } from '@/stores/drawers'
 

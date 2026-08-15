@@ -21,6 +21,116 @@ interface ChangelogEntry {
 
 const changelogData: ChangelogEntry[] = [
   {
+    version: '1.22.0',
+    date: '2026-08-14',
+    changes: [
+      {
+        type: 'performance',
+        title: 'Removed Redux from the application',
+        description:
+          'The last of the Redux code is gone, along with Redux Toolkit and redux-persist. Four packages leave the client bundle, which means less JavaScript to download and parse on every page. Cart contents are unaffected and still saved between visits.',
+        impact: 'medium'
+      },
+      {
+        type: 'bug',
+        title: 'Fixed a crash on first page load',
+        description:
+          'The welcome animation referenced the browser window while the page was still being rendered on the server, which could fail the render before anything appeared. It now waits until the page is running in the browser.',
+        impact: 'high'
+      },
+      {
+        type: 'bug',
+        title: 'Ticket sale dates survive a page refresh',
+        description:
+          'Tickets held in the cart lost their sale start and end dates when the cart was restored on a later visit, so anything checking those dates was working from bad data. The dates are now restored correctly.',
+        impact: 'high'
+      },
+      {
+        type: 'fix',
+        title: 'Returning visitors no longer see a flash of the wrong content',
+        description:
+          'Screens that depend on saved browser state, including the cart and the welcome animation, briefly rendered as though the visitor were new before correcting themselves. They now wait for saved state before drawing.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Smoother welcome animation',
+        description:
+          'The falling-text animation regenerated itself on every render, which caused columns to reshuffle mid-animation. It is now generated once and adapts if the window is resized or a phone is rotated.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
+    version: '1.21.0',
+    date: '2026-08-14',
+    changes: [
+      {
+        type: 'fix',
+        title: 'Failed saves no longer report success',
+        description:
+          'Several admin screens showed a success message even when the save had not gone through, including the page content editors, drag-to-reorder lists, and subscriber deletion. Each action now checks what the server actually returned, so a failure shows the reason instead of a green confirmation.',
+        impact: 'high'
+      },
+      {
+        type: 'ui',
+        title: 'Notifications now appear where the action happened',
+        description:
+          'Confirmations and errors used to surface as floating toasts that could be missed or dismissed before being read. They now appear inline, next to the button or form that triggered them, and stay until you dismiss them or try again.',
+        impact: 'medium'
+      },
+      {
+        type: 'fix',
+        title: 'Editors no longer get stuck on "Saving..."',
+        description:
+          'If a page save or sign out ran into an error, the button could stay disabled and the screen locked in a loading state until a refresh. Loading now clears on both success and failure.',
+        impact: 'high'
+      },
+      {
+        type: 'fix',
+        title: 'Reorder lists report the real result',
+        description:
+          'Dragging to reorder programs, news, newsletters, resources, campaigns, closings, events, partners, and team members always flashed "Saved successfully" regardless of outcome. The confirmation now reflects whether the new order was actually stored.',
+        impact: 'high'
+      },
+      {
+        type: 'fix',
+        title: 'Phone number field accepts edits correctly',
+        description:
+          'The phone number input reformatted on every keystroke, which moved the cursor unexpectedly and could make characters impossible to delete. It now formats when you leave the field.',
+        impact: 'medium'
+      },
+      {
+        type: 'fix',
+        title: 'Repeat clicks can no longer fire duplicate actions',
+        description:
+          'Delete and edit controls on subscribers, partners, team members, and saved payment methods now disable while a request is in flight, with a spinner on the affected row.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Clearer, more specific error messages',
+        description:
+          'Errors now say which operation failed and include the underlying reason where one is available, rather than a generic failure notice. Empty form submissions explain what is missing instead of doing nothing.',
+        impact: 'medium'
+      },
+      {
+        type: 'improvement',
+        title: 'Better screen reader support for status messages',
+        description:
+          'Status messages are announced once with the correct urgency, errors assertively and confirmations politely, and form fields now reference their error text properly. Several fields that only had placeholder text gained real labels.',
+        impact: 'low'
+      },
+      {
+        type: 'performance',
+        title: 'Removed Redux from the application',
+        description:
+          'The Redux store and its slices were only powering toast notifications and a shared loading flag. Both are gone, which removes the library from the client bundle and cuts unnecessary re-renders on pages that read from it.',
+        impact: 'low'
+      }
+    ]
+  },
+  {
     version: '1.20.0',
     date: '2026-06-30',
     changes: [

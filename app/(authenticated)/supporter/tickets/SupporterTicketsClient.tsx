@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft, Calendar, ChevronRight, Ticket } from 'lucide-react'
-import { MotionLink } from '../../../../components/_shared/MotionLink'
+import { MotionLink } from '@/components/_shared/MotionLink'
 import { containerVariants, itemVariants } from '@/lib/constants/motion'
 
 const SupporterTicketsClient = ({ data }) => {

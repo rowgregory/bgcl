@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 import { Ticket, TicketType } from '@prisma/client'
 
 export interface CartItem {
@@ -28,13 +28,22 @@ interface CartState {
   items: CartItem[]
   isCheckingOut: boolean
   lastUpdated: string | null
+  hasHydrated: boolean
 
   addToCart: (ticket: AddToCartTicket, quantity: number) => void
   removeFromCart: (ticketId: string) => void
   updateQuantity: (ticketId: string, quantity: number) => void
   clearCart: () => void
   setIsCheckingOut: (checkingOut: boolean) => void
+  setHasHydrated: (value: boolean) => void
 }
+
+// JSON storage turns Dates into strings, so they have to be revived on read
+const reviveItem = (item: CartItem): CartItem => ({
+  ...item,
+  ticketSalesStartDate: new Date(item.ticketSalesStartDate),
+  ticketSalesEndDate: new Date(item.ticketSalesEndDate)
+})
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -42,6 +51,7 @@ export const useCartStore = create<CartState>()(
       items: [],
       isCheckingOut: false,
       lastUpdated: null,
+      hasHydrated: false,
 
       addToCart: (ticket, quantity) =>
         set((s) => {
@@ -95,11 +105,25 @@ export const useCartStore = create<CartState>()(
 
       clearCart: () => set({ items: [], isCheckingOut: false, lastUpdated: new Date().toISOString() }),
 
-      setIsCheckingOut: (isCheckingOut) => set({ isCheckingOut })
+      setIsCheckingOut: (isCheckingOut) => set({ isCheckingOut }),
+
+      setHasHydrated: (value) => set({ hasHydrated: value })
     }),
     {
       name: 'bgcl-cart',
-      partialize: (s) => ({ items: s.items, lastUpdated: s.lastUpdated })
+      storage: createJSONStorage(() => localStorage),
+      version: 1,
+      partialize: (s) => ({ items: s.items, lastUpdated: s.lastUpdated }),
+      merge: (persisted, current) => {
+        const incoming = (persisted ?? {}) as Partial<CartState>
+
+        return {
+          ...current,
+          ...incoming,
+          items: (incoming.items ?? []).map(reviveItem)
+        }
+      },
+      onRehydrateStorage: () => (state) => state?.setHasHydrated(true)
     }
   )
 )
@@ -111,3 +135,5 @@ export const useCartTotal = () => useCartStore((s) => s.items.reduce((acc, i) =>
 
 export const useCartItemByTicketId = (ticketId: string) =>
   useCartStore((s) => s.items.find((i) => i.ticketId === ticketId))
+
+export const useCartHasHydrated = () => useCartStore((s) => s.hasHydrated)

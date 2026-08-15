@@ -4,17 +4,17 @@ import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CITApplicationFormProps, CITFormData, CreateCITApplicationInput } from '@/types/entities/cit-application.types'
 import { FORM_STEPS, INITIAL_DATA } from '@/lib/constants/cit-application.constants'
-import { CITFormDesktopProgress } from '@/components/cit-application/CITFormDesktopProgress'
-import { CITFormMobileProgress } from '@/components/cit-application/CITFormMobileProgress'
-import { CITStep1 } from '@/components/cit-application/CITStep1'
-import { CITStep2 } from '@/components/cit-application/CITStep2'
-import { CITStep3 } from '@/components/cit-application/CITStep3'
-import { CITStep4 } from '@/components/cit-application/CITStep4'
-import { CITFormNavigation } from '@/components/cit-application/CITFormNavigation'
+import { CITFormMobileProgress } from './_components/CITFormMobileProgress'
+import { CITStep1 } from './_components/CITStep1'
+import { CITStep2 } from './_components/CITStep2'
+import { CITStep3 } from './_components/CITStep3'
+import { CITStep4 } from './_components/CITStep4'
+import { CITFormNavigation } from './_components/CITFormNavigation'
 import { validateCITStep } from '@/lib/utils/cit-application.utils'
-import { CITFormSuccess } from '@/components/cit-application/CITFormSuccess'
-import { CITFormHeader } from '@/components/cit-application/CITFormHeader'
+import { CITFormSuccess } from './_components/CITFormSuccess'
+import { CITFormHeader } from './_components/CITFormHeader'
 import { createCITApplication } from '@/lib/actions/cit-application'
+import { CITFormDesktopProgress } from './_components/CITFormDesktopProgress'
 
 export function CITClient({ t }: CITApplicationFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
@@ -147,18 +147,18 @@ export function CITClient({ t }: CITApplicationFormProps) {
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.25 }}
-                className="space-y-4 sm:space-y-6"
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="dark:bg-neutral-900 dark:border-neutral-800 bg-white border-neutral-200 rounded-xl p-6 sm:p-8 md:p-12 space-y-4 sm:space-y-6 border"
+                role="region"
+                aria-label={`Step ${currentStep}: ${FORM_STEPS[currentStep - 1].name}`}
+                aria-live="polite"
               >
                 {currentStep === 1 && <CITStep1 data={data} errors={errors} update={update} />}
-
                 {currentStep === 2 && <CITStep2 data={data} errors={errors} update={update} />}
-
                 {currentStep === 3 && <CITStep3 data={data} errors={errors} toggleWeek={toggleWeek} />}
-
                 {currentStep === 4 && <CITStep4 data={data} errors={errors} update={update} />}
               </motion.div>
             </AnimatePresence>

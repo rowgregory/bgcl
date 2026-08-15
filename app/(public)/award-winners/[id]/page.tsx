@@ -3,6 +3,6 @@ import { getNewsById } from '@/lib/actions/news/getNewsById'
 
 export default async function NewsDetailPage({ params }) {
   const { id } = await params
-  const { news } = await getNewsById(id)
-  return <NewsClient news={news} />
+  const result = await getNewsById(id)
+  return <NewsClient news={result.data} />
 }

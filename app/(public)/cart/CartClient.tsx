@@ -6,11 +6,30 @@ import { ArrowLeft } from 'lucide-react'
 import { CartItemRow } from './_components/CartItemRow'
 import { CartOrderSummary } from './_components/CartOrderSummary'
 import { EmptyCart } from './_components/EmptyCart'
-import { useCartStore } from '@/stores/useCartStore'
+import { useCartStore, useCartCount, useCartHasHydrated } from '@/stores/useCartStore'
 
 export default function CartClient() {
-  const { items } = useCartStore()
-  const itemCount = items.reduce((acc, item) => acc + item.quantity, 0)
+  const items = useCartStore((s) => s.items)
+  const itemCount = useCartCount()
+  const hasHydrated = useCartHasHydrated()
+
+  if (!hasHydrated) {
+    return (
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950" aria-busy="true">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          <div className="h-9 w-48 rounded bg-neutral-200 dark:bg-neutral-800 animate-pulse mb-10" />
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 sm:gap-8 items-start">
+            <div className="space-y-3">
+              <div className="h-28 rounded-xl bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
+              <div className="h-28 rounded-xl bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
+            </div>
+            <div className="h-64 rounded-xl bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
+          </div>
+          <span className="sr-only">Loading your cart</span>
+        </div>
+      </div>
+    )
+  }
 
   if (items.length === 0) return <EmptyCart />
 
@@ -40,15 +59,22 @@ export default function CartClient() {
             <h2 id="cart-items-heading" className="sr-only">
               Cart Items
             </h2>
-            <AnimatePresence mode="popLayout">
-              <ul role="list" aria-label="Items in your cart" className="space-y-3 list-none p-0 m-0">
+            <ul role="list" aria-label="Items in your cart" className="space-y-3 list-none p-0 m-0">
+              <AnimatePresence mode="popLayout" initial={false}>
                 {items.map((item, index) => (
-                  <li key={item.ticketId}>
-                    <CartItemRow key={index} item={item} index={index} />
-                  </li>
+                  <motion.li
+                    key={item.ticketId}
+                    layout
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -12 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <CartItemRow item={item} index={index} />
+                  </motion.li>
                 ))}
-              </ul>
-            </AnimatePresence>
+              </AnimatePresence>
+            </ul>
 
             <div className="mt-6">
               <Link

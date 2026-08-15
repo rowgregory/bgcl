@@ -1,7 +1,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 
-export const getContactSubmissions = async (): Promise<IContactSubmission[]> => {
+export const getContactSubmissions = async () => {
   try {
     const contactSubmissions = await prisma.contactSubmission.findMany({
       orderBy: { createdAt: 'desc' }

@@ -1,88 +1,106 @@
+'use client'
+
 import { useCallback, useEffect, useState } from 'react'
-import { store } from '@/lib/store/store'
 import { motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
-import { IPaymentMethod } from '@/types/entities/payment-method'
+import { Controller, useFormContext } from 'react-hook-form'
+import type { PaymentMethod } from '@prisma/client'
 import { calculateStripeFees } from '@/lib/utils/calculateStripeFees'
 import { useDefaultCard } from '@/lib/hooks/useDefaultCard'
+import { useTicketCheckoutSubmit } from '@/lib/hooks/useTicketCheckoutSubmit'
 import { CardElementField } from '@/components/_shared/CardElementField'
-import { useInitializeForm } from '@/lib/hooks/useInitializeForm'
 import { SavedCardSelector } from '@/components/_shared/SavedCardSelector'
 import { CoverFeesToggle } from '@/components/_shared/CoverFeesToggle'
 import { SaveCardToggle } from '@/components/_shared/SaveCardToggle'
-import { SubmitButton } from '@/components/ui/buttons/SubmitButton'
-import { FormError } from '@/components/_shared/FormError'
-import { setTicketCheckoutForm as setForm } from '@/lib/utils/setTicketCheckoutForm'
+import FormError from '@/components/_shared/FormError'
 import { CheckoutStep3UserInfo } from '@/components/_shared/CheckoutStep3UserInfo'
-import { useTicketCheckoutSubmit } from '@/lib/hooks/useTicketCheckoutSubmit'
-import { setHideConfetti, setShowConfetti } from '@/lib/store/slices/uiSlice'
-import { TicketCheckoutSalesWindowNotice } from './TicketCheckoutSalesWindowNotice'
 import CustomSwitch from '@/components/_shared/CustomSwitch'
-import { setInputs } from '@/lib/store/slices/formSlice'
+import { SubmitButton } from '@/components/ui/buttons/SubmitButton'
 import { useCartStore } from '@/stores/useCartStore'
+import { useConfettiStore } from '@/stores/useConfettiStore'
+import { TicketCheckoutSalesWindowNotice } from './TicketCheckoutSalesWindowNotice'
+import { TicketCheckoutFormInput } from '@/lib/validations/ticket-checkout.validation'
 
-interface ICheckoutForm {
-  savedCards: IPaymentMethod[]
-  inputs: any
-  setStep: any
+type Props = {
+  savedCards: PaymentMethod[]
+  setStep: (step: number) => void
 }
 
-export function TicketCheckoutForm({ savedCards, inputs, setStep }: ICheckoutForm) {
+export function TicketCheckoutForm({ savedCards, setStep }: Props) {
   const items = useCartStore((s) => s.items)
-  const session = useSession()
-  const isAuthed = session.status === 'authenticated'
+  const { status } = useSession()
+  const isAuthed = status === 'authenticated'
 
-  const setDefaultCard = useCallback((value: string) => setForm({ selectedCardId: value }), [])
+  const {
+    control,
+    watch,
+    setValue,
+    handleSubmit,
+    formState: { isSubmitting }
+  } = useFormContext<TicketCheckoutFormInput>()
+
+  // Stripe Elements owns card validity, so it stays out of the form
+  const [cardComplete, setCardComplete] = useState(false)
+
+  const coverFees = watch('coverFees')
+  const selectedCardId = watch('selectedCardId')
+  const useNewCard = watch('useNewCard')
+  const firstName = watch('firstName')
+  const lastName = watch('lastName')
+  const addressLine1 = watch('addressLine1')
+
+  const setDefaultCard = useCallback(
+    (value: string) => setValue('selectedCardId', value, { shouldDirty: true }),
+    [setValue]
+  )
   useDefaultCard(savedCards, setDefaultCard)
-  useInitializeForm({ savedCards })
 
   const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const processingFee = Math.round(calculateStripeFees(totalPrice) * 100) / 100
-  const finalAmount = inputs?.coverFees ? totalPrice + processingFee : totalPrice
+  const finalAmount = coverFees ? totalPrice + processingFee : totalPrice
   const amountInCents = Math.round(finalAmount * 100)
-  const usingSavedCard = !!(inputs?.selectedCardId && !inputs?.useNewCard)
-  const fullName = `${inputs?.firstName?.trim() ?? ''} ${inputs?.lastName?.trim() ?? ''}`.trim()
-  const derivedName =
-    inputs?.firstName || inputs?.lastName ? { firstName: inputs.firstName, lastName: inputs.lastName } : null
-  const derivedAddress = inputs?.addressLine1
-    ? {
-        addressLine1: inputs.addressLine1,
-        addressLine2: inputs.addressLine2,
-        city: inputs.city,
-        state: inputs.state,
-        zipPostalCode: inputs.zipPostalCode
-      }
-    : null
-
   const finalAmountDisplay = (amountInCents / 100).toFixed(2)
 
-  const { handleSubmit } = useTicketCheckoutSubmit({ inputs, amountInCents, processingFee, usingSavedCard, fullName })
+  const usingSavedCard = Boolean(selectedCardId && !useNewCard)
+  const fullName = `${firstName?.trim() ?? ''} ${lastName?.trim() ?? ''}`.trim()
+  const hasName = Boolean(firstName || lastName)
+  const hasAddress = Boolean(addressLine1)
+
+  const { submitCheckout, isProcessing } = useTicketCheckoutSubmit({
+    amountInCents,
+    processingFee,
+    usingSavedCard,
+    fullName
+  })
+
+  const onSubmit = handleSubmit(submitCheckout)
 
   const salesStartDate = items[0]?.ticketSalesStartDate
   const salesEndDate = items[0]?.ticketSalesEndDate
-  const now = new Date()
 
-  const [salesStarted, setSalesStarted] = useState(!salesStartDate || new Date(salesStartDate) <= now)
+  const [salesStarted, setSalesStarted] = useState(() => !salesStartDate || new Date(salesStartDate) <= new Date())
+  const salesEnded = Boolean(salesEndDate && new Date(salesEndDate) < new Date())
 
-  const salesEnded = salesEndDate && new Date(salesEndDate) < now
+  const show = useConfettiStore((s) => s.show)
+  const hide = useConfettiStore((s) => s.hide)
 
   useEffect(() => {
-    if (salesStarted) return
+    if (salesStarted || !salesStartDate) return
+
     const id = setInterval(() => {
       if (new Date(salesStartDate) <= new Date()) {
-        store.dispatch(setShowConfetti())
-        setTimeout(() => store.dispatch(setHideConfetti(), 2000))
+        show()
+        setTimeout(() => hide(), 2000)
         setSalesStarted(true)
         clearInterval(id)
       }
     }, 1000)
+
     return () => clearInterval(id)
-  }, [salesStartDate, salesStarted])
+  }, [hide, salesStartDate, salesStarted, show])
 
-  const isValid =
-    salesStarted && !salesEnded && (usingSavedCard ? true : inputs?.cardComplete) && !!derivedName && !!derivedAddress
-
-  const showPaymentSection = salesStarted && !salesEnded && !!derivedName && !!derivedAddress
+  const canPay = salesStarted && !salesEnded && hasName && hasAddress
+  const isValid = canPay && (usingSavedCard || cardComplete)
 
   return (
     <motion.div
@@ -92,21 +110,39 @@ export function TicketCheckoutForm({ savedCards, inputs, setStep }: ICheckoutFor
     >
       <h2 className="text-xl sm:text-2xl font-bold dark:text-white text-neutral-900 mb-4 sm:mb-6">Payment Details</h2>
       <div className="flex-1">
-        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-y-12">
+        <form onSubmit={onSubmit} noValidate className="flex flex-col gap-y-12">
           {/* ── Contact ── */}
-          <CheckoutStep3UserInfo address={derivedAddress} name={fullName} setStep={setStep} />
-
-          <CustomSwitch
-            checked={inputs?.attendingEvent ?? true}
-            label="I will be attending the event"
-            description="Let us know if you plan to join us on the night"
-            onChange={(val) =>
-              store.dispatch(setInputs({ formName: 'ticketCheckoutForm', data: { attendingEvent: val } }))
+          <CheckoutStep3UserInfo
+            address={
+              hasAddress
+                ? {
+                    addressLine1: watch('addressLine1'),
+                    addressLine2: watch('addressLine2'),
+                    city: watch('city'),
+                    state: watch('state'),
+                    zipPostalCode: watch('zipPostalCode')
+                  }
+                : null
             }
+            name={fullName}
+            setStep={setStep}
+          />
+
+          <Controller
+            name="attendingEvent"
+            control={control}
+            render={({ field: { value, onChange } }) => (
+              <CustomSwitch
+                checked={value ?? true}
+                onChange={onChange}
+                label="I will be attending the event"
+                description="Let us know if you plan to join us on the night"
+              />
+            )}
           />
 
           {/* ── Payment ── */}
-          {showPaymentSection && (
+          {canPay && (
             <fieldset className="border-0 p-0 m-0">
               <legend className="text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-6">
                 Payment Method
@@ -116,28 +152,32 @@ export function TicketCheckoutForm({ savedCards, inputs, setStep }: ICheckoutFor
                 {isAuthed && (
                   <SavedCardSelector
                     savedCards={savedCards}
-                    selectedCardId={inputs?.selectedCardId}
-                    useNewCard={inputs?.useNewCard}
-                    onSelectCard={(id) => setForm({ selectedCardId: id })}
-                    onUseNewCard={() => setForm({ useNewCard: true, selectedCardId: null })}
-                    onUseSavedCard={() =>
-                      setForm({ useNewCard: false, selectedCardId: savedCards[0]?.stripePaymentId ?? null })
-                    }
+                    selectedCardId={selectedCardId}
+                    useNewCard={useNewCard}
+                    onSelectCard={(id) => setValue('selectedCardId', id, { shouldDirty: true })}
+                    onUseNewCard={() => {
+                      setValue('useNewCard', true, { shouldDirty: true })
+                      setValue('selectedCardId', '', { shouldDirty: true })
+                    }}
+                    onUseSavedCard={() => {
+                      setValue('useNewCard', false, { shouldDirty: true })
+                      setValue('selectedCardId', savedCards[0]?.stripePaymentId ?? '', { shouldDirty: true })
+                    }}
                   />
                 )}
 
-                {(!isAuthed || savedCards.length === 0 || inputs?.useNewCard) && (
-                  <CardElementField formName="ticketCheckoutForm" />
+                {(!isAuthed || savedCards.length === 0 || useNewCard) && (
+                  <CardElementField onChange={setCardComplete} />
                 )}
 
                 {/* ── Error ── */}
-                <FormError formName="ticketCheckoutForm" />
+                <FormError />
 
                 {/* ── Save card ── */}
-                <SaveCardToggle formName="ticketCheckoutForm" />
+                <SaveCardToggle />
 
                 {/* ── Cover fees ── */}
-                <CoverFeesToggle formName="ticketCheckoutForm" processingFee={processingFee} />
+                <CoverFeesToggle processingFee={processingFee} />
               </div>
             </fieldset>
           )}
@@ -152,8 +192,11 @@ export function TicketCheckoutForm({ savedCards, inputs, setStep }: ICheckoutFor
             />
           )}
 
-          {/* ── Submit ── */}
-          <SubmitButton formName="ticketCheckoutForm" isValid={isValid} label={`Pay $${finalAmountDisplay}`} />
+          <SubmitButton
+            isSubmitting={isSubmitting || isProcessing}
+            isValid={isValid}
+            label={`Pay $${finalAmountDisplay}`}
+          />
         </form>
       </div>
     </motion.div>

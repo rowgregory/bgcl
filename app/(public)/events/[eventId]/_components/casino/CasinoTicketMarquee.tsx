@@ -2,8 +2,8 @@ import { getTicketStatus } from '@/lib/utils/getTicketStatus'
 import { ShoppingCart } from 'lucide-react'
 import { useRef } from 'react'
 import { CasinoQuickAddPill } from './CasinoQuickAddPill'
-import { useUiSelector } from '@/lib/store/store'
 import { TCasinoTicketMarquee } from '@/types/casino.types'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
 
 export function CasinoTicketMarquee({
   tickets,
@@ -13,7 +13,7 @@ export function CasinoTicketMarquee({
   ticketSalesEndDate
 }: TCasinoTicketMarquee) {
   const trackRef = useRef<HTMLDivElement>(null)
-  const { soundOn } = useUiSelector()
+  const soundOn = usePreferencesStore((s) => s.soundOn)
 
   const pause = () => {
     if (trackRef.current) trackRef.current.style.animationPlayState = 'paused'

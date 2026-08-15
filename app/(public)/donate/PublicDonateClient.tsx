@@ -1,61 +1,77 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
-import { IAddress } from '@/types/entities/address.types'
-import { IPaymentMethod } from '@/types/entities/payment-method'
-import { useEffect, useState } from 'react'
-import { store, useFormSelector } from '@/lib/store/store'
-import { createFormActions, setInputs } from '@/lib/store/slices/formSlice'
 import { useSession } from 'next-auth/react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { Address, PaymentMethod } from '@prisma/client'
+
 import { CheckoutStep1 } from '@/components/public/checkout/CheckoutStep1'
+import { CheckoutStep2 } from '@/components/public/checkout/CheckoutStep2'
 import { CheckoutStepIndicator } from '@/components/public/checkout/CheckoutStepIndicator'
 import { updateUserName } from '@/lib/actions/user/updateUserName'
+import { updatePhoneNumber } from '@/lib/actions/user/updatePhoneNumber'
 import { updateAddress } from '@/lib/actions/address/updateAddress'
-import { CheckoutStep2 } from '@/components/public/checkout/CheckoutStep2'
 import { PublicDonateCheckoutForm } from '@/app/(public)/donate/_components/PublicDonateCheckoutForm'
 import { DonationFormLeftColumn } from '@/app/(public)/donate/_components/DonationFormLeftColumn'
 import { DonationFormHeader } from '@/app/(public)/donate/_components/DonationFormHeader'
-import { updatePhoneNumber } from '@/lib/actions/user/updatePhoneNumber'
-import { CampaignWithCount } from '@/types/campaign.types'
+import {
+  EMPTY_DONATION,
+  donationSchema,
+  type DonationFormInput,
+  type DonationFormValues
+} from '@/lib/validations/donation.validation'
+import type { CampaignWithCount } from '@/types/campaign.types'
 
-type IPublicDonateClient = {
+type Props = {
   campaigns: CampaignWithCount[]
-  name: { firstName: string; lastName: string }
-  phone: string
-  address: IAddress
-  savedCards: IPaymentMethod[]
+  name: { firstName: string; lastName: string } | null
+  phone: string | null
+  address: Address | null
+  savedCards: PaymentMethod[]
 }
 
 const donateCheckoutStepLabels = ['Sign In', 'User Info', 'Donate']
 
-export function PublicDonateClient({ campaigns, name, address, savedCards, phone }: IPublicDonateClient) {
-  // ── Store ─────────────────────────────────────────────────────────────────
-  const session = useSession()
-  const isAuthed = session.status === 'authenticated'
-  const { forms } = useFormSelector()
+// Fields step 2 collects, validated before advancing
+const STEP_2_FIELDS = ['firstName', 'lastName', 'phone', 'addressLine1', 'city', 'state', 'zipPostalCode'] as const
+
+export function PublicDonateClient({ campaigns, name, address, savedCards, phone }: Props) {
+  const { status } = useSession()
+  const isAuthed = status === 'authenticated'
+
   const searchParams = useSearchParams()
-  const { handleInput, setErrors } = createFormActions('donateCheckoutForm', store.dispatch)
-
-  // ── Derived ───────────────────────────────────────────────────────────────
-  const hasUserInfo = !!(name?.firstName?.trim() && name?.lastName?.trim() && address && phone?.trim())
   const campaignName = searchParams.get('campaignName')
-  const inputs = forms?.donateCheckoutForm?.inputs
-  const errors = forms?.donateCheckoutForm?.errors
+  const stepFromUrl = searchParams.get('step')
 
-  // ── UI state ──────────────────────────────────────────────────────────────
-  const params = useSearchParams()
-  const stepFromUrl = params.get('step')
-  const [step, setStep] = useState(() => {
-    if (!isAuthed) return 1
-    if (hasUserInfo) return 3
-    return 2
+  const hasUserInfo = Boolean(name?.firstName?.trim() && name?.lastName?.trim() && address && phone?.trim())
+
+  const methods = useForm<DonationFormInput, unknown, DonationFormValues>({
+    resolver: zodResolver(donationSchema),
+    mode: 'onTouched',
+    defaultValues: {
+      ...EMPTY_DONATION,
+      firstName: name?.firstName ?? '',
+      lastName: name?.lastName ?? '',
+      phone: phone ?? '',
+      addressLine1: address?.addressLine1 ?? '',
+      addressLine2: address?.addressLine2 ?? '',
+      city: address?.city ?? '',
+      state: address?.state ?? '',
+      zipPostalCode: address?.zipPostalCode ?? '',
+      coverFees: true,
+      useNewCard: savedCards.length === 0
+    }
   })
 
-  // ── Effects ───────────────────────────────────────────────────────────────
-  useEffect(() => {
-    store.dispatch(setInputs({ formName: 'donateCheckoutForm', data: { ...name, ...address, ...{ phone } } }))
-  }, [address, name, phone])
+  const { trigger, getValues } = methods
+
+  const [step, setStep] = useState(() => {
+    if (!isAuthed) return 1
+    return hasUserInfo ? 3 : 2
+  })
 
   useEffect(() => {
     if (!stepFromUrl) return
@@ -63,28 +79,24 @@ export function PublicDonateClient({ campaigns, name, address, savedCards, phone
   }, [stepFromUrl, hasUserInfo])
 
   const handleStep2 = async () => {
-    const updates = []
+    const valid = await trigger(STEP_2_FIELDS)
+    if (!valid) return
 
-    if (inputs?.firstName && inputs?.lastName) {
-      updates.push(updateUserName({ firstName: inputs.firstName, lastName: inputs.lastName }))
-    }
-    if (inputs?.phone) {
-      updates.push(updatePhoneNumber({ phone: inputs.phone }))
-    }
-    if (inputs?.addressLine1) {
-      updates.push(
-        updateAddress({
-          addressLine1: inputs.addressLine1,
-          addressLine2: inputs.addressLine2,
-          city: inputs.city,
-          state: inputs.state,
-          zipPostalCode: inputs.zipPostalCode,
-          country: 'US'
-        })
-      )
-    }
+    const values = getValues()
 
-    await Promise.all(updates)
+    await Promise.all([
+      updateUserName({ firstName: values.firstName, lastName: values.lastName }),
+      updatePhoneNumber({ phone: values.phone }),
+      updateAddress({
+        addressLine1: values.addressLine1,
+        addressLine2: values.addressLine2,
+        city: values.city,
+        state: values.state,
+        zipPostalCode: values.zipPostalCode,
+        country: 'US'
+      })
+    ])
+
     setStep(3)
   }
 
@@ -112,30 +124,22 @@ export function PublicDonateClient({ campaigns, name, address, savedCards, phone
               labels={donateCheckoutStepLabels}
             />
 
-            {/* Sign In */}
-            {step === 1 && <CheckoutStep1 redirectTo="/donate?step=2" />}
+            <FormProvider {...methods}>
+              {/* Sign In */}
+              {step === 1 && <CheckoutStep1 redirectTo="/donate?step=2" />}
 
-            {/* User Info */}
-            {step === 2 && (
-              <CheckoutStep2
-                onSubmit={handleStep2}
-                isLoading={false}
-                errors={errors}
-                handleInput={handleInput}
-                inputs={inputs}
-                setErrors={setErrors}
-              />
-            )}
+              {/* User Info */}
+              {step === 2 && <CheckoutStep2 onSubmit={handleStep2} />}
 
-            {step === 3 && (
-              <PublicDonateCheckoutForm
-                campaignName={campaignName}
-                campaigns={campaigns}
-                savedCards={savedCards}
-                inputs={inputs}
-                setStep={setStep}
-              />
-            )}
+              {step === 3 && (
+                <PublicDonateCheckoutForm
+                  campaignName={campaignName}
+                  campaigns={campaigns}
+                  savedCards={savedCards}
+                  setStep={setStep}
+                />
+              )}
+            </FormProvider>
 
             {/* Trust Badge */}
             <motion.div

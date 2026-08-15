@@ -2,10 +2,10 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
-import { IPartner } from '@/types/entities/partner'
 import { revalidatePath } from 'next/cache'
+import { Partner } from '@prisma/client'
 
-export async function reorderPartners(tier: string, partners: IPartner[]) {
+export async function reorderPartners(tier: string, partners: Partner[]) {
   try {
     // Validation
     if (!partners || !Array.isArray(partners) || partners.length === 0) {
@@ -53,7 +53,7 @@ export async function reorderPartners(tier: string, partners: IPartner[]) {
   }
 }
 
-async function updateOrderInDatabase(partners: IPartner[]) {
+async function updateOrderInDatabase(partners: Partner[]) {
   const updatePromises = partners.map((partner, index) =>
     prisma.partner.update({
       where: { id: partner.id },

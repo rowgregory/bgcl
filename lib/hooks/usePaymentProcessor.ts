@@ -1,118 +1,168 @@
-import { PaymentMethod } from '@stripe/stripe-js'
-import { useSession } from 'next-auth/react'
+'use client'
+
+import { useCallback, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import Pusher from 'pusher-js'
-import { savePaymentMethod } from '../actions/stripe/savePaymentMethod'
-import { useRef } from 'react'
-import { store } from '../store/store'
-import { setShowConfetti } from '../store/slices/uiSlice'
+import { useSession } from 'next-auth/react'
+import Pusher, { type Channel } from 'pusher-js'
+import type { PaymentMethod } from '@stripe/stripe-js'
+
+import { savePaymentMethod } from '@/lib/actions/stripe/savePaymentMethod'
+import { useConfettiStore } from '@/stores/useConfettiStore'
+
+type OrderCreatedEvent = { orderId: string }
+type OrderFailedEvent = { error?: string }
+
+type SetError = (value: string) => void
+type SetProcessingStatus = (value: string) => void
+type SetLoading = (value?: boolean) => void
+
+const PROCESSING_TIMEOUT_MS = 10_000
+const TIMEOUT_MESSAGE = 'Order processing timeout. Please check your email for confirmation.'
 
 export function usePaymentProcessor() {
   const router = useRouter()
   const session = useSession()
-  const hasProcessedOrder = useRef(false)
-  const hasProcessedRecurringOrder = useRef(false)
 
-  const getPaymentMethodId = (paymentMethod: string | PaymentMethod | undefined): string | undefined => {
+  const pusherRef = useRef<Pusher | null>(null)
+  const channelRef = useRef<Channel | null>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // One terminal event per attempt, whichever lands first
+  const settledRef = useRef(false)
+
+  const getPaymentMethodId = (paymentMethod: string | PaymentMethod | null | undefined): string | undefined => {
     return typeof paymentMethod === 'string' ? paymentMethod : paymentMethod?.id
   }
 
-  const setupPusherListenerOneTime = (
-    paymentIntentId: string,
-    saveCard?: boolean,
-    paymentMethod?: string,
-    processingStatus?: string,
-    setError?: any,
-    setProcessingStatus?: any,
-    setLoading?: any
-  ) => {
-    const channelId = session?.data?.user?.id
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER
-    })
-    const channel = pusher.subscribe(`payment-${channelId}`)
+  const teardown = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
 
-    const timeout = setTimeout(() => {
-      if (processingStatus === 'processing') {
-        setError('Order processing timeout. Please check your email for confirmation.')
+    const channel = channelRef.current
+    const pusher = pusherRef.current
+
+    if (channel) {
+      channel.unbind_all()
+      pusher?.unsubscribe(channel.name)
+    }
+
+    pusher?.disconnect()
+
+    channelRef.current = null
+    pusherRef.current = null
+  }, [])
+
+  // Navigating away mid-payment shouldn't leave a socket open
+  useEffect(() => teardown, [teardown])
+
+  const subscribe = useCallback(
+    (
+      channelName: string,
+      setError: SetError,
+      setProcessingStatus: SetProcessingStatus,
+      setLoading: SetLoading,
+      onCreated?: () => void
+    ) => {
+      teardown()
+      settledRef.current = false
+
+      const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {
+        cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!
+      })
+      const channel = pusher.subscribe(channelName)
+
+      pusherRef.current = pusher
+      channelRef.current = channel
+
+      timeoutRef.current = setTimeout(() => {
+        if (settledRef.current) return
+        settledRef.current = true
+
+        setError(TIMEOUT_MESSAGE)
         setProcessingStatus('failed')
         setLoading(false)
-      }
-    }, 10000)
+        teardown()
+      }, PROCESSING_TIMEOUT_MS)
 
-    channel.bind('order-created', (data: any) => {
-      if (hasProcessedOrder.current) return
-      hasProcessedOrder.current = true
+      channel.bind('order-created', (data: OrderCreatedEvent) => {
+        if (settledRef.current) return
+        settledRef.current = true
 
-      clearTimeout(timeout)
-      setProcessingStatus('success')
+        setProcessingStatus('success')
+        onCreated?.()
+        teardown()
 
-      if (saveCard && session?.data?.user?.id && paymentMethod) {
-        savePaymentMethod(session?.data?.user?.id, paymentMethod as string, true).catch(console.error)
-      }
+        useConfettiStore.getState().burst()
+        router.push(`/order-confirmation/${data.orderId}`)
+      })
 
-      store.dispatch(setShowConfetti())
-      router.push(`/order-confirmation/${data.orderId}`)
-      channel.unbind_all()
-      pusher.unsubscribe(`payment-${channelId}`)
-    })
+      channel.bind('order-failed', (data: OrderFailedEvent) => {
+        if (settledRef.current) return
+        settledRef.current = true
 
-    channel.bind('order-failed', (data: any) => {
-      clearTimeout(timeout)
-      setProcessingStatus('failed')
-      setError(data.error || 'Order processing failed')
-      setLoading(false)
-      channel.unbind('order-created')
-      channel.unbind('order-failed')
-    })
-  }
-
-  const setupPusherListenerRecurring = (
-    subscriptionResult?: any,
-    processingStatus?: string,
-    setError?: any,
-    setProcessingStatus?: any,
-    setLoading?: any
-  ) => {
-    const channelId = `payment-${subscriptionResult.subscriptionId}`
-
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER
-    })
-
-    const channel = pusher.subscribe(channelId)
-
-    const timeout = setTimeout(() => {
-      if (processingStatus === 'processing') {
-        setError('Order processing timeout. Please check your email for confirmation.')
+        setError(data.error || 'Order processing failed')
         setProcessingStatus('failed')
         setLoading(false)
+        teardown()
+      })
+    },
+    [router, teardown]
+  )
+
+  const setupPusherListenerOneTime = useCallback(
+    (
+      saveCard: boolean | undefined,
+      paymentMethod: string | undefined,
+      setError: SetError,
+      setProcessingStatus: SetProcessingStatus,
+      setLoading: SetLoading
+    ) => {
+      const userId = session?.data?.user?.id
+
+      if (!userId) {
+        setError('Your session expired. Please sign in and try again.')
+        setProcessingStatus('failed')
+        setLoading(false)
+        return
       }
-    }, 10000)
 
-    channel.bind('order-created', (data: any) => {
-      if (hasProcessedRecurringOrder.current) return
-      hasProcessedRecurringOrder.current = true
+      subscribe(`payment-${userId}`, setError, setProcessingStatus, setLoading, () => {
+        if (!saveCard || !paymentMethod) return
 
-      clearTimeout(timeout)
-      setProcessingStatus('success')
+        void (async () => {
+          const res = await savePaymentMethod({ stripePaymentId: paymentMethod, isDefault: true })
 
-      store.dispatch(setShowConfetti())
-      router.push(`/order-confirmation/${data.orderId}`)
-      channel.unbind_all()
-      pusher.unsubscribe(channelId)
-      setLoading(false)
-    })
+          if (!res.success) {
+            console.error('Failed to save payment method:', res.error)
+          }
+        })()
+      })
+    },
+    [session?.data?.user?.id, subscribe]
+  )
 
-    channel.bind('order-failed', (data: any) => {
-      clearTimeout(timeout)
-      setProcessingStatus('failed')
-      setLoading(false)
-      setError(data.error || 'Order processing failed')
-      channel.unbind_all()
-      pusher.unsubscribe(channelId)
-    })
-  }
+  const setupPusherListenerRecurring = useCallback(
+    (
+      subscriptionResult: { subscriptionId?: string } | undefined,
+      setError: SetError,
+      setProcessingStatus: SetProcessingStatus,
+      setLoading: SetLoading
+    ) => {
+      const subscriptionId = subscriptionResult?.subscriptionId
+
+      if (!subscriptionId) {
+        setError('Missing subscription. Please try again.')
+        setProcessingStatus('failed')
+        setLoading(false)
+        return
+      }
+
+      subscribe(`payment-${subscriptionId}`, setError, setProcessingStatus, setLoading)
+    },
+    [subscribe]
+  )
 
   return {
     getPaymentMethodId,
