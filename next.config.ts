@@ -35,14 +35,12 @@ const securityHeaders = [
     value: 'camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(self "https://js.stripe.com")'
   },
   { key: 'X-DNS-Prefetch-Control', value: 'on' },
-  { key: 'Content-Security-Policy', value: csp }
+  { key: 'Content-Security-Policy-Report-Only', value: csp }
 ]
 
 const nextConfig: NextConfig = {
   // Don't advertise the framework version
   poweredByHeader: false,
-
-  experimental: { serverMinification: false },
 
   images: {
     remotePatterns: [
