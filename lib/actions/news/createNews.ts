@@ -4,14 +4,19 @@ import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
 import { newsSchema } from '@/lib/validations/news.validation'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function createNews(input: unknown) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   const parsed = newsSchema.safeParse(input)
 
   if (!parsed.success) {
     const issue = parsed.error.issues[0]
     return {
       success: false,
+      data: null,
       error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid news data'
     }
   }
@@ -39,7 +44,7 @@ export async function createNews(input: unknown) {
     return {
       success: true,
       data: news,
-      message: 'News created successfully'
+      error: null
     }
   } catch (error) {
     await createLog('error', 'Failed to create news', {
@@ -49,6 +54,7 @@ export async function createNews(input: unknown) {
 
     return {
       success: false,
+      data: null,
       error: 'Failed to create news. Please try again.'
     }
   }

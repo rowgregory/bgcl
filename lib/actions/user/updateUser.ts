@@ -4,8 +4,12 @@ import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
 import { userSchema } from '@/lib/validations/user.validation'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function updateUser(id: string, input: unknown) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   if (!id) {
     return { success: false, error: 'User ID is required.' }
   }

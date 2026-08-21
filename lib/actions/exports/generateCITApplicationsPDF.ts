@@ -1,22 +1,47 @@
 'use server'
 
 import prisma from '@/prisma/client'
+import { createLog } from '../log/createLog'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 import { CITApplication } from '@prisma/client'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
-export const exportCITApplicationsAction = async () => {
-  const applications = await prisma.cITApplication.findMany({
-    orderBy: { createdAt: 'desc' }
-  })
+export const exportCITApplicationsAction = async (): Promise<{
+  success: boolean
+  data: string | null
+  error: string | null
+}> => {
+  const auth = await requireAdmin({ allowProgram: true })
+  if (!auth.user) return { success: false, data: null, error: auth.error }
 
-  const stats = calculateApplicationStats(applications)
+  try {
+    const applications = await prisma.cITApplication.findMany({
+      orderBy: { createdAt: 'desc' }
+    })
 
-  const pdfBuffer = await createCITApplicationsPDF(applications, stats)
+    if (applications.length === 0) {
+      return { success: false, data: null, error: 'There are no applications to export.' }
+    }
 
-  return pdfBuffer
+    const stats = calculateApplicationStats(applications)
+    const pdfBuffer = await createCITApplicationsPDF(applications, stats)
+
+    await createLog('info', 'Exported CIT applications report', {
+      userId: auth.user.id,
+      count: applications.length
+    })
+
+    return { success: true, data: Buffer.from(pdfBuffer).toString('base64'), error: null }
+  } catch (error) {
+    await createLog('error', 'Failed to export CIT applications', {
+      userId: auth.user.id,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
+    return { success: false, data: null, error: 'Could not generate the report.' }
+  }
 }
-
 interface CITStats {
   total: number
   byStatus: Record<string, number>

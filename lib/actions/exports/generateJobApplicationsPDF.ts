@@ -1,22 +1,31 @@
 'use server'
 
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 import prisma from '@/prisma/client'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
 export const exportApplicationsAction = async () => {
-  const applications = await prisma.jobApplication.findMany({
-    include: {
-      references: true
-    }
-  })
+  const auth = await requireAdmin({ allowProgram: true })
+  if (!auth.user) return { success: false, data: null, error: auth.error }
 
-  const stats = calculateApplicationStats(applications)
+  try {
+    const applications = await prisma.jobApplication.findMany({
+      include: {
+        references: true
+      }
+    })
 
-  const pdfBuffer = await createApplicationsPDF(applications, stats)
+    const stats = calculateApplicationStats(applications)
 
-  return pdfBuffer
+    const pdfBuffer = await createApplicationsPDF(applications, stats)
+
+    return { success: true, data: pdfBuffer, error: null }
+  } catch {
+    return { success: false, data: null, error: 'Could not export job applications' }
+  }
 }
+
 const calculateApplicationStats = (applications: any[]) => {
   const stats = {
     total: applications.length,

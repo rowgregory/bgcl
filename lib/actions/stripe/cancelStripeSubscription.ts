@@ -1,7 +1,8 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { stripe } from '../../stripe/stripeClient'
+import { requireUser } from '@/lib/utils/requireAdmin'
+import { stripe } from '@/lib/stripe/stripeClient'
 import { createLog } from '../log/createLog'
 
 /**
@@ -16,6 +17,9 @@ export async function cancelStripeSubscription(
   cancellationReason?: string,
   cancellationComment?: string
 ) {
+  const auth = await requireUser()
+  if (!auth.ok) return { success: false, data: null, error: auth.error }
+
   try {
     // Find the order in the database
     const order = await prisma.order.findFirst({
@@ -26,7 +30,7 @@ export async function cancelStripeSubscription(
     })
 
     if (!order) {
-      throw new Error(`No order found for subscription ${subscriptionId}`)
+      return { success: false, data: null, error: `No order found for subscription ${subscriptionId}` }
     }
 
     // Cancel immediately in Stripe
@@ -78,13 +82,12 @@ export async function cancelStripeSubscription(
       }
     }
   } catch (error) {
-    // Log the error
     await createLog('error', `Failed to cancel subscription: ${subscriptionId}`, {
       subscriptionId,
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined
     })
 
-    throw error
+    return { success: false, data: null, error: `Failed to cancel subscription` }
   }
 }

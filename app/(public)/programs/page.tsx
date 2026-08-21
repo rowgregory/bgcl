@@ -10,5 +10,5 @@ export default async function PublicProgramsPage() {
     getPageBySlugClient('program')
   ])
 
-  return <ProgramsClient programs={programs} resources={resources} pageData={pageData} />
+  return <ProgramsClient programs={programs.data} resources={resources.data} pageData={pageData} />
 }

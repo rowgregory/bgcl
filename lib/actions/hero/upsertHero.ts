@@ -1,11 +1,15 @@
 'use server'
 
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 import prisma from '@/prisma/client'
 import { IHero } from '@/types/entities/hero'
 import { HeroStatus } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 
 export const upsertHero = async (data: Partial<IHero>): Promise<{ success: boolean; data?: IHero; error?: string }> => {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     const existing = await prisma.hero.findFirst()
 
@@ -52,8 +56,8 @@ export const upsertHero = async (data: Partial<IHero>): Promise<{ success: boole
 
     revalidatePath('/', 'layout')
 
-    return { success: true, data: hero as IHero }
+    return { success: true, data: hero as IHero, error: null }
   } catch (error) {
-    return { success: false, error: 'Failed to save hero' }
+    return { success: false, data: null, error: 'Failed to save hero' }
   }
 }

@@ -1,8 +1,8 @@
 'use server'
 
-import { failedPaymentTemplate } from '../../email-templates/failed-payment'
-import { resend } from '../../resend/resend'
+import { resend } from '@/lib/resend/resend'
 import { createLog } from '../log/createLog'
+import { failedPaymentTemplate } from '@/lib/email-templates/failed-payment'
 
 export async function sendFailedPaymentEmail(customerName: string, customerEmail: string, amount: number) {
   try {
@@ -15,12 +15,12 @@ export async function sendFailedPaymentEmail(customerName: string, customerEmail
       html: failedPaymentTemplate(customerName, amount, retryUrl)
     })
 
-    return { success: true }
+    return { success: true, error: null }
   } catch (error) {
     await createLog('error', 'Failed to send failed payment email', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    return { success: false, error: 'Failed to send failed payment email. Please try again.' }
+    return { success: false, data: null, error: 'Failed to send failed payment email. Please try again.' }
   }
 }

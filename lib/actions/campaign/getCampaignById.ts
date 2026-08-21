@@ -1,11 +1,10 @@
 import prisma from '@/prisma/client'
+import { createLog } from '../log/createLog'
 
 export async function getCampaignById(id: string) {
-  try {
-    if (!id) {
-      throw new Error('Campaign ID is required')
-    }
+  if (!id) return { success: false, data: null, error: 'Campaign ID is required' }
 
+  try {
     const campaign = await prisma.campaign.findUnique({
       where: { id },
       include: {
@@ -25,21 +24,19 @@ export async function getCampaignById(id: string) {
       }
     })
 
-    if (!campaign) {
-      throw new Error('Campaign not found')
-    }
+    if (!campaign) return { success: false, data: null, error: 'Campaign not found' }
 
     return {
       success: true,
-      campaign,
+      data: campaign,
       message: 'Campaign retrieved successfully'
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to retrieve campaign'
-    return {
-      success: false,
-      error: errorMessage,
-      campaign: null
-    }
+    await createLog('error', 'Failed to fetch campaign by id', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      campaignId: id
+    })
+
+    return { success: false, data: null, error: 'Could not load campaign' }
   }
 }

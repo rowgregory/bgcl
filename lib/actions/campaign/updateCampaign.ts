@@ -6,11 +6,13 @@ import { getActor } from '../user/getActor'
 import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
 import { revalidatePath } from 'next/cache'
 import { campaignSchema } from '@/lib/validations/campaign.validation'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function updateCampaign(id: string, input: unknown) {
-  if (!id) {
-    return { success: false, error: 'Campaign ID is required.' }
-  }
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
+  if (!id) return { success: false, error: 'Campaign ID is required.' }
 
   // Validate on the server too — never trust the client
   const parsed = campaignSchema.safeParse(input)
@@ -19,6 +21,7 @@ export async function updateCampaign(id: string, input: unknown) {
     const issue = parsed.error.issues[0]
     return {
       success: false,
+      data: null,
       error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid campaign data'
     }
   }
@@ -57,6 +60,7 @@ export async function updateCampaign(id: string, input: unknown) {
 
     return {
       success: false,
+      data: null,
       error: 'Failed to update campaign. Please try again.'
     }
   }

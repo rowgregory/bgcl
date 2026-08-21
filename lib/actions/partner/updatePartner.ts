@@ -5,8 +5,12 @@ import { revalidatePath } from 'next/cache'
 import { createLog } from '../log/createLog'
 import { partnerSchema, PARTNER_NULLABLE_FIELDS } from '@/lib/validations/partner.validation'
 import { emptyToNull } from '@/lib/utils/emptyToNull'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function updatePartner(id: string, input: unknown) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   if (!id) {
     return { success: false, error: 'Partner ID is required.' }
   }
@@ -17,6 +21,7 @@ export async function updatePartner(id: string, input: unknown) {
     const issue = parsed.error.issues[0]
     return {
       success: false,
+      data: null,
       error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid partner data'
     }
   }
@@ -29,9 +34,7 @@ export async function updatePartner(id: string, input: unknown) {
       select: { id: true }
     })
 
-    if (!existing) {
-      return { success: false, error: 'Partner not found.' }
-    }
+    if (!existing) return { success: false, data: null, error: 'Partner not found.' }
 
     // `order` is managed by drag-to-reorder, so it isn't touched here
     const partner = await prisma.partner.update({
@@ -50,13 +53,13 @@ export async function updatePartner(id: string, input: unknown) {
       name: partner.name
     })
 
-    return { success: true, data: partner }
+    return { success: true, data: partner, error: null }
   } catch (error) {
     await createLog('error', 'Failed to update partner', {
       partnerId: id,
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    return { success: false, error: 'Failed to update partner. Please try again.' }
+    return { success: false, data: null, error: 'Failed to update partner. Please try again.' }
   }
 }

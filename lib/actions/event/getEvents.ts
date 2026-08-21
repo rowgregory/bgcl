@@ -15,13 +15,14 @@ export async function getEvents() {
       success: true,
       data: JSON.parse(
         JSON.stringify(events, (_, value) => (value?.constructor?.name === 'Decimal' ? Number(value) : value))
-      )
+      ),
+      error: null
     }
   } catch (error) {
     await createLog('error', 'Error fetching events', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    return { success: false, error: 'Failed to fetch events' }
+    return { success: false, data: null, error: 'Failed to fetch events' }
   }
 }

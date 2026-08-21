@@ -1,7 +1,6 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
 import { useFormContext } from 'react-hook-form'
 import type { PaymentMethod } from '@prisma/client'
 
@@ -28,10 +27,9 @@ type Props = {
   setStep: (step: number) => void
 }
 
-export function PublicDonateCheckoutForm({ campaignName, campaigns, savedCards, setStep }: Props) {
-  const { status } = useSession()
-  const isAuthed = status === 'authenticated'
+const MIN_DONATION = 5
 
+export function PublicDonateCheckoutForm({ campaignName, campaigns, savedCards, setStep }: Props) {
   const {
     watch,
     setValue,
@@ -46,9 +44,11 @@ export function PublicDonateCheckoutForm({ campaignName, campaigns, savedCards, 
 
   // ── Derived ───────────────────────────────────────────────────────────────
   const baseAmount = getDonateCheckoutAmount(values)
-  const rawFee = calculateStripeFees(baseAmount)
-  const processingFee = Math.round(rawFee * 100) / 100
-  const feesCovered = values.coverFees ? rawFee : 0
+
+  // One rounded figure drives the display, the charge, and the metadata, so
+  // what the donor is shown is exactly what they are billed
+  const processingFee = Math.round(calculateStripeFees(baseAmount) * 100) / 100
+  const feesCovered = values.coverFees ? processingFee : 0
   const finalAmount = Math.round((baseAmount + feesCovered) * 100)
   const finalAmountDisplay = (finalAmount / 100).toFixed(2)
 
@@ -57,6 +57,7 @@ export function PublicDonateCheckoutForm({ campaignName, campaigns, savedCards, 
 
   const hasName = Boolean(values.firstName || values.lastName)
   const hasAddress = Boolean(values.addressLine1)
+  const meetsMinimum = baseAmount >= MIN_DONATION
 
   const derivedAddress = hasAddress
     ? {
@@ -68,7 +69,7 @@ export function PublicDonateCheckoutForm({ campaignName, campaigns, savedCards, 
       }
     : null
 
-  const isValid = (usingSavedCard || cardComplete) && hasName && hasAddress
+  const isValid = (usingSavedCard || cardComplete) && hasName && hasAddress && meetsMinimum
 
   const setDefaultCard = useCallback(
     (value: string) => setValue('selectedCardId', value, { shouldDirty: true }),
@@ -115,7 +116,7 @@ export function PublicDonateCheckoutForm({ campaignName, campaigns, savedCards, 
             Payment Method
           </legend>
           <div className="space-y-6">
-            {isAuthed && (
+            {savedCards.length > 0 && (
               <SavedCardSelector
                 savedCards={savedCards}
                 selectedCardId={values.selectedCardId}
@@ -133,17 +134,27 @@ export function PublicDonateCheckoutForm({ campaignName, campaigns, savedCards, 
               />
             )}
 
-            {(!isAuthed || savedCards.length === 0 || values.useNewCard) && (
-              <CardElementField onChange={setCardComplete} />
-            )}
+            {(savedCards.length === 0 || values.useNewCard) && <CardElementField onChange={setCardComplete} />}
 
-            <SaveCardToggle />
+            {/* Nothing to save when paying with a card already on file */}
+            {!usingSavedCard && <SaveCardToggle />}
+
             <CoverFeesToggle processingFee={processingFee} />
           </div>
         </fieldset>
 
         {/* ── Error ── */}
         <FormError />
+
+        {!meetsMinimum && (
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">Donations start at ${MIN_DONATION}.</p>
+        )}
+
+        {meetsMinimum && (!hasName || !hasAddress) && (
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            Add your {!hasName ? 'name' : 'mailing address'} above to continue.
+          </p>
+        )}
 
         <SubmitButton
           isSubmitting={isSubmitting || isProcessing}

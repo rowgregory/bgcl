@@ -3,7 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 
-export const getNewsAndTeamMembers = async () => {
+export async function getNewsAndTeamMembers() {
   try {
     const [news, allTeamMembers] = await Promise.all([
       prisma.news.findMany({
@@ -19,7 +19,6 @@ export const getNewsAndTeamMembers = async () => {
       })
     ])
 
-    // Organize team members by their type
     const teamMembers = {
       honoree: allTeamMembers.filter((member) => member.role === 'honoree'),
       helping: allTeamMembers.filter((member) => member.role === 'helping'),
@@ -30,16 +29,14 @@ export const getNewsAndTeamMembers = async () => {
 
     return {
       success: true,
-      data: {
-        news,
-        teamMembers
-      }
+      data: { news, teamMembers },
+      error: null
     }
   } catch (error) {
     await createLog('error', 'Failed to fetch news and team members', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    throw error
+    return { success: false, data: null, error: 'Could not load news and team members.' }
   }
 }

@@ -2,6 +2,6 @@ import { EventsTransactionsClient } from '@/app/(authenticated)/admin/events/tra
 import { getEventsTransactions } from '@/lib/actions/_dashboard/getEventsTransactions'
 
 export default async function EventsTransactionsPage() {
-  const data = await getEventsTransactions()
-  return <EventsTransactionsClient data={data} />
+  const result = await getEventsTransactions()
+  return <EventsTransactionsClient data={result.data} />
 }

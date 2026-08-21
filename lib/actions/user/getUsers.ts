@@ -1,7 +1,11 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
-export const getUsers = async () => {
+export async function getUsers() {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     const users = await prisma.user.findMany({
       orderBy: { createdAt: 'desc' },
@@ -20,12 +24,12 @@ export const getUsers = async () => {
       }
     })
 
-    return users
+    return { success: true, data: users }
   } catch (error) {
     await createLog('error', 'Failed to fetch users', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    throw error
+    return { success: false, data: null, error: 'Could not load users' }
   }
 }

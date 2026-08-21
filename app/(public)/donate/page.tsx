@@ -9,16 +9,16 @@ export const dynamic = 'force-dynamic'
 
 export default async function DonatePage() {
   const [campaigns, name, address, paymentMethods, phone] = await Promise.all([
-    getCampaigns().catch(() => null),
-    getUserName().catch(() => null),
-    getUserAddress().catch(() => null),
-    getSavedPaymentMethods().catch(() => ({ data: [] })),
-    getPhoneNumber().catch(() => null)
+    getCampaigns(),
+    getUserName(),
+    getUserAddress(),
+    getSavedPaymentMethods(),
+    getPhoneNumber()
   ])
 
   return (
     <PublicDonateClient
-      campaigns={campaigns}
+      campaigns={campaigns.data}
       name={name?.data}
       address={address?.data}
       savedCards={paymentMethods?.data ?? []}

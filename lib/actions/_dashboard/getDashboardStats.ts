@@ -2,6 +2,18 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
+
+export interface RecentOrder {
+  id: string
+  createdAt: Date
+  type: string
+  status: string
+  totalAmount: number
+  customerName: string | null
+  user: { firstName: string | null; lastName: string | null; email: string } | null
+  event: { title: string } | null
+}
 
 export interface DashboardStats {
   totalRevenue: number
@@ -12,73 +24,96 @@ export interface DashboardStats {
   ticketsSold: number
   totalOrders: number
   totalFeesCovered: number
-  recentOrders: any[]
+  recentOrders: RecentOrder[]
 }
 
-export async function getDashboardStats(): Promise<DashboardStats> {
+export async function getDashboardStats(): Promise<{
+  success: boolean
+  data: DashboardStats | null
+  error: string | null
+}> {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59)
 
-    // 5 queries instead of 8 — confirmed orders fetched once, filtered in JS
-    const [confirmedOrders, totalSupporters, newSupportersThisMonth, ticketsSold, recentOrders] = await Promise.all([
-      prisma.order.findMany({
-        where: { status: 'CONFIRMED' },
-        select: { totalAmount: true, feesCovered: true, createdAt: true }
-      }),
+    const confirmed = { status: 'CONFIRMED' as const }
 
-      prisma.user.count({
-        where: { role: 'SUPPORTER' }
-      }),
+    // Summed in Postgres rather than in JS, so this stays flat as orders grow
+    const [allTime, thisMonth, lastMonth, totalSupporters, newSupportersThisMonth, ticketsSold, recentOrders] =
+      await Promise.all([
+        prisma.order.aggregate({
+          where: confirmed,
+          _sum: { totalAmount: true, feesCovered: true },
+          _count: true
+        }),
 
-      prisma.user.count({
-        where: { role: 'SUPPORTER', createdAt: { gte: startOfMonth } }
-      }),
+        prisma.order.aggregate({
+          where: { ...confirmed, createdAt: { gte: startOfMonth } },
+          _sum: { totalAmount: true }
+        }),
 
-      prisma.orderItem.aggregate({
-        where: { order: { status: 'CONFIRMED', type: 'TICKET_PURCHASE' } },
-        _sum: { quantity: true }
-      }),
+        prisma.order.aggregate({
+          where: { ...confirmed, createdAt: { gte: startOfLastMonth, lt: startOfMonth } },
+          _sum: { totalAmount: true }
+        }),
 
-      prisma.order.findMany({
-        take: 10,
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          createdAt: true,
-          type: true,
-          status: true,
-          totalAmount: true,
-          customerName: true,
-          user: { select: { firstName: true, lastName: true, email: true } },
-          event: { select: { title: true } }
-        }
-      })
-    ])
+        prisma.user.count({
+          where: { role: 'SUPPORTER' }
+        }),
 
-    const thisMonthOrders = confirmedOrders.filter((o) => new Date(o.createdAt) >= startOfMonth)
-    const lastMonthOrders = confirmedOrders.filter((o) => {
-      const d = new Date(o.createdAt)
-      return d >= startOfLastMonth && d <= endOfLastMonth
-    })
+        prisma.user.count({
+          where: { role: 'SUPPORTER', createdAt: { gte: startOfMonth } }
+        }),
+
+        prisma.orderItem.aggregate({
+          where: { order: { ...confirmed, type: 'TICKET_PURCHASE' } },
+          _sum: { quantity: true }
+        }),
+
+        prisma.order.findMany({
+          take: 10,
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            createdAt: true,
+            type: true,
+            status: true,
+            totalAmount: true,
+            customerName: true,
+            user: { select: { firstName: true, lastName: true, email: true } },
+            event: { select: { title: true } }
+          }
+        })
+      ])
 
     return {
-      totalRevenue: confirmedOrders.reduce((s, o) => s + Number(o.totalAmount), 0),
-      revenueThisMonth: thisMonthOrders.reduce((s, o) => s + Number(o.totalAmount), 0),
-      revenueLastMonth: lastMonthOrders.reduce((s, o) => s + Number(o.totalAmount), 0),
-      totalSupporters,
-      newSupportersThisMonth,
-      ticketsSold: ticketsSold._sum.quantity ?? 0,
-      totalOrders: confirmedOrders.length,
-      totalFeesCovered: confirmedOrders.reduce((s, o) => s + Number(o.feesCovered), 0),
-      recentOrders
+      success: true,
+      error: null,
+      data: {
+        totalRevenue: Number(allTime._sum.totalAmount ?? 0),
+        revenueThisMonth: Number(thisMonth._sum.totalAmount ?? 0),
+        revenueLastMonth: Number(lastMonth._sum.totalAmount ?? 0),
+        totalFeesCovered: Number(allTime._sum.feesCovered ?? 0),
+        totalOrders: allTime._count,
+        totalSupporters,
+        newSupportersThisMonth,
+        ticketsSold: ticketsSold._sum.quantity ?? 0,
+        recentOrders: recentOrders.map((order) => ({
+          ...order,
+          totalAmount: Number(order.totalAmount)
+        }))
+      }
     }
   } catch (error) {
     await createLog('error', 'Failed to fetch dashboard stats', {
+      userId: auth.user.id,
       error: error instanceof Error ? error.message : 'Unknown error'
     })
-    throw error
+
+    return { success: false, data: null, error: 'Could not load dashboard stats.' }
   }
 }

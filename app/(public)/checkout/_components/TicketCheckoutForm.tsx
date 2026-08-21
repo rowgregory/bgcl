@@ -1,8 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { useSession } from 'next-auth/react'
 import { Controller, useFormContext } from 'react-hook-form'
 import type { PaymentMethod } from '@prisma/client'
 import { calculateStripeFees } from '@/lib/utils/calculateStripeFees'
@@ -16,7 +15,7 @@ import FormError from '@/components/_shared/FormError'
 import { CheckoutStep3UserInfo } from '@/components/_shared/CheckoutStep3UserInfo'
 import CustomSwitch from '@/components/_shared/CustomSwitch'
 import { SubmitButton } from '@/components/ui/buttons/SubmitButton'
-import { useCartStore } from '@/stores/useCartStore'
+import { useCartStore, useCartHasHydrated } from '@/stores/useCartStore'
 import { useConfettiStore } from '@/stores/useConfettiStore'
 import { TicketCheckoutSalesWindowNotice } from './TicketCheckoutSalesWindowNotice'
 import { TicketCheckoutFormInput } from '@/lib/validations/ticket-checkout.validation'
@@ -28,8 +27,7 @@ type Props = {
 
 export function TicketCheckoutForm({ savedCards, setStep }: Props) {
   const items = useCartStore((s) => s.items)
-  const { status } = useSession()
-  const isAuthed = status === 'authenticated'
+  const hasHydrated = useCartHasHydrated()
 
   const {
     control,
@@ -48,6 +46,10 @@ export function TicketCheckoutForm({ savedCards, setStep }: Props) {
   const firstName = watch('firstName')
   const lastName = watch('lastName')
   const addressLine1 = watch('addressLine1')
+  const addressLine2 = watch('addressLine2')
+  const city = watch('city')
+  const state = watch('state')
+  const zipPostalCode = watch('zipPostalCode')
 
   const setDefaultCard = useCallback(
     (value: string) => setValue('selectedCardId', value, { shouldDirty: true }),
@@ -75,31 +77,53 @@ export function TicketCheckoutForm({ savedCards, setStep }: Props) {
 
   const onSubmit = handleSubmit(submitCheckout)
 
-  const salesStartDate = items[0]?.ticketSalesStartDate
-  const salesEndDate = items[0]?.ticketSalesEndDate
+  // The widest window across everything in the cart, not just the first item
+  const { salesStartDate, salesEndDate } = useMemo(() => {
+    const starts = items
+      .map((i) => i.ticketSalesStartDate)
+      .filter(Boolean)
+      .map((d) => new Date(d!).getTime())
+    const ends = items
+      .map((i) => i.ticketSalesEndDate)
+      .filter(Boolean)
+      .map((d) => new Date(d!).getTime())
 
-  const [salesStarted, setSalesStarted] = useState(() => !salesStartDate || new Date(salesStartDate) <= new Date())
-  const salesEnded = Boolean(salesEndDate && new Date(salesEndDate) < new Date())
+    return {
+      salesStartDate: starts.length ? new Date(Math.max(...starts)) : null,
+      salesEndDate: ends.length ? new Date(Math.min(...ends)) : null
+    }
+  }, [items])
+
+  // Re-evaluated on a tick rather than frozen at first render, which would be
+  // wrong anyway: the cart is empty until the persisted store rehydrates
+  const [now, setNow] = useState(() => Date.now())
+
+  const salesStarted = !salesStartDate || salesStartDate.getTime() <= now
+  const salesEnded = Boolean(salesEndDate && salesEndDate.getTime() < now)
+
+  useEffect(() => {
+    if (!salesStartDate && !salesEndDate) return
+
+    const id = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(id)
+  }, [salesStartDate, salesEndDate])
 
   const show = useConfettiStore((s) => s.show)
   const hide = useConfettiStore((s) => s.hide)
+  const [celebrated, setCelebrated] = useState(false)
 
   useEffect(() => {
-    if (salesStarted || !salesStartDate) return
+    if (celebrated || !salesStartDate || !salesStarted || salesEnded) return
 
-    const id = setInterval(() => {
-      if (new Date(salesStartDate) <= new Date()) {
-        show()
-        setTimeout(() => hide(), 2000)
-        setSalesStarted(true)
-        clearInterval(id)
-      }
-    }, 1000)
+    setCelebrated(true)
+    show()
 
-    return () => clearInterval(id)
-  }, [hide, salesStartDate, salesStarted, show])
+    const id = setTimeout(() => hide(), 2000)
+    return () => clearTimeout(id)
+  }, [celebrated, hide, salesEnded, salesStartDate, salesStarted, show])
 
-  const canPay = salesStarted && !salesEnded && hasName && hasAddress
+  const isEmpty = hasHydrated && items.length === 0
+  const canPay = hasHydrated && !isEmpty && salesStarted && !salesEnded && hasName && hasAddress
   const isValid = canPay && (usingSavedCard || cardComplete)
 
   return (
@@ -113,17 +137,7 @@ export function TicketCheckoutForm({ savedCards, setStep }: Props) {
         <form onSubmit={onSubmit} noValidate className="flex flex-col gap-y-12">
           {/* ── Contact ── */}
           <CheckoutStep3UserInfo
-            address={
-              hasAddress
-                ? {
-                    addressLine1: watch('addressLine1'),
-                    addressLine2: watch('addressLine2'),
-                    city: watch('city'),
-                    state: watch('state'),
-                    zipPostalCode: watch('zipPostalCode')
-                  }
-                : null
-            }
+            address={hasAddress ? { addressLine1, addressLine2, city, state, zipPostalCode } : null}
             name={fullName}
             setStep={setStep}
           />
@@ -149,7 +163,7 @@ export function TicketCheckoutForm({ savedCards, setStep }: Props) {
               </legend>
               <div className="space-y-6">
                 {/* ── Saved cards ── */}
-                {isAuthed && (
+                {savedCards.length > 0 && (
                   <SavedCardSelector
                     savedCards={savedCards}
                     selectedCardId={selectedCardId}
@@ -166,9 +180,7 @@ export function TicketCheckoutForm({ savedCards, setStep }: Props) {
                   />
                 )}
 
-                {(!isAuthed || savedCards.length === 0 || useNewCard) && (
-                  <CardElementField onChange={setCardComplete} />
-                )}
+                {(savedCards.length === 0 || useNewCard) && <CardElementField onChange={setCardComplete} />}
 
                 {/* ── Error ── */}
                 <FormError />
@@ -182,8 +194,21 @@ export function TicketCheckoutForm({ savedCards, setStep }: Props) {
             </fieldset>
           )}
 
+          {/* Why the payment section is hidden */}
+          {hasHydrated && isEmpty && (
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              Your cart is empty. Add tickets before checking out.
+            </p>
+          )}
+
+          {!isEmpty && salesStarted && !salesEnded && (!hasName || !hasAddress) && (
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              Add your {!hasName ? 'name' : 'mailing address'} above to continue to payment.
+            </p>
+          )}
+
           {/* Sales window notice */}
-          {(!salesStarted || salesEnded) && (
+          {!isEmpty && (!salesStarted || salesEnded) && (
             <TicketCheckoutSalesWindowNotice
               salesEndDate={salesEndDate}
               salesEnded={salesEnded}

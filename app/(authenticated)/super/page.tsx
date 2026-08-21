@@ -5,6 +5,5 @@ export const dynamic = 'force-dynamic'
 
 export default async function SuperDashboardPage() {
   const result = await getSuperDashboardData()
-
   return <SuperDashboardClient logs={result.data.logs} />
 }

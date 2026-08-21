@@ -1,18 +1,18 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 
-export const getResources = async () => {
+export async function getResources() {
   try {
     const resources = await prisma.resource.findMany({
       orderBy: { order: 'asc' }
     })
 
-    return resources
+    return { success: true, data: resources, error: null }
   } catch (error) {
     await createLog('error', 'Failed to fetch resources', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    throw error
+    return { success: false, data: null, error: 'Could not load resources' }
   }
 }

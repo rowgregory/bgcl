@@ -4,8 +4,12 @@ import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { ContactReadStatus } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function updateContactSubmissionStatus(id: string, status: ContactReadStatus) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     const existingContactSubmission = await prisma.contactSubmission.findUnique({
       where: { id }
@@ -15,7 +19,7 @@ export async function updateContactSubmissionStatus(id: string, status: ContactR
       await createLog('warn', 'Contact submission not found for status update', {
         contactSubmissionId: id
       })
-      return { success: false, error: 'Contact submission not found', status: 404 }
+      return { success: false, data: null, error: 'Contact submission not found', status: 404 }
     }
 
     const contactSubmission = await prisma.contactSubmission.update({
@@ -40,6 +44,7 @@ export async function updateContactSubmissionStatus(id: string, status: ContactR
 
     return {
       success: false,
+      data: null,
       error: 'Failed to update contact submission status. Please try again.'
     }
   }

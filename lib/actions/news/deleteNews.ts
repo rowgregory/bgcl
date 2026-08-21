@@ -3,20 +3,24 @@
 import prisma from '@/prisma/client'
 import { revalidatePath } from 'next/cache'
 import { createLog } from '../log/createLog'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function deleteNews(id: string) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     const news = await prisma.news.findUnique({
       where: { id },
       select: { id: true, title: true }
     })
 
-    if (!news) {
+    if (!news)
       return {
         success: false,
+        data: null,
         error: 'News not found'
       }
-    }
 
     await prisma.news.delete({
       where: { id }
@@ -38,7 +42,8 @@ export async function deleteNews(id: string) {
 
     return {
       success: false,
-      error: 'Failed to delete news. Please try again.'
+      data: null,
+      error: 'Could not delete news'
     }
   }
 }

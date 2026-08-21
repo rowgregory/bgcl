@@ -1,21 +1,14 @@
 import prisma from '@/prisma/client'
-import { auth } from '../../auth/auth'
 import { createLog } from '../log/createLog'
+import { requireUser } from '@/lib/utils/requireAdmin'
 
 export const getUserAddress = async () => {
+  const auth = await requireUser()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
-    const session = await auth()
-
-    if (!session?.user?.id) {
-      return {
-        success: false,
-        error: 'Unauthorized',
-        data: null
-      }
-    }
-
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: auth.user.id },
       select: { address: true }
     })
 

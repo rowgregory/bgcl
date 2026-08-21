@@ -1,20 +1,17 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { auth } from '../../auth/auth'
 import { createLog } from '../log/createLog'
+import { requireUser } from '@/lib/utils/requireAdmin'
 
 export async function getTicketOrders() {
-  const session = await auth()
-
-  if (!session?.user) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  const auth = await requireUser()
+  if (!auth.ok) return { success: false, data: null, error: auth.error }
 
   try {
     const orders = await prisma.order.findMany({
       where: {
-        OR: [{ userId: session.user.id }, { customerEmail: session.user.email }],
+        OR: [{ userId: auth.user.id }, { customerEmail: auth.user.email }],
         type: 'TICKET_PURCHASE',
         status: 'CONFIRMED'
       },
@@ -41,13 +38,14 @@ export async function getTicketOrders() {
         JSON.stringify(orders, (_, value) =>
           typeof value === 'bigint' ? value.toString() : value?.constructor?.name === 'Decimal' ? Number(value) : value
         )
-      )
+      ),
+      error: null
     }
   } catch (error) {
     await createLog('error', 'Failed to fetch ticket orders', {
-      userId: session.user.id,
+      userId: auth.user.id,
       error: error instanceof Error ? error.message : 'Unknown error'
     })
-    return { success: false, error: 'Failed to fetch ticket orders' }
+    return { success: false, data: null, error: 'Could not load ticket orders' }
   }
 }

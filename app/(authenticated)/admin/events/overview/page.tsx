@@ -2,6 +2,6 @@ import { EventsOverviewClient } from '@/app/(authenticated)/admin/events/overvie
 import { getEventsOverview } from '@/lib/actions/_dashboard/getEventsOverview'
 
 export default async function EventsOverviewPage() {
-  const data = await getEventsOverview()
-  return <EventsOverviewClient data={data} />
+  const result = await getEventsOverview()
+  return <EventsOverviewClient data={result.data} />
 }

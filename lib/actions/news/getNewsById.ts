@@ -1,7 +1,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 
-export const getNewsById = async (id: string) => {
+export async function getNewsById(id: string) {
   try {
     const news = await prisma.news.findUnique({
       where: { id }
@@ -14,12 +14,12 @@ export const getNewsById = async (id: string) => {
       return null
     }
 
-    return { news }
+    return { success: true, data: news, error: null }
   } catch (error) {
     await createLog('error', 'Failed to fetch news', {
       error: error instanceof Error ? error.message : 'Unknown error',
       newsId: id
     })
-    return error
+    return { success: false, data: null, error: 'Could not load news' }
   }
 }

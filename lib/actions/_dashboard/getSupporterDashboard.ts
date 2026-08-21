@@ -1,19 +1,16 @@
 import prisma from '@/prisma/client'
-import { auth } from '../../auth/auth'
 import { createLog } from '../log/createLog'
+import { requireUser } from '@/lib/utils/requireAdmin'
 
 export async function getSupporterDashboard() {
+  const auth = await requireUser()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
-    const session = await auth()
-
-    if (!session?.user?.id) {
-      throw new Error('Not authenticated')
-    }
-
     // Get all orders for this user
     const orders = await prisma.order.findMany({
       where: {
-        OR: [{ userId: session.user.id }, { customerEmail: session.user.email }]
+        OR: [{ userId: auth.user.id }, { customerEmail: auth.user.email }]
       },
       include: {
         orderItems: {
@@ -150,7 +147,7 @@ export async function getSupporterDashboard() {
 
     // Get user's join date
     const userCreatedAt = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: auth.user.id },
       select: { createdAt: true }
     })
 
@@ -166,88 +163,92 @@ export async function getSupporterDashboard() {
     const totalSpend = totalDonated + totalTicketSpend
 
     return {
-      donationOrders: donationOrders.map((o) => ({
-        ...o,
-        totalAmount: Number(o.totalAmount),
-        feesCovered: Number(o.feesCovered)
-      })),
-      ticketOrders: ticketOrders.slice(0, 3).map((o) => ({
-        ...o,
-        totalAmount: Number(o.totalAmount),
-        feesCovered: Number(o.feesCovered),
-        orderItems: o.orderItems.map((item) => ({
-          ...item,
-          pricePerUnit: item.pricePerUnit ? Number(item.pricePerUnit) : null,
-          totalPrice: item.totalPrice ? Number(item.totalPrice) : null
-        }))
-      })),
-      totalDonated: Number(totalDonated),
-      monthlyCount,
-      yearlyCount,
-      monthlyAmount: Number(monthlyAmount),
-      yearlyAmount: Number(yearlyAmount),
-      upcomingEvents,
-      totalTickets,
-      recentDonations: recentDonations.map((o) => ({
-        ...o,
-        totalAmount: Number(o.totalAmount),
-        feesCovered: Number(o.feesCovered)
-      })),
-      joinYear,
-      stats: [
-        {
-          label: 'Total Donated',
-          value: `$${totalDonated.toFixed(2)}`,
-          subtext: `${donationOrders.length} donations`,
-          icon: 'Heart',
-          color: 'text-red-400',
-          bg: 'bg-red-500/10',
-          border: 'border-red-500/30'
-        },
-        {
-          label: 'Monthly Support',
-          value: `$${monthlyAmount.toFixed(2)}`,
-          subtext:
-            activeMonthly > 0 && cancelledMonthly > 0
-              ? `${activeMonthly} active, ${cancelledMonthly} cancelled`
-              : activeMonthly > 0
-                ? `${activeMonthly} active`
-                : cancelledMonthly > 0
-                  ? `${cancelledMonthly} cancelled`
-                  : '0 plans',
-          icon: 'Zap',
-          color: 'text-blue-400',
-          bg: 'bg-blue-500/10',
-          border: 'border-blue-500/30'
-        },
-        {
-          label: 'Yearly Support',
-          value: yearlyCount > 0 ? `$${yearlyAmount.toFixed(2)}` : '$0',
-          subtext: `${yearlyCount} active`,
-          icon: 'Zap',
-          color: 'text-blue-400',
-          bg: 'bg-blue-500/10',
-          border: 'border-blue-500/30'
-        },
-        {
-          label: 'Event Tickets',
-          value: `$${totalTicketSpend.toFixed(2)}`,
-          subtext: `${totalTicketCount} ticket${totalTicketCount !== 1 ? 's' : ''} purchased`,
-          icon: 'Ticket',
-          color: 'text-green-400',
-          bg: 'bg-green-500/10',
-          border: 'border-green-500/30'
-        },
-        {
-          label: 'Total Spent',
-          value: `$${totalSpend.toFixed(2)}`,
-          subtext: `donations & tickets`,
-          icon: 'DollarSign',
-          color: 'text-sky-400',
-          bg: 'bg-sky-500/10',
-          border: 'border-sky-500/30'
-        }
-      ]
+      success: true,
+      data: {
+        donationOrders: donationOrders.map((o) => ({
+          ...o,
+          totalAmount: Number(o.totalAmount),
+          feesCovered: Number(o.feesCovered)
+        })),
+        ticketOrders: ticketOrders.slice(0, 3).map((o) => ({
+          ...o,
+          totalAmount: Number(o.totalAmount),
+          feesCovered: Number(o.feesCovered),
+          orderItems: o.orderItems.map((item) => ({
+            ...item,
+            pricePerUnit: item.pricePerUnit ? Number(item.pricePerUnit) : null,
+            totalPrice: item.totalPrice ? Number(item.totalPrice) : null
+          }))
+        })),
+        totalDonated: Number(totalDonated),
+        monthlyCount,
+        yearlyCount,
+        monthlyAmount: Number(monthlyAmount),
+        yearlyAmount: Number(yearlyAmount),
+        upcomingEvents,
+        totalTickets,
+        recentDonations: recentDonations.map((o) => ({
+          ...o,
+          totalAmount: Number(o.totalAmount),
+          feesCovered: Number(o.feesCovered)
+        })),
+        joinYear,
+        stats: [
+          {
+            label: 'Total Donated',
+            value: `$${totalDonated.toFixed(2)}`,
+            subtext: `${donationOrders.length} donations`,
+            icon: 'Heart',
+            color: 'text-red-400',
+            bg: 'bg-red-500/10',
+            border: 'border-red-500/30'
+          },
+          {
+            label: 'Monthly Support',
+            value: `$${monthlyAmount.toFixed(2)}`,
+            subtext:
+              activeMonthly > 0 && cancelledMonthly > 0
+                ? `${activeMonthly} active, ${cancelledMonthly} cancelled`
+                : activeMonthly > 0
+                  ? `${activeMonthly} active`
+                  : cancelledMonthly > 0
+                    ? `${cancelledMonthly} cancelled`
+                    : '0 plans',
+            icon: 'Zap',
+            color: 'text-blue-400',
+            bg: 'bg-blue-500/10',
+            border: 'border-blue-500/30'
+          },
+          {
+            label: 'Yearly Support',
+            value: yearlyCount > 0 ? `$${yearlyAmount.toFixed(2)}` : '$0',
+            subtext: `${yearlyCount} active`,
+            icon: 'Zap',
+            color: 'text-blue-400',
+            bg: 'bg-blue-500/10',
+            border: 'border-blue-500/30'
+          },
+          {
+            label: 'Event Tickets',
+            value: `$${totalTicketSpend.toFixed(2)}`,
+            subtext: `${totalTicketCount} ticket${totalTicketCount !== 1 ? 's' : ''} purchased`,
+            icon: 'Ticket',
+            color: 'text-green-400',
+            bg: 'bg-green-500/10',
+            border: 'border-green-500/30'
+          },
+          {
+            label: 'Total Spent',
+            value: `$${totalSpend.toFixed(2)}`,
+            subtext: `donations & tickets`,
+            icon: 'DollarSign',
+            color: 'text-sky-400',
+            bg: 'bg-sky-500/10',
+            border: 'border-sky-500/30'
+          }
+        ]
+      },
+      error: null
     }
   } catch (error) {
     await createLog('error', 'Failed to fetch supporter dashboard data', {
@@ -256,7 +257,8 @@ export async function getSupporterDashboard() {
 
     return {
       success: false,
-      error: 'Failed to fetch supporter dashboard data. Please try again.'
+      data: null,
+      error: 'Could not load supporter dashboard data.'
     }
   }
 }

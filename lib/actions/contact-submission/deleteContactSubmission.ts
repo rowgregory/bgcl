@@ -3,8 +3,12 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function deleteContactSubmission(id: string) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     const contactSubmission = await prisma.contactSubmission.findUnique({
       where: { id },
@@ -14,6 +18,7 @@ export async function deleteContactSubmission(id: string) {
     if (!contactSubmission) {
       return {
         success: false,
+        data: null,
         error: 'Contact submission not found'
       }
     }
@@ -40,6 +45,7 @@ export async function deleteContactSubmission(id: string) {
 
     return {
       success: false,
+      data: null,
       error: 'Failed to delete contact submission. Please try again.'
     }
   }

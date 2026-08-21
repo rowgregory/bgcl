@@ -2,6 +2,6 @@ import NewsletterEmailsClient from '@/app/(authenticated)/admin/newsletter-email
 import { getSubscribers } from '@/lib/actions/subscriber/getSubscribers'
 
 export default async function NewsletterEmailsPage() {
-  const subscribers = await getSubscribers()
-  return <NewsletterEmailsClient subscribers={subscribers} />
+  const result = await getSubscribers()
+  return <NewsletterEmailsClient subscribers={result.data} />
 }

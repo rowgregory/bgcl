@@ -2,6 +2,6 @@ import { getJobApplications } from '@/lib/actions/job-application/getJobApplicat
 import AdminJobApplicationsClient from './AdminJobApplicationsClient'
 
 export default async function AdminJobApplicationsPage() {
-  const jobApplications = await getJobApplications()
-  return <AdminJobApplicationsClient jobApplications={jobApplications} />
+  const result = await getJobApplications()
+  return <AdminJobApplicationsClient jobApplications={result.data} />
 }

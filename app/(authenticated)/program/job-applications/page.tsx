@@ -3,5 +3,5 @@ import { getJobApplications } from '@/lib/actions/job-application/getJobApplicat
 
 export default async function ProgramJobApplicationsPage() {
   const result = await getJobApplications()
-  return <JobApplicationsClient jobApplications={result} />
+  return <JobApplicationsClient jobApplications={result.data} />
 }

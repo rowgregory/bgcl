@@ -44,9 +44,9 @@ export default function AdminJobApplicationsClient({
   const handleExportApplications = async () => {
     setLoading(true)
     try {
-      const buffer = await exportApplicationsAction()
+      const reuslt = await exportApplicationsAction()
 
-      const blob = new Blob([buffer], { type: 'application/pdf' })
+      const blob = new Blob([reuslt.data], { type: 'application/pdf' })
       const url = window.URL.createObjectURL(blob)
 
       const now = new Date()

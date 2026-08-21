@@ -4,8 +4,12 @@ import prisma from '@/prisma/client'
 import { revalidatePath } from 'next/cache'
 import { createLog } from '../log/createLog'
 import { userSchema } from '@/lib/validations/user.validation'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function createUser(input: unknown) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   const parsed = userSchema.safeParse(input)
 
   if (!parsed.success) {

@@ -5,8 +5,12 @@ import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
 import { programSchema, PROGRAM_NULLABLE_FIELDS } from '@/lib/validations/program.validation'
 import { emptyToNull } from '@/lib/utils/emptyToNull'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function createProgram(input: unknown) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   const parsed = programSchema.safeParse(input)
 
   if (!parsed.success) {

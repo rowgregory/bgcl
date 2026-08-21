@@ -1,27 +1,21 @@
 'use server'
 
-import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
+import { requireUser } from '@/lib/utils/requireAdmin'
 
 export async function getUserProfile() {
+  const auth = await requireUser()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
-    const session = await auth()
-
-    if (!session?.user?.id) {
-      await createLog('warn', 'Unauthorized profile access attempt', {
-        session
-      })
-      return { success: false, error: 'Unauthorized', status: 401 }
-    }
-
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id }
+      where: { id: auth.user.id }
     })
 
     if (!user) {
       await createLog('warn', 'User profile not found', {
-        userId: session.user.id
+        userId: auth.user.id
       })
       return { success: false, error: 'Profile not found', status: 404 }
     }

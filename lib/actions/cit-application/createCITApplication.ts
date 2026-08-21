@@ -1,8 +1,6 @@
 'use server'
 
-import { ActionResult } from '@/types/common.types'
 import { CreateCITApplicationInput } from '@/types/entities/cit-application.types'
-import { CITApplication } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { isValidEmail } from '../../utils/regex'
 import prisma from '@/prisma/client'
@@ -19,7 +17,7 @@ import { citApplicationConfirmationEmail } from '../../email-templates/cit-appli
  * rather than guarding on a session. `status` defaults to PENDING at the
  * schema level.
  */
-export async function createCITApplication(input: CreateCITApplicationInput): Promise<ActionResult<CITApplication>> {
+export async function createCITApplication(input: CreateCITApplicationInput) {
   try {
     // ── Validation ────────────────────────────────────────────────────────────
     const requiredStrings: [keyof CreateCITApplicationInput, string][] = [
@@ -38,7 +36,7 @@ export async function createCITApplication(input: CreateCITApplicationInput): Pr
 
     for (const [field, value] of requiredStrings) {
       if (!value || !value.trim()) {
-        return { success: false, error: `Missing required field: ${field}` }
+        return { success: false, data: null, error: `Missing required field: ${field}` }
       }
     }
 
@@ -114,7 +112,7 @@ export async function createCITApplication(input: CreateCITApplicationInput): Pr
     revalidatePath(CIT_APPLICATION_PATH)
     revalidatePath(CIT_ADMIN_PATH)
 
-    return { success: true, data: application }
+    return { success: true, data: application, error: null }
   } catch (error) {
     await createLog('ERROR', 'Failed to create CIT application', {
       error: error instanceof Error ? error.message : String(error)

@@ -4,5 +4,5 @@ import { getPageBySlugClient } from '@/lib/actions/page/getPageBySlugClient'
 
 export default async function PublicCampaignsPage() {
   const [campaigns, pageData] = await Promise.all([getCampaigns(true), getPageBySlugClient('campaign')])
-  return <CampaignsClient campaigns={campaigns} pageData={pageData} />
+  return <CampaignsClient campaigns={campaigns.data} pageData={pageData} />
 }

@@ -4,8 +4,12 @@ import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
 import { ticketSchema } from '@/lib/validations/ticket.validation'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function createTicket(eventId: string, input: unknown) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   if (!eventId) {
     return { success: false, error: 'Event ID is required.' }
   }

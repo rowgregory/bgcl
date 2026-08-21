@@ -1,14 +1,12 @@
 import prisma from '@/prisma/client'
-import { auth } from '../../auth/auth'
-import { serializeOrder } from '../../utils/serialize'
+import { requireSuperuser } from '@/lib/utils/requireAdmin'
+import { createLog } from '../log/createLog'
 
 export async function getSuperDashboardData() {
-  try {
-    const session = await auth()
-    if (session?.user?.role !== 'SUPERUSER') {
-      return { success: false, data: null, error: 'Unauthorized' }
-    }
+  const auth = await requireSuperuser()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
 
+  try {
     const [users, logs] = await Promise.all([
       prisma.user.findMany({
         orderBy: { createdAt: 'desc' },
@@ -61,7 +59,12 @@ export async function getSuperDashboardData() {
           ...u,
           createdAt: u.createdAt.toISOString(),
           lastLoginAt: u.lastLoginAt?.toISOString() ?? null,
-          orders: u.orders.map(serializeOrder)
+          orders: (order: any) => ({
+            ...order,
+            totalAmount: Number(order.totalAmount),
+            feesCovered: order.feesCovered != null ? Number(order.feesCovered) : null,
+            createdAt: order.createdAt.toISOString()
+          })
         })),
         logs: logs.map((l) => ({
           ...l,
@@ -71,10 +74,14 @@ export async function getSuperDashboardData() {
       error: null
     }
   } catch (error) {
+    await createLog('error', 'Error fetching super dashboard data', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+
     return {
       success: false,
       data: null,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: 'Could not load super dashboard data.'
     }
   }
 }

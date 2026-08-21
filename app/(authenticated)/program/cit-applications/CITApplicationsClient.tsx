@@ -57,9 +57,9 @@ export function CITApplicationsClient({ applications }: AdminCITApplicationsClie
   const handleExportApplications = async () => {
     setLoading(true)
     try {
-      const buffer = await exportCITApplicationsAction()
+      const result = await exportCITApplicationsAction()
 
-      const blob = new Blob([buffer], { type: 'application/pdf' })
+      const blob = new Blob([result.data], { type: 'application/pdf' })
       const url = window.URL.createObjectURL(blob)
 
       const now = new Date()

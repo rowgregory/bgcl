@@ -5,16 +5,21 @@ import { revalidatePath } from 'next/cache'
 import { createLog } from '../log/createLog'
 import { eventSchema } from '@/lib/validations/event.validation'
 import { emptyToNull } from '@/lib/utils/emptyToNull'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 const toDate = (v: string | null | undefined) => (v ? new Date(v) : null)
 
 export async function createEvent(input: unknown) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   const parsed = eventSchema.safeParse(input)
 
   if (!parsed.success) {
     const issue = parsed.error.issues[0]
     return {
       success: false,
+      data: null,
       error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid event data'
     }
   }
@@ -74,7 +79,7 @@ export async function createEvent(input: unknown) {
       type: event.type
     })
 
-    return { success: true, data: { id: event.id } }
+    return { success: true, data: { id: event.id }, error: null }
   } catch (error) {
     await createLog('error', 'Failed to create event', {
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -83,7 +88,8 @@ export async function createEvent(input: unknown) {
 
     return {
       success: false,
-      error: 'Failed to create event. Please try again.'
+      data: null,
+      error: 'Could not create event'
     }
   }
 }

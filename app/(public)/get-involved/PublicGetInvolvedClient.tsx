@@ -69,7 +69,6 @@ export default function PublicGetInvolvedClient({ pageData }) {
 
   const handleNext = async () => {
     const valid = await trigger(STEP_FIELDS[currentStep])
-    console.log('CURRENT STEP: ', currentStep)
     if (!valid) return
 
     if (currentStep < FORM_STEPS.length) {

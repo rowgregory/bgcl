@@ -1,6 +1,6 @@
-'use server'
-
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 import prisma from '@/prisma/client'
+import { createLog } from '../log/createLog'
 
 export interface DonationStats {
   total: number
@@ -16,7 +16,10 @@ export interface DonationStats {
   annualArr: number
 }
 
-export async function getDonationStats() {
+export async function getDonationStats(): Promise<{ success: boolean; data: DonationStats | null; error: string }> {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     const orders = (
       await prisma.order.findMany({
@@ -147,20 +150,24 @@ export async function getDonationStats() {
     campaigns.sort((a, b) => b.totalAmount - a.totalAmount)
 
     return {
-      ...stats,
-      failedOrders: orders?.filter((order) => order.status === 'FAILED'),
-      annualArr,
-      trendData,
-      retentionData,
-      campaigns,
-      oneTimeTotal: orders
-        .filter((item) => item.type === 'ONE_TIME_DONATION')
-        .reduce((acc, item) => acc + item.totalAmount, 0)
-    } as DonationStats & { annualArr: number }
-  } catch {
-    return {
-      success: false,
-      error: 'Failed to fetch donation stats'
+      success: true,
+      data: {
+        ...stats,
+        failedOrders: orders?.filter((order) => order.status === 'FAILED'),
+        annualArr,
+        trendData,
+        retentionData,
+        campaigns,
+        oneTimeTotal: orders
+          .filter((item) => item.type === 'ONE_TIME_DONATION')
+          .reduce((acc, item) => acc + item.totalAmount, 0)
+      } as DonationStats & { annualArr: number },
+      error: null
     }
+  } catch (error) {
+    await createLog('error', 'Failed to fetch donation stats', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+    return { success: false, data: null, error: 'Could not load donation stats' }
   }
 }

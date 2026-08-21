@@ -4,22 +4,30 @@ import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
 import { Partner } from '@prisma/client'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function reorderPartners(tier: string, partners: Partner[]) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     // Validation
     if (!partners || !Array.isArray(partners) || partners.length === 0) {
-      throw new Error('Invalid partners data')
+      return { success: false, data: null, error: 'Invalid partners data' }
     }
 
     if (!tier || typeof tier !== 'string') {
-      throw new Error('Invalid tier')
+      return { success: false, data: null, error: 'Invalid tier' }
     }
 
     const isValidPartners = partners.every((member) => member.id && member.tier === tier)
 
     if (!isValidPartners) {
-      throw new Error(`Invalid partner data structure - missing id or tier doesn't match ${tier}`)
+      return {
+        success: false,
+        data: null,
+        error: `Invalid partner data structure - missing id or tier doesn't match ${tier}`
+      }
     }
 
     // Recalculate display order for tier group starting from 1
@@ -39,7 +47,8 @@ export async function reorderPartners(tier: string, partners: Partner[]) {
         tier,
         count: updatedPartners.length,
         saved: savedPartners
-      }
+      },
+      error: null
     }
   } catch (error) {
     await createLog('error', 'Failed to reorder partners', {
@@ -48,6 +57,7 @@ export async function reorderPartners(tier: string, partners: Partner[]) {
 
     return {
       success: false,
+      data: null,
       error: 'Failed to reorder partners. Please try again.'
     }
   }

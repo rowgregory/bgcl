@@ -5,7 +5,6 @@ import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import type { Stripe, StripeElements } from '@stripe/stripe-js'
 import { useSession } from 'next-auth/react'
 import { useFormContext } from 'react-hook-form'
-
 import { createPaymentIntentForCheckout } from '../actions/stripe/createPaymentIntentForCheckout'
 import { createSetupIntentForSubscription } from '../actions/stripe/createSetupIntentForSubscription'
 import { createSubscriptionAfterSetup } from '../actions/stripe/createSubscriptionAfterSetup'
@@ -20,6 +19,20 @@ type Args = {
   feesCovered: number
   usingSavedCard: boolean
   fullName: string
+}
+
+type SharedArgs = {
+  stripe: Stripe
+  elements: StripeElements
+  userEmail: string
+  values: DonationFormValues
+  finalAmount: number
+  feesCovered: number
+  usingSavedCard: boolean
+  fullName: string
+  addressParams: { address: Record<string, string | null | undefined> }
+  pusherCallbacks: PusherCallbacks
+  fail: (message: string) => void
 }
 
 type PusherCallbacks = readonly [(value: string) => void, (value: string) => void, () => void]
@@ -102,25 +115,9 @@ export function useDonationSubmit({ finalAmount, feesCovered, usingSavedCard, fu
   return { submitDonation, isProcessing }
 }
 
-type SharedArgs = {
-  stripe: Stripe
-  elements: StripeElements
-  userId?: string
-  userEmail: string
-  values: DonationFormValues
-  finalAmount: number
-  feesCovered: number
-  usingSavedCard: boolean
-  fullName: string
-  addressParams: { address: Record<string, string | null | undefined> }
-  pusherCallbacks: PusherCallbacks
-  fail: (message: string) => void
-}
-
 async function handleOneTimeDonation({
   stripe,
   elements,
-  userId,
   userEmail,
   values,
   finalAmount,
@@ -137,7 +134,6 @@ async function handleOneTimeDonation({
   getPaymentMethodId: ReturnType<typeof usePaymentProcessor>['getPaymentMethodId']
 }) {
   const intentResult = await createPaymentIntentForCheckout({
-    userId,
     name: fullName,
     email: userEmail,
     amount: finalAmount,
@@ -170,7 +166,7 @@ async function handleOneTimeDonation({
     return
   }
 
-  const { error, paymentIntent } = await stripe.confirmCardPayment(intentResult.clientSecret!, {
+  const { error, paymentIntent } = await stripe.confirmCardPayment(intentResult.data.clientSecret!, {
     payment_method: { card: cardElement, billing_details: { name: fullName, email: userEmail } }
   })
 
@@ -190,7 +186,6 @@ async function handleOneTimeDonation({
 async function handleRecurringDonation({
   stripe,
   elements,
-  userId,
   userEmail,
   values,
   finalAmount,
@@ -207,7 +202,6 @@ async function handleRecurringDonation({
   const frequency: 'monthly' | 'yearly' = values.donationType === 'monthly' ? 'monthly' : 'yearly'
 
   const recurringBase = {
-    userId,
     email: userEmail,
     name: fullName,
     amount: finalAmount,
@@ -231,12 +225,11 @@ async function handleRecurringDonation({
       return
     }
 
-    setupPusherListenerRecurring(result, ...pusherCallbacks)
+    setupPusherListenerRecurring(result.data, ...pusherCallbacks)
     return
   }
 
   const setupResult = await createSetupIntentForSubscription({
-    userId,
     email: userEmail,
     name: fullName,
     amount: finalAmount,
@@ -258,7 +251,7 @@ async function handleRecurringDonation({
     return
   }
 
-  const { error } = await stripe.confirmCardSetup(setupResult.clientSecret, {
+  const { error } = await stripe.confirmCardSetup(setupResult.data.clientSecret, {
     payment_method: { card: cardElement, billing_details: { name: fullName, email: userEmail } }
   })
 
@@ -268,13 +261,9 @@ async function handleRecurringDonation({
   }
 
   const subscriptionResult = await createSubscriptionAfterSetup({
-    setupIntentId: setupResult.setupIntentId,
+    setupIntentId: setupResult.data.setupIntentId,
     email: userEmail,
     name: fullName,
-    frequency,
-    amount: finalAmount,
-    coverFees: values.coverFees,
-    feesCovered,
     ...addressParams,
     notes: values.notes,
     campaignId: values.campaignId,
@@ -286,5 +275,5 @@ async function handleRecurringDonation({
     return
   }
 
-  setupPusherListenerRecurring(subscriptionResult, ...pusherCallbacks)
+  setupPusherListenerRecurring(subscriptionResult.data, ...pusherCallbacks)
 }

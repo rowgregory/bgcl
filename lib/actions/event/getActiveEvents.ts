@@ -24,6 +24,6 @@ export async function getActiveEvents() {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    return { success: false, error: 'Failed to fetch active events', data: null }
+    return { success: false, error: 'Could not load active events', data: null }
   }
 }

@@ -1,11 +1,12 @@
 'use server'
 
 import prisma from '@/prisma/client'
+import Stripe from 'stripe'
 import { stripe } from '../../stripe/stripeClient'
 import { createLog } from '../log/createLog'
+import { auth } from '@/lib/auth/auth'
 
 interface SetupIntentParams {
-  userId?: string
   email: string
   name: string
   amount: number // in cents
@@ -15,8 +16,12 @@ interface SetupIntentParams {
   phone?: string
 }
 
+const MIN_AMOUNT_CENTS = 500
+const MAX_METADATA_LENGTH = 450
+
+const trim = (value?: string | null) => (value ?? '').slice(0, MAX_METADATA_LENGTH)
+
 export async function createSetupIntentForSubscription({
-  userId,
   email,
   name,
   amount,
@@ -24,17 +29,28 @@ export async function createSetupIntentForSubscription({
   coverFees,
   feesCovered,
   phone
-}: SetupIntentParams) {
-  try {
-    if (amount < 500) throw new Error('Minimum donation is $5')
+}: SetupIntentParams): Promise<{
+  success: boolean
+  data: { clientSecret: string | null; setupIntentId: string } | null
+  error: string | null
+}> {
+  const session = await auth()
+  const userId = session?.user?.id
 
+  if (!userId) return { success: false, data: null, error: 'You must be signed in to set up a recurring donation.' }
+
+  if (!Number.isInteger(amount) || amount < MIN_AMOUNT_CENTS) {
+    return { success: false, data: null, error: 'Minimum donation is $5.' }
+  }
+
+  try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { stripeCustomerId: true }
     })
 
     if (!user?.stripeCustomerId) {
-      throw new Error('Stripe customer not found for this user')
+      return { success: false, data: null, error: 'No billing profile found for your account.' }
     }
 
     const setupIntent = await stripe.setupIntents.create({
@@ -43,32 +59,33 @@ export async function createSetupIntentForSubscription({
       usage: 'off_session',
       metadata: {
         userId,
-        email,
-        name,
+        email: trim(email),
+        name: trim(name),
         frequency,
-        amount: amount.toString(),
+        amount: String(amount),
         type: 'RECURRING_DONATION',
         coverFees: coverFees ? 'true' : 'false',
-        feesCovered: feesCovered?.toString() || '0',
-        phone
+        feesCovered: String(feesCovered ?? 0),
+        phone: trim(phone)
       }
     })
 
     return {
       success: true,
-      clientSecret: setupIntent.client_secret,
-      setupIntentId: setupIntent.id
+      error: null,
+      data: {
+        clientSecret: setupIntent.client_secret,
+        setupIntentId: setupIntent.id
+      }
     }
   } catch (error) {
     await createLog('error', 'SetupIntent creation error', {
-      error: error instanceof Error ? error.message : 'Unknown error',
       userId,
-      email
+      email,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stripeCode: error instanceof Stripe.errors.StripeError ? error.code : undefined
     })
 
-    return {
-      success: false,
-      error: 'Failed to create setup intent'
-    }
+    return { success: false, data: null, error: 'Could not start the setup. Please try again.' }
   }
 }

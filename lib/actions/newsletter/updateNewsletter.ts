@@ -4,11 +4,13 @@ import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
 import { newsletterSchema } from '@/lib/validations/newsletter.validation'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function updateNewsletter(id: string, input: unknown) {
-  if (!id) {
-    return { success: false, error: 'Newsletter ID is required.' }
-  }
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
+  if (!id) return { success: false, error: 'Newsletter ID is required.' }
 
   const parsed = newsletterSchema.safeParse(input)
 
@@ -41,7 +43,7 @@ export async function updateNewsletter(id: string, input: unknown) {
       year: newsletter.year
     })
 
-    return { success: true, data: newsletter }
+    return { success: true, data: newsletter, error: null }
   } catch (error) {
     // month_year is @@unique
     if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
@@ -58,6 +60,7 @@ export async function updateNewsletter(id: string, input: unknown) {
 
     return {
       success: false,
+      data: null,
       error: 'Failed to update newsletter. Please try again.'
     }
   }

@@ -36,7 +36,7 @@ export default async function RootLayout({
             programs={programs}
             pageContent={homePage}
             capitalPage={capitalPage}
-            donations={donationOrders}
+            donations={donationOrders.data}
             hero={hero?.data}
           >
             {children}

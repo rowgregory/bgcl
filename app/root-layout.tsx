@@ -17,7 +17,7 @@ import WelcomeAnimation from '@/components/layout/WelcomeAnimation'
 import Confetti3D from '@/components/layout/Confetti3D'
 import { AnnouncementStrip } from '@/components/layout/AnnouncementStrip'
 import { JobApplicationDrawer } from '@/components/drawers/JobApplicationDrawer'
-import { Order, Page, Program } from '@prisma/client'
+import { Page, Program } from '@prisma/client'
 import { IHero } from '@/types/entities/hero'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
@@ -27,7 +27,7 @@ interface RootLayoutWrapperProps {
   programs: Program[]
   pageContent: any
   capitalPage: Page | null
-  donations: Order[]
+  donations: { id: string; customerName: string; createdAt: string }[]
   hero: IHero | null
 }
 
@@ -56,7 +56,6 @@ export default function RootLayoutWrapper({
         <Confetti3D />
         <AnnouncementStrip hero={hero} />
         {show && <Header />}
-
         {children}
         {show && <Footer />}
       </ThemeProvider>

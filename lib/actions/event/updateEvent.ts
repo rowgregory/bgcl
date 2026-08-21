@@ -4,13 +4,15 @@ import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
 import { eventSchema } from '@/lib/validations/event.validation'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 const toDate = (v: string | null | undefined) => (v ? new Date(v) : null)
 
 export async function updateEvent(id: string, input: unknown) {
-  if (!id) {
-    return { success: false, error: 'Event ID is required.' }
-  }
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
+  if (!id) return { success: false, data: null, error: 'Event ID is required.' }
 
   const parsed = eventSchema.safeParse(input)
 
@@ -18,6 +20,7 @@ export async function updateEvent(id: string, input: unknown) {
     const issue = parsed.error.issues[0]
     return {
       success: false,
+      data: null,
       error: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Invalid event data'
     }
   }
@@ -32,7 +35,7 @@ export async function updateEvent(id: string, input: unknown) {
         source: 'updateEvent',
         eventId: id
       })
-      return { success: false, error: 'Event not found', status: 404 }
+      return { success: false, data: null, error: 'Event not found', status: 404 }
     }
 
     // `order`, `attendeeCount`, and `guestCount` are managed elsewhere and
@@ -86,6 +89,6 @@ export async function updateEvent(id: string, input: unknown) {
       error: error instanceof Error ? error.message : 'Failed to update event'
     })
 
-    return { success: false, error: 'Failed to update event. Please try again.' }
+    return { success: false, data: null, error: 'Failed to update event. Please try again.' }
   }
 }

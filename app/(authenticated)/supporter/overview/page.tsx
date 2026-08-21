@@ -5,10 +5,8 @@ import { getUserAddress } from '@/lib/actions/user/getUserAddress'
 import { getUserName } from '@/lib/actions/user/getUserName'
 import SupporterOverviewClient from './SupporterOverviewClient'
 
-export const dynamic = 'force-dynamic'
-
 export default async function SupporterOverviewPage() {
-  const [dashboard, address, name, paymentMethods, phone] = await Promise.all([
+  const [dashboardResult, addressResult, nameResult, paymentMethodsResult, phoneResult] = await Promise.all([
     getSupporterDashboard(),
     getUserAddress(),
     getUserName(),
@@ -18,11 +16,11 @@ export default async function SupporterOverviewPage() {
 
   return (
     <SupporterOverviewClient
-      dashboard={dashboard}
-      address={address?.data}
-      name={name?.data}
-      savedCards={paymentMethods?.data}
-      phone={phone.data}
+      dashboard={dashboardResult.data}
+      address={addressResult.data}
+      name={nameResult.data}
+      savedCards={paymentMethodsResult?.data}
+      phone={phoneResult.data}
     />
   )
 }

@@ -5,11 +5,13 @@ import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
 import { PROGRAM_NULLABLE_FIELDS, programSchema } from '@/lib/validations/program.validation'
 import { emptyToNull } from '@/lib/utils/emptyToNull'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function updateProgram(id: string, input: unknown) {
-  if (!id) {
-    return { success: false, error: 'Program ID is required.' }
-  }
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
+  if (!id) return { success: false, error: 'Program ID is required.' }
 
   const parsed = programSchema.safeParse(input)
 
@@ -29,9 +31,7 @@ export async function updateProgram(id: string, input: unknown) {
       select: { id: true }
     })
 
-    if (!existingProgram) {
-      return { success: false, error: 'Program not found', status: 404 }
-    }
+    if (!existingProgram) return { success: false, error: 'Program not found', status: 404 }
 
     const program = await prisma.program.update({
       where: { id },

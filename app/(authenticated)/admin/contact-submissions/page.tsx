@@ -2,6 +2,6 @@ import ContactSubmissionsClient from '@/app/(authenticated)/admin/contact-submis
 import { getContactSubmissions } from '@/lib/actions/contact-submission/getContactSubmissions'
 
 export default async function ContactSubmissionsPage() {
-  const contactSubmissions = await getContactSubmissions()
-  return <ContactSubmissionsClient contactSubmissions={contactSubmissions} />
+  const result = await getContactSubmissions()
+  return <ContactSubmissionsClient contactSubmissions={result.data} />
 }

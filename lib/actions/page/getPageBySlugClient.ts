@@ -7,12 +7,7 @@ export const getPageBySlugClient = async (slug: string) => {
       where: { slug }
     })
 
-    if (!page) {
-      await createLog('warn', 'Page not found', {
-        slug
-      })
-      return { page: null, sections: null, error: null }
-    }
+    if (!page) return { page: null, sections: null, error: null }
 
     // Parse and organize content by sections
     const content = page.content as any[]

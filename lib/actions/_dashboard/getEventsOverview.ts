@@ -1,7 +1,11 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function getEventsOverview() {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     const [events, ticketOrders] = await Promise.all([
       prisma.event.findMany({
@@ -36,63 +40,67 @@ export async function getEventsOverview() {
     const recentOrders = ticketOrders.slice(0, 10)
 
     return {
-      stats: {
-        totalRevenue: Number(totalRevenue),
-        totalTicketsSold,
-        totalAttendees,
-        totalEvents,
-        upcomingCount: upcomingEvents.length,
-        pastCount: pastEvents.length
+      success: true,
+      data: {
+        stats: {
+          totalRevenue: Number(totalRevenue),
+          totalTicketsSold,
+          totalAttendees,
+          totalEvents,
+          upcomingCount: upcomingEvents.length,
+          pastCount: pastEvents.length
+        },
+        upcomingEvents: upcomingEvents.slice(0, 5).map((e) => ({
+          ...e,
+          tickets: e.tickets.map((t) => ({
+            ...t,
+            price: Number(t.price)
+          })),
+          orders: e.orders.map((o) => ({
+            ...o,
+            totalAmount: Number(o.totalAmount),
+            feesCovered: Number(o.feesCovered),
+            orderItems: o.orderItems.map((i) => ({
+              ...i,
+              pricePerUnit: i.pricePerUnit ? Number(i.pricePerUnit) : null,
+              totalPrice: i.totalPrice ? Number(i.totalPrice) : null
+            }))
+          }))
+        })),
+        recentOrders: recentOrders.map((o) => ({
+          ...o,
+          totalAmount: Number(o.totalAmount),
+          feesCovered: Number(o.feesCovered),
+          orderItems: o.orderItems.map((i) => ({
+            ...i,
+            pricePerUnit: i.pricePerUnit ? Number(i.pricePerUnit) : null,
+            totalPrice: i.totalPrice ? Number(i.totalPrice) : null
+          }))
+        })),
+        events: events.map((e) => ({
+          ...e,
+          tickets: e.tickets.map((t) => ({
+            ...t,
+            price: Number(t.price)
+          })),
+          orders: e.orders.map((o) => ({
+            ...o,
+            totalAmount: Number(o.totalAmount),
+            feesCovered: Number(o.feesCovered),
+            orderItems: o.orderItems.map((i) => ({
+              ...i,
+              pricePerUnit: i.pricePerUnit ? Number(i.pricePerUnit) : null,
+              totalPrice: i.totalPrice ? Number(i.totalPrice) : null
+            }))
+          }))
+        }))
       },
-      upcomingEvents: upcomingEvents.slice(0, 5).map((e) => ({
-        ...e,
-        tickets: e.tickets.map((t) => ({
-          ...t,
-          price: Number(t.price)
-        })),
-        orders: e.orders.map((o) => ({
-          ...o,
-          totalAmount: Number(o.totalAmount),
-          feesCovered: Number(o.feesCovered),
-          orderItems: o.orderItems.map((i) => ({
-            ...i,
-            pricePerUnit: i.pricePerUnit ? Number(i.pricePerUnit) : null,
-            totalPrice: i.totalPrice ? Number(i.totalPrice) : null
-          }))
-        }))
-      })),
-      recentOrders: recentOrders.map((o) => ({
-        ...o,
-        totalAmount: Number(o.totalAmount),
-        feesCovered: Number(o.feesCovered),
-        orderItems: o.orderItems.map((i) => ({
-          ...i,
-          pricePerUnit: i.pricePerUnit ? Number(i.pricePerUnit) : null,
-          totalPrice: i.totalPrice ? Number(i.totalPrice) : null
-        }))
-      })),
-      events: events.map((e) => ({
-        ...e,
-        tickets: e.tickets.map((t) => ({
-          ...t,
-          price: Number(t.price)
-        })),
-        orders: e.orders.map((o) => ({
-          ...o,
-          totalAmount: Number(o.totalAmount),
-          feesCovered: Number(o.feesCovered),
-          orderItems: o.orderItems.map((i) => ({
-            ...i,
-            pricePerUnit: i.pricePerUnit ? Number(i.pricePerUnit) : null,
-            totalPrice: i.totalPrice ? Number(i.totalPrice) : null
-          }))
-        }))
-      }))
+      error: null
     }
   } catch (error) {
     await createLog('error', 'Error fetching events overview data', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
-    throw error
+    return { success: false, data: null, error: 'Could not load events overview' }
   }
 }

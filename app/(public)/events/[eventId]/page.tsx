@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 export default async function EventPage({ params }: { params: Promise<{ eventId: string }> }) {
   const { eventId } = await params
 
-  const [data, name, paymentMethods, address] = await Promise.all([
+  const [event, name, paymentMethods, address] = await Promise.all([
     getEventById(eventId),
     getUserName().catch(() => null),
     getSavedPaymentMethods().catch(() => ({ data: [] })),
@@ -18,7 +18,7 @@ export default async function EventPage({ params }: { params: Promise<{ eventId:
 
   return (
     <PublicEventDetailsClient
-      data={data}
+      data={event.data}
       name={name?.data}
       savedCards={paymentMethods?.data ?? []}
       address={address?.data}

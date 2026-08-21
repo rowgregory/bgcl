@@ -1,5 +1,6 @@
 'use server'
 
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 import prisma from '@/prisma/client'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
@@ -42,6 +43,9 @@ interface EventStats {
 
 // ─── Server Action ─────────────────────────────────────────────────────────────
 export async function generateEventsReport(filters: ReportFilters = {}) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     const { startDate, endDate, eventId, status, type } = filters
 

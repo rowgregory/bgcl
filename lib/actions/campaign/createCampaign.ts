@@ -6,16 +6,18 @@ import { getActor } from '../user/getActor'
 import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
 import { revalidatePath } from 'next/cache'
 import { campaignSchema } from '@/lib/validations/campaign.validation'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function createCampaign(input: unknown) {
-  // Validate on the server too — never trust the client
-  const parsed = campaignSchema.safeParse(input)
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
 
-  console.log('PARSED: ', parsed)
+  const parsed = campaignSchema.safeParse(input)
 
   if (!parsed.success) {
     return {
       success: false,
+      data: null,
       error: parsed.error.issues[0]?.message ?? 'Invalid campaign data'
     }
   }
@@ -44,7 +46,7 @@ export async function createCampaign(input: unknown) {
 
     revalidatePath('/', 'layout')
 
-    return { success: true }
+    return { success: true, error: null }
   } catch (error) {
     await createLog('error', 'Failed to create campaign', {
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -53,6 +55,7 @@ export async function createCampaign(input: unknown) {
 
     return {
       success: false,
+      data: null,
       error: 'Failed to create campaign. Please try again.'
     }
   }

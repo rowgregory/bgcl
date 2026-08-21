@@ -15,7 +15,7 @@ const STATUS_STYLES: Record<string, string> = {
   REFUNDED: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
 }
 
-export default async function AdminDashboard({ stats }) {
+export default function AdminDashboardClient({ stats }) {
   const monthDelta = stats.revenueThisMonth - stats.revenueLastMonth
   const monthDeltaPct = stats.revenueLastMonth > 0 ? ((monthDelta / stats.revenueLastMonth) * 100).toFixed(1) : null
   const monthUp = monthDelta >= 0

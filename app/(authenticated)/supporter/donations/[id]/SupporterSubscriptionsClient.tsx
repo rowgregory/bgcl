@@ -103,7 +103,7 @@ export default function SupporterSubscriptionsClient({ data }: SubscriptionClien
                 </div>
                 <div className="space-y-2">
                   <h1 className="text-4xl md:text-5xl font-black dark:text-white text-neutral-900 leading-tight">
-                    {formatCurrency(item?.price.unit_amount || amount * 100)}/
+                    {formatCurrency(item?.price.unit_amount || amount)}/
                     {frequency === 'year' || frequency === 'yearly' ? 'year' : 'month'}
                   </h1>
                   <p className="dark:text-neutral-500 text-neutral-600 text-lg">

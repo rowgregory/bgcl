@@ -3,8 +3,12 @@
 import prisma from '@/prisma/client'
 import { revalidatePath } from 'next/cache'
 import { createLog } from '../log/createLog'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function deletePartner(id: string) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     const partner = await prisma.partner.findUnique({
       where: { id },
@@ -14,6 +18,7 @@ export async function deletePartner(id: string) {
     if (!partner) {
       return {
         success: false,
+        data: null,
         error: 'Partner not found'
       }
     }
@@ -38,6 +43,7 @@ export async function deletePartner(id: string) {
 
     return {
       success: false,
+      data: null,
       error: 'Failed to delete partner. Please try again.'
     }
   }

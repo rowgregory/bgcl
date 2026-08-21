@@ -9,5 +9,5 @@ export default async function LatestNewsPage() {
     getNews(),
     getPageBySlugClient('latest-news')
   ])
-  return <LatestNewsClient newsletters={newsletters} news={news} pageData={pageData} />
+  return <LatestNewsClient newsletters={newsletters.data} news={news.data} pageData={pageData} />
 }

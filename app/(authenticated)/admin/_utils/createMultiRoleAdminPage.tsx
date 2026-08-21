@@ -26,7 +26,7 @@ export function createMultiRoleAdminPage(roles: RoleGroup[], pageTitle: string) 
               <h1 className="text-2xl font-semibold dark:text-neutral-100 text-neutral-900">{pageTitle}</h1>
             </div>
             {roleData.map((group) => (
-              <TeamMemberList key={group.role} data={group.data} role={group.role} roleLabel={group.label} />
+              <TeamMemberList key={group.role} data={group.data.data} role={group.role} roleLabel={group.label} />
             ))}
           </div>
         </div>

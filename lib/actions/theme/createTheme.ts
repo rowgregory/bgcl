@@ -4,8 +4,12 @@ import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { ICreateTheme } from '@/types/entities/theme'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function createTheme(data: ICreateTheme) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     // Get the highest order number
     const highestTheme = await prisma.theme.findFirst({

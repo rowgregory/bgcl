@@ -63,7 +63,7 @@ export default function PaymentMethodModal() {
     try {
       const setupRes = await getSetupIntentClientSecret()
 
-      if (!setupRes.success || !setupRes.clientSecret) {
+      if (!setupRes.success || !setupRes.data.clientSecret) {
         setError('root', { message: setupRes.error || 'Could not start card setup. Try again.' })
         return
       }
@@ -72,7 +72,7 @@ export default function PaymentMethodModal() {
       const cardElement = elements.getElement(CardElement)
       if (!cardElement) throw new Error('Card element not found')
 
-      const { setupIntent, error } = await stripe.confirmCardSetup(setupRes.clientSecret, {
+      const { setupIntent, error } = await stripe.confirmCardSetup(setupRes.data.clientSecret, {
         payment_method: {
           card: cardElement,
           billing_details: { name: values.cardholderName }

@@ -2,32 +2,29 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
-import { auth } from '../../auth/auth'
 import { revalidatePath } from 'next/cache'
+import { requireUser } from '@/lib/utils/requireAdmin'
 
 export async function deleteAddress() {
-  const session = await auth()
-
-  if (!session?.user?.id) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  const auth = await requireUser()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
 
   try {
     await prisma.address.delete({
-      where: { userId: session.user.id }
+      where: { userId: auth.user.id }
     })
 
-    await createLog('info', 'User deleted address', { userId: session.user.id })
+    await createLog('info', 'User deleted address', { userId: auth.user.id })
 
     revalidatePath('/', 'layout')
 
     return { success: true }
   } catch (error) {
     await createLog('error', 'Failed to delete address', {
-      userId: session.user.id,
+      userId: auth.user.id,
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    return { success: false, error: 'Failed to remove address. Please try again.' }
+    return { success: false, data: null, error: 'Failed to remove address. Please try again.' }
   }
 }

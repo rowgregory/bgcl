@@ -1,12 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { AlertCircle, CreditCard, Loader2, X } from 'lucide-react'
 import { CardElement } from '@stripe/react-stripe-js'
 import { Controller, useFormContext } from 'react-hook-form'
 import { PaymentMethodFormInput } from '@/lib/validations/payment-method.validation'
 import { usePaymentMethodModal } from '@/stores/drawers'
 import { StripeCardElementChangeEvent } from '@stripe/stripe-js'
+import { usePreferencesStore } from '@/stores/usePreferencesStore'
 
 export default function PaymentMethodForm() {
   const {
@@ -16,25 +17,11 @@ export default function PaymentMethodForm() {
   } = useFormContext<PaymentMethodFormInput>()
 
   const onClose = usePaymentMethodModal((s) => s.close)
+  const isDark = usePreferencesStore((s) => s.isDark)
 
   // Stripe's iframe isn't a form field, so its state stays local
   const [cardError, setCardError] = useState<string | null>(null)
   const [cardComplete, setCardComplete] = useState(false)
-
-  // Read the theme after mount, not during render, so SSR and the client agree
-  const [isDark, setIsDark] = useState(false)
-
-  useEffect(() => {
-    const root = document.documentElement
-    const sync = () => setIsDark(root.classList.contains('dark'))
-
-    sync()
-
-    const observer = new MutationObserver(sync)
-    observer.observe(root, { attributes: true, attributeFilter: ['class'] })
-
-    return () => observer.disconnect()
-  }, [])
 
   const handleCardChange = (event: StripeCardElementChangeEvent) => {
     setCardComplete(event.complete)

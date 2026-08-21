@@ -6,8 +6,12 @@ import { getActor } from '../user/getActor'
 import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
 import { revalidatePath } from 'next/cache'
 import { closingSchema } from '@/lib/validations/closing.validation'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function createClosing(input: unknown) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   const parsed = closingSchema.safeParse(input)
 
   if (!parsed.success) {

@@ -6,26 +6,13 @@ import Link from 'next/link'
 import { DollarSign } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
-const originalWarn = console.warn
-console.warn = (...args) => {
-  if (typeof args[0] === 'string' && args[0].includes('non-static position')) return
-  originalWarn(...args)
-}
-
 interface ICurrentDonation {
   id: string
   customerName: string
-  customerEmail: string
-  amount: number
-  frequency: string
-  nextBillingDate: string | Date
-  startDate: string | Date
-  status: string
-  stripeSubscriptionId: string
-  type: string
+  createdAt: string
 }
 
-export default function DonationNotification({ donations }) {
+export default function DonationNotification({ donations }: { donations: ICurrentDonation[] }) {
   const [currentDonation, setCurrentDonation] = useState<ICurrentDonation | null>(donations[0])
   const [isVisible, setIsVisible] = useState(true)
   const indexRef = useRef(0)
@@ -152,7 +139,7 @@ export default function DonationNotification({ donations }) {
                     <span className="text-white font-semibold text-sm">New Donation</span>
                   </div>
                   <span className="text-white/80 text-xs" aria-hidden="true">
-                    {getTimeAgo(currentDonation?.startDate)}
+                    {getTimeAgo(currentDonation?.createdAt)}
                   </span>
                 </div>
               </div>
@@ -217,7 +204,7 @@ export default function DonationNotification({ donations }) {
                   <div className="flex-1">
                     <span className="text-white font-semibold text-sm block">New Donation</span>
                     <span className="text-white/80 text-xs" aria-hidden="true">
-                      {getTimeAgo(currentDonation?.startDate)}
+                      {getTimeAgo(currentDonation?.createdAt)}
                     </span>
                   </div>
                 </div>

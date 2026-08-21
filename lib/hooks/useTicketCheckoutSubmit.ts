@@ -4,7 +4,6 @@ import { useCallback, useState } from 'react'
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { useSession } from 'next-auth/react'
 import { useFormContext } from 'react-hook-form'
-
 import { createPaymentIntentForTicketCheckout } from '../actions/stripe/createPaymentIntentForTicketCheckout'
 import { useCartStore } from '@/stores/useCartStore'
 import { usePaymentProcessor } from './usePaymentProcessor'
@@ -31,7 +30,6 @@ export function useTicketCheckoutSubmit({ amountInCents, processingFee, usingSav
   const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>('idle')
   const isProcessing = processingStatus === 'processing'
 
-  const userId = session?.user?.id
   const userEmail = session?.user?.email
 
   const fail = useCallback(
@@ -60,11 +58,23 @@ export function useTicketCheckoutSubmit({ amountInCents, processingFee, usingSav
       return
     }
 
+    const eventId = items[0]?.eventId
+
+    if (items.length === 0 || !eventId) {
+      fail('Your cart is empty.')
+      return
+    }
+
+    // One payment intent carries one eventId, so a mixed cart would mislabel the order
+    if (items.some((item) => item.eventId !== eventId)) {
+      fail('Your cart has tickets for more than one event. Please check out one event at a time.')
+      return
+    }
+
     setProcessingStatus('processing')
 
     try {
       const intentResult = await createPaymentIntentForTicketCheckout({
-        userId,
         name: fullName,
         email: userEmail,
         amount: amountInCents,
@@ -82,17 +92,24 @@ export function useTicketCheckoutSubmit({ amountInCents, processingFee, usingSav
         savedCardId: usingSavedCard ? values.selectedCardId : undefined,
         // Stripe metadata caps at 500 chars, so keys are shortened here
         tickets: JSON.stringify(items.map((item) => ({ i: item.ticketId, q: item.quantity }))),
-        eventId: items[0]?.eventId,
+        eventId,
         attendingEvent: values.attendingEvent
       })
 
-      if (!intentResult.success) {
+      if (!intentResult.success || !intentResult.data) {
         fail(intentResult.error || 'Failed to start checkout. Please try again.')
         return
       }
 
       if (usingSavedCard) {
         setupPusherListenerOneTime(false, undefined, ...pusherCallbacks)
+        return
+      }
+
+      const { clientSecret } = intentResult.data
+
+      if (!clientSecret) {
+        fail('Could not start the payment. Please try again.')
         return
       }
 
@@ -103,7 +120,7 @@ export function useTicketCheckoutSubmit({ amountInCents, processingFee, usingSav
         return
       }
 
-      const { error, paymentIntent } = await stripe.confirmCardPayment(intentResult.clientSecret!, {
+      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card: cardElement, billing_details: { name: fullName, email: userEmail } }
       })
 

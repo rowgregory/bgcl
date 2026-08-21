@@ -7,7 +7,7 @@ export default async function ContactUsPage() {
   const [closings, pageData] = await Promise.all([getClosings(), getPageBySlugClient('contact')])
   return (
     <Suspense fallback={null}>
-      <ContactUsClient closings={closings} pageData={pageData} />
+      <ContactUsClient closings={closings.data} pageData={pageData} />
     </Suspense>
   )
 }

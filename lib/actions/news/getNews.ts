@@ -1,19 +1,18 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
-import { News } from '@prisma/client'
 
-export const getNews = async (): Promise<News[]> => {
+export async function getNews() {
   try {
     const news = await prisma.news.findMany({
       orderBy: { order: 'asc' }
     })
 
-    return news
+    return { success: true, data: news, error: null }
   } catch (error) {
     await createLog('error', 'Failed to fetch news', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    throw error
+    return { success: false, data: null, error: 'Could not load news' }
   }
 }

@@ -6,5 +6,5 @@ import { getCampaignById } from '@/lib/actions/campaign/getCampaignById'
 export default async function CampaignPage({ params }) {
   const { id } = await params
   const result = await getCampaignById(id)
-  return <CampaignClient campaign={result.campaign} />
+  return <CampaignClient campaign={result.data} />
 }

@@ -1,7 +1,7 @@
 import prisma from '@/prisma/client'
-import { CampaignWithCount } from '@/types/campaign.types'
+import { createLog } from '../log/createLog'
 
-export const getCampaigns = async (isPublic?: boolean): Promise<CampaignWithCount[]> => {
+export const getCampaigns = async (isPublic?: boolean) => {
   try {
     const campaigns = await prisma.campaign.findMany({
       where: isPublic ? { isListed: true } : undefined,
@@ -9,18 +9,12 @@ export const getCampaigns = async (isPublic?: boolean): Promise<CampaignWithCoun
       orderBy: { order: 'asc' }
     })
 
-    return campaigns
+    return { success: true, data: campaigns, error: null }
   } catch (error) {
-    await prisma.log.create({
-      data: {
-        level: 'error',
-        message: 'Failed to fetch campaigns',
-        metadata: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error'
-        })
-      }
+    await createLog('error', 'Failed to fetch campaigns', {
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    return []
+    return { success: false, data: null, error: 'Could not load campaigns' }
   }
 }

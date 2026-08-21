@@ -27,6 +27,7 @@ export async function createNewsletter(input: unknown) {
     if (existing) {
       return {
         success: false,
+        data: null,
         error: `Newsletter for ${data.month} ${data.year} already exists`
       }
     }
@@ -54,7 +55,7 @@ export async function createNewsletter(input: unknown) {
       year: newsletter.year
     })
 
-    return { success: true, data: newsletter }
+    return { success: true }
   } catch (error) {
     // month_year is @@unique — covers the race with the check above
     if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
@@ -72,6 +73,7 @@ export async function createNewsletter(input: unknown) {
 
     return {
       success: false,
+      data: null,
       error: 'Failed to create newsletter. Please try again.'
     }
   }

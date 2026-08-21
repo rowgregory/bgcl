@@ -3,11 +3,13 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
-export async function reorderClosings(
-  closings: Array<{ id: string; order?: number }>
-): Promise<{ success: boolean; error?: string }> {
+export async function reorderClosings(closings: Array<{ id: string; order?: number }>) {
   try {
+    const auth = await requireAdmin()
+    if (!auth.user) return { success: false, data: null, error: auth.error }
+
     await Promise.all(
       closings.map((closing, index) =>
         prisma.closing.update({
@@ -25,6 +27,6 @@ export async function reorderClosings(
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    return { success: false, error: 'Failed to reorder closings. Please try again.' }
+    return { success: false, data: null, error: 'Failed to reorder closings. Please try again.' }
   }
 }

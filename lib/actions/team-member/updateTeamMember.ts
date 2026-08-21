@@ -5,8 +5,12 @@ import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
 import { teamMemberSchema, TEAM_MEMBER_NULLABLE_FIELDS } from '@/lib/validations/team-member.validation'
 import { emptyToNull } from '@/lib/utils/emptyToNull'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function updateTeamMember(id: string, input: unknown) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   if (!id) {
     return { success: false, error: 'Team member ID is required.' }
   }

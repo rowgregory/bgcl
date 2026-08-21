@@ -4,6 +4,6 @@ import { getCampaigns } from '@/lib/actions/campaign/getCampaigns'
 export const metadata = { title: 'Campaigns - Admin' }
 
 export default async function DonationsCampaignsPage() {
-  const data = await getCampaigns()
-  return <AdminListPage data={data} pageTitle="Campaigns" itemType="campaign" />
+  const result = await getCampaigns()
+  return <AdminListPage data={result.data} pageTitle="Campaigns" itemType="campaign" />
 }

@@ -2,9 +2,13 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
-import { BillingAddress, DonationWithRelations } from '@/app/(authenticated)/admin/donations/_types/donation.types'
+import { BillingAddress } from '@/app/(authenticated)/admin/donations/_types/donation.types'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
-export const getDonations = async (): Promise<DonationWithRelations[]> => {
+export async function getDonations() {
+  const auth = await requireAdmin()
+  if (!auth.ok) return { success: false, data: null, error: auth.error }
+
   try {
     const donations = await prisma.order.findMany({
       where: {
@@ -18,17 +22,19 @@ export const getDonations = async (): Promise<DonationWithRelations[]> => {
       }
     })
 
-    return donations.map((donation) => ({
+    const serializedDonations = donations.map((donation) => ({
       ...donation,
       totalAmount: Number(donation.totalAmount),
       feesCovered: Number(donation.feesCovered),
       billingAddress: (donation.billingAddress as BillingAddress | null) ?? null
     }))
+
+    return { success: true, data: serializedDonations, error: null }
   } catch (error) {
     await createLog('error', 'Failed to fetch donations', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    throw error
+    return { success: false, data: null, error: 'Could not load donations' }
   }
 }

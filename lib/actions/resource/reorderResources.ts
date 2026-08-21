@@ -3,11 +3,13 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
-export async function reorderResources(
-  resources: Array<{ id: string; order?: number }>
-): Promise<{ success: boolean; error?: string }> {
+export async function reorderResources(resources: Array<{ id: string; order?: number }>) {
   try {
+    const auth = await requireAdmin()
+    if (!auth.user) return { success: false, data: null, error: auth.error }
+
     await Promise.all(
       resources.map((resource, index) =>
         prisma.resource.update({

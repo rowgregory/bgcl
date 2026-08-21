@@ -38,7 +38,7 @@ const colorMap: Record<string, string> = {
   neutral: 'text-neutral-600 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800'
 }
 
-export function EventsOverviewClient({ data }: { data: Awaited<ReturnType<typeof getEventsOverview>> }) {
+export function EventsOverviewClient({ data }) {
   const { stats, events } = data
 
   const topStats = [

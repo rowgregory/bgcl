@@ -8,7 +8,7 @@ export default async function AdminLayoutPage({ children }: { children: React.Re
   const [themes, modalState] = await Promise.all([getThemes(), getModalToggleState('home')])
 
   return (
-    <AdminLayoutClient themes={themes.data ?? []} isModalEnabled={modalState}>
+    <AdminLayoutClient themes={themes.data ?? []} isModalEnabled={modalState.data}>
       {children}
     </AdminLayoutClient>
   )

@@ -1,8 +1,12 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function reorderThemes(themes: Array<{ id: string; order: number }>) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     await prisma.$transaction(
       themes.map(({ id, order }) =>

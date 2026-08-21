@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 interface TeamMember {
   id: string
@@ -14,6 +15,9 @@ interface TeamMember {
 }
 
 export async function reorderTeamMembers(role: string, teamMembers: TeamMember[]) {
+  const auth = await requireAdmin()
+  if (!auth.user) return { success: false, data: null, error: auth.error }
+
   try {
     // Validation
     if (!teamMembers || !Array.isArray(teamMembers) || teamMembers.length === 0) {

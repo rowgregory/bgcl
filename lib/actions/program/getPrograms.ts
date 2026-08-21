@@ -2,7 +2,7 @@ import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { Program } from '@prisma/client'
 
-export async function getPrograms(isListed?: boolean): Promise<Program[]> {
+export async function getPrograms(isListed?: boolean) {
   try {
     const programs = await prisma.program.findMany({
       where: isListed !== undefined ? { isListed } : undefined,
@@ -14,12 +14,12 @@ export async function getPrograms(isListed?: boolean): Promise<Program[]> {
       descriptions: Array.isArray(program.descriptions) ? program.descriptions : []
     })) as Program[]
 
-    return formattedPrograms
+    return { success: false, data: formattedPrograms, error: null }
   } catch (error) {
     await createLog('error', 'Failed to fetch programs', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
-    throw error
+    return { success: false, data: null, error: 'Could not load programs' }
   }
 }
