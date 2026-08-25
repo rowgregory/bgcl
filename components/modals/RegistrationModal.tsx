@@ -3,13 +3,12 @@
 import { useState, useRef } from 'react'
 import { X, ArrowRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { usePathname } from 'next/navigation'
-import Picture from '../_shared/Picture'
 import { useOverlayAccessibility } from '@/lib/hooks/useOverlayAccessibility'
+import Picture from '../_shared/Picture'
 
 export default function RegistrationModal({ modal }) {
-  const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(pathname === '/' && modal?.toggleModal)
+  const modalEnabled = String(modal?.toggleModal) === 'true'
+  const [isOpen, setIsOpen] = useState(modalEnabled)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
 
   useOverlayAccessibility(isOpen)
@@ -54,7 +53,7 @@ export default function RegistrationModal({ modal }) {
     setIsOpen(false)
   }
 
-  if (pathname !== '/' && !modal?.toggleModal) return null
+  if (!modal?.toggleModal) return null
 
   return (
     <AnimatePresence>

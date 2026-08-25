@@ -1,18 +1,12 @@
-import { getHomePageData } from '@/lib/actions/_infra/getHomePageData'
+import { getPublicLayoutData } from '@/lib/actions/_infra/getPublicLayoutData'
 import { ReactNode } from 'react'
 import PublicChrome from './_components/PublicChrome'
 
 export default async function PublicLayout({ children }: { children: ReactNode }) {
-  const { programs, donationOrders, homePage, capitalPage, hero } = await getHomePageData()
+  const { programs, donationOrders, capitalPage, hero } = await getPublicLayoutData()
 
   return (
-    <PublicChrome
-      programs={programs}
-      pageContent={homePage}
-      capitalPage={capitalPage}
-      donations={donationOrders.data}
-      hero={hero?.data}
-    >
+    <PublicChrome programs={programs} capitalPage={capitalPage} donations={donationOrders.data} hero={hero?.data}>
       {children}
     </PublicChrome>
   )
