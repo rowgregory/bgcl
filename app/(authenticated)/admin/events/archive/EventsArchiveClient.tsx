@@ -104,7 +104,7 @@ const ArchiveEventRow = ({ event, index }: { event: ArchivedEvent; index: number
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-export const EventsArchiveClient = ({ data }: { data: ArchivedEvent[] }) => {
+export default function EventsArchiveClient({ data }: { data: ArchivedEvent[] }) {
   const [searchQuery, setSearchQuery] = useState('')
 
   const filtered = useMemo(() => {
@@ -131,7 +131,7 @@ export const EventsArchiveClient = ({ data }: { data: ArchivedEvent[] }) => {
   return (
     <div className="h-screen bg-white dark:bg-neutral-950 flex flex-col min-w-0">
       <div className="flex-1 overflow-y-auto px-3 sm:px-8 pb-6 pt-4">
-        <div className="mx-auto max-w-7xl space-y-4">
+        <div className="space-y-4">
           {/* Stats */}
           <div className="overflow-x-auto pb-1">
             <div className="flex items-center gap-4 min-w-max">
@@ -202,5 +202,3 @@ export const EventsArchiveClient = ({ data }: { data: ArchivedEvent[] }) => {
     </div>
   )
 }
-
-export default EventsArchiveClient

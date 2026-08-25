@@ -12,7 +12,7 @@ export const useConfettiStore = create<ConfettiState>((set) => ({
   isActive: false,
   show: () => set({ isActive: true }),
   hide: () => set({ isActive: false }),
-  burst: (ms = 4000) => {
+  burst: (ms = 6000) => {
     set({ isActive: true })
     setTimeout(() => set({ isActive: false }), ms)
   }

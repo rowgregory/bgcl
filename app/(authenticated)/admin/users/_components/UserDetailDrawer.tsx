@@ -1,33 +1,8 @@
 import { UserWithAddress } from '@/types/user.types'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Mail, X, User, ShoppingBag, Phone, MapPin, Calendar, Briefcase, Building2, Badge } from 'lucide-react'
-
-const ROLE_COLORS: Record<string, string> = {
-  SUPERUSER: 'bg-lime-100 dark:bg-lime-900/30 text-lime-700 dark:text-lime-300',
-  ADMIN: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300',
-  SUPPORTER: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300',
-  PROGRAM: 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300'
-}
-
-const ROLE_LABEL: Record<string, string> = {
-  SUPERUSER: 'Super User',
-  ADMIN: 'Admin',
-  PROGRAM: 'Program',
-  SUPPORTER: 'Supporter'
-}
-
-const ORDER_TYPE_LABEL: Record<string, string> = {
-  TICKET_PURCHASE: 'Ticket Purchase',
-  ONE_TIME_DONATION: 'One-Time Donation',
-  RECURRING_DONATION: 'Recurring Donation'
-}
-
-const STATUS_COLORS: Record<string, string> = {
-  CONFIRMED: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
-  PENDING: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400',
-  FAILED: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
-  REFUNDED: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
-}
+import { RoleEditor } from './RoleEditor'
+import { ORDER_TYPE_LABEL, STATUS_COLORS } from '../_users.constants'
 
 export function UserDetailDrawer({ user, onClose }: { user: UserWithAddress | null; onClose: () => void }) {
   const orders: any[] = (user as any)?.orders ?? []
@@ -83,13 +58,12 @@ export function UserDetailDrawer({ user, onClose }: { user: UserWithAddress | nu
 
             {/* Drawer Body */}
             <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
-              {/* Role Badge */}
-              <div className="flex items-center gap-2">
-                <span className={`px-2.5 py-1 rounded text-xs font-semibold ${ROLE_COLORS[user.role] ?? ''}`}>
-                  {ROLE_LABEL[user.role] ?? user.role}
-                </span>
+              {/* Role */}
+              <div className="flex items-start justify-between gap-3">
+                <RoleEditor userId={user.id} currentRole={user.role} />
+
                 {(user as any).staffStatus && (
-                  <span className="px-2.5 py-1 rounded text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
+                  <span className="px-2.5 py-1 rounded text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 shrink-0">
                     {(user as any).staffStatus}
                   </span>
                 )}

@@ -3,6 +3,7 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { requireAdmin } from '@/lib/utils/requireAdmin'
+import { OrderStatus } from '@prisma/client'
 
 export interface RecentOrder {
   id: string
@@ -40,24 +41,29 @@ export async function getDashboardStats(): Promise<{
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
 
-    const confirmed = { status: 'CONFIRMED' as const }
+    // CANCELLED means the subscription stopped, not that it was refunded, so
+    // the money it collected still counts toward revenue.
+    const revenueStatuses = { status: { in: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED] } }
+
+    // Tickets are the exception: a cancelled order isn't a seat filled.
+    const confirmed = { status: OrderStatus.CONFIRMED }
 
     // Summed in Postgres rather than in JS, so this stays flat as orders grow
     const [allTime, thisMonth, lastMonth, totalSupporters, newSupportersThisMonth, ticketsSold, recentOrders] =
       await Promise.all([
         prisma.order.aggregate({
-          where: confirmed,
+          where: revenueStatuses,
           _sum: { totalAmount: true, feesCovered: true },
           _count: true
         }),
 
         prisma.order.aggregate({
-          where: { ...confirmed, createdAt: { gte: startOfMonth } },
+          where: { ...revenueStatuses, createdAt: { gte: startOfMonth } },
           _sum: { totalAmount: true }
         }),
 
         prisma.order.aggregate({
-          where: { ...confirmed, createdAt: { gte: startOfLastMonth, lt: startOfMonth } },
+          where: { ...revenueStatuses, createdAt: { gte: startOfLastMonth, lt: startOfMonth } },
           _sum: { totalAmount: true }
         }),
 

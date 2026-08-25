@@ -84,7 +84,7 @@ export default function CustomSwitch({ checked, onChange, label, description }: 
         aria-hidden="true"
       >
         <div
-          className={`w-4 h-4 rounded-full absolute top-1 transition-all ${
+          className={`w-4 h-4 rounded-full absolute top-0.75 transition-all ${
             checked ? 'dark:bg-zinc-200 bg-white left-5' : 'dark:bg-zinc-600 bg-neutral-400 left-1'
           }`}
         />

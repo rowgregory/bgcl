@@ -10,6 +10,18 @@ import Picture from '@/components/_shared/Picture'
 import { usePreferencesStore } from '@/stores/usePreferencesStore'
 import { useNavigationStore } from '@/stores/useNavigationStore'
 import { useCartStore } from '@/stores/useCartStore'
+import type { Role } from '@prisma/client'
+
+const ADMIN_ROLES: Role[] = ['ADMIN', 'SUPERUSER', 'STAFF']
+
+/** Where the header's account link should point for a given role. */
+export function getAccountHref(role?: Role | null) {
+  if (!role) return '/supporter/overview'
+  if (ADMIN_ROLES.includes(role)) return '/admin/dashboard'
+  if (role === 'PROGRAM') return '/admin/job-applications'
+
+  return '/supporter/overview'
+}
 
 export default function Header() {
   const { data, status } = useSession()
@@ -19,13 +31,15 @@ export default function Header() {
   const isOpen = useNavigationStore((s) => s.mobileNavigation)
   const { items } = useCartStore()
   const isSpanish = usePreferencesStore((s) => s.isSpanish)
+  const role = data?.user?.role
+  const isAdmin = role === 'ADMIN' || role === 'SUPERUSER'
 
   const getLaunchPath = () => {
     if (status !== 'authenticated') return '/auth/login'
     return ['ADMIN', 'SUPERUSER'].includes(data?.user?.role ?? '')
       ? '/admin/dashboard'
       : data?.user?.role === 'PROGRAM'
-        ? '/program/job-applications'
+        ? '/admin/job-applications'
         : '/supporter/overview'
   }
 
@@ -104,13 +118,21 @@ export default function Header() {
                 </span>
               )}
             </Link>
-            <button
-              onClick={handleLaunchApp}
-              className="dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900 text-sm font-medium transition-colors whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
-              aria-label="Launch the member app"
-            >
-              Launch App
-            </button>
+            {status === 'authenticated' ? (
+              <Link
+                href={getAccountHref(role)}
+                className="dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900 text-sm font-medium transition-colors whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+              >
+                {isAdmin ? 'Dashboard' : 'My Account'}
+              </Link>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="dark:text-neutral-300 dark:hover:text-white text-neutral-700 hover:text-neutral-900 text-sm font-medium transition-colors whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </header>

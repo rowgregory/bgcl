@@ -5,13 +5,13 @@ export const getDonationsNavLinks = (path: string) => [
     isActive: path === '/admin/donations/overview'
   },
   {
-    textKey: 'Campaigns',
-    linkKey: '/admin/donations/campaigns',
-    isActive: path === '/admin/donations/campaigns'
-  },
-  {
     textKey: 'Transactions',
     linkKey: '/admin/donations/transactions',
     isActive: path === '/admin/donations/transactions'
+  },
+  {
+    textKey: 'Campaigns',
+    linkKey: '/admin/donations/campaigns',
+    isActive: path === '/admin/donations/campaigns'
   }
 ]

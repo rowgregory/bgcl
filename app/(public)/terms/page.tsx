@@ -68,14 +68,16 @@ export default function TermsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen dark:bg-neutral-950 bg-white">
       {/* Hero Section */}
-      <div className="bg-zinc-900 border-b border-zinc-800">
+      <div className="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800">
         <div className="max-w-334 mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-4">
-            <p className="text-sky-400 font-semibold text-sm uppercase tracking-wider">Legal</p>
-            <h1 className="text-5xl font-bold text-white">Terms & Conditions</h1>
-            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">Last Updated: January 2025</p>
+            <p className="text-sky-600 dark:text-sky-400 font-semibold text-sm uppercase tracking-wider">Legal</p>
+            <h1 className="text-5xl font-bold text-neutral-900 dark:text-white">Terms &amp; Conditions</h1>
+            <p className="text-neutral-600 dark:text-neutral-400 text-lg max-w-2xl mx-auto">
+              Last Updated: January 2025
+            </p>
           </motion.div>
         </div>
       </div>
@@ -86,9 +88,9 @@ export default function TermsPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="mb-16 bg-zinc-900 border border-zinc-800 rounded-lg p-8 space-y-4"
+          className="mb-16 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-8 space-y-4"
         >
-          <p className="text-zinc-300 leading-relaxed">
+          <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed">
             Please read these Terms and Conditions carefully before using this website. By accessing and using this
             site, you agree to be bound by all terms and conditions outlined below. If you do not agree with any part of
             these terms, please do not use this website.
@@ -110,75 +112,36 @@ export default function TermsPage() {
                   <span className="text-white font-bold">{section.number}</span>
                 </div>
                 <div className="flex-1 space-y-3">
-                  <h2 className="text-2xl font-bold text-white">{section.title}</h2>
-                  <p className="text-zinc-400 leading-relaxed">{section.content}</p>
+                  <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">{section.title}</h2>
+                  <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">{section.content}</p>
                 </div>
               </div>
             </motion.section>
           ))}
         </div>
 
-        {/* Text Message Agreement */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mt-16 space-y-6"
-        >
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-8 space-y-6">
-            <h2 className="text-2xl font-bold text-white">Agreement to Receive Text Messages</h2>
-
-            <p className="text-zinc-400 leading-relaxed">
-              By providing your mobile number, you agree that The Boys & Girls Club of Lynn may send you periodic SMS or
-              MMS messages containing but not limited to important information, updates, deals, and specials.
-            </p>
-
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-white">Terms:</h3>
-              <ul className="space-y-2">
-                {textMessageTerms.map((term, index) => (
-                  <li key={index} className="flex items-start space-x-3">
-                    <span className="text-sky-400 font-bold mt-1">✓</span>
-                    <span className="text-zinc-400">{term}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="border-t border-zinc-700 pt-6 space-y-4">
-              <h3 className="text-lg font-semibold text-white">Charges</h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Though The Boys & Girls Club of Lynn will never charge you for the text messages you receive, depending
-                on your phone plan, you may see some charges from your mobile provider. Please reach out to your
-                wireless provider if you have questions about your text or data plan.
-              </p>
-            </div>
-
-            <div className="border-t border-zinc-700 pt-6 space-y-4">
-              <h3 className="text-lg font-semibold text-white">Service Changes</h3>
-              <p className="text-zinc-400 leading-relaxed">
-                By subscribing or otherwise using the service, you acknowledge and agree that we will have the right to
-                change and/or terminate the service at any time, with or without cause and/or advance notice.
-              </p>
-            </div>
-          </div>
-        </motion.section>
-
         {/* Contact Section */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55 }}
-          className="mt-16 bg-zinc-900 border border-zinc-800 rounded-lg p-8 space-y-4"
+          className="mt-16 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-8 space-y-4"
         >
-          <h2 className="text-2xl font-bold text-white">Questions?</h2>
-          <p className="text-zinc-400 leading-relaxed">
-            If you have any questions about these Terms and Conditions, please contact The Boys & Girls Club of Lynn at{' '}
-            <a href="tel:781-593-1772" className="text-sky-400 hover:text-sky-300 font-semibold">
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">Questions?</h2>
+          <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
+            If you have any questions about these Terms and Conditions, please contact The Boys &amp; Girls Club of Lynn
+            at{' '}
+            <a
+              href="tel:781-593-1772"
+              className="text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 font-semibold"
+            >
               (781) 593-1772
             </a>{' '}
             or email us at{' '}
-            <a href="mailto:info@bgcl.org" className="text-sky-400 hover:text-sky-300 font-semibold">
+            <a
+              href="mailto:info@bgcl.org"
+              className="text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 font-semibold"
+            >
               info@bgcl.org
             </a>
             .
@@ -190,16 +153,22 @@ export default function TermsPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="mt-12 pt-8 border-t border-zinc-800"
+          className="mt-12 pt-8 border-t border-neutral-200 dark:border-neutral-800"
         >
           <div className="grid grid-cols-2 gap-4">
-            <Link href="/privacy" className="text-sky-400 hover:text-sky-300 font-semibold flex items-center space-x-2">
+            <Link
+              href="/privacy"
+              className="text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 font-semibold flex items-center space-x-2"
+            >
               <span>Privacy Policy</span>
-              <span>→</span>
+              <span aria-hidden="true">→</span>
             </Link>
-            <Link href="/contact" className="text-sky-400 hover:text-sky-300 font-semibold flex items-center space-x-2">
+            <Link
+              href="/contact"
+              className="text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 font-semibold flex items-center space-x-2"
+            >
               <span>Contact Us</span>
-              <span>→</span>
+              <span aria-hidden="true">→</span>
             </Link>
           </div>
         </motion.div>
@@ -210,11 +179,11 @@ export default function TermsPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.65 }}
-        className="bg-zinc-900 border-t border-zinc-800 py-12 mt-16"
+        className="bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 py-12 mt-16"
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <h2 className="text-2xl font-bold text-white">Transparent & Fair</h2>
-          <p className="text-zinc-400">
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">Transparent &amp; Fair</h2>
+          <p className="text-neutral-600 dark:text-neutral-400">
             We believe in transparency and fair practices. These terms ensure a safe and respectful environment for all
             users.
           </p>

@@ -1,3 +1,5 @@
+import { Variants } from 'framer-motion'
+
 export const drawerVariants = {
   closed: {
     x: '100%',
@@ -92,4 +94,17 @@ export const fadeIn = {
     opacity: 1,
     transition: { duration: 0.8, easing: 'easeOut', delay }
   })
+}
+
+export const EASE = [0.22, 1, 0.36, 1] as const
+
+/** Staggers its children in on first paint. */
+export const stagger: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.11, delayChildren: 0.15 } }
+}
+
+export const riseUp: Variants = {
+  hidden: { opacity: 0, y: 26 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.75, ease: EASE } }
 }

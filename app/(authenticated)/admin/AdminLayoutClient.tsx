@@ -37,12 +37,12 @@ type Props = {
 
 export default function AdminLayoutClient({ children, themes, isModalEnabled }: Props) {
   const pathname = usePathname()
-  const navigationGroups = adminNavigationLinkData(pathname)
+  const session = useSession()
+  const navigationGroups = adminNavigationLinkData(pathname, session?.data?.user?.role)
   const selectedPage = getCurrentPageId(pathname, navigationGroups)
   const adminSidebar = useSidebarStore((s) => s.adminSidebar)
   const toggleAdminSidebar = useSidebarStore((s) => s.toggleAdminSidebar)
   const onClose = useSidebarStore((s) => s.closeAdminSidebar)
-  const session = useSession()
 
   const isEventDetailsPage = pathname.includes('/admin/events/events/')
 
@@ -83,7 +83,9 @@ export default function AdminLayoutClient({ children, themes, isModalEnabled }: 
         </header>
       )}
 
-      <div className="min-h-screen dark:bg-neutral-950 bg-white flex">
+      <div
+        className={`dark:bg-neutral-950 bg-white flex ${isEventDetailsPage ? 'fixed inset-0 overflow-hidden' : 'min-h-screen'}`}
+      >
         {!isEventDetailsPage && (
           <>
             {/* ── Mobile sidebar backdrop ── */}

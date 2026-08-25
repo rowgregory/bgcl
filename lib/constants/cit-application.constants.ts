@@ -50,7 +50,6 @@ export const CIT_APPLICATION_PATH = '/cit-application'
  * admin list/detail views stay fresh without a manual refresh.
  */
 export const CIT_ADMIN_PATH = '/admin/cit-applications'
-export const CIT_PROGRAM_PATH = '/program/cit-applications'
 
 /**
  * Canonical list of valid statuses, derived to mirror the Prisma enum.

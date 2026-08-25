@@ -13,7 +13,7 @@ import { requireAdmin } from '@/lib/utils/requireAdmin'
  */
 export async function getCITApplications() {
   const auth = await requireAdmin({ allowProgram: true })
-  if (!auth.user) return { success: false, data: null, error: auth.error }
+  if (!auth.ok) return { success: false, data: null, error: auth.error }
 
   try {
     const applications = await prisma.cITApplication.findMany({

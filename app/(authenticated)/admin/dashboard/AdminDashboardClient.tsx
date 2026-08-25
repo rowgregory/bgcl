@@ -1,3 +1,7 @@
+'use client'
+
+import { DashboardStats } from '@/lib/actions/_dashboard/getDashboardStats'
+import { motion } from 'framer-motion'
 import { ShoppingCart, DollarSign, Heart, Ticket, TrendingDown, TrendingUp, Users } from 'lucide-react'
 
 const usd = (n: number) => `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
@@ -12,10 +16,32 @@ const STATUS_STYLES: Record<string, string> = {
   CONFIRMED: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
   PENDING: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400',
   FAILED: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
+  CANCELLED: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400',
   REFUNDED: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
 }
 
-export default function AdminDashboardClient({ stats }) {
+// Cards stagger in; rows follow once the grid has landed
+const gridVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.05 } }
+}
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' as const } }
+}
+
+const tableVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.03, delayChildren: 0.25 } }
+}
+
+const rowVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.25 } }
+}
+
+export default function AdminDashboardClient({ stats }: { stats: DashboardStats }) {
   const monthDelta = stats.revenueThisMonth - stats.revenueLastMonth
   const monthDeltaPct = stats.revenueLastMonth > 0 ? ((monthDelta / stats.revenueLastMonth) * 100).toFixed(1) : null
   const monthUp = monthDelta >= 0
@@ -60,7 +86,7 @@ export default function AdminDashboardClient({ stats }) {
     {
       label: 'Total Orders',
       value: stats.totalOrders.toLocaleString(),
-      sub: 'confirmed orders',
+      sub: 'confirmed and cancelled',
       icon: ShoppingCart,
       color: 'text-sky-600 dark:text-sky-400',
       bg: 'bg-sky-50 dark:bg-sky-500/10'
@@ -78,16 +104,24 @@ export default function AdminDashboardClient({ stats }) {
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 px-6 py-10">
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <motion.div
+        variants={gridVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
+      >
         {statCards.map(({ label, value, sub, subGreen, subRed, icon: Icon, color, bg }) => (
-          <div
+          <motion.div
             key={label}
+            variants={cardVariants}
+            whileHover={{ y: -2 }}
+            transition={{ duration: 0.15 }}
             className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5"
           >
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{label}</p>
               <div className={`p-1.5 rounded-lg ${bg}`}>
-                <Icon className={`w-4 h-4 ${color}`} />
+                <Icon className={`w-4 h-4 ${color}`} aria-hidden="true" />
               </div>
             </div>
             <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-1">{value}</p>
@@ -102,76 +136,104 @@ export default function AdminDashboardClient({ stats }) {
             >
               {sub}
             </p>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* Recent Orders */}
-      <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.2, ease: 'easeOut' }}
+        className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden"
+      >
         <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-800">
           <h2 className="text-sm font-semibold text-neutral-900 dark:text-white">Recent Orders</h2>
           <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">10 most recent across all types</p>
         </div>
 
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-neutral-100 dark:border-neutral-800">
-              <th className="text-left px-6 py-3 text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
-                Date
-              </th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
-                Supporter
-              </th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider hidden md:table-cell">
-                Event
-              </th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider hidden lg:table-cell">
-                Type
-              </th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="text-right px-6 py-3 text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
-                Amount
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
-            {stats?.recentOrders.map((order) => {
-              const name = order.user
-                ? `${order.user.firstName ?? ''} ${order.user.lastName ?? ''}`.trim() || order.user.email
-                : order.customerName || 'Anonymous'
-
-              return (
-                <tr key={order.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors">
-                  <td className="px-6 py-3.5 text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
-                    {new Date(order.createdAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: '2-digit',
-                      year: '2-digit'
-                    })}
-                  </td>
-                  <td className="px-6 py-3.5 font-medium text-neutral-900 dark:text-white max-w-40 truncate">{name}</td>
-                  <td className="px-6 py-3.5 text-neutral-500 dark:text-neutral-400 hidden md:table-cell max-w-45 truncate">
-                    {order.event?.title ?? '—'}
-                  </td>
-                  <td className="px-6 py-3.5 text-neutral-500 dark:text-neutral-400 hidden lg:table-cell whitespace-nowrap">
-                    {ORDER_TYPE_LABEL[order.type] ?? order.type}
-                  </td>
-                  <td className="px-6 py-3.5">
-                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${STATUS_STYLES[order.status] ?? ''}`}>
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3.5 text-right font-semibold text-neutral-900 dark:text-white whitespace-nowrap">
-                    {usd(Number(order.totalAmount))}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-neutral-100 dark:border-neutral-800">
+                <th className="text-left px-6 py-3 text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="text-left px-6 py-3 text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
+                  Supporter
+                </th>
+                <th className="text-left px-6 py-3 text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider hidden md:table-cell">
+                  Event
+                </th>
+                <th className="text-left px-6 py-3 text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider hidden lg:table-cell">
+                  Type
+                </th>
+                <th className="text-left px-6 py-3 text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="text-right px-6 py-3 text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
+                  Amount
+                </th>
+              </tr>
+            </thead>
+            <motion.tbody
+              variants={tableVariants}
+              initial="hidden"
+              animate="visible"
+              className="divide-y divide-neutral-100 dark:divide-neutral-800"
+            >
+              {stats.recentOrders.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-10 text-center text-neutral-400 dark:text-neutral-500">
+                    No orders yet
                   </td>
                 </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
+              ) : (
+                stats.recentOrders.map((order) => {
+                  const name = order.user
+                    ? `${order.user.firstName ?? ''} ${order.user.lastName ?? ''}`.trim() || order.user.email
+                    : order.customerName || 'Anonymous'
+
+                  return (
+                    <motion.tr
+                      key={order.id}
+                      variants={rowVariants}
+                      className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                    >
+                      <td className="px-6 py-3.5 text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
+                        {new Date(order.createdAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: '2-digit',
+                          year: '2-digit'
+                        })}
+                      </td>
+                      <td className="px-6 py-3.5 font-medium text-neutral-900 dark:text-white max-w-40 truncate">
+                        {name}
+                      </td>
+                      <td className="px-6 py-3.5 text-neutral-500 dark:text-neutral-400 hidden md:table-cell max-w-45 truncate">
+                        {order.event?.title ?? '—'}
+                      </td>
+                      <td className="px-6 py-3.5 text-neutral-500 dark:text-neutral-400 hidden lg:table-cell whitespace-nowrap">
+                        {ORDER_TYPE_LABEL[order.type] ?? order.type}
+                      </td>
+                      <td className="px-6 py-3.5">
+                        <span
+                          className={`px-2 py-0.5 rounded text-xs font-medium ${STATUS_STYLES[order.status] ?? ''}`}
+                        >
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3.5 text-right font-semibold text-neutral-900 dark:text-white whitespace-nowrap">
+                        {usd(Number(order.totalAmount))}
+                      </td>
+                    </motion.tr>
+                  )
+                })
+              )}
+            </motion.tbody>
+          </table>
+        </div>
+      </motion.div>
     </div>
   )
 }

@@ -2,7 +2,7 @@ import { Plus, Ticket } from 'lucide-react'
 import { TicketRow } from './TicketRow'
 import { sectionHeaderCls } from '@/lib/constants/form.constants'
 
-export function RightPanelTicket({ tickets, setTickets, publishedCount, pending, totalCapacity, totalSold }) {
+export function RightPanelTicket({ tickets, setTickets, publishedCount, pending, totalCapacity, totalSold, isRaffle }) {
   const addTicket = () => {
     setTickets((prev) => [
       ...prev,
@@ -78,6 +78,7 @@ export function RightPanelTicket({ tickets, setTickets, publishedCount, pending,
               onDelete={() => removeTicket(idx)}
               onToggleExpand={() => toggleExpand(idx)}
               isSaving={pending}
+              isRaffle={isRaffle}
             />
           ))
         )}

@@ -14,8 +14,6 @@ export async function getSubscriptionDetails(subscriptionId: string) {
     })
     const subscription = response as any
 
-    console.log('subscription: ', subscription)
-
     const order = await prisma.order.findFirst({
       where: {
         stripeSubscriptionId: subscriptionId,

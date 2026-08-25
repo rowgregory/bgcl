@@ -29,12 +29,12 @@ export default function PublicPartnersClient({ partners, pageData }: { partners:
             >
               <div className="space-y-3 sm:space-y-4">
                 <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-                  {t.eyebrow}
+                  {t?.eyebrow}
                 </p>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-                  {t.heading}
+                  {t?.heading}
                 </h1>
-                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t.subheading}</p>
+                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t?.subheading}</p>
               </div>
 
               <dl className="flex flex-wrap gap-6 sm:gap-10 pt-2">
@@ -102,12 +102,12 @@ export default function PublicPartnersClient({ partners, pageData }: { partners:
             >
               <div className="space-y-3 max-w-xl">
                 <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-500 uppercase tracking-widest">
-                  {t.cta_eyebrow}
+                  {t?.cta_eyebrow}
                 </p>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 leading-tight">
-                  {t.cta_heading}
+                  {t?.cta_heading}
                 </h2>
-                <p className="text-sm sm:text-base dark:text-neutral-400 text-neutral-600">{t.cta_subheading}</p>
+                <p className="text-sm sm:text-base dark:text-neutral-400 text-neutral-600">{t?.cta_subheading}</p>
               </div>
               <Link
                 href="/contact?subject=other"

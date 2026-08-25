@@ -66,24 +66,19 @@ export const CampaignDrawer = () => {
     })
   }, [isOpen, campaign, reset])
 
-  const onSubmit = handleSubmit(
-    async (values) => {
-      try {
-        const res = isUpdating ? await updateCampaign(campaign.id, values) : await createCampaign(values)
-        if (!res.success) {
-          setError('root', { message: res.error })
-        }
-
-        close()
-        router.refresh()
-      } catch {
-        setError('root', { message: `Failed to ${isUpdating ? 'update' : 'create'} campaign. Please try again` })
+  const onSubmit = handleSubmit(async (values) => {
+    try {
+      const res = isUpdating ? await updateCampaign(campaign.id, values) : await createCampaign(values)
+      if (!res.success) {
+        setError('root', { message: res.error })
       }
-    },
-    (errors) => {
-      console.log('VALIDATION FAILED:', errors)
+
+      close()
+      router.refresh()
+    } catch {
+      setError('root', { message: `Failed to ${isUpdating ? 'update' : 'create'} campaign. Please try again` })
     }
-  )
+  })
 
   return (
     <AnimatePresence>

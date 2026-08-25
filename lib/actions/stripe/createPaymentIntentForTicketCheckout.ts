@@ -5,6 +5,7 @@ import Stripe from 'stripe'
 import { stripe } from '../../stripe/stripeClient'
 import { createLog } from '../log/createLog'
 import { auth } from '@/lib/auth/auth'
+import { getOrCreateStripeCustomer } from './getOrCreateStripeCustomer'
 
 interface TicketCheckoutParams {
   email: string
@@ -35,6 +36,12 @@ interface CartLine {
 
 const MIN_AMOUNT_CENTS = 500
 const MAX_METADATA_LENGTH = 450
+
+const STRIPE_PERCENT = 0.029
+const STRIPE_FIXED_CENTS = 30
+
+const grossUpCents = (subtotalCents: number) =>
+  Math.round((subtotalCents + STRIPE_FIXED_CENTS) / (1 - STRIPE_PERCENT)) - subtotalCents
 
 const trim = (value?: string | null) => (value ?? '').slice(0, MAX_METADATA_LENGTH)
 
@@ -112,8 +119,9 @@ export async function createPaymentIntentForTicketCheckout({
       subtotal += Math.round(Number(ticket.price) * 100) * line.quantity
     }
 
-    const fees = coverFees ? Math.max(0, Math.round(feesCovered)) : 0
-    const expectedAmount = subtotal + fees
+    const feeCents = coverFees ? grossUpCents(subtotal) : 0
+
+    const expectedAmount = subtotal + feeCents
 
     if (expectedAmount < MIN_AMOUNT_CENTS) {
       return { success: false, data: null, error: 'Minimum purchase amount is $5.' }
@@ -129,12 +137,7 @@ export async function createPaymentIntentForTicketCheckout({
       })
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { stripeCustomerId: true }
-    })
-
-    const customerId = user?.stripeCustomerId ?? undefined
+    const customerId = await getOrCreateStripeCustomer(userId)
 
     const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
       amount: expectedAmount,
@@ -150,7 +153,7 @@ export async function createPaymentIntentForTicketCheckout({
         email: trim(email),
         saveCard: saveCard ? 'true' : 'false',
         coverFees: coverFees ? 'true' : 'false',
-        feesCovered: String(fees),
+        feesCovered: String(feesCovered),
         addressLine1: trim(address?.addressLine1),
         addressLine2: trim(address?.addressLine2),
         city: trim(address?.city),
@@ -211,6 +214,15 @@ export async function createPaymentIntentForTicketCheckout({
       return { success: false, data: null, error: error.message }
     }
 
-    return { success: false, data: null, error: 'Could not start the payment. Please try again.' }
+    const message = error instanceof Error ? error.message : 'Unknown error'
+
+    return {
+      success: false,
+      data: null,
+      error:
+        process.env.NODE_ENV === 'development'
+          ? `Could not start the payment: ${message}`
+          : 'Could not start the payment. Please try again.'
+    }
   }
 }

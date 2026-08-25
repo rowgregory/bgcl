@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import type { Event, Ticket, Order, User, EventType, EventStatus } from '@prisma/client'
 import type { EventFormInput, RafflePrize, RaffleScheduleItem, DressCodeItem } from '@/lib/validations/event.validation'
 
@@ -89,3 +89,20 @@ export type LocalTicket = Partial<SerializedTicket> & {
   _isDirty: boolean
   _expanded: boolean
 }
+
+type GalaEventContext = {
+  eventId: string
+  eventTitle: string
+  ticketSalesStartDate: Date | null
+  ticketSalesEndDate: Date | null
+}
+
+export type TGalaTicketMarquee = GalaEventContext & {
+  tickets: Ticket[]
+}
+
+export type TGalaQuickAddPill = ComponentPropsWithoutRef<'button'> &
+  GalaEventContext & {
+    ticket: Ticket
+    soundOn: boolean
+  }

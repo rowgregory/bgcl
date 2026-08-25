@@ -1,7 +1,14 @@
-import SupporterPage from './page'
+'use client'
 
-export const dynamic = 'force-dynamic'
+import { stripePromise } from '@/lib/stripe/stripePromise'
+import { Elements } from '@stripe/react-stripe-js'
+import { ReactNode } from 'react'
+import SupporterShell from './_components/SupporterShell'
 
-export default async function SupporterLayout({ children }) {
-  return <SupporterPage>{children}</SupporterPage>
+export default function SupporterLayout({ children }: { children: ReactNode }) {
+  return (
+    <Elements stripe={stripePromise}>
+      <SupporterShell>{children}</SupporterShell>
+    </Elements>
+  )
 }

@@ -1,6 +1,6 @@
 import { EventTemplate } from '@/types/event.types'
 import { EventType } from '@prisma/client'
-import { Sparkles, Briefcase, Users, Music, GraduationCap, Heart, Trophy, Utensils } from 'lucide-react'
+import { Sparkles, Briefcase, Users, Music, GraduationCap, Heart, Trophy, Utensils, Wine } from 'lucide-react'
 
 export const EVENT_CATEGORIES = [
   'Workshop',
@@ -140,39 +140,51 @@ export const eventTemplates: EventTemplate[] = [
   {
     id: 'gala',
     name: 'Gala Event',
-    icon: <Sparkles className="w-5 h-5" />,
-    description: 'Elegant evening gala event',
+    icon: <Wine className="w-5 h-5" />,
+    description: 'Formal seated dinner with awards, live auction, and sponsor recognition',
     data: {
       title: 'Annual Gala',
-      description: 'Join us for an elegant evening of dinner, dancing, and celebration.',
+      description:
+        'An evening of dinner, live entertainment, and celebration honoring the people who make our work possible. Proceeds support year-round programming at the Boys & Girls Club of Lynn.',
       category: 'Fundraiser',
       type: EventType.IN_PERSON,
-      dresscode: 'Formal',
-      date: '2026-10-11T22:30',
+      dresscode: 'Black Tie Optional',
+      date: '2026-10-17T18:00',
       duration: '4 hours',
-      location: 'Danvers Yacht Club',
-      maxAttendees: '200',
-      requirements: 'Registration Required, 21+ Only',
-      materials: '',
-      isPublic: false,
-      ticketSalesStartDate: '2026-09-01T00:00',
-      ticketSalesEndDate: '2026-10-10T23:59',
-      registrationDeadline: '2026-10-02T23:59',
+      location: 'Tedesco Country Club',
+      maxAttendees: 200,
+      requirements: '21+ Only',
+      materials: 'Business Cards',
+      isPublic: true,
 
       isRaffle: false,
-      raffleDrawDate: null,
-      raffleTerms: null,
-      raffleTicketsPerOrder: 1,
-      subtitle: null,
-      tagline: null,
-      address: null,
-      website: null,
-      missionStatement: null,
-      raffleTicketPrice: null,
-      raffleGrandPrizeLabel: null,
-      raffleOddsLabel: null,
-      rafflePrizes: null,
-      raffleSchedule: null
+      subtitle: 'An Evening of Impact',
+      tagline: 'Celebrating Our Youth, Our Members, Our Future',
+      address: '154 Tedesco St, Marblehead, MA 01945',
+      website: 'www.bgcl.org',
+      missionStatement:
+        'To inspire and enable all young people, especially those who need us the most, to be responsible, caring and productive citizens of tomorrow.',
+      registrationDeadline: '2026-10-03',
+      ticketSalesStartDate: '2026-08-01T00:00',
+      ticketSalesEndDate: '2026-10-17T18:00',
+
+      raffleSchedule: [
+        { time: '6:00 PM', label: 'Cocktail Reception & Silent Auction Opens' },
+        { time: '7:00 PM', label: 'Dinner Service & Welcome' },
+        { time: '7:45 PM', label: 'Youth of the Year Presentation' },
+        { time: '8:15 PM', label: 'Live Auction & Fund a Need' },
+        { time: '9:00 PM', label: 'Dancing & Dessert' },
+        { time: 'All Night', label: 'Open Bar' }
+      ],
+
+      dressCodeHeadline: 'Black Tie Optional',
+      dressCodeItems: [
+        { label: 'Formal', description: 'Tuxedo, dark suit, floor-length or cocktail dress' },
+        { label: 'Business Formal', description: 'Suit and tie, or a dressy separates combination' },
+        { label: 'Festive Touches', description: 'A pop of color or a statement accessory is welcome' }
+      ],
+      dressCodeNote: 'Per Venue: No jeans, t-shirts, or hats allowed.',
+      bestDressedPrizes: ''
     }
   },
   {

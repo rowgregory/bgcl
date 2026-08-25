@@ -154,32 +154,6 @@ export function EventDetails({ register, errors }) {
             placeholder="Business Cards"
           />
         </div>
-
-        <div>
-          <label htmlFor="registrationUrl" className={labelCls}>
-            Registration URL
-          </label>
-          <input
-            id="registrationUrl"
-            type="text"
-            {...register('registrationUrl')}
-            className={inputCls}
-            placeholder="https://..."
-          />
-        </div>
-
-        <div>
-          <label htmlFor="meetingUrl" className={labelCls}>
-            Meeting URL
-          </label>
-          <input
-            id="meetingUrl"
-            type="text"
-            {...register('meetingUrl')}
-            className={inputCls}
-            placeholder="https://zoom.us/..."
-          />
-        </div>
       </div>
     </div>
   )

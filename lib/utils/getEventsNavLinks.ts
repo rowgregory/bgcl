@@ -5,14 +5,14 @@ export const getEventsNavLinks = (path: string) => [
     isActive: path === '/admin/events/overview'
   },
   {
-    textKey: 'Events',
-    linkKey: '/admin/events/events',
-    isActive: path === '/admin/events/events'
-  },
-  {
     textKey: 'Transactions',
     linkKey: '/admin/events/transactions',
     isActive: path === '/admin/events/transactions'
+  },
+  {
+    textKey: 'Events',
+    linkKey: '/admin/events/events',
+    isActive: path === '/admin/events/events'
   },
   {
     textKey: 'Manifest',

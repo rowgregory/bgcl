@@ -9,7 +9,7 @@ import StatChip from '@/components/_shared/StatChip'
 import { TicketOrderDrawer } from '@/app/(authenticated)/admin/events/transactions/_components/TicketOrderDrawer'
 import { TicketOrderRow } from './_components/TicketOrderRow'
 
-export const EventsTransactionsClient = ({ data }: { data: IOrder[] }) => {
+export default function EventsTransactionsClient({ data }: { data: IOrder[] }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [eventFilter, setEventFilter] = useState<string>('all')
   const [open, setOpen] = useState(false)
@@ -56,7 +56,7 @@ export const EventsTransactionsClient = ({ data }: { data: IOrder[] }) => {
 
       <div className="h-screen bg-white dark:bg-neutral-950 flex flex-col min-w-0">
         <div className="flex-1 overflow-y-auto px-3 sm:px-8 pb-6 pt-4">
-          <div className="mx-auto max-w-7xl space-y-4">
+          <div className="space-y-4">
             {/* Stats */}
             <div className="overflow-x-auto pb-1">
               <div className="flex items-center gap-4 min-w-max">
@@ -167,5 +167,3 @@ export const EventsTransactionsClient = ({ data }: { data: IOrder[] }) => {
     </>
   )
 }
-
-export default EventsTransactionsClient

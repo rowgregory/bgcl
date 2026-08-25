@@ -287,7 +287,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 
       // Increment guest count — guard the update
       if (metadata?.eventId && order.attendingEvent !== false) {
-        const guestIncrement = Math.max(...tickets.map((t) => t.guestCount ?? 1))
+        const guestIncrement = tickets.reduce((sum, t) => sum + (t.guestCount ?? 1) * (t.quantity ?? 1), 0)
 
         if (guestIncrement > 0) {
           const eventExists = await prisma.event.findUnique({
@@ -428,32 +428,40 @@ async function handlePaymentMethodAttached(paymentMethod: Stripe.PaymentMethod) 
 
     if (!customerId) return
 
+    const card = paymentMethod.card
+    if (!card) return
+
     const user = await prisma.user.findFirst({
-      where: { stripeCustomerId: customerId }
+      where: { stripeCustomerId: customerId },
+      select: { id: true }
     })
 
     if (!user) return
 
-    // Set all existing cards to non-default
-    await prisma.paymentMethod.updateMany({
-      where: { userId: user.id },
-      data: { isDefault: false }
-    })
+    await prisma.$transaction(async (tx) => {
+      const existing = await tx.paymentMethod.findUnique({
+        where: { stripePaymentId: paymentMethod.id },
+        select: { id: true }
+      })
 
-    // Upsert — create if new, update if already exists
-    await prisma.paymentMethod.upsert({
-      where: { stripePaymentId: paymentMethod.id },
-      update: { isDefault: true },
-      create: {
-        stripePaymentId: paymentMethod.id,
-        cardholderName: paymentMethod.billing_details?.name || 'Unknown',
-        cardBrand: paymentMethod.card?.brand || 'unknown',
-        cardLast4: paymentMethod.card?.last4 || '0000',
-        cardExpMonth: paymentMethod.card?.exp_month || 0,
-        cardExpYear: paymentMethod.card?.exp_year || 0,
-        isDefault: true,
-        userId: user.id
-      }
+      // savePaymentMethod already wrote this row and owns the default flag
+      if (existing) return
+
+      const hasAny = await tx.paymentMethod.count({ where: { userId: user.id } })
+
+      await tx.paymentMethod.create({
+        data: {
+          stripePaymentId: paymentMethod.id,
+          cardholderName: paymentMethod.billing_details?.name ?? null,
+          cardBrand: card.brand,
+          cardLast4: card.last4,
+          cardExpMonth: card.exp_month,
+          cardExpYear: card.exp_year,
+          // Only a user's first card is default by default
+          isDefault: hasAny === 0,
+          userId: user.id
+        }
+      })
     })
 
     await createLog('info', 'Payment method attached via webhook', {

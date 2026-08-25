@@ -43,15 +43,24 @@ export function usePaymentProcessor() {
     const channel = channelRef.current
     const pusher = pusherRef.current
 
-    if (channel) {
-      channel.unbind_all()
-      pusher?.unsubscribe(channel.name)
-    }
-
-    pusher?.disconnect()
-
     channelRef.current = null
     pusherRef.current = null
+
+    if (!pusher) return
+
+    channel?.unbind_all()
+
+    const state = pusher.connection.state
+
+    // Disconnecting mid-handshake logs an error, so wait for the socket to settle
+    if (state === 'connecting' || state === 'initialized') {
+      pusher.connection.bind('connected', () => pusher.disconnect())
+      return
+    }
+
+    if (state === 'disconnected' || state === 'failed') return
+
+    pusher.disconnect()
   }, [])
 
   // Navigating away mid-payment shouldn't leave a socket open
@@ -132,11 +141,7 @@ export function usePaymentProcessor() {
         if (!saveCard || !paymentMethod) return
 
         void (async () => {
-          const res = await savePaymentMethod({ stripePaymentId: paymentMethod, isDefault: true })
-
-          if (!res.success) {
-            console.error('Failed to save payment method:', res.error)
-          }
+          await savePaymentMethod({ stripePaymentId: paymentMethod, isDefault: true })
         })()
       })
     },

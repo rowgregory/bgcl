@@ -24,7 +24,7 @@ export default function LatestNewsClient({
   news: News[]
   pageData: any
 }) {
-  const t = pageData.sections.news
+  const t = pageData?.sections?.news
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [memberType, setMemberType] = useState<'member' | 'donor' | 'non-member'>('member')
@@ -106,15 +106,15 @@ export default function LatestNewsClient({
             >
               <div className="space-y-3 sm:space-y-4">
                 <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-                  {t.eyebrow}
+                  {t?.eyebrow}
                 </p>
                 <h1
                   id="latest-news-heading"
                   className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight"
                 >
-                  {t.heading}
+                  {t?.heading}
                 </h1>
-                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t.subheading}</p>
+                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t?.subheading}</p>
               </div>
             </motion.div>
 
@@ -229,11 +229,11 @@ export default function LatestNewsClient({
                 <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
                   <Mail className="w-6 h-6 sm:w-8 sm:h-8 dark:text-sky-400 text-sky-600 shrink-0" aria-hidden="true" />
                   <h2 id="subscribe-heading" className="text-xl sm:text-2xl font-bold dark:text-white text-neutral-900">
-                    {t.subscribe_heading}
+                    {t?.subscribe_heading}
                   </h2>
                 </div>
                 <p className="dark:text-neutral-300 text-neutral-700 mb-6 sm:mb-8 max-w-2xl text-sm sm:text-base">
-                  {t.subscribe_subheading}
+                  {t?.subscribe_subheading}
                 </p>
 
                 <div id={messageId}>
@@ -343,9 +343,9 @@ export default function LatestNewsClient({
               className="mb-12"
             >
               <h2 id="newsletters-heading" className="text-4xl font-black dark:text-white text-neutral-900 mb-4">
-                {t.newsletters_heading}
+                {t?.newsletters_heading}
               </h2>
-              <p className="text-lg dark:text-neutral-400 text-neutral-600">{t.newsletters_subheading}</p>
+              <p className="text-lg dark:text-neutral-400 text-neutral-600">{t?.newsletters_subheading}</p>
             </motion.div>
 
             {Object.entries(
@@ -425,9 +425,9 @@ export default function LatestNewsClient({
               className="space-y-6"
             >
               <h2 id="cta-heading" className="text-4xl font-black dark:text-white text-neutral-900">
-                {t.cta_heading}
+                {t?.cta_heading}
               </h2>
-              <p className="text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl mx-auto">{t.cta_subheading}</p>
+              <p className="text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl mx-auto">{t?.cta_subheading}</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
                   href="tel:781-593-1772"

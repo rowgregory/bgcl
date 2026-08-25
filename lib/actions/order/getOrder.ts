@@ -38,7 +38,7 @@ export const getOrder = async (id: string) => {
       }
     })
 
-    if (!order) return null
+    if (!order) return { success: true, data: null, error: null }
 
     return {
       success: true,

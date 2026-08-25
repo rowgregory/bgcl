@@ -11,13 +11,15 @@ export function TicketRow({
   onUpdate,
   onDelete,
   onToggleExpand,
-  isSaving
+  isSaving,
+  isRaffle
 }: {
   ticket: LocalTicket
   onUpdate: (field: string, value: any) => void
   onDelete: () => void
   onToggleExpand: () => void
   isSaving: boolean
+  isRaffle: boolean
 }) {
   const typeCfg = TICKET_TYPE_CONFIG[(ticket.ticketType as TicketType) ?? 'GENERAL']
 
@@ -50,6 +52,10 @@ export function TicketRow({
             <span>
               {ticket.quantitySold ?? 0}/{ticket.totalQuantity ?? 0} sold
             </span>
+
+            <span className="text-neutral-300 dark:text-neutral-600">·</span>
+            <span>Admits {ticket.guestCount}</span>
+
             <span className="text-neutral-300 dark:text-neutral-600">·</span>
             {ticket.isPublished ? (
               <span className="text-green-600 dark:text-green-400 flex items-center gap-1">
@@ -120,6 +126,19 @@ export function TicketRow({
                 />
               </div>
 
+              {/* Admits */}
+              <div className="col-span-2">
+                <label className={labelCls}>Admits (guests per ticket)</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={ticket.guestCount ?? ''}
+                  onChange={(e) => onUpdate('guestCount', parseInt(e.target.value) || 1)}
+                  className={inputCls}
+                  placeholder="1"
+                />
+              </div>
+
               {/* Ticket Type */}
               <div className="col-span-2">
                 <label className={labelCls}>Type</label>
@@ -135,15 +154,15 @@ export function TicketRow({
                 </select>
               </div>
 
-              <div className="flex items-end">
-                <CustomSwitch
-                  checked={!!ticket.isRaffleTicket}
-                  onChange={(v) => onUpdate('isRaffleTicket', v)}
-                  label="Raffle Ticket"
-                />
-              </div>
+              <div className="col-span-2 space-y-2">
+                {isRaffle && (
+                  <CustomSwitch
+                    checked={!!ticket.isRaffleTicket}
+                    onChange={(v) => onUpdate('isRaffleTicket', v)}
+                    label="Raffle Ticket"
+                  />
+                )}
 
-              <div className="flex items-end">
                 <CustomSwitch
                   checked={!!ticket.isPublished}
                   onChange={(v) => onUpdate('isPublished', v)}

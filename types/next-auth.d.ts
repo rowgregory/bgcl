@@ -1,33 +1,28 @@
-import { DefaultSession, DefaultUser } from 'next-auth'
+import type { Role } from '@prisma/client'
+import type { DefaultSession, DefaultUser } from 'next-auth'
 
+// Columns the adapter reads and writes beyond its own schema
 declare module '@auth/core/adapters' {
   interface AdapterUser {
-    callbackUrl?: string
-    role: 'STAFF' | 'VOLUNTEER' | 'ADMIN' | 'SUPERUSER' | 'SUPPORTER' | 'PROGRAM'
+    role: Role
+    firstName?: string | null
+    lastName?: string | null
   }
 }
 
 declare module 'next-auth' {
+  /** Returned by the Google `profile()` mapping and handed to the adapter. */
+  interface User extends DefaultUser {
+    role?: Role
+    firstName?: string | null
+    lastName?: string | null
+  }
+
   interface Session {
     user: {
       id: string
       email: string
-      role: 'STAFF' | 'VOLUNTEER' | 'ADMIN' | 'SUPERUSER' | 'SUPPORTER' | 'PROGRAM'
-      callbackUrl?: string
+      role: Role
     } & DefaultSession['user']
-  }
-}
-
-interface User extends DefaultUser {
-  id: string
-  role: 'STAFF' | 'VOLUNTEER' | 'ADMIN' | 'SUPERUSER' | 'SUPPORTER' | 'PROGRAM'
-  callbackUrl?: string
-}
-
-declare module 'next-auth/jwt' {
-  interface JWT {
-    userId: string
-    role: 'STAFF' | 'VOLUNTEER' | 'ADMIN' | 'SUPERUSER' | 'SUPPORTER' | 'PROGRAM'
-    callbackUrl?: string
   }
 }

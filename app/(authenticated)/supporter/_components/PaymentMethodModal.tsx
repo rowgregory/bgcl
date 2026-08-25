@@ -3,7 +3,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js'
-import { createPaymentMethod } from '@/lib/actions/stripe/createPaymentMethod'
 import PaymentMethodForm from './PaymentMethodForm'
 import { getSetupIntentClientSecret } from '@/lib/actions/stripe/getSetupIntentClientSecret'
 import Backdrop from '@/components/_shared/Backdrop'
@@ -20,9 +19,12 @@ import {
 } from '@/lib/validations/payment-method.validation'
 import { useEscapeKey } from '@/lib/hooks/useEscapeKey'
 import { useLockBodyScroll } from '@/lib/hooks/useLockBodyScroll'
+import { PaymentMethod } from '@prisma/client'
+import { savePaymentMethod } from '@/lib/actions/stripe/savePaymentMethod'
 
-export default function PaymentMethodModal() {
+export default function PaymentMethodModal({ savedCards }: { savedCards: PaymentMethod[] }) {
   const router = useRouter()
+  const isFirstCard = savedCards.length === 0
 
   const stripe = useStripe()
   const elements = useElements()
@@ -32,7 +34,7 @@ export default function PaymentMethodModal() {
 
   const methods = useForm<PaymentMethodFormInput, unknown, PaymentMethodFormValues>({
     resolver: zodResolver(paymentMethodFormSchema),
-    defaultValues: EMPTY_PAYMENT_METHOD,
+    defaultValues: { ...EMPTY_PAYMENT_METHOD, isDefault: isFirstCard },
     mode: 'onTouched'
   })
 
@@ -63,14 +65,10 @@ export default function PaymentMethodModal() {
     try {
       const setupRes = await getSetupIntentClientSecret()
 
-      if (!setupRes.success || !setupRes.data.clientSecret) {
+      if (!setupRes.success || !setupRes.data?.clientSecret) {
         setError('root', { message: setupRes.error || 'Could not start card setup. Try again.' })
         return
       }
-
-      // Confirm card setup
-      const cardElement = elements.getElement(CardElement)
-      if (!cardElement) throw new Error('Card element not found')
 
       const { setupIntent, error } = await stripe.confirmCardSetup(setupRes.data.clientSecret, {
         payment_method: {
@@ -84,15 +82,15 @@ export default function PaymentMethodModal() {
         return
       }
 
-      const paymentMethodId =
+      const stripePaymentId =
         typeof setupIntent?.payment_method === 'string' ? setupIntent.payment_method : setupIntent?.payment_method?.id
 
-      if (!paymentMethodId) {
+      if (!stripePaymentId) {
         setError('root', { message: 'Stripe did not return a payment method. Try again.' })
         return
       }
 
-      const res = await createPaymentMethod(paymentMethodId)
+      const res = await savePaymentMethod({ stripePaymentId, isDefault: values.isDefault })
 
       if (!res.success) {
         setError('root', { message: res.error })
@@ -125,7 +123,7 @@ export default function PaymentMethodModal() {
             >
               <FormProvider {...methods}>
                 <form id="paymentMethodForm" onSubmit={onSubmit} noValidate>
-                  <PaymentMethodForm />
+                  <PaymentMethodForm isFirstCard={isFirstCard} />
                 </form>
               </FormProvider>
             </motion.div>

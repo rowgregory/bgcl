@@ -5,6 +5,8 @@ import Stripe from 'stripe'
 import { createLog } from '../log/createLog'
 import { stripe } from '../../stripe/stripeClient'
 import { requireUser } from '@/lib/utils/requireAdmin'
+import { isCardLinkedToSubscription } from './isCardLinkedToSubscription'
+import { getOrCreateStripeCustomer } from './getOrCreateStripeCustomer'
 
 export async function deletePaymentMethod(paymentMethodId: string): Promise<{
   success: boolean
@@ -42,26 +44,13 @@ export async function deletePaymentMethod(paymentMethodId: string): Promise<{
       return { success: false, data: null, error: 'Payment method not found.' }
     }
 
-    // Don't strand an active recurring donation without a card
-    if (paymentMethod.isDefault) {
-      const activeSubscription = await prisma.order.findFirst({
-        where: {
-          OR: [{ userId: auth.user.id }, ...(auth.user.email ? [{ customerEmail: auth.user.email }] : [])],
-          type: 'RECURRING_DONATION',
-          status: 'CONFIRMED',
-          stripeSubscriptionId: { not: null },
-          paymentMethodId: paymentMethod.stripePaymentId
-        },
-        select: { id: true }
-      })
+    const isLinked = await isCardLinkedToSubscription(paymentMethod.stripePaymentId)
 
-      if (activeSubscription) {
-        return {
-          success: false,
-          data: null,
-          error:
-            'Cannot delete the default payment method while you have an active recurring donation. Please cancel your subscription first.'
-        }
+    if (isLinked) {
+      return {
+        success: false,
+        data: null,
+        error: 'This card funds an active monthly donation. Update your donation before removing it.'
       }
     }
 
@@ -84,15 +73,53 @@ export async function deletePaymentMethod(paymentMethodId: string): Promise<{
       }
     }
 
-    await prisma.paymentMethod.delete({
-      where: { id: paymentMethodId }
+    // Delete and pick a successor together, so the user is never left with
+    // cards but no default
+    const promoted = await prisma.$transaction(async (tx) => {
+      await tx.paymentMethod.delete({ where: { id: paymentMethodId } })
+
+      if (!paymentMethod.isDefault) return null
+
+      const next = await tx.paymentMethod.findFirst({
+        where: { userId: auth.user!.id },
+        orderBy: { createdAt: 'desc' },
+        select: { id: true, stripePaymentId: true }
+      })
+
+      if (!next) return null
+
+      await tx.paymentMethod.update({
+        where: { id: next.id },
+        data: { isDefault: true }
+      })
+
+      return next
     })
+
+    // Keep Stripe in step. Outside the transaction: a rollback can't undo a
+    // Stripe write, and a failure here shouldn't fail the delete.
+    if (promoted) {
+      try {
+        const stripeCustomerId = await getOrCreateStripeCustomer(auth.user.id)
+
+        await stripe.customers.update(stripeCustomerId, {
+          invoice_settings: { default_payment_method: promoted.stripePaymentId }
+        })
+      } catch (error) {
+        await createLog('error', 'Failed to sync default payment method to Stripe', {
+          userId: auth.user.id,
+          stripePaymentId: promoted.stripePaymentId,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        })
+      }
+    }
 
     await createLog('info', 'Payment method deleted', {
       userId: auth.user.id,
       paymentMethodId,
       cardBrand: paymentMethod.cardBrand,
-      cardLast4: paymentMethod.cardLast4
+      cardLast4: paymentMethod.cardLast4,
+      promotedPaymentMethodId: promoted?.id ?? null
     })
 
     return { success: true, data: null, error: null }

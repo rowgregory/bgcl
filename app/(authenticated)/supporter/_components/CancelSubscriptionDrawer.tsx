@@ -139,7 +139,7 @@ export default function CancelSubscriptionDrawer() {
                     <div className="p-4 dark:bg-neutral-800/50 bg-neutral-50 rounded-xl">
                       <p className="text-sm dark:text-neutral-500 text-neutral-600 mb-1">Current Donation</p>
                       <p className="text-2xl font-bold dark:text-white text-neutral-900">
-                        {formatCurrency(cancelSubscriptionDetails?.subscriptionAmount)}
+                        {formatCurrency(cancelSubscriptionDetails?.subscriptionAmount / 100)}
                       </p>
                     </div>
 

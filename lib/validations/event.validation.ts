@@ -136,10 +136,10 @@ export const EMPTY_EVENT: EventFormInput = {
   meetingUrl: '',
 
   // Flags
-  isPublic: true,
+  isPublic: false,
   requiresRSVP: false,
   allowMultipleTickets: false,
-  showTicketMarquee: true,
+  showTicketMarquee: false,
 
   // Dress code
   dresscode: '',

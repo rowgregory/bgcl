@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { LogOut, X } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { signOut } from 'next-auth/react'
 import { adminNavigationLinkData } from '@/lib/utils/adminNavLinks'
@@ -13,6 +13,7 @@ import { InlineMessage, InlineMessageState } from '@/components/_shared/InlineMe
 export default function AdminSidebar() {
   const pathname = usePathname()
   const session = useSession()
+  const router = useRouter()
   const onClose = useSidebarStore((s) => s.closeAdminSidebar)
   const [message, setMessage] = useState<InlineMessageState | null>(null)
   const [isSigningOut, setIsSigningOut] = useState(false)
@@ -23,7 +24,9 @@ export default function AdminSidebar() {
     setIsSigningOut(true)
 
     try {
-      await signOut({ redirectTo: '/auth/login' })
+      await signOut({ redirect: false })
+      router.push('/auth/login')
+      router.refresh()
     } catch (error: unknown) {
       setMessage({
         type: 'error',
@@ -34,9 +37,7 @@ export default function AdminSidebar() {
     }
   }
 
-  if (!session?.data?.user) {
-    return null
-  }
+  if (session.status === 'loading') return null
 
   return (
     <aside className="w-64 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-r h-screen flex flex-col">
@@ -61,7 +62,7 @@ export default function AdminSidebar() {
 
       {/* Navigation - Scrollable */}
       <nav className="space-y-6 px-6 py-6 flex-1 overflow-y-auto">
-        {adminNavigationLinkData(pathname).map((group) => (
+        {adminNavigationLinkData(pathname, session.data?.user?.role).map((group) => (
           <div key={group.title}>
             <h3 className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase mb-3 px-3">
               {group.title}
@@ -106,7 +107,7 @@ export default function AdminSidebar() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium dark:text-white text-neutral-900 truncate">
-              {session.data?.user?.name || 'User'}
+              {`${session.data?.user?.firstName} ${session.data?.user?.lastName}`}
             </p>
             <p className="text-xs dark:text-neutral-400 text-neutral-500 truncate">{session.data?.user?.email}</p>
           </div>

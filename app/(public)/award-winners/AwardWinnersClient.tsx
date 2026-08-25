@@ -31,12 +31,12 @@ const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
             >
               <div className="space-y-3 sm:space-y-4">
                 <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-                  {t.eyebrow}
+                  {t?.eyebrow}
                 </p>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-                  {t.heading}
+                  {t?.heading}
                 </h1>
-                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t.subheading}</p>
+                <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t?.subheading}</p>
               </div>
             </motion.div>
           </div>
@@ -56,9 +56,9 @@ const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
               className="mb-12 sm:mb-16"
             >
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4">
-                {t.honorees_heading}
+                {t?.honorees_heading}
               </h2>
-              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">{t.honorees_subheading}</p>
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">{t?.honorees_subheading}</p>
             </motion.div>
 
             <motion.div
@@ -121,9 +121,9 @@ const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
               className="mb-12"
             >
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4">
-                {t.fame_heading}
+                {t?.fame_heading}
               </h2>
-              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">{t.fame_subheading}</p>
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">{t?.fame_subheading}</p>
             </motion.div>
 
             <motion.div
@@ -165,9 +165,9 @@ const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
                 id="helping-hands-heading"
                 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4"
               >
-                {t.helping_heading}
+                {t?.helping_heading}
               </h2>
-              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">{t.helping_subheading}</p>
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">{t?.helping_subheading}</p>
             </motion.div>
 
             <motion.div
@@ -208,9 +208,9 @@ const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
                 id="youth-recipients-heading"
                 className="text-2xl sm:text-3xl md:text-4xl font-black dark:text-white text-neutral-900 mb-3 sm:mb-4"
               >
-                {t.commitment_heading}
+                {t?.commitment_heading}
               </h2>
-              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">{t.commitment_subheading}</p>
+              <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600">{t?.commitment_subheading}</p>
             </motion.div>
 
             <motion.div
@@ -248,10 +248,10 @@ const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
               className="space-y-6"
             >
               <h2 id="cta-heading" className="text-4xl font-black dark:text-white text-neutral-900">
-                {t.cta_heading}
+                {t?.cta_heading}
               </h2>
 
-              <p className="text-lg dark:text-neutral-400 text-neutral-600">{t.cta_subheading}</p>
+              <p className="text-lg dark:text-neutral-400 text-neutral-600">{t?.cta_subheading}</p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button

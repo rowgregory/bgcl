@@ -5,6 +5,7 @@ import Stripe from 'stripe'
 import { stripe } from '../../stripe/stripeClient'
 import { createLog } from '../log/createLog'
 import { auth } from '@/lib/auth/auth'
+import { getOrCreateStripeCustomer } from './getOrCreateStripeCustomer'
 
 interface SetupIntentParams {
   email: string
@@ -44,17 +45,10 @@ export async function createSetupIntentForSubscription({
   }
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { stripeCustomerId: true }
-    })
-
-    if (!user?.stripeCustomerId) {
-      return { success: false, data: null, error: 'No billing profile found for your account.' }
-    }
+    const stripeCustomerId = await getOrCreateStripeCustomer(userId)
 
     const setupIntent = await stripe.setupIntents.create({
-      customer: user.stripeCustomerId,
+      customer: stripeCustomerId,
       payment_method_types: ['card'],
       usage: 'off_session',
       metadata: {

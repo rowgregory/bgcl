@@ -1,6 +1,6 @@
 'use client'
 
-import { EventCard } from '@/components/events/EventCard'
+import { EventCard } from '@/app/(public)/events/_components/EventCard'
 import { motion } from 'framer-motion'
 import { Calendar, Heart, Home, Users } from 'lucide-react'
 import Link from 'next/link'

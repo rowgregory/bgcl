@@ -79,7 +79,6 @@ export default function DonationNotification({ donations }: { donations: ICurren
   if (
     [
       '/admin/',
-      '/program/',
       '/supporter',
       '/cart',
       '/auth',

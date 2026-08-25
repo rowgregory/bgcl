@@ -1,9 +1,11 @@
 'use server'
 
-import prisma from '@/prisma/client'
 import Stripe from 'stripe'
+
+import prisma from '@/prisma/client'
 import { stripe } from '@/lib/stripe/stripeClient'
-import { createLog } from '../log/createLog'
+import { createLog } from '@/lib/actions/log/createLog'
+import { getOrCreateStripeCustomer } from './getOrCreateStripeCustomer'
 import { savePaymentMethodSchema } from '@/lib/validations/payment-method.validation'
 import { requireUser } from '@/lib/utils/requireAdmin'
 
@@ -26,19 +28,12 @@ export async function savePaymentMethod(input: unknown) {
   const { stripePaymentId, isDefault } = parsed.data
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { stripeCustomerId: true }
-    })
-
-    if (!user?.stripeCustomerId) {
-      return { success: false, data: null, error: 'No billing profile found for your account.' }
-    }
+    const stripeCustomerId = await getOrCreateStripeCustomer(userId)
 
     const paymentMethod = await stripe.paymentMethods.retrieve(stripePaymentId)
 
     // Verify the payment method actually belongs to this user's Stripe customer
-    if (paymentMethod.customer !== user.stripeCustomerId) {
+    if (paymentMethod.customer !== stripeCustomerId) {
       await createLog('warn', 'Payment method ownership mismatch', { userId, stripePaymentId })
       return { success: false, data: null, error: 'That payment method could not be verified.' }
     }
@@ -50,7 +45,9 @@ export async function savePaymentMethod(input: unknown) {
     }
 
     const saved = await prisma.$transaction(async (tx) => {
-      const existingCount = await tx.paymentMethod.count({ where: { userId } })
+      const existingCount = await tx.paymentMethod.count({
+        where: { userId, stripePaymentId: { not: stripePaymentId } }
+      })
 
       // A user's first card is always their default
       const shouldBeDefault = isDefault || existingCount === 0
@@ -77,6 +74,14 @@ export async function savePaymentMethod(input: unknown) {
         }
       })
     })
+
+    // Keep Stripe in step, so subscriptions and invoices bill the right card.
+    // Outside the transaction: a Prisma rollback can't undo a Stripe write.
+    if (saved.isDefault) {
+      await stripe.customers.update(stripeCustomerId, {
+        invoice_settings: { default_payment_method: stripePaymentId }
+      })
+    }
 
     await createLog('info', 'Payment method saved', {
       userId,

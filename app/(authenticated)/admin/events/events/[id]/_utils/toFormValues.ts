@@ -1,13 +1,14 @@
 import { EMPTY_EVENT, EventFormInput } from '@/lib/validations/event.validation'
 import { SerializedEvent } from '@/types/event.types'
+import { formatDatetimeLocalForInput } from '@/lib/utils/date-utils'
 
 interface Props {
   event: SerializedEvent | null
   isNew: boolean
 }
 
-const toDateTimeInput = (d?: Date | string | null) => (d ? new Date(d).toISOString().slice(0, 16) : '')
-const toDateInput = (d?: Date | string | null) => (d ? new Date(d).toISOString().slice(0, 10) : '')
+const toDateTimeInput = (d?: Date | string | null) => formatDatetimeLocalForInput(d)
+const toDateInput = (d?: Date | string | null) => formatDatetimeLocalForInput(d).slice(0, 10)
 
 export function toFormValues(event: Props['event']): EventFormInput {
   if (!event) return EMPTY_EVENT as EventFormInput

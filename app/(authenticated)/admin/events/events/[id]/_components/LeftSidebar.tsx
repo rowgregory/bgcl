@@ -1,16 +1,13 @@
 import { EventTemplates } from '@/components/events/EventTemplates'
-import { STATUS_CONFIG } from '../_constants/event-details.constants'
-import { Hash, Settings, Zap } from 'lucide-react'
+import { Hash, Zap } from 'lucide-react'
 import { SectionHeader } from './SectionHeader'
-import { Controller } from 'react-hook-form'
-import { EventStatus } from '@prisma/client'
 import { FormSwitch } from '@/components/_shared/FormSwitch'
 import { sectionCls } from '@/lib/constants/form.constants'
+import { StatusPanel } from './StatusPanel'
 
 export function LeftSidebar({
   showTemplates,
   handleSelectTemplate,
-  control,
   isNew,
   event,
   watchedCapacity,
@@ -25,40 +22,7 @@ export function LeftSidebar({
         <EventTemplates onSelectTemplate={handleSelectTemplate} />
       ) : (
         <div className="p-4 space-y-4">
-          {/* Status */}
-          <div className={sectionCls}>
-            <SectionHeader icon={Settings} title="Status" />
-            <Controller
-              control={control}
-              name="status"
-              render={({ field: { value, onChange } }) => (
-                <div className="p-3 space-y-2" role="radiogroup" aria-label="Event status">
-                  {(Object.keys(STATUS_CONFIG) as EventStatus[]).map((s) => {
-                    const cfg = STATUS_CONFIG[s]
-                    const isSelected = value === s
-
-                    return (
-                      <button
-                        key={s}
-                        type="button"
-                        role="radio"
-                        aria-checked={isSelected}
-                        onClick={() => onChange(s)}
-                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          isSelected
-                            ? 'bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-500/30'
-                            : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800'
-                        }`}
-                      >
-                        <span className={`w-2 h-2 rounded-full ${cfg.dot}`} aria-hidden="true" />
-                        {cfg.label}
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-            />
-          </div>
+          <StatusPanel />
 
           {/* Quick Stats */}
           {!isNew && (
@@ -89,7 +53,6 @@ export function LeftSidebar({
             <div className="p-3 space-y-2">
               <FormSwitch name="isPublic" label="Public" />
               <FormSwitch name="isRaffle" label="Raffle Event" />
-              <FormSwitch name="showTicketMarquee" label="Ticket Marquee" />
             </div>
           </div>
         </div>

@@ -78,14 +78,16 @@ export default function PrivacyPolicyPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen dark:bg-neutral-950 bg-white">
       {/* Hero Section */}
-      <div className="bg-zinc-900 border-b border-zinc-800">
+      <div className="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800">
         <div className="max-w-334 mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-4">
-            <p className="text-blue-400 font-semibold text-sm uppercase tracking-wider">Legal</p>
-            <h1 className="text-5xl font-bold text-white">Privacy Policy</h1>
-            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">Last Updated: January 2025</p>
+            <p className="text-sky-600 dark:text-sky-400 font-semibold text-sm uppercase tracking-wider">Legal</p>
+            <h1 className="text-5xl font-bold text-neutral-900 dark:text-white">Privacy Policy</h1>
+            <p className="text-neutral-600 dark:text-neutral-400 text-lg max-w-2xl mx-auto">
+              Last Updated: January 2025
+            </p>
           </motion.div>
         </div>
       </div>
@@ -96,16 +98,16 @@ export default function PrivacyPolicyPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="mb-16 bg-zinc-900 border border-zinc-800 rounded-lg p-8 space-y-4"
+          className="mb-16 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-8 space-y-4"
         >
-          <p className="text-zinc-300 leading-relaxed">
-            This website is owned and operated by the Boys & Girls Club of Lynn. We recognize that visitors to our site
-            may be concerned about the information they provide to us and how we use that information.
+          <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed">
+            This website is owned and operated by the Boys &amp; Girls Club of Lynn. We recognize that visitors to our
+            site may be concerned about the information they provide to us and how we use that information.
           </p>
-          <p className="text-zinc-300 leading-relaxed">
+          <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed">
             By visiting, making a purchase, registering for a membership, or by making a gift to us, you accept the
             practices described in this policy.{' '}
-            <span className="text-blue-400 font-semibold">
+            <span className="text-sky-600 dark:text-sky-400 font-semibold">
               This Privacy Policy may be changed or updated at any time.
             </span>
           </p>
@@ -121,8 +123,8 @@ export default function PrivacyPolicyPage() {
               transition={{ delay: index * 0.05 }}
               className="space-y-3"
             >
-              <h2 className="text-2xl font-bold text-white">{section.title}</h2>
-              <p className="text-zinc-400 leading-relaxed">{section.content}</p>
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">{section.title}</h2>
+              <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">{section.content}</p>
             </motion.section>
           ))}
         </div>
@@ -132,16 +134,22 @@ export default function PrivacyPolicyPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
-          className="mt-16 bg-zinc-900 border border-zinc-800 rounded-lg p-8 space-y-4"
+          className="mt-16 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-8 space-y-4"
         >
-          <h2 className="text-2xl font-bold text-white">Questions or Comments?</h2>
-          <p className="text-zinc-400 leading-relaxed">
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">Questions or Comments?</h2>
+          <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
             Should you have any questions and/or comments on this policy, please send a message to{' '}
-            <a href="mailto:info@bgcl.org" className="text-blue-400 hover:text-blue-300 font-semibold">
+            <a
+              href="mailto:info@bgcl.org"
+              className="text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 font-semibold"
+            >
               info@bgcl.org
             </a>{' '}
             or visit our{' '}
-            <Link href="/contact" className="text-blue-400 hover:text-blue-300 font-semibold">
+            <Link
+              href="/contact"
+              className="text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 font-semibold"
+            >
               Contact Us
             </Link>{' '}
             page.
@@ -153,19 +161,22 @@ export default function PrivacyPolicyPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.75 }}
-          className="mt-12 pt-8 border-t border-zinc-800"
+          className="mt-12 pt-8 border-t border-neutral-200 dark:border-neutral-800"
         >
           <div className="grid grid-cols-2 gap-4">
-            <Link href="/terms" className="text-blue-400 hover:text-blue-300 font-semibold flex items-center space-x-2">
-              <span>Terms & Conditions</span>
-              <span>→</span>
+            <Link
+              href="/terms"
+              className="text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 font-semibold flex items-center space-x-2"
+            >
+              <span>Terms &amp; Conditions</span>
+              <span aria-hidden="true">→</span>
             </Link>
             <Link
               href="/contact"
-              className="text-blue-400 hover:text-blue-300 font-semibold flex items-center space-x-2"
+              className="text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 font-semibold flex items-center space-x-2"
             >
               <span>Contact Us</span>
-              <span>→</span>
+              <span aria-hidden="true">→</span>
             </Link>
           </div>
         </motion.div>
@@ -176,11 +187,11 @@ export default function PrivacyPolicyPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
-        className="bg-zinc-900 border-t border-zinc-800 py-12 mt-16"
+        className="bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 py-12 mt-16"
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <h2 className="text-2xl font-bold text-white">Committed to Your Privacy</h2>
-          <p className="text-zinc-400">
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">Committed to Your Privacy</h2>
+          <p className="text-neutral-600 dark:text-neutral-400">
             Your trust is important to us. We take data privacy seriously and are transparent about how we use your
             information.
           </p>

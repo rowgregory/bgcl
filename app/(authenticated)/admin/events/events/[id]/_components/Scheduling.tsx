@@ -108,18 +108,6 @@ export function Scheduling({ register, errors, control }) {
             className={inputCls}
           />
         </div>
-
-        <div className="col-span-2">
-          <label htmlFor="registrationDeadline" className={labelCls}>
-            Registration Deadline
-          </label>
-          <input
-            id="registrationDeadline"
-            type="datetime-local"
-            {...register('registrationDeadline')}
-            className={inputCls}
-          />
-        </div>
       </div>
     </div>
   )

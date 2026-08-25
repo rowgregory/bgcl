@@ -1,22 +1,20 @@
 import prisma from '@/prisma/client'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import NextAuth from 'next-auth'
-import { createLog } from '../actions/log/createLog'
-import { Role } from '@prisma/client'
+import type { Role } from '@prisma/client'
+
 import googleProvider from '../providers/google.provider'
 import magicLinkProvider from '../providers/magic-link.provider'
-import { handleMagicLinkCallback } from './callbacks/magic-link.callback'
-import { handleGoogleCallback } from './callbacks/google.callback'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   debug: false,
-  session: {
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60 // 24 hours
-  },
   adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: 'database',
+    maxAge: 30 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60
+  },
   pages: {
     signIn: '/auth/login',
     error: '/auth/error'
@@ -25,61 +23,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [googleProvider, magicLinkProvider],
 
   callbacks: {
-    async signIn({ user, account, profile }) {
-      try {
-        switch (account?.provider) {
-          case 'email':
-            return await handleMagicLinkCallback(user)
-          case 'google':
-            return await handleGoogleCallback(user, account, profile)
-          default:
-            return true
-        }
-      } catch (error) {
-        return false
-      }
-    },
-
-    async jwt({ token, user }) {
-      if (user) {
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { email: user.email! },
-            select: {
-              id: true,
-              role: true,
-              firstName: true,
-              lastName: true
-            }
-          })
-
-          if (dbUser) {
-            token.userId = dbUser.id
-            token.role = dbUser.role
-            if (dbUser.firstName && dbUser.lastName) {
-              token.name = `${dbUser.firstName} ${dbUser.lastName}`.trim()
-            }
-          }
-        } catch (error) {
-          await createLog('error', 'JWT callback error', {
-            error: error instanceof Error ? error.message : 'Unknown error',
-            email: user.email
-          })
-        }
-      }
-      return token
-    },
-
-    async session({ session, token }) {
-      if (token.userId && typeof token.userId === 'string') {
-        session.user.id = token.userId
-        session.user.role = token.role as Role
-      } else {
-        await createLog('error', 'Session callback error - missing userId', {
-          email: session.user.email
-        })
-      }
-
+    // `user` is the database row, so no lookup needed
+    async session({ session, user }) {
+      session.user.id = user.id
+      session.user.role = (user as { role: Role }).role
       return session
     }
   }

@@ -1,33 +1,29 @@
 'use client'
 
-import { useEffect, ReactNode } from 'react'
+import { useEffect, useState, ReactNode } from 'react'
 import { usePreferencesStore } from '@/stores/usePreferencesStore'
 
-const STORAGE_KEY = 'bgcl-preferences'
-
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const isDark = usePreferencesStore((s) => s.isDark)
+  const theme = usePreferencesStore((s) => s.theme)
+  const setIsDark = usePreferencesStore((s) => s.setIsDark)
 
-  // Seed from the system preference only when the user has never chosen
+  const [systemPrefersDark, setSystemPrefersDark] = useState(false)
+
   useEffect(() => {
-    const hasStoredPreference = (() => {
-      try {
-        return Boolean(localStorage.getItem(STORAGE_KEY))
-      } catch {
-        return false
-      }
-    })()
+    const query = window.matchMedia('(prefers-color-scheme: dark)')
+    setSystemPrefersDark(query.matches)
 
-    if (hasStoredPreference) return
-
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    usePreferencesStore.getState().setIsDark(prefersDark)
+    const onChange = (e: MediaQueryListEvent) => setSystemPrefersDark(e.matches)
+    query.addEventListener('change', onChange)
+    return () => query.removeEventListener('change', onChange)
   }, [])
 
-  // The store drives the class, not the other way around
+  const isDark = theme === 'system' ? systemPrefersDark : theme === 'dark'
+
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark)
-  }, [isDark])
+    setIsDark(isDark)
+  }, [isDark, setIsDark])
 
   return <>{children}</>
 }

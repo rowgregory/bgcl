@@ -3,10 +3,10 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, Download } from 'lucide-react'
 import Link from 'next/link'
-import Picture from '../../../components/_shared/Picture'
 import { containerVariants, itemVariants } from '@/lib/constants/motion'
 import { Resource } from '@/types/resource.types'
 import { Program } from '@prisma/client'
+import Picture from '@/components/_shared/Picture'
 
 export const ProgramsClient = ({
   programs,
@@ -17,7 +17,7 @@ export const ProgramsClient = ({
   resources: Resource[]
   pageData: any
 }) => {
-  const t = pageData.sections.programs
+  const t = pageData?.sections?.programs
   return (
     <main id="main-content" className="py-12 sm:py-16 md:py-20">
       <div className="max-w-334 mx-auto space-y-12 sm:space-y-16 px-4 sm:px-6 md:px-12">
@@ -30,12 +30,12 @@ export const ProgramsClient = ({
         >
           <div className="space-y-3 sm:space-y-4">
             <p className="text-[10px] sm:text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase tracking-widest">
-              {t.eyebrow}
+              {t?.eyebrow}
             </p>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black dark:text-white text-neutral-900 leading-tight">
-              {t.heading}
+              {t?.heading}
             </h1>
-            <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t.subheading}</p>
+            <p className="text-base sm:text-lg dark:text-neutral-400 text-neutral-600 max-w-2xl">{t?.subheading}</p>
           </div>
         </motion.div>
 

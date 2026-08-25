@@ -4,8 +4,10 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { signOut } from 'next-auth/react'
 import { AlertCircle, LogOut } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function LogoutButton() {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [failed, setFailed] = useState(false)
 
@@ -14,7 +16,9 @@ export default function LogoutButton() {
     setFailed(false)
 
     try {
-      await signOut({ redirectTo: '/auth/login' })
+      await signOut({ redirect: false })
+      router.push('/auth/login')
+      router.refresh()
     } catch {
       setFailed(true)
       setIsLoading(false)

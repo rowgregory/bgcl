@@ -8,7 +8,6 @@ import { Building2, ArrowRight, ChevronUp } from 'lucide-react'
 
 const CAPITAL_CAMPAIGN_LINKS = [
   '/admin/',
-  '/program/',
   '/supporter',
   '/checkout',
   '/cart',

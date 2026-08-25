@@ -1,16 +1,4 @@
-export const HIDDEN_PATHS = [
-  '/auth',
-  '/admin',
-  '/supporter',
-  '/checkout',
-  '/order-confirmation',
-  '/programs/',
-  '/donate',
-  '/campaigns/',
-  '/program/',
-  '/events/',
-  '/super'
-]
+export const HIDDEN_PATHS = ['/programs/', '/campaigns/', '/events/']
 
 export const mainNavigationLinks = [
   { label: 'HOME', href: '/', priority: 1 },

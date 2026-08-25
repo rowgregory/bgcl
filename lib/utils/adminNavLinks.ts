@@ -1,3 +1,4 @@
+import { Role } from '@prisma/client'
 import {
   LucideIcon,
   LayoutDashboard,
@@ -14,11 +15,13 @@ import {
   UserCircle,
   FileText
 } from 'lucide-react'
+import { PROGRAM_PATHS } from '../constants/auth.constants'
 
 const isStringInPath = (path: string, str: string) => path.includes(str)
 
 export const adminNavigationLinkData = (
-  path: string
+  path: string,
+  role?: Role
 ): {
   title: string
   items: { icon: LucideIcon; label: string; path: string; description: string; active: boolean }[]
@@ -132,7 +135,7 @@ export const adminNavigationLinkData = (
     }
   ]
 
-  return [
+  const groups = [
     { title: 'Overview', items: dashboardGroup },
     { title: 'Operations', items: operationsGroup },
     { title: 'Management', items: managementGroup },
@@ -140,4 +143,10 @@ export const adminNavigationLinkData = (
     { title: 'Profile', items: userGroup },
     { title: 'System', items: systemGroup }
   ]
+
+  if (role !== 'PROGRAM') return groups
+
+  return groups
+    .map((group) => ({ ...group, items: group.items.filter((item) => PROGRAM_PATHS.includes(item.path)) }))
+    .filter((group) => group.items.length > 0)
 }

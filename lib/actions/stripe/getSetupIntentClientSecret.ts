@@ -1,10 +1,10 @@
 'use server'
 
-import prisma from '@/prisma/client'
 import Stripe from 'stripe'
 import { stripe } from '../../stripe/stripeClient'
 import { createLog } from '../log/createLog'
 import { requireUser } from '@/lib/utils/requireAdmin'
+import { getOrCreateStripeCustomer } from './getOrCreateStripeCustomer'
 
 export async function getSetupIntentClientSecret(): Promise<{
   success: boolean
@@ -15,17 +15,10 @@ export async function getSetupIntentClientSecret(): Promise<{
   if (!auth.user) return { success: false, data: null, error: auth.error }
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: auth.user.id },
-      select: { stripeCustomerId: true }
-    })
-
-    if (!user?.stripeCustomerId) {
-      return { success: false, data: null, error: 'No billing profile found for your account.' }
-    }
+    const stripeCustomerId = await getOrCreateStripeCustomer(auth.user.id)
 
     const setupIntent = await stripe.setupIntents.create({
-      customer: user.stripeCustomerId,
+      customer: stripeCustomerId,
       payment_method_types: ['card']
     })
 

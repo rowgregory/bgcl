@@ -146,7 +146,7 @@ export function AdminEventDetailsClient({ event, isNew }: Props) {
   const publishedCount = tickets.filter((t) => t.isPublished).length
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 w-full">
+    <div className="w-full flex flex-col flex-1 min-h-0">
       {/* ── Top Bar ── */}
       <TopBar
         isNew={isNew}
@@ -183,12 +183,12 @@ export function AdminEventDetailsClient({ event, isNew }: Props) {
           id="event-form"
           onSubmit={onSubmit}
           noValidate
-          className="flex flex-col lg:flex-row h-[calc(100vh-57px)] lg:h-[calc(100vh-57px)]"
+          className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden"
         >
           <div
             className={`
               ${mobilePanel === 'settings' ? 'flex' : 'hidden'} lg:flex
-              flex-col h-full overflow-y-auto
+              flex-col min-h-0 lg:overflow-y-auto
               border-b lg:border-b-0 lg:border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900
             `}
           >
@@ -196,7 +196,6 @@ export function AdminEventDetailsClient({ event, isNew }: Props) {
             <LeftSidebar
               handleSelectTemplate={handleSelectTemplate}
               showTemplates={showTemplates}
-              control={control}
               event={event}
               isNew={isNew}
               publishedCount={publishedCount}
@@ -208,8 +207,8 @@ export function AdminEventDetailsClient({ event, isNew }: Props) {
           </div>
 
           {/* ── Main: Form ── */}
-          <main className="flex-1 lg:overflow-y-auto">
-            <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+          <main className="flex-1 min-h-0 flex flex-col">
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
               {/* ── Event Details ── */}
               <EventDetails errors={errors} register={register} />
 
@@ -238,7 +237,7 @@ export function AdminEventDetailsClient({ event, isNew }: Props) {
           <div
             className={`
               ${mobilePanel === 'tickets' ? 'flex' : 'hidden'} lg:flex
-              flex-col h-full overflow-y-auto
+              flex-col min-h-0 lg:overflow-y-auto
               border-t lg:border-t-0 lg:border-l border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900
             `}
           >
@@ -250,6 +249,7 @@ export function AdminEventDetailsClient({ event, isNew }: Props) {
               tickets={tickets}
               totalCapacity={totalCapacity}
               totalSold={totalSold}
+              isRaffle={watchedIsRaffle}
             />
           </div>
         </form>

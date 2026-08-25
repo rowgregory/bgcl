@@ -1,42 +1,12 @@
 'use client'
 
-import { getEventsOverview } from '@/lib/actions/_dashboard/getEventsOverview'
+import { containerVariants, itemVariants } from '@/lib/constants/motion'
 import { formatCurrency } from '@/lib/utils/currency.utils'
 import { motion } from 'framer-motion'
 import { Calendar, DollarSign, Ticket, Users, Clock, CheckCircle } from 'lucide-react'
-import {
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Scatter,
-  ScatterChart,
-  Cell,
-  PieChart,
-  Pie
-} from 'recharts'
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
-}
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0 }
-}
-
-const COLORS = ['#0EA5E9', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#6366F1']
-
-const colorMap: Record<string, string> = {
-  emerald: 'text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/20',
-  sky: 'text-sky-600 dark:text-sky-400 bg-sky-100 dark:bg-sky-900/20',
-  indigo: 'text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/20',
-  violet: 'text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/20',
-  amber: 'text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/20',
-  neutral: 'text-neutral-600 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800'
-}
+import { useMemo } from 'react'
+import { SaleWindowBadge } from './_components/SalesWindowBadge'
+import { colorMap, COLORS } from './_events-overview.constants'
 
 export function EventsOverviewClient({ data }) {
   const { stats, events } = data
@@ -92,11 +62,265 @@ export function EventsOverviewClient({ data }) {
     }
   ]
 
+  const DAY_MS = 86_400_000
+
+  const ticketTotals = (event) => {
+    const tickets = event.tickets ?? []
+
+    const capacity = event.capacity ?? tickets.reduce((sum, t) => sum + (t.totalQuantity ?? 0), 0)
+    const sold = event.ticketsSold ?? tickets.reduce((sum, t) => sum + (t.quantitySold ?? 0), 0)
+    const revenue = event.revenue ?? tickets.reduce((sum, t) => sum + Number(t.price ?? 0) * (t.quantitySold ?? 0), 0)
+
+    return { capacity, sold, revenue, pctSold: capacity > 0 ? Math.round((sold / capacity) * 100) : 0 }
+  }
+
+  const overview = useMemo(() => {
+    const startOfToday = new Date()
+    startOfToday.setHours(0, 0, 0, 0)
+
+    const withTotals = (events ?? []).map((event) => {
+      const opensAt = event.ticketSalesStartDate ? new Date(event.ticketSalesStartDate) : null
+      const closesAt = event.ticketSalesEndDate ? new Date(event.ticketSalesEndDate) : null
+      const now = Date.now()
+
+      const daysUntil = (date) => (date ? Math.ceil((date.getTime() - startOfToday.getTime()) / DAY_MS) : null)
+
+      let saleStatus = 'always'
+
+      if (opensAt && now < opensAt.getTime()) saleStatus = 'scheduled'
+      else if (closesAt && now > closesAt.getTime()) saleStatus = 'closed'
+      else if (opensAt || closesAt) saleStatus = 'open'
+
+      return {
+        ...event,
+        totals: ticketTotals(event),
+        daysAway: Math.round((new Date(event.date).getTime() - startOfToday.getTime()) / DAY_MS),
+        sale: {
+          status: saleStatus,
+          opensAt,
+          closesAt,
+          daysUntilOpen: daysUntil(opensAt),
+          daysUntilClose: daysUntil(closesAt)
+        }
+      }
+    })
+
+    const upcoming = withTotals.filter((e) => e.daysAway >= 0).sort((a, b) => a.daysAway - b.daysAway)
+
+    const nextEvent = upcoming[0] ?? null
+
+    const topEvent = [...withTotals].sort((a, b) => b.totals.revenue - a.totals.revenue)[0] ?? null
+
+    const alerts = []
+
+    for (const event of upcoming) {
+      if (event.totals.capacity > 0 && event.totals.pctSold >= 90) {
+        alerts.push({
+          id: `${event.id}-sellout`,
+          tone: 'amber',
+          title: event.title,
+          detail: `${event.totals.capacity - event.totals.sold} tickets left, ${event.totals.pctSold}% sold`
+        })
+      }
+
+      if (event.daysAway <= 14 && event.totals.capacity > 0 && event.totals.pctSold < 40) {
+        alerts.push({
+          id: `${event.id}-slow`,
+          tone: 'violet',
+          title: event.title,
+          detail: `${event.daysAway} days out, only ${event.totals.pctSold}% sold`
+        })
+      }
+
+      if (event.totals.capacity === 0) {
+        alerts.push({
+          id: `${event.id}-notickets`,
+          tone: 'neutral',
+          title: event.title,
+          detail: 'no ticket types configured'
+        })
+      }
+    }
+
+    return { nextEvent, topEvent, alerts: alerts.slice(0, 5), upcomingCount: upcoming.length }
+  }, [events])
+
+  const eventRevenue = (event) => event.orders.reduce((sum, o) => sum + Number(o.totalAmount), 0)
+
+  const charts = useMemo(() => {
+    const byEvent = (events ?? [])
+      .map((e) => ({
+        id: e.id,
+        title: e.title,
+        revenue: eventRevenue(e),
+        sold: e.tickets.reduce((sum, t) => sum + (t.quantitySold ?? 0), 0),
+        orders: e.orders.length
+      }))
+      .filter((e) => e.revenue > 0 || e.sold > 0)
+      .sort((a, b) => b.revenue - a.revenue)
+
+    const ticketMap = new Map()
+
+    for (const event of events ?? []) {
+      for (const ticket of event.tickets) {
+        const row = ticketMap.get(ticket.name) ?? { name: ticket.name, sold: 0, revenue: 0 }
+        row.sold += ticket.quantitySold ?? 0
+        row.revenue += (ticket.quantitySold ?? 0) * Number(ticket.price)
+        ticketMap.set(ticket.name, row)
+      }
+    }
+
+    const byTicketType = [...ticketMap.values()].filter((t) => t.sold > 0).sort((a, b) => b.sold - a.sold)
+
+    return {
+      byEvent,
+      byTicketType,
+      maxRevenue: Math.max(...byEvent.map((e) => e.revenue), 1),
+      totalSold: byTicketType.reduce((sum, t) => sum + t.sold, 0)
+    }
+  }, [events])
+
   return (
-    <div className="p-6 space-y-8">
+    <div className="p-6 space-y-6">
+      {/* At a glance */}
+      <motion.div
+        className="grid grid-cols-1 xl:grid-cols-3 gap-4"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {/* Next event */}
+        <motion.div
+          className="xl:col-span-2 dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-lg border p-5"
+          variants={itemVariants}
+        >
+          <div className="flex items-start justify-between gap-3 mb-4">
+            <p className="text-xs dark:text-neutral-500 text-neutral-600 uppercase tracking-wider font-semibold pt-1">
+              Next Event
+            </p>
+            {overview.nextEvent && (
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <SaleWindowBadge sale={overview.nextEvent.sale} compact />
+                <span className={`text-xs font-semibold px-2 py-1 rounded-md ${colorMap.amber}`}>
+                  {overview.nextEvent.daysAway === 0
+                    ? 'Today'
+                    : `${overview.nextEvent.daysAway} day${overview.nextEvent.daysAway === 1 ? '' : 's'} away`}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {!overview.nextEvent ? (
+            <p className="text-sm dark:text-neutral-500 text-neutral-500 py-8 text-center">
+              No upcoming events scheduled.
+            </p>
+          ) : (
+            <>
+              <p className="text-xl font-black dark:text-white text-neutral-900">{overview.nextEvent.title}</p>
+              <p className="text-sm dark:text-neutral-500 text-neutral-600 mt-1">
+                {new Date(overview.nextEvent.date).toLocaleDateString('en-US', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                  timeZone: 'America/New_York'
+                })}
+                {overview.nextEvent.location ? ` · ${overview.nextEvent.location}` : ''}
+              </p>
+
+              <div className="mt-5">
+                <div className="flex items-baseline justify-between mb-2">
+                  <p className="text-xs dark:text-neutral-500 text-neutral-600 uppercase tracking-wider font-semibold">
+                    Capacity
+                  </p>
+                  <p className="text-sm dark:text-neutral-400 text-neutral-700 font-medium">
+                    {overview.nextEvent.totals.sold.toLocaleString()} /{' '}
+                    {overview.nextEvent.totals.capacity.toLocaleString()}
+                  </p>
+                </div>
+                <div className="h-2 rounded-full dark:bg-neutral-800 bg-neutral-200 overflow-hidden">
+                  <motion.div
+                    className={`h-full rounded-full ${
+                      overview.nextEvent.totals.pctSold >= 90
+                        ? 'bg-amber-500'
+                        : overview.nextEvent.totals.pctSold >= 50
+                          ? 'bg-emerald-500'
+                          : 'bg-sky-500'
+                    }`}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min(overview.nextEvent.totals.pctSold, 100)}%` }}
+                    transition={{ duration: 0.6, ease: 'easeOut' }}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-5 pt-5 border-t dark:border-neutral-800 border-neutral-200">
+                {[
+                  { label: 'Revenue', value: formatCurrency(overview.nextEvent.totals.revenue) },
+                  { label: 'Sold', value: overview.nextEvent.totals.sold.toLocaleString() },
+                  { label: 'Orders', value: (overview.nextEvent.orders?.length ?? 0).toLocaleString() },
+                  { label: 'Attendees', value: (overview.nextEvent.guestCount ?? 0).toLocaleString() }
+                ].map((cell) => (
+                  <div key={cell.label}>
+                    <p className="text-xs dark:text-neutral-600 text-neutral-500 uppercase tracking-wider font-semibold mb-1">
+                      {cell.label}
+                    </p>
+                    <p className="text-lg font-black dark:text-white text-neutral-900 tabular-nums">{cell.value}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </motion.div>
+
+        {/* Needs attention */}
+        <motion.div
+          className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-lg border p-5"
+          variants={itemVariants}
+        >
+          <p className="text-xs dark:text-neutral-500 text-neutral-600 uppercase tracking-wider font-semibold mb-4">
+            Needs Attention
+          </p>
+
+          {overview.alerts.length === 0 ? (
+            <div className="flex items-center gap-2 py-8 justify-center">
+              <CheckCircle className="w-4 h-4 text-emerald-500" />
+              <p className="text-sm dark:text-neutral-500 text-neutral-500">Nothing to flag.</p>
+            </div>
+          ) : (
+            <ul className="space-y-3">
+              {overview.alerts.map((alert) => (
+                <li key={alert.id} className="flex gap-3">
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${colorMap[alert.tone].split(' ').find((c) => c.startsWith('bg-'))}`}
+                  />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium dark:text-white text-neutral-900 truncate">{alert.title}</p>
+                    <p className="text-xs dark:text-neutral-500 text-neutral-600">{alert.detail}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {overview.topEvent && (
+            <div className="mt-5 pt-5 border-t dark:border-neutral-800 border-neutral-200">
+              <p className="text-xs dark:text-neutral-600 text-neutral-500 uppercase tracking-wider font-semibold mb-1">
+                Top Grossing
+              </p>
+              <p className="text-sm font-medium dark:text-white text-neutral-900 truncate">{overview.topEvent.title}</p>
+              <p className="text-xs dark:text-neutral-500 text-neutral-600">
+                {formatCurrency(overview.topEvent.totals.revenue)} · {overview.topEvent.totals.sold.toLocaleString()}{' '}
+                tickets
+              </p>
+            </div>
+          )}
+        </motion.div>
+      </motion.div>
+
       {/* Top Stats */}
       <motion.div
-        className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4"
+        className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-lg border divide-y sm:divide-y-0 sm:divide-x dark:divide-neutral-800 divide-neutral-200 grid grid-cols-2 sm:grid-cols-3 2xl:grid-cols-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -104,349 +328,128 @@ export function EventsOverviewClient({ data }) {
         {topStats.map((stat) => {
           const Icon = stat.icon
           return (
-            <motion.div
-              key={stat.id}
-              className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-lg p-5 dark:hover:border-neutral-700 hover:border-neutral-300 transition-all border"
-              variants={itemVariants}
-              whileHover={{ y: -2 }}
-            >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-3 ${colorMap[stat.color]}`}>
-                <Icon className="w-4 h-4" />
+            <motion.div key={stat.id} className="px-4 py-3.5" variants={itemVariants}>
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <Icon
+                  className={`w-3.5 h-3.5 shrink-0 ${colorMap[stat.color]
+                    .split(' ')
+                    .filter((c) => c.startsWith('text-') || c.startsWith('dark:text-'))
+                    .join(' ')}`}
+                />
+                <p className="text-[11px] dark:text-neutral-500 text-neutral-600 uppercase tracking-wider font-semibold truncate">
+                  {stat.label}
+                </p>
               </div>
-              <p className="text-xs dark:text-neutral-500 text-neutral-600 uppercase tracking-wider font-semibold mb-2">
-                {stat.label}
+              <p className="text-lg font-bold dark:text-white text-neutral-900 tabular-nums leading-none">
+                {stat.value}
               </p>
-              <p className="text-2xl font-black dark:text-white text-neutral-900 mb-1">{stat.value}</p>
-              <p className="text-xs dark:text-neutral-600 text-neutral-500">{stat.description}</p>
+              <p className="text-[11px] dark:text-neutral-600 text-neutral-500 mt-1.5 truncate">{stat.description}</p>
             </motion.div>
           )
         })}
       </motion.div>
 
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/* Scatter Chart - Ticket Sales by Event */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        {/* Revenue by event */}
         <motion.div
           variants={itemVariants}
-          className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-2xl border p-6"
+          className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-lg border p-5"
         >
-          <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-6">Ticket Sales by Event</h3>
-          <motion.div
-            variants={itemVariants}
-            className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 h-125"
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <ScatterChart margin={{ top: 20, right: 30, bottom: 40, left: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-neutral-700" />
-                <XAxis
-                  dataKey="ticketsSold"
-                  name="Tickets Sold"
-                  stroke="#9ca3af"
-                  tick={{ fontSize: 12, fill: '#9ca3af' }}
-                  label={{
-                    value: 'Tickets Sold',
-                    position: 'insideBottom',
-                    offset: -20,
-                    fill: '#9ca3af',
-                    fontSize: 12
-                  }}
-                  type="number"
-                />
-                <YAxis
-                  dataKey="revenue"
-                  name="Revenue"
-                  stroke="#9ca3af"
-                  tick={{ fontSize: 12, fill: '#9ca3af' }}
-                  tickFormatter={(v) => `$${v}`}
-                  label={{
-                    value: 'Revenue',
-                    angle: -90,
-                    position: 'insideLeft',
-                    offset: 10,
-                    fill: '#9ca3af',
-                    fontSize: 12
-                  }}
-                  type="number"
-                />
-                <Tooltip
-                  cursor={{ strokeDasharray: '3 3' }}
-                  content={({ payload }) => {
-                    if (!payload || !payload.length) return null
-                    const data = payload[0].payload
-                    return (
-                      <div className="p-3 bg-neutral-900 rounded-lg border border-neutral-700 shadow-xl">
-                        <p className="font-bold text-white text-sm mb-2">{data.title}</p>
-                        <div className="space-y-1">
-                          <p className="text-xs text-sky-400">
-                            Tickets Sold: <span className="text-white font-semibold">{data.ticketsSold}</span>
-                          </p>
-                          <p className="text-xs text-sky-400">
-                            Attendees: <span className="text-white font-semibold">{data.attendees}</span>
-                          </p>
-                          <p className="text-xs text-sky-400">
-                            Revenue: <span className="text-white font-semibold">{formatCurrency(data.revenue)}</span>
-                          </p>
-                        </div>
-                      </div>
-                    )
-                  }}
-                />
-                <Scatter
-                  name="Events"
-                  data={events.map((e) => ({
-                    title: e.title,
-                    ticketsSold: e.tickets.reduce((sum, t) => sum + (t.quantitySold ?? 0), 0),
-                    revenue: e.orders.reduce((sum, o) => sum + Number(o.totalAmount), 0),
-                    attendees: e.guestCount ?? 0
-                  }))}
-                >
-                  {events.map((e, i) => {
-                    const revenue = e.orders.reduce((sum, o) => sum + Number(o.totalAmount), 0)
-                    const maxRevenue = Math.max(
-                      ...events.map((x) => x.orders.reduce((s, o) => s + Number(o.totalAmount), 0)),
-                      1
-                    )
-                    const size = (revenue / maxRevenue) * 800 + 100
-                    return (
-                      <Cell
-                        key={i}
-                        fill="#0EA5E9"
-                        fillOpacity={0.8}
-                        stroke="#0284c7"
-                        strokeWidth={1}
-                        r={Math.sqrt(size / Math.PI)}
-                      />
-                    )
-                  })}
-                </Scatter>
-              </ScatterChart>
-            </ResponsiveContainer>
-          </motion.div>
-        </motion.div>
+          <div className="flex items-baseline justify-between mb-4">
+            <h3 className="text-xs dark:text-neutral-500 text-neutral-600 uppercase tracking-wider font-semibold">
+              Revenue by Event
+            </h3>
+            <span className="text-[11px] dark:text-neutral-600 text-neutral-500">
+              {charts.byEvent.length} with sales
+            </span>
+          </div>
 
-        <motion.div
-          variants={itemVariants}
-          className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-2xl border p-6"
-        >
-          <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-6">Ticket Type Breakdown</h3>
-          <motion.div
-            variants={itemVariants}
-            className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 h-125"
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={(() => {
-                    const ticketMap: Record<string, { name: string; sold: number; revenue: number }> = {}
-                    events.forEach((e) => {
-                      e.tickets.forEach((t) => {
-                        const key = t.name
-                        if (!ticketMap[key]) {
-                          ticketMap[key] = { name: t.name, sold: 0, revenue: 0 }
-                        }
-                        ticketMap[key].sold += t.quantitySold ?? 0
-                        ticketMap[key].revenue += (t.quantitySold ?? 0) * Number(t.price)
-                      })
-                    })
-                    return Object.values(ticketMap)
-                  })()}
-                  dataKey="sold"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius="70%"
-                  innerRadius="40%"
-                  paddingAngle={3}
-                  label={false}
-                  labelLine={false}
-                >
-                  {events
-                    .flatMap((e) => e.tickets)
-                    .map((_, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                    ))}
-                </Pie>
-                <Tooltip
-                  content={({ payload }) => {
-                    if (!payload || !payload.length) return null
-                    const data = payload[0].payload
-                    return (
-                      <div className="p-3 bg-white border-neutral-200 dark:bg-neutral-900 rounded-lg border dark:border-neutral-700 shadow-xl">
-                        <p className="font-bold text-neutral-900 dark:text-white text-sm mb-2">{data.name}</p>
-                        <div className="space-y-1">
-                          <p className="text-xs text-sky-400">
-                            Tickets Sold:{' '}
-                            <span className="text-neutral-900 dark:text-white font-semibold">{data.sold}</span>
-                          </p>
-                          <p className="text-xs text-sky-400">
-                            Revenue:{' '}
-                            <span className="text-neutral-900 dark:text-white font-semibold">
-                              {formatCurrency(data.revenue)}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-                    )
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </motion.div>
-          {/* Breakdown list */}
-          <div className="mt-4 space-y-2">
-            {(() => {
-              const ticketMap: Record<string, { name: string; sold: number; revenue: number }> = {}
-              events.forEach((e) => {
-                e.tickets.forEach((t) => {
-                  const key = t.name
-                  if (!ticketMap[key]) ticketMap[key] = { name: t.name, sold: 0, revenue: 0 }
-                  ticketMap[key].sold += t.quantitySold ?? 0
-                  ticketMap[key].revenue += (t.quantitySold ?? 0) * Number(t.price)
-                })
-              })
-
-              const rows = Object.values(ticketMap).filter((t) => t.sold > 0)
-              return rows.map((item, i) => (
-                <div key={i} className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <div
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: COLORS[i % COLORS.length] }}
-                    />
-                    <span className="text-xs text-neutral-600 dark:text-neutral-400 truncate">{item.name}</span>
+          {charts.byEvent.length === 0 ? (
+            <p className="text-sm dark:text-neutral-500 text-neutral-500 py-6 text-center">No sales yet.</p>
+          ) : (
+            <div className="space-y-2.5">
+              {charts.byEvent.slice(0, 8).map((event) => (
+                <div key={event.id}>
+                  <div className="flex items-baseline justify-between gap-3 mb-1">
+                    <span className="text-xs dark:text-neutral-300 text-neutral-700 truncate">{event.title}</span>
+                    <span className="text-xs font-semibold dark:text-white text-neutral-900 tabular-nums shrink-0">
+                      {formatCurrency(event.revenue)}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-xs font-semibold text-neutral-900 dark:text-white">{item.sold} sold</span>
-                    <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                      {formatCurrency(item.revenue)}
+                  <div className="flex items-center gap-2">
+                    <div className="h-1.5 flex-1 rounded-full dark:bg-neutral-800 bg-neutral-100 overflow-hidden">
+                      <motion.div
+                        className="h-full rounded-full bg-sky-500"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(event.revenue / charts.maxRevenue) * 100}%` }}
+                        transition={{ duration: 0.5, ease: 'easeOut' }}
+                      />
+                    </div>
+                    <span className="text-[11px] dark:text-neutral-600 text-neutral-500 tabular-nums w-16 text-right shrink-0">
+                      {event.sold.toLocaleString()} sold
                     </span>
                   </div>
                 </div>
-              ))
-            })()}
-          </div>
+              ))}
+            </div>
+          )}
         </motion.div>
-      </div>
-      <motion.div
-        variants={itemVariants}
-        className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white rounded-2xl border border-neutral-200 p-6"
-      >
-        <motion.div variants={itemVariants} className="space-y-4">
-          <h3 className="text-lg font-bold text-neutral-900 dark:text-white">Event Performance</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {events.map((event, idx) => {
-              const ticketsSold = event.tickets.reduce((sum, t) => sum + (t.quantitySold ?? 0), 0)
-              const totalTickets = event.tickets.reduce((sum, t) => sum + (t.totalQuantity ?? 0), 0)
-              const revenue = event.orders.reduce((sum, o) => sum + Number(o.totalAmount), 0)
-              const totalRevenue = events.reduce(
-                (sum, e) => sum + e.orders.reduce((s, o) => s + Number(o.totalAmount), 0),
-                0
-              )
-              const soldOutPercentage = totalTickets > 0 ? (ticketsSold / totalTickets) * 100 : 0
-              const isPast = new Date(event.date) < new Date()
 
-              return (
-                <motion.div
-                  key={event.id}
-                  whileHover={{ y: -2 }}
-                  className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 hover:border-neutral-300 dark:hover:border-neutral-700 transition-all"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="min-w-0 flex-1 mr-3">
-                      <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-1">
-                        {new Date(event.date).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric'
-                        })}
-                      </p>
-                      <p className="text-base font-bold text-neutral-900 dark:text-white leading-snug truncate">
-                        {event.title}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end gap-1.5 shrink-0">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: COLORS[idx % COLORS.length] }}
-                        aria-hidden="true"
-                      />
+        {/* Ticket type breakdown */}
+        <motion.div
+          variants={itemVariants}
+          className="dark:bg-neutral-900/50 dark:border-neutral-800 bg-white border-neutral-200 rounded-lg border p-5"
+        >
+          <div className="flex items-baseline justify-between mb-4">
+            <h3 className="text-xs dark:text-neutral-500 text-neutral-600 uppercase tracking-wider font-semibold">
+              Ticket Type Breakdown
+            </h3>
+            <span className="text-[11px] dark:text-neutral-600 text-neutral-500 tabular-nums">
+              {charts.totalSold.toLocaleString()} total
+            </span>
+          </div>
+
+          {charts.byTicketType.length === 0 ? (
+            <p className="text-sm dark:text-neutral-500 text-neutral-500 py-6 text-center">No tickets sold yet.</p>
+          ) : (
+            <>
+              <div className="flex h-2 rounded-full overflow-hidden mb-4 gap-px">
+                {charts.byTicketType.map((type, i) => (
+                  <motion.div
+                    key={type.name}
+                    style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                    initial={{ flexGrow: 0 }}
+                    animate={{ flexGrow: type.sold }}
+                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                  />
+                ))}
+              </div>
+
+              <div className="space-y-2">
+                {charts.byTicketType.map((type, i) => (
+                  <div key={type.name} className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 min-w-0">
                       <span
-                        className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                          isPast
-                            ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
-                            : 'bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400'
-                        }`}
-                      >
-                        {isPast ? 'Past' : 'Upcoming'}
+                        className="w-2 h-2 rounded-full shrink-0"
+                        style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                      />
+                      <span className="text-xs dark:text-neutral-400 text-neutral-600 truncate">{type.name}</span>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0 tabular-nums">
+                      <span className="text-xs font-semibold dark:text-white text-neutral-900">
+                        {type.sold.toLocaleString()}
+                      </span>
+                      <span className="text-xs dark:text-neutral-500 text-neutral-500 w-20 text-right">
+                        {formatCurrency(type.revenue)}
                       </span>
                     </div>
                   </div>
-
-                  <div className="space-y-3">
-                    {/* Revenue */}
-                    <div>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Revenue</p>
-                      <p className="text-2xl font-black text-sky-600 dark:text-sky-400">{formatCurrency(revenue)}</p>
-                    </div>
-
-                    {/* Stats grid */}
-                    <div className="grid grid-cols-3 gap-3">
-                      <div>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">Tickets Sold</p>
-                        <p className="text-lg font-bold text-neutral-900 dark:text-white">
-                          {ticketsSold}
-                          {totalTickets > 0 && (
-                            <span className="text-xs font-normal text-neutral-400 dark:text-neutral-500 ml-0.5">
-                              /{totalTickets}
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">Attendees</p>
-                        <p className="text-lg font-bold text-neutral-900 dark:text-white">{event.guestCount ?? 0}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">Orders</p>
-                        <p className="text-lg font-bold text-neutral-900 dark:text-white">{event.orders.length}</p>
-                      </div>
-                    </div>
-
-                    {/* Capacity bar */}
-                    {totalTickets > 0 && (
-                      <div>
-                        <div className="flex justify-between items-center mb-1">
-                          <p className="text-xs text-neutral-500 dark:text-neutral-400">Capacity</p>
-                          <p className="text-xs font-semibold text-neutral-600 dark:text-neutral-300">
-                            {soldOutPercentage.toFixed(0)}%
-                          </p>
-                        </div>
-                        <div className="w-full h-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${soldOutPercentage}%` }}
-                            transition={{ duration: 0.8, ease: 'easeOut', delay: idx * 0.1 }}
-                            className="h-full rounded-full bg-sky-500"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* % of total revenue */}
-                    {totalRevenue > 0 && (
-                      <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
-                        <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
-                          {((revenue / totalRevenue) * 100).toFixed(1)}% of total revenue
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              )
-            })}
-          </div>
+                ))}
+              </div>
+            </>
+          )}
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   )
 }

@@ -6,6 +6,7 @@ import Stripe from 'stripe'
 import { createLog } from '../log/createLog'
 import { OrderType } from '@prisma/client'
 import { auth } from '@/lib/auth/auth'
+import { getOrCreateStripeCustomer } from './getOrCreateStripeCustomer'
 
 interface DonateCheckoutParams {
   email: string
@@ -65,12 +66,7 @@ export async function createPaymentIntentForCheckout({
   }
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { stripeCustomerId: true }
-    })
-
-    const customerId = user?.stripeCustomerId ?? undefined
+    const customerId = await getOrCreateStripeCustomer(userId)
 
     const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
       amount,
