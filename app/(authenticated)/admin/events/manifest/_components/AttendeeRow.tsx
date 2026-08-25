@@ -14,14 +14,7 @@ export function AttendeeRow({ attendee, index }: { attendee: EventGroup['attende
     >
       {/* Name */}
       <td className="px-4 py-3 whitespace-nowrap">
-        <div className="flex items-center gap-2.5">
-          <div className="shrink-0 w-7 h-7 rounded-full bg-sky-600 flex items-center justify-center" aria-hidden="true">
-            <span className="text-white text-xs font-bold leading-none">
-              {attendee.name?.[0]?.toUpperCase() ?? '?'}
-            </span>
-          </div>
-          <span className="text-sm font-semibold dark:text-neutral-200 text-neutral-800">{attendee.name}</span>
-        </div>
+        <span className="text-sm font-semibold dark:text-neutral-200 text-neutral-800">{attendee.name}</span>
       </td>
 
       {/* Email */}

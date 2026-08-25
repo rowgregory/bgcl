@@ -1,7 +1,6 @@
 import prisma from '@/prisma/client'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import NextAuth from 'next-auth'
-import type { Role } from '@prisma/client'
 
 import googleProvider from '../providers/google.provider'
 import magicLinkProvider from '../providers/magic-link.provider'
@@ -23,10 +22,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [googleProvider, magicLinkProvider],
 
   callbacks: {
-    // `user` is the database row, so no lookup needed
     async session({ session, user }) {
       session.user.id = user.id
-      session.user.role = (user as { role: Role }).role
+      session.user.role = user.role
+      session.user.firstName = user.firstName
+      session.user.lastName = user.lastName
       return session
     }
   }

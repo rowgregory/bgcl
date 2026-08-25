@@ -195,7 +195,7 @@ export function DonationDrawer() {
                         : 'text-emerald-900 dark:text-emerald-100'
                   }`}
                 >
-                  ${donation.totalAmount.toFixed(2)}
+                  ${donation.totalAmount?.toFixed(2)}
                 </p>
                 {donation.status === 'FAILED' && (
                   <p className="text-xs text-red-700 dark:text-red-400 mt-2 italic">This amount was not charged</p>

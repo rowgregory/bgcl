@@ -1,4 +1,5 @@
 import { TeamMemberList } from '@/app/(authenticated)/admin/the-library/_components/TeamMemberList'
+import { TeamMemberDrawer } from '@/app/(authenticated)/admin/the-library/_components/TeamMemberDrawer'
 import { getTeamMembersByRole } from '@/lib/actions/team-member/getTeamMembersByRole'
 import { TeamMemberRole } from '@/lib/validations/team-member.validation'
 
@@ -20,16 +21,20 @@ export function createMultiRoleAdminPage(roles: RoleGroup[], pageTitle: string) 
       )
 
       return (
-        <div className="min-h-screen dark:bg-neutral-950 bg-white p-6 md:p-8">
-          <div className="w-full space-y-12">
-            <div>
-              <h1 className="text-2xl font-semibold dark:text-neutral-100 text-neutral-900">{pageTitle}</h1>
+        <>
+          <TeamMemberDrawer />
+
+          <div className="min-h-screen dark:bg-neutral-950 bg-white p-6 md:p-8">
+            <div className="w-full space-y-12">
+              <div>
+                <h1 className="text-2xl font-semibold dark:text-neutral-100 text-neutral-900">{pageTitle}</h1>
+              </div>
+              {roleData.map((group) => (
+                <TeamMemberList key={group.role} data={group.data.data} role={group.role} roleLabel={group.label} />
+              ))}
             </div>
-            {roleData.map((group) => (
-              <TeamMemberList key={group.role} data={group.data.data} role={group.role} roleLabel={group.label} />
-            ))}
           </div>
-        </div>
+        </>
       )
     }
   }

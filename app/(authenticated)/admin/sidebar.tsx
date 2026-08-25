@@ -1,25 +1,41 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { LogOut, X } from 'lucide-react'
+import { ChevronRight, LogOut, ShieldAlert, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 import { signOut } from 'next-auth/react'
-import { adminNavigationLinkData } from '@/lib/utils/adminNavLinks'
+import { adminNavigationLinkData, NavItem } from '@/app/(authenticated)/admin/_utils/adminNavigationLinkData'
 import { useSidebarStore } from '@/stores/useSidebarStore'
 import extractErrorMessage from '@/lib/utils/extractErrorMessage'
 import { InlineMessage, InlineMessageState } from '@/components/_shared/InlineMessage'
+import { Role } from '@prisma/client'
+import { ModalToggle } from './_components/ModalToggle'
 
-export default function AdminSidebar() {
+type SidebarUser = {
+  role: Role
+  firstName?: string | null
+  lastName?: string | null
+  email?: string | null
+}
+
+export default function AdminSidebar({ user, isModalEnabled }: { user: SidebarUser; isModalEnabled: boolean }) {
   const pathname = usePathname()
-  const session = useSession()
   const router = useRouter()
   const onClose = useSidebarStore((s) => s.closeAdminSidebar)
   const [message, setMessage] = useState<InlineMessageState | null>(null)
   const [isSigningOut, setIsSigningOut] = useState(false)
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({})
+  const groups = adminNavigationLinkData(pathname, user.role)
 
-  const handleLogout = async (e: { preventDefault: () => void }) => {
-    e.preventDefault()
+  const isOpen = (item: NavItem) => expanded[item.label] ?? item.inSection
+
+  const navLinkCls = 'flex items-center gap-2.5 px-2 py-1.5 rounded text-[13px] transition-colors'
+  const navIdle =
+    'dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+
+  const displayName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email
+
+  const handleLogout = async () => {
     setMessage(null)
     setIsSigningOut(true)
 
@@ -28,62 +44,89 @@ export default function AdminSidebar() {
       router.push('/auth/login')
       router.refresh()
     } catch (error: unknown) {
-      setMessage({
-        type: 'error',
-        message: 'Logout failed',
-        description: extractErrorMessage(error)
-      })
+      setMessage({ type: 'error', message: 'Logout failed', description: extractErrorMessage(error) })
       setIsSigningOut(false)
     }
   }
 
-  if (session.status === 'loading') return null
-
   return (
     <aside className="w-64 dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-r h-screen flex flex-col">
-      {/* Header */}
-      <div className="dark:border-neutral-800 border-neutral-200 border-b shrink-0">
-        <div className="flex items-center justify-between py-4 px-6">
-          <Link href="/" className="text-lg font-bold dark:text-neutral-100 text-neutral-900">
-            Boys &amp; Girls Club
-          </Link>
-          {onClose && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onClose}
-              className="lg:hidden p-2 dark:hover:bg-neutral-800 hover:bg-neutral-100 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5 dark:text-neutral-100 text-neutral-900" />
-            </motion.button>
-          )}
-        </div>
+      <div className="h-11 flex items-center justify-between py-3 px-4 border-b dark:border-neutral-800 border-neutral-200 shrink-0">
+        <Link href="/" className="text-sm font-bold dark:text-neutral-100 text-neutral-900 truncate">
+          Boys &amp; Girls Club of Lynn
+        </Link>
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={onClose}
+          aria-label="Close sidebar"
+          className="lg:hidden p-1.5 dark:hover:bg-neutral-800 hover:bg-neutral-100 rounded transition-colors shrink-0"
+        >
+          <X className="w-4 h-4 dark:text-neutral-100 text-neutral-900" />
+        </motion.button>
       </div>
 
-      {/* Navigation - Scrollable */}
-      <nav className="space-y-6 px-6 py-6 flex-1 overflow-y-auto">
-        {adminNavigationLinkData(pathname, session.data?.user?.role).map((group) => (
+      <nav className="space-y-5 px-3 py-4 flex-1 overflow-y-auto">
+        {groups.map((group) => (
           <div key={group.title}>
-            <h3 className="text-xs font-semibold dark:text-neutral-500 text-neutral-600 uppercase mb-3 px-3">
+            <h3 className="text-[10px] font-semibold dark:text-neutral-600 text-neutral-500 uppercase tracking-wider mb-1.5 px-2">
               {group.title}
             </h3>
-            <div className="space-y-1">
+
+            <div className="space-y-0.5">
               {group.items.map((item) => {
-                const IconComponent = item.icon
+                const Icon = item.icon
+
+                if (!item.children) {
+                  return (
+                    <Link
+                      key={item.path}
+                      href={item.path}
+                      className={`${navLinkCls} ${item.active ? 'bg-sky-600 text-white' : navIdle}`}
+                    >
+                      <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />
+                      <span className="truncate">{item.label}</span>
+                    </Link>
+                  )
+                }
+
+                const open = isOpen(item)
 
                 return (
-                  <Link
-                    key={item.path}
-                    href={item.path || ''}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
-                      item.active
-                        ? 'dark:bg-linear-to-r dark:from-cyan-600 dark:to-sky-600 bg-linear-to-r from-sky-500 to-sky-600 text-white'
-                        : 'dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
-                    }`}
-                  >
-                    <IconComponent className="w-4 h-4" />
-                    <div className="flex items-center gap-2">{item.label}</div>
-                  </Link>
+                  <div key={item.label}>
+                    <button
+                      type="button"
+                      onClick={() => setExpanded((prev) => ({ ...prev, [item.label]: !open }))}
+                      aria-expanded={open}
+                      className={`${navLinkCls} w-full ${
+                        item.inSection ? 'dark:text-white text-neutral-900 font-medium' : navIdle
+                      }`}
+                    >
+                      <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />
+                      <span className="truncate flex-1 text-left">{item.label}</span>
+                      <ChevronRight
+                        className={`w-3.5 h-3.5 shrink-0 transition-transform ${open ? 'rotate-90' : ''}`}
+                        aria-hidden="true"
+                      />
+                    </button>
+
+                    {open && (
+                      <div className="mt-0.5 ml-6.25 pl-2.5 border-l dark:border-neutral-800 border-neutral-200 space-y-0.5">
+                        {item.children.map((c) => (
+                          <Link
+                            key={c.path}
+                            href={c.path}
+                            className={`block px-2 py-1 rounded text-[13px] truncate transition-colors ${
+                              c.active
+                                ? 'bg-sky-600 text-white'
+                                : 'dark:text-neutral-500 dark:hover:bg-neutral-900 dark:hover:text-neutral-300 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900'
+                            }`}
+                          >
+                            {c.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )
               })}
             </div>
@@ -91,40 +134,52 @@ export default function AdminSidebar() {
         ))}
       </nav>
 
-      {/* User Section - Sticky Bottom */}
-      <div className="shrink-0 border-t dark:border-neutral-800 border-neutral-200 p-4 dark:bg-neutral-950 bg-white">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-full bg-linear-to-br from-sky-400 to-sky-500 flex items-center justify-center">
-            <span className="text-sm font-semibold text-white">
-              {session.data?.user?.name
-                ?.split(' ')
-                .map((n) => n[0])
-                .join('')
-                .slice(0, 2) ||
-                session.data?.user?.email?.[0]?.toUpperCase() ||
-                '?'}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium dark:text-white text-neutral-900 truncate">
-              {`${session.data?.user?.firstName} ${session.data?.user?.lastName}`}
-            </p>
-            <p className="text-xs dark:text-neutral-400 text-neutral-500 truncate">{session.data?.user?.email}</p>
-          </div>
+      {(user.role === 'ADMIN' || user.role === 'SUPERUSER') && (
+        <div className="shrink-0 border-t dark:border-neutral-800 border-neutral-200 px-3 py-2 space-y-0.5">
+          <ModalToggle initialEnabled={isModalEnabled} />
+
+          {user.role === 'SUPERUSER' && (
+            <Link
+              href="/super"
+              className={`flex items-center gap-2.5 px-2 py-1.5 rounded text-[13px] transition-colors ${
+                pathname.startsWith('/super')
+                  ? 'bg-sky-600 text-white'
+                  : 'dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+              }`}
+            >
+              <ShieldAlert className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span className="truncate">Super</span>
+            </Link>
+          )}
         </div>
+      )}
 
-        <InlineMessage state={message} onDismiss={() => setMessage(null)} className="mb-3" />
+      <div className="shrink-0 border-t dark:border-neutral-800 border-neutral-200 p-3">
+        <InlineMessage state={message} onDismiss={() => setMessage(null)} className="mb-2" />
 
-        <motion.button
-          whileHover={{ scale: isSigningOut ? 1 : 1.02 }}
-          whileTap={{ scale: isSigningOut ? 1 : 0.98 }}
-          onClick={handleLogout}
-          disabled={isSigningOut}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium dark:text-red-400 text-red-600 dark:bg-red-900/20 bg-red-50 dark:hover:bg-red-900/30 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          <LogOut className="w-4 h-4" />
-          {isSigningOut ? 'Signing out...' : 'Sign Out'}
-        </motion.button>
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-full bg-sky-500 flex items-center justify-center shrink-0">
+            <span className="text-xs font-semibold text-white">{user.email?.[0]?.toUpperCase()}</span>
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] font-medium dark:text-white text-neutral-900 truncate leading-tight">
+              {displayName}
+            </p>
+            <p className="text-[11px] dark:text-neutral-500 text-neutral-500 truncate">{user.email}</p>
+          </div>
+
+          <motion.button
+            whileTap={{ scale: isSigningOut ? 1 : 0.95 }}
+            onClick={handleLogout}
+            disabled={isSigningOut}
+            aria-label="Sign out"
+            title="Sign out"
+            className="p-1.5 rounded dark:text-neutral-500 text-neutral-400 hover:text-red-500 dark:hover:text-red-400 dark:hover:bg-neutral-900 hover:bg-neutral-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+          >
+            <LogOut className={`w-4 h-4 ${isSigningOut ? 'animate-pulse' : ''}`} aria-hidden="true" />
+          </motion.button>
+        </div>
       </div>
     </aside>
   )

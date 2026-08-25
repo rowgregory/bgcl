@@ -3,7 +3,7 @@
 import { generateDonationReport } from '@/lib/actions/exports/generateDonationsReport'
 import { containerVariants, itemVariants } from '@/lib/constants/motion'
 import { formatCurrency } from '@/lib/utils/currency.utils'
-import { useDonationDrawer } from '@/stores/drawers'
+import { useFailedPaymentDrawer } from '@/stores/drawers'
 import { usePreferencesStore } from '@/stores/usePreferencesStore'
 import { motion } from 'framer-motion'
 import { Heart, TrendingUp, Users, Calendar, Download, Zap } from 'lucide-react'
@@ -28,7 +28,7 @@ const COLORS = ['#0EA5E9', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'
 export default function DonationsOverviewClient({ stats }: { stats: any }) {
   const [chartType, setChartType] = useState<'line' | 'bar'>('line')
   const isDark = usePreferencesStore((s) => s.isDark)
-  const open = useDonationDrawer((s) => s.open)
+  const open = useFailedPaymentDrawer((s) => s.open)
 
   const [loading, setLoading] = useState(false)
 

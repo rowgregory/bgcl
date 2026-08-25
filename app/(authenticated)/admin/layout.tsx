@@ -1,14 +1,11 @@
 import AdminLayoutClient from '@/app/(authenticated)/admin/AdminLayoutClient'
 import { getModalToggleState } from '@/lib/actions/page/getModalToggleState'
-import { getThemes } from '@/lib/actions/theme/getThemes'
-
-export const dynamic = 'force-dynamic'
+import { auth } from '@/lib/auth/auth'
 
 export default async function AdminLayoutPage({ children }: { children: React.ReactNode }) {
-  const [themes, modalState] = await Promise.all([getThemes(), getModalToggleState('home')])
-
+  const [session, modalToggleResult] = await Promise.all([auth(), getModalToggleState()])
   return (
-    <AdminLayoutClient themes={themes.data ?? []} isModalEnabled={modalState.data}>
+    <AdminLayoutClient user={session.user} isModalEnabled={modalToggleResult.data}>
       {children}
     </AdminLayoutClient>
   )

@@ -37,7 +37,7 @@ export function LoginForm() {
 
     try {
       // On success the browser navigates away, so loading is never reset here.
-      await signIn('google', { redirect: true })
+      await signIn('google', { redirect: true, redirectTo: '/auth/login' })
     } catch (error) {
       const message = error instanceof Error ? error.message : ''
 
@@ -64,7 +64,7 @@ export function LoginForm() {
     setPending('email')
 
     try {
-      const result = await signIn('email', { email: trimmed, redirect: false })
+      const result = await signIn('email', { email: trimmed, redirect: false, redirectTo: '/auth/login' })
 
       if (result?.ok) {
         setEmailSent(true)

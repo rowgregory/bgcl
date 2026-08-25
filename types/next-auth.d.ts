@@ -21,8 +21,9 @@ declare module 'next-auth' {
   interface Session {
     user: {
       id: string
-      email: string
       role: Role
+      firstName?: string | null
+      lastName?: string | null
     } & DefaultSession['user']
   }
 }

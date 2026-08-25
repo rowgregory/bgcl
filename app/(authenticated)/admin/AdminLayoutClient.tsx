@@ -4,41 +4,23 @@ import { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { Menu } from 'lucide-react'
 import { usePathname } from 'next/navigation'
-import { adminNavigationLinkData } from '@/lib/utils/adminNavLinks'
-import dropdownActionItems from '@/lib/constants/dropdownActionItems'
+import { adminNavigationLinkData } from '@/app/(authenticated)/admin/_utils/adminNavigationLinkData'
 import { getCurrentPageId } from '@/lib/utils/getCurrentPageId'
-import ActionMenuButton from '@/components/ui/buttons/ActionMenuButton'
-import LogoutButton from '@/components/_shared/LogoutButton'
-import MobileMenuButton from '@/components/ui/buttons/MobileMenuButton'
-import { CampaignDrawer } from './donations/_components/CampaignDrawer'
-import ResourceDrawer from '@/app/(authenticated)/admin/the-library/resources/_components/ResourceDrawer'
-import { DonationDrawer } from '@/app/(authenticated)/admin/donations/_components/DonationDrawer'
-import { FailedPaymentsDrawer } from '@/components/drawers/FailedPaymentDrawer'
-import { NewsDrawer } from '@/app/(authenticated)/admin/the-library/news/_components/NewsDrawer'
-import PartnerDrawer from './the-library/partners/_components/PartnerDrawer'
-import ProgramDrawer from '@/app/(authenticated)/admin/the-library/programs/_components/ProgramDrawer'
-import { TeamMemberDrawer } from '@/app/(authenticated)/admin/the-library/_components/TeamMemberDrawer'
-import { ContactSubmissionDrawer } from '@/app/(authenticated)/admin/contact-submissions/_components/ContactSubmissionDrawer'
-import AdminSidebar from '@/app/(authenticated)/admin/sidebar'
-import Link from 'next/link'
-import { useSession } from 'next-auth/react'
-import ActionMenuDropdown from '@/app/(authenticated)/admin/_components/ActionMenuDropdown'
-import ClosingDrawer from '@/app/(authenticated)/admin/the-library/closings/_components/ClosingDrawer'
 import { useSidebarStore } from '@/stores/useSidebarStore'
-import UserDrawer from '@/app/(authenticated)/admin/users/_components/UserDrawer'
-import NewsletterDrawer from '@/app/(authenticated)/admin/the-library/newsletters/_components/NewsletterDrawer'
-import { Theme } from '@prisma/client'
+import AdminSidebar from './sidebar'
+import { Role } from '@prisma/client'
 
-type Props = {
+export default function AdminLayoutClient({
+  children,
+  user,
+  isModalEnabled
+}: {
   children: ReactNode
-  themes?: Theme[]
-  isModalEnabled?: boolean
-}
-
-export default function AdminLayoutClient({ children, themes, isModalEnabled }: Props) {
+  user: { role: Role; firstName?: string | null; lastName?: string | null; email?: string | null }
+  isModalEnabled: boolean
+}) {
   const pathname = usePathname()
-  const session = useSession()
-  const navigationGroups = adminNavigationLinkData(pathname, session?.data?.user?.role)
+  const navigationGroups = adminNavigationLinkData(pathname, user.role)
   const selectedPage = getCurrentPageId(pathname, navigationGroups)
   const adminSidebar = useSidebarStore((s) => s.adminSidebar)
   const toggleAdminSidebar = useSidebarStore((s) => s.toggleAdminSidebar)
@@ -48,41 +30,6 @@ export default function AdminLayoutClient({ children, themes, isModalEnabled }: 
 
   return (
     <>
-      <ProgramDrawer themes={themes} />
-      <UserDrawer />
-      <TeamMemberDrawer />
-      <NewsDrawer />
-      <NewsletterDrawer />
-      <ResourceDrawer />
-      <CampaignDrawer />
-      <ClosingDrawer />
-      <ActionMenuDropdown actionItems={dropdownActionItems(isModalEnabled)} isModalEnabled={isModalEnabled} />
-      <FailedPaymentsDrawer />
-      <DonationDrawer />
-
-      <PartnerDrawer />
-      <ContactSubmissionDrawer />
-
-      {/* ── Desktop header ── */}
-      {!isEventDetailsPage && (
-        <header className="hidden lg:flex fixed top-0 left-64 right-0 items-center justify-between dark:bg-neutral-950 dark:border-neutral-800 bg-white border-neutral-200 border-b py-2.5 px-6 z-30 h-15.25">
-          <h1 className="text-lg font-bold dark:text-neutral-100 text-neutral-900 capitalize">{selectedPage}</h1>
-          <div className="flex items-center gap-2 md:gap-4">
-            {session.data?.user?.role === 'SUPERUSER' && (
-              <Link
-                href="/super"
-                className="text-xs font-mono text-neutral-400 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
-              >
-                super
-              </Link>
-            )}
-            <ActionMenuButton />
-            <MobileMenuButton />
-            <LogoutButton />
-          </div>
-        </header>
-      )}
-
       <div
         className={`dark:bg-neutral-950 bg-white flex ${isEventDetailsPage ? 'fixed inset-0 overflow-hidden' : 'min-h-screen'}`}
       >
@@ -101,7 +48,7 @@ export default function AdminLayoutClient({ children, themes, isModalEnabled }: 
 
             {/* ── Desktop sidebar ── */}
             <div className="hidden lg:block fixed left-0 top-0 h-screen w-64 z-20">
-              <AdminSidebar />
+              <AdminSidebar user={user} isModalEnabled={isModalEnabled} />
             </div>
 
             {/* ── Mobile sidebar ── */}
@@ -111,7 +58,7 @@ export default function AdminLayoutClient({ children, themes, isModalEnabled }: 
               transition={{ duration: 0.3 }}
               className="fixed lg:hidden inset-y-0 left-0 z-50 w-64"
             >
-              <AdminSidebar />
+              <AdminSidebar user={user} isModalEnabled={isModalEnabled} />
             </motion.div>
           </>
         )}
@@ -120,7 +67,7 @@ export default function AdminLayoutClient({ children, themes, isModalEnabled }: 
         {isEventDetailsPage ? (
           <>{children}</>
         ) : (
-          <main className="flex-1 flex flex-col lg:ml-64 overflow-y-auto lg:mt-15">
+          <main className="flex-1 flex flex-col lg:ml-64 overflow-y-auto">
             {/* Mobile header */}
             <div className="fixed w-full z-20 top-0 lg:hidden flex items-center justify-between dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-50 border-neutral-200 border-b px-4 py-4">
               <motion.button

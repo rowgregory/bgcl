@@ -1,16 +1,15 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { motion } from 'framer-motion'
-import { Search, Users } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { IOrder } from '@/types/entities/order'
 import { EventGroup } from './_types/event-manifest.types'
 import { EventSection } from './_components/EventSection'
+import { AdminPageHeader } from '@/app/(authenticated)/admin/_components/AdminPageHeader'
 
 export default function EventsManifestClient({ data }: { data: IOrder[] }) {
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Group orders by event
   const eventGroups = useMemo<EventGroup[]>(() => {
     const map = new Map<string, EventGroup>()
 
@@ -29,9 +28,9 @@ export default function EventsManifestClient({ data }: { data: IOrder[] }) {
       const existing = group.attendees.find((a) => a.email === order.customerEmail)
 
       if (existing) {
-        // Same person bought more tickets — merge
+        // Same person bought more tickets, so merge and keep the earliest purchase
         existing.totalTickets += totalTickets
-        // Keep the earliest purchase date
+
         if (new Date(order.createdAt) < new Date(existing.purchasedAt)) {
           existing.purchasedAt = order.createdAt
         }
@@ -63,58 +62,45 @@ export default function EventsManifestClient({ data }: { data: IOrder[] }) {
       }))
   }, [data])
 
-  const totalEvents = eventGroups.length
+  const totalAttendees = eventGroups.reduce((sum, g) => sum + g.attendees.length, 0)
+  const totalGuests = eventGroups.reduce((sum, g) => sum + g.attendees.reduce((s, a) => s + (a.guestCount ?? 0), 0), 0)
 
   return (
-    <div className="h-screen bg-white dark:bg-neutral-950 flex flex-col min-w-0">
-      <div className="flex-1 overflow-y-auto px-3 sm:px-8 pb-6 pt-4">
-        <div className="space-y-4">
-          {/* Stats */}
-          <div className="overflow-x-auto pb-1">
-            <div className="flex items-center gap-4 min-w-max">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                  Events
-                </span>
-                <span className="text-sm font-black dark:text-white text-neutral-900">{totalEvents}</span>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-white dark:bg-neutral-950">
+      <AdminPageHeader
+        title="Manifest"
+        meta={`${eventGroups.length} ${eventGroups.length === 1 ? 'event' : 'events'} · ${totalAttendees} purchasers · ${totalGuests} guests`}
+      />
 
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" aria-hidden="true" />
-            <input
-              type="search"
-              aria-label="Search attendees by name or email"
-              placeholder="Search by name or email..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
-            />
-          </div>
-
-          {/* Event groups */}
-          {eventGroups.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center h-64 text-neutral-500 dark:text-neutral-400"
-              role="status"
-              aria-live="polite"
-            >
-              <Users className="w-12 h-12 mb-3 opacity-30" aria-hidden="true" />
-              <p className="text-lg font-medium">No attendees yet</p>
-              <p className="text-sm">Ticket purchases will appear here</p>
-            </motion.div>
-          ) : (
-            <div className="space-y-4">
-              {eventGroups.map((group) => (
-                <EventSection key={group.eventId} group={group} searchQuery={searchQuery} />
-              ))}
-            </div>
-          )}
+      <div className="px-6 py-6 lg:px-8">
+        <div className="relative w-full sm:w-72 mb-5">
+          <Search
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 dark:text-neutral-600"
+            aria-hidden="true"
+          />
+          <input
+            type="search"
+            aria-label="Search attendees by name or email"
+            placeholder="Search name or email"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-8 pr-3 py-1.5 bg-transparent border border-neutral-200 dark:border-neutral-800 rounded text-[13px] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+          />
         </div>
+
+        {eventGroups.length === 0 ? (
+          <div className="py-16 text-center" role="status" aria-live="polite">
+            <p className="text-sm text-neutral-400 dark:text-neutral-600">
+              Attendees will appear here once tickets are sold.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {eventGroups.map((group) => (
+              <EventSection key={group.eventId} group={group} searchQuery={searchQuery} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
