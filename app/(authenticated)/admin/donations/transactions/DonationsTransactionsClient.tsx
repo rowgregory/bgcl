@@ -1,19 +1,28 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Search, DollarSign, Tag } from 'lucide-react'
-import StatChip from '@/components/_shared/StatChip'
-import DonationsTransactionOrderRow from '../_components/DonationsTransactionOrderRow'
+import { Search } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils/currency.utils'
 import { DonationWithRelations } from '../_types/donation.types'
+import DonationsTransactionOrderRow from '../_components/DonationsTransactionOrderRow'
+import { AdminPageHeader } from '@/app/(authenticated)/admin/_components/AdminPageHeader'
 
 type FrequencyFilter = 'all' | 'one_time' | 'monthly' | 'yearly'
+
+const FREQUENCIES: { label: string; value: FrequencyFilter }[] = [
+  { label: 'All', value: 'all' },
+  { label: 'One-time', value: 'one_time' },
+  { label: 'Monthly', value: 'monthly' },
+  { label: 'Yearly', value: 'yearly' }
+]
+
+const thCls =
+  'py-2 pr-4 text-[11px] font-medium text-neutral-400 dark:text-neutral-600 uppercase tracking-wider whitespace-nowrap'
 
 export default function DonationsTransactionsClient({ data }: { data: DonationWithRelations[] }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [frequencyFilter, setFrequencyFilter] = useState<FrequencyFilter>('all')
-  const [campaignFilter, setCampaignFilter] = useState<string>('all')
+  const [campaignFilter, setCampaignFilter] = useState('all')
 
   const campaigns = useMemo(() => {
     const map = new Map<string, string>()
@@ -26,167 +35,151 @@ export default function DonationsTransactionsClient({ data }: { data: DonationWi
   const filtered = useMemo(
     () =>
       data.filter((o) => {
-        if (searchQuery.trim()) {
-          const q = searchQuery.toLowerCase()
-          if (
-            !o.customerEmail?.toLowerCase().includes(q) &&
-            !o.customerName?.toLowerCase().includes(q) &&
-            !o.id?.toLowerCase().includes(q) &&
-            !o.paymentIntentId?.toLowerCase().includes(q)
-          )
-            return false
-        }
         if (frequencyFilter === 'one_time' && o.type !== 'ONE_TIME_DONATION') return false
         if (frequencyFilter === 'monthly' && o.recurringFrequency !== 'monthly') return false
         if (frequencyFilter === 'yearly' && o.recurringFrequency !== 'yearly') return false
         if (campaignFilter !== 'all' && o.campaignId !== campaignFilter) return false
-        return true
+
+        const q = searchQuery.trim().toLowerCase()
+        if (!q) return true
+
+        return (
+          o.customerEmail?.toLowerCase().includes(q) ||
+          o.customerName?.toLowerCase().includes(q) ||
+          o.id?.toLowerCase().includes(q) ||
+          o.paymentIntentId?.toLowerCase().includes(q)
+        )
       }),
     [data, searchQuery, frequencyFilter, campaignFilter]
   )
 
-  const totalAmount = filtered.reduce((sum, o) => sum + o.totalAmount, 0)
-  const recurringCount = filtered.filter((o) => o.isRecurring).length
-  const oneTimeCount = filtered.filter((o) => !o.isRecurring).length
+  // Recurring rows are one subscription each, so lifetimeAmount is what was collected
+  const collected = filtered.reduce((sum, o) => sum + (o.lifetimeAmount ?? o.totalAmount), 0)
+  const recurringCount = filtered.filter((o) => o.type === 'RECURRING_DONATION').length
 
-  const freqBtns: { label: string; value: FrequencyFilter }[] = [
-    { label: 'All', value: 'all' },
-    { label: 'One-Time', value: 'one_time' },
-    { label: 'Monthly', value: 'monthly' },
-    { label: 'Yearly', value: 'yearly' }
-  ]
+  const isFiltered = frequencyFilter !== 'all' || campaignFilter !== 'all' || searchQuery.trim().length > 0
 
   return (
-    <div className="h-screen bg-white dark:bg-neutral-950 flex flex-col min-w-0">
-      <div className="flex-1 overflow-y-auto px-3 sm:px-8 pb-6 pt-4">
-        <div className="mx-auto max-w-7xl space-y-4">
-          {/* Stats - scrollable row on small screens */}
-          <div className="overflow-x-auto pb-1">
-            <div className="flex items-center gap-4 min-w-max">
-              <StatChip label="Transactions" value={filtered.length.toString()} />
-              <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700" />
-              <StatChip label="Total" value={formatCurrency(totalAmount)} color="emerald" />
-              <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700" />
-              <StatChip label="Recurring" value={recurringCount.toString()} color="indigo" />
-              <div className="w-px h-4 bg-neutral-200 dark:bg-neutral-700" />
-              <StatChip label="One-Time" value={oneTimeCount.toString()} />
-            </div>
+    <div className="min-h-screen bg-white dark:bg-neutral-950">
+      <AdminPageHeader
+        title="Donation Transactions"
+        meta={`${filtered.length} ${filtered.length === 1 ? 'donor' : 'donors'} · ${formatCurrency(collected)} collected · ${recurringCount} recurring`}
+      />
+
+      <div className="px-6 py-6 lg:px-8">
+        <div className="flex flex-wrap items-center gap-3 mb-5">
+          <div className="relative w-full sm:w-72">
+            <Search
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 dark:text-neutral-600"
+              aria-hidden="true"
+            />
+            <input
+              type="search"
+              aria-label="Search donations by name, email, or ID"
+              placeholder="Search name, email, or ID"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-3 py-1.5 bg-transparent border border-neutral-200 dark:border-neutral-800 rounded text-[13px] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+            />
           </div>
 
-          {/* Filters + Search - scrollable on small screens */}
-          <div className="space-y-2">
-            <div className="overflow-x-auto pb-1">
-              <div className="flex items-center gap-2 min-w-max">
-                {/* Frequency */}
-                <div className="flex items-center gap-0.5 p-1 bg-neutral-100 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
-                  {freqBtns.map((btn) => (
-                    <button
-                      key={btn.value}
-                      onClick={() => setFrequencyFilter(btn.value)}
-                      className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all whitespace-nowrap ${
-                        frequencyFilter === btn.value
-                          ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm'
-                          : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
-                      }`}
-                    >
-                      {btn.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Campaign */}
-                {campaigns.length > 0 && (
-                  <div className="flex items-center gap-0.5 p-1 bg-neutral-100 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
-                    <button
-                      onClick={() => setCampaignFilter('all')}
-                      className={`flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-md transition-all whitespace-nowrap ${
-                        campaignFilter === 'all'
-                          ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm'
-                          : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
-                      }`}
-                    >
-                      <Tag className="w-3 h-3" /> All
-                    </button>
-                    {campaigns.map((c) => (
-                      <button
-                        key={c.id}
-                        onClick={() => setCampaignFilter(c.id)}
-                        className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all max-w-30 truncate whitespace-nowrap ${
-                          campaignFilter === c.id
-                            ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm'
-                            : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
-                        }`}
-                      >
-                        {c.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Search - full width */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-              <input
-                type="text"
-                placeholder="Search by name, email, ID..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
-              />
-            </div>
+          <div
+            role="radiogroup"
+            aria-label="Filter by frequency"
+            className="inline-flex rounded border border-neutral-200 dark:border-neutral-800 p-0.5"
+          >
+            {FREQUENCIES.map((btn) => (
+              <button
+                key={btn.value}
+                type="button"
+                role="radio"
+                aria-checked={frequencyFilter === btn.value}
+                onClick={() => setFrequencyFilter(btn.value)}
+                className={`px-2.5 py-1 text-xs font-medium rounded-sm transition-colors whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
+                  frequencyFilter === btn.value
+                    ? 'bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white'
+                    : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200'
+                }`}
+              >
+                {btn.label}
+              </button>
+            ))}
           </div>
 
-          {/* Table - always a table, horizontally scrollable */}
-          {filtered.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center h-64 text-neutral-500 dark:text-neutral-400"
+          {campaigns.length > 0 && (
+            <select
+              value={campaignFilter}
+              onChange={(e) => setCampaignFilter(e.target.value)}
+              aria-label="Filter by campaign"
+              className="py-1.5 pl-2.5 pr-8 bg-transparent border border-neutral-200 dark:border-neutral-800 rounded text-[13px] text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500 max-w-48 truncate"
             >
-              <DollarSign className="w-12 h-12 mb-3 opacity-30" />
-              <p className="text-lg font-medium">No transactions found</p>
-              <p className="text-sm">Try adjusting your filters</p>
-            </motion.div>
-          ) : (
-            <div className="overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-800">
-              <table className="w-full min-w-160 border-collapse">
-                <thead>
-                  <tr className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">
-                      Amount
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">
-                      Name
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">
-                      Email
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">
-                      Date
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">
-                      Campaign
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">
-                      Type
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <AnimatePresence initial={false}>
-                    {filtered.map((order, i) => (
-                      <DonationsTransactionOrderRow key={order.id} order={order} index={i} />
-                    ))}
-                  </AnimatePresence>
-                </tbody>
-              </table>
-            </div>
+              <option value="all">All campaigns</option>
+              {campaigns.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
           )}
+
+          {isFiltered && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('')
+                setFrequencyFilter('all')
+                setCampaignFilter('all')
+              }}
+              className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-neutral-900 dark:hover:text-neutral-300 transition-colors"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-180 text-sm" aria-label="Donation transactions">
+            <thead>
+              <tr className="border-b border-neutral-200 dark:border-neutral-800">
+                <th scope="col" className={`text-left ${thCls}`}>
+                  Name
+                </th>
+                <th scope="col" className={`text-left ${thCls}`}>
+                  Email
+                </th>
+                <th scope="col" className={`text-left ${thCls}`}>
+                  Campaign
+                </th>
+                <th scope="col" className={`text-left ${thCls}`}>
+                  Type
+                </th>
+                <th scope="col" className={`text-left ${thCls}`}>
+                  Last payment
+                </th>
+                <th scope="col" className={`text-left ${thCls}`}>
+                  Status
+                </th>
+                <th scope="col" className={`text-right ${thCls}`}>
+                  Amount
+                </th>
+                <th scope="col" className={`text-right ${thCls} pr-0`}>
+                  Collected
+                </th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-neutral-100 dark:divide-neutral-900">
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="py-16 text-center text-sm text-neutral-400 dark:text-neutral-600">
+                    {isFiltered ? 'No donations match these filters.' : 'Donations will appear here.'}
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((order, i) => <DonationsTransactionOrderRow key={order.id} order={order} />)
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

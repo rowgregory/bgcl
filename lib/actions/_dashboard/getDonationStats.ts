@@ -51,26 +51,54 @@ export async function getDonationStats(): Promise<{ success: boolean; data: Dona
       totalAmount: Number(o.totalAmount),
       feesCovered: Number(o.feesCovered)
     }))
+    type SubSummary = { frequency: string | null; amount: number; status: string; lastPaidAt: Date | null }
+
+    const subscriptionMap = new Map<string, SubSummary>()
+
+    for (const order of orders) {
+      if (order.type !== 'RECURRING_DONATION' || !order.stripeSubscriptionId) continue
+
+      const seen = subscriptionMap.get(order.stripeSubscriptionId)
+      const orderDate = order.paidAt ?? order.createdAt
+
+      // Keep the most recent cycle: its amount and status are the current ones
+      if (!seen || (orderDate && seen.lastPaidAt && new Date(orderDate) > new Date(seen.lastPaidAt))) {
+        subscriptionMap.set(order.stripeSubscriptionId, {
+          frequency: order.recurringFrequency,
+          amount: order.totalAmount,
+          status: order.status,
+          lastPaidAt: orderDate
+        })
+      }
+    }
+
+    const subscriptions = Array.from(subscriptionMap.values())
+    const activeSubs = subscriptions.filter((s) => s.status === 'CONFIRMED')
+
+    const monthlySubs = activeSubs.filter((s) => s.frequency === 'monthly')
+    const yearlySubs = activeSubs.filter((s) => s.frequency === 'yearly')
 
     const stats = {
       total: orders.length,
-      oneTime: orders.filter((o) => o.type === 'ONE_TIME_DONATION').length,
-      monthly: orders.filter((o) => o.type === 'RECURRING_DONATION' && o.recurringFrequency === 'monthly').length,
-      yearly: orders.filter((o) => o.type === 'RECURRING_DONATION' && o.recurringFrequency === 'yearly').length,
-      totalRaised: orders.filter((order) => order.paymentMethodId !== null).reduce((sum, o) => sum + o.totalAmount, 0),
-      monthlyRecurring: orders
-        .filter((o) => o.type === 'RECURRING_DONATION' && o.recurringFrequency === 'monthly')
-        .reduce((sum, o) => sum + o.totalAmount, 0),
-      yearlyRecurring: orders
-        .filter((o) => o.type === 'RECURRING_DONATION' && o.recurringFrequency === 'yearly')
-        .reduce((sum, o) => sum + o.totalAmount, 0),
+      oneTime: orders.filter((o) => o.type === 'ONE_TIME_DONATION' && o.status === 'CONFIRMED').length,
+
+      monthly: monthlySubs.length,
+      yearly: yearlySubs.length,
+
+      totalRaised: orders.filter((o) => o.paymentMethodId !== null).reduce((sum, o) => sum + o.totalAmount, 0),
+
+      monthlyRecurring: monthlySubs.reduce((sum, s) => sum + s.amount, 0),
+      yearlyRecurring: yearlySubs.reduce((sum, s) => sum + s.amount, 0),
+
       activeCount: orders.filter((o) => o.status === 'CONFIRMED').length,
       failedCount: orders.filter((o) => o.status === 'FAILED').length,
       cancelledCount: orders.filter((o) => o.status === 'CANCELLED').length,
+
       churnRate:
-        orders.length > 0
-          ? Math.round((orders.filter((o) => o.status === 'CANCELLED').length / orders.length) * 100)
+        subscriptions.length > 0
+          ? Math.round((subscriptions.filter((s) => s.status === 'CANCELLED').length / subscriptions.length) * 100)
           : 0,
+
       avgDonation: orders.length > 0 ? Math.round(orders.reduce((sum, o) => sum + o.totalAmount, 0) / orders.length) : 0
     }
 
@@ -159,7 +187,7 @@ export async function getDonationStats(): Promise<{ success: boolean; data: Dona
         retentionData,
         campaigns,
         oneTimeTotal: orders
-          .filter((item) => item.type === 'ONE_TIME_DONATION')
+          .filter((item) => item.type === 'ONE_TIME_DONATION' && item.status === 'CONFIRMED')
           .reduce((acc, item) => acc + item.totalAmount, 0)
       } as DonationStats & { annualArr: number },
       error: null

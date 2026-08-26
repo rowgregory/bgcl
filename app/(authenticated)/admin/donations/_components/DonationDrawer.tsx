@@ -1,29 +1,29 @@
 'use client'
 
-import { formatDate } from '@/lib/utils/date-utils'
-import { useDonationDrawer } from '@/stores/drawers'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  X,
-  DollarSign,
-  User,
-  Mail,
-  Calendar,
-  CreditCard,
-  MapPin,
-  FileText,
-  Check,
-  RefreshCw,
-  Phone,
-  ExternalLink,
-  AlertCircle,
-  XCircle
-} from 'lucide-react'
+import { X, ExternalLink } from 'lucide-react'
+import { formatDate } from '@/lib/utils/date-utils'
+import { formatCurrency } from '@/lib/utils/currency.utils'
+import { useDonationDrawer } from '@/stores/drawers'
 
 const normalizeFees = (raw: any) => {
   const n = Number(raw ?? 0)
   return Number.isInteger(n) ? n / 100 : n
 }
+
+const STATUS_DOT: Record<string, string> = {
+  CONFIRMED: 'bg-emerald-500',
+  PENDING: 'bg-amber-500',
+  FAILED: 'bg-red-500',
+  CANCELLED: 'bg-neutral-300 dark:bg-neutral-700',
+  REFUNDED: 'bg-neutral-300 dark:bg-neutral-700'
+}
+
+const sentenceCase = (v?: string | null) => (v ? v.charAt(0) + v.slice(1).toLowerCase() : '—')
+
+const labelCls = 'text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-400 dark:text-neutral-600'
+const dtCls = 'text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-600'
+const ddCls = 'text-[13px] text-neutral-900 dark:text-white'
 
 export function DonationDrawer() {
   const onClose = useDonationDrawer((s) => s.close)
@@ -32,403 +32,297 @@ export function DonationDrawer() {
 
   if (!donation) return null
 
-  const openStripeSubscription = () => {
-    if (donation.stripeSubscriptionId) {
-      const mode = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.includes('_test_') ? 'test' : 'live'
-      window.open(
-        `https://dashboard.stripe.com/acct_1Sngee7U2cwtK0RQ/${mode}/subscriptions/${donation.stripeSubscriptionId}`,
-        '_blank'
-      )
-    }
-  }
-
-  const openStripePayment = () => {
-    if (donation.paymentIntentId) {
-      const mode = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.includes('_test_') ? 'test' : 'live'
-      window.open(
-        `https://dashboard.stripe.com/acct_1Sngee7U2cwtK0RQ/${mode}/payments/${donation.paymentIntentId}`,
-        '_blank'
-      )
-    }
-  }
-
+  const isRecurring = donation.type === 'RECURRING_DONATION'
   const isCancelled = donation.status === 'CANCELLED'
+  const isFailed = donation.status === 'FAILED'
+
+  const cycles = donation.cycles ?? []
+  const cycleCount = donation.cycleCount ?? (donation.status === 'CONFIRMED' ? 1 : 0)
+  const collected = donation.lifetimeAmount ?? (donation.status === 'CONFIRMED' ? donation.totalAmount : 0)
+  const failedCycles = cycles.filter((c: any) => c.status === 'FAILED').length
+  const perCycle = donation.totalAmount ?? 0
+  const cadence = donation.recurringFrequency === 'yearly' ? 'yr' : 'mo'
+
+  const openStripe = (path: string, id: string) => {
+    const mode = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.includes('_test_') ? 'test' : 'live'
+    const account = process.env.NEXT_PUBLIC_STRIPE_ACCOUNT_ID
+    window.open(`https://dashboard.stripe.com/${account}/${mode}/${path}/${id}`, '_blank')
+  }
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-50"
+            aria-hidden="true"
+            className="fixed inset-0 bg-black/40 z-50"
           />
 
-          {/* Drawer */}
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 h-full w-full sm:w-150 bg-white dark:bg-neutral-900 border-l border-neutral-200 dark:border-neutral-800 z-50 overflow-y-auto"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Donation details"
+            className="fixed right-0 top-0 h-full w-full sm:w-150 bg-white dark:bg-neutral-950 border-l border-neutral-200 dark:border-neutral-800 z-50 flex flex-col"
           >
-            {/* Header */}
-            <div className="sticky top-0 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 flex items-center justify-between z-10">
-              <div className="flex items-center gap-3">
-                <div
-                  className={`p-2 rounded-lg ${
-                    donation.status === 'FAILED'
-                      ? 'bg-red-100 dark:bg-red-900/20'
-                      : isCancelled
-                        ? 'bg-neutral-200 dark:bg-neutral-800'
-                        : 'bg-emerald-100 dark:bg-emerald-900/20'
-                  }`}
-                >
-                  {donation.status === 'FAILED' ? (
-                    <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-                  ) : isCancelled ? (
-                    <XCircle className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
-                  ) : donation.isRecurring ? (
-                    <RefreshCw className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                  ) : (
-                    <DollarSign className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                  )}
-                </div>
-                <div>
-                  <h2 className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white">
-                    {donation.status === 'FAILED'
-                      ? 'Failed Payment'
-                      : isCancelled
-                        ? 'Cancelled Subscription'
-                        : donation.isRecurring
-                          ? 'Recurring Donation'
-                          : 'One-Time Donation'}
-                  </h2>
-                  <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
-                    {formatDate(new Date(donation.createdAt))}
-                  </p>
-                </div>
+            <div className="shrink-0 h-11 flex items-center justify-between gap-4 px-5 border-b border-neutral-200 dark:border-neutral-800">
+              <div className="flex items-baseline gap-2.5 min-w-0">
+                <h2 className="text-sm font-semibold text-neutral-900 dark:text-white truncate">
+                  {donation.customerName ?? 'Donation'}
+                </h2>
+                <span className="text-xs text-neutral-400 dark:text-neutral-600 truncate">
+                  {isRecurring ? `${sentenceCase(donation.recurringFrequency)} donor` : 'One-time donor'}
+                </span>
               </div>
+
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
+                aria-label="Close"
+                className="p-1.5 rounded text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors shrink-0"
               >
-                <X className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
 
-            {/* Content */}
-            <div className="p-4 sm:p-6 space-y-6">
-              {/* Cancelled Subscription Alert Banner */}
-              {isCancelled && (
-                <div className="bg-neutral-100 dark:bg-neutral-800/50 border border-neutral-300 dark:border-neutral-700 rounded-xl p-5">
-                  <div className="flex items-start gap-3">
-                    <XCircle className="w-5 h-5 text-neutral-600 dark:text-neutral-400 shrink-0 mt-0.5" />
-                    <div className="flex-1">
-                      <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 mb-1">
-                        Subscription Cancelled
-                      </h3>
-                      <p className="text-sm text-neutral-700 dark:text-neutral-300">
-                        This recurring donation has been cancelled and will no longer be charged.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
+            <div className="flex-1 overflow-y-auto px-5 py-6 space-y-8">
+              <section>
+                <p className={labelCls}>{isRecurring ? 'Total collected' : 'Donation amount'}</p>
 
-              {/* Failed Payment Alert Banner */}
-              {donation.status === 'FAILED' && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-xl p-5">
-                  <div className="flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
-                    <div className="flex-1">
-                      <h3 className="text-sm font-bold text-red-900 dark:text-red-100 mb-1">Payment Failed</h3>
-                      <p className="text-sm text-red-700 dark:text-red-300 mb-3">
-                        This payment attempt was unsuccessful. The donor was not charged.
-                      </p>
-                      {donation.failureReason && (
-                        <div className="mt-3 pt-3 border-t border-red-200 dark:border-red-700">
-                          <p className="text-xs font-semibold text-red-800 dark:text-red-200 mb-1">Failure Reason:</p>
-                          <p className="text-sm text-red-700 dark:text-red-300 font-mono">{donation.failureReason}</p>
-                          {donation.failureCode && (
-                            <p className="text-xs text-red-600 dark:text-red-400 mt-1">Code: {donation.failureCode}</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Amount Card */}
-              <div
-                className={`border rounded-2xl p-6 ${
-                  donation.status === 'FAILED'
-                    ? 'bg-linear-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border-red-200 dark:border-red-800/50'
-                    : isCancelled
-                      ? 'bg-linear-to-br from-neutral-50 to-neutral-100 dark:from-neutral-800/20 dark:to-neutral-700/20 border-neutral-300 dark:border-neutral-700'
-                      : 'bg-linear-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 border-emerald-200 dark:border-emerald-800/50'
-                }`}
-              >
                 <p
-                  className={`text-sm font-semibold mb-2 ${
-                    donation.status === 'FAILED'
-                      ? 'text-red-800 dark:text-red-300'
-                      : isCancelled
-                        ? 'text-neutral-700 dark:text-neutral-300'
-                        : 'text-emerald-800 dark:text-emerald-300'
+                  className={`mt-2 text-4xl font-semibold tracking-tight tabular-nums ${
+                    isFailed || isCancelled
+                      ? 'text-neutral-400 dark:text-neutral-600'
+                      : 'text-neutral-900 dark:text-white'
                   }`}
                 >
-                  {donation.isRecurring
-                    ? `${donation.recurringFrequency?.charAt(0).toUpperCase()}${donation.recurringFrequency?.slice(1)} Amount`
-                    : 'Donation Amount'}
+                  {formatCurrency(collected)}
                 </p>
-                <p
-                  className={`text-4xl font-black ${
-                    donation.status === 'FAILED'
-                      ? 'text-red-900 dark:text-red-100'
-                      : isCancelled
-                        ? 'text-neutral-700 dark:text-neutral-300 line-through'
-                        : 'text-emerald-900 dark:text-emerald-100'
-                  }`}
-                >
-                  ${donation.totalAmount?.toFixed(2)}
-                </p>
-                {donation.status === 'FAILED' && (
-                  <p className="text-xs text-red-700 dark:text-red-400 mt-2 italic">This amount was not charged</p>
-                )}
-                {isCancelled && (
-                  <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-2 italic">
-                    This subscription was cancelled
+
+                {isRecurring && (
+                  <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400 tabular-nums">
+                    {formatCurrency(perCycle)}/{cadence} · {cycleCount} {cycleCount === 1 ? 'payment' : 'payments'}
+                    {failedCycles > 0 && (
+                      <span className="text-red-600 dark:text-red-400"> · {failedCycles} failed</span>
+                    )}
                   </p>
                 )}
-                {donation.coverFees && !isCancelled && donation.status !== 'FAILED' && (
-                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-emerald-200 dark:border-emerald-800">
-                    <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                    <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
-                      Covered ${normalizeFees(donation.feesCovered)} in processing fees
-                    </span>
-                  </div>
-                )}
-              </div>
 
-              {/* Status Badge */}
-              <div className="flex items-center gap-2">
-                <span
-                  className={`
-                    px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide
-                    ${
-                      donation.status === 'CONFIRMED'
-                        ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-                        : donation.status === 'FAILED'
-                          ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-                          : isCancelled
-                            ? 'bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300'
-                            : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
-                    }
-                  `}
-                >
-                  {donation.status}
-                </span>
-                {donation.isRecurring && !isCancelled && (
-                  <span className="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
-                    {donation.recurringFrequency}
+                <div className="mt-3 flex items-center gap-3 text-xs">
+                  <span className="inline-flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400">
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[donation.status] ?? 'bg-neutral-300'}`}
+                      aria-hidden="true"
+                    />
+                    {sentenceCase(donation.status)}
                   </span>
-                )}
-              </div>
 
-              {/* Donor Information */}
-              <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-black text-neutral-900 dark:text-white mb-4 uppercase tracking-wide">
-                  Donor Information
-                </h3>
-
-                <div className="flex items-center gap-3">
-                  <User className="w-4 h-4 text-neutral-400 shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-0.5">Name</p>
-                    <p className="text-sm font-semibold text-neutral-900 dark:text-white truncate">
-                      {donation.customerName}
-                    </p>
-                  </div>
+                  {donation.coverFees && !isCancelled && !isFailed && (
+                    <span className="text-neutral-400 dark:text-neutral-600 tabular-nums">
+                      covered ${normalizeFees(donation.feesCovered).toFixed(2)} in fees
+                    </span>
+                  )}
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <Mail className="w-4 h-4 text-neutral-400 shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-0.5">Email</p>
+                {isFailed && donation.failureReason && (
+                  <p className="mt-3 text-[13px] text-red-600 dark:text-red-400">
+                    {donation.failureReason}
+                    {donation.failureCode && (
+                      <span className="text-neutral-400 dark:text-neutral-600 font-mono">
+                        {' '}
+                        ({donation.failureCode})
+                      </span>
+                    )}
+                  </p>
+                )}
 
+                {isCancelled && (
+                  <p className="mt-3 text-[13px] text-neutral-500 dark:text-neutral-400">
+                    Cancelled. No further charges will be made.
+                  </p>
+                )}
+              </section>
+
+              {isRecurring && cycles.length > 0 && (
+                <section>
+                  <div className="flex items-baseline justify-between mb-3">
+                    <p className={labelCls}>Payment history</p>
+                    {donation.firstPaidAt && (
+                      <span className="text-xs text-neutral-400 dark:text-neutral-600 tabular-nums">
+                        since {formatDate(new Date(donation.firstPaidAt))}
+                      </span>
+                    )}
+                  </div>
+
+                  <table className="w-full text-[13px]">
+                    <tbody className="divide-y divide-neutral-100 dark:divide-neutral-900">
+                      {cycles.map((cycle: any) => (
+                        <tr key={cycle.id}>
+                          <td className="py-2 pr-4 text-neutral-500 dark:text-neutral-400 tabular-nums whitespace-nowrap">
+                            {formatDate(new Date(cycle.paidAt ?? cycle.createdAt))}
+                          </td>
+
+                          <td className="py-2 pr-4">
+                            <span className="inline-flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+                              <span
+                                className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_DOT[cycle.status] ?? 'bg-neutral-300'}`}
+                                aria-hidden="true"
+                              />
+                              {sentenceCase(cycle.status)}
+                            </span>
+                          </td>
+
+                          <td
+                            className={`py-2 text-right tabular-nums ${
+                              cycle.status === 'CONFIRMED'
+                                ? 'text-neutral-900 dark:text-white'
+                                : 'text-neutral-400 dark:text-neutral-600 line-through'
+                            }`}
+                          >
+                            {formatCurrency(cycle.totalAmount)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+
+                    <tfoot>
+                      <tr className="border-t border-neutral-200 dark:border-neutral-800">
+                        <td colSpan={2} className="py-2.5 text-neutral-500 dark:text-neutral-400">
+                          Collected
+                        </td>
+                        <td className="py-2.5 text-right font-medium text-neutral-900 dark:text-white tabular-nums">
+                          {formatCurrency(collected)}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+
+                  {donation.nextBillingDate && !isCancelled && !isFailed && (
+                    <p className="mt-3 text-xs text-neutral-400 dark:text-neutral-600 tabular-nums">
+                      Next charge of {formatCurrency(perCycle)} on {formatDate(new Date(donation.nextBillingDate))}
+                    </p>
+                  )}
+                </section>
+              )}
+
+              <section>
+                <p className={`${labelCls} mb-3`}>Donor</p>
+
+                <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-2 items-baseline">
+                  <dt className={dtCls}>Name</dt>
+                  <dd className={`${ddCls} truncate`}>{donation.customerName ?? '—'}</dd>
+
+                  <dt className={dtCls}>Email</dt>
+                  <dd className="min-w-0">
                     <a
                       href={`mailto:${donation.customerEmail}`}
-                      className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline truncate block"
+                      className="text-[13px] text-sky-600 dark:text-sky-400 hover:underline truncate block"
                     >
                       {donation.customerEmail}
                     </a>
-                  </div>
-                </div>
+                  </dd>
 
-                {donation.customerPhone && (
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-4 h-4 text-neutral-400 shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-0.5">Phone</p>
+                  {donation.customerPhone && (
+                    <>
+                      <dt className={dtCls}>Phone</dt>
+                      <dd>
+                        <a
+                          href={`tel:${donation.customerPhone}`}
+                          className="text-[13px] text-sky-600 dark:text-sky-400 hover:underline"
+                        >
+                          {donation.customerPhone}
+                        </a>
+                      </dd>
+                    </>
+                  )}
 
-                      <a
-                        href={`tel:${donation.customerPhone}`}
-                        className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
-                      >
-                        {donation.customerPhone}
-                      </a>
-                    </div>
-                  </div>
-                )}
-              </div>
+                  {donation.campaign && (
+                    <>
+                      <dt className={dtCls}>Campaign</dt>
+                      <dd className={`${ddCls} truncate`}>{donation.campaign.name}</dd>
+                    </>
+                  )}
 
-              {/* Billing Address */}
-              {donation.billingAddress && (
-                <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5">
-                  <h3 className="text-sm font-black text-neutral-900 dark:text-white mb-4 uppercase tracking-wide flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    Billing Address
-                  </h3>
-                  <div className="text-sm space-y-0.5">
-                    {donation.billingAddress.addressLine1 && (
-                      <p className="dark:text-white text-neutral-900 font-medium">
-                        {donation.billingAddress.addressLine1}
-                      </p>
-                    )}
-                    {donation.billingAddress.addressLine2 && (
-                      <p className="dark:text-neutral-300 text-neutral-700">{donation.billingAddress.addressLine2}</p>
-                    )}
-                    <p className="dark:text-neutral-300 text-neutral-700">
-                      {[
-                        donation.billingAddress.city,
-                        donation.billingAddress.state,
-                        donation.billingAddress.zipPostalCode
-                      ]
-                        .filter(Boolean)
-                        .join(', ')}
-                    </p>
-                    {donation.billingAddress.country && (
-                      <p className="dark:text-neutral-500 text-neutral-400 text-xs uppercase tracking-wider font-medium">
-                        {donation.billingAddress.country}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
+                  {donation.paymentMethod && (
+                    <>
+                      <dt className={dtCls}>Method</dt>
+                      <dd className={`${ddCls} capitalize`}>{donation.paymentMethod}</dd>
+                    </>
+                  )}
 
-              {/* Payment Details */}
-              <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-black text-neutral-900 dark:text-white mb-4 uppercase tracking-wide">
-                  Payment Details
-                </h3>
+                  {donation.billingAddress && (
+                    <>
+                      <dt className={dtCls}>Address</dt>
+                      <dd className={ddCls}>
+                        {[
+                          donation.billingAddress.addressLine1,
+                          donation.billingAddress.addressLine2,
+                          [
+                            donation.billingAddress.city,
+                            donation.billingAddress.state,
+                            donation.billingAddress.zipPostalCode
+                          ]
+                            .filter(Boolean)
+                            .join(', ')
+                        ]
+                          .filter(Boolean)
+                          .map((line, i) => (
+                            <span key={i} className="block">
+                              {line}
+                            </span>
+                          ))}
+                      </dd>
+                    </>
+                  )}
+                </dl>
+              </section>
 
-                {donation.createdAt && (
-                  <div className="flex items-center gap-3">
-                    <Calendar className="w-4 h-4 text-neutral-400 shrink-0" />
-                    <div>
-                      <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-0.5">
-                        {donation.status === 'FAILED' ? 'Attempted At' : isCancelled ? 'Originally Created' : 'Paid At'}
-                      </p>
-                      <p className="text-sm font-semibold text-neutral-900 dark:text-white">
-                        {formatDate(new Date(donation.createdAt))}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {donation.paymentMethod && (
-                  <div className="flex items-center gap-3">
-                    <CreditCard className="w-4 h-4 text-neutral-400 shrink-0" />
-                    <div>
-                      <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-0.5">Payment Method</p>
-                      <p className="text-sm font-semibold text-neutral-900 dark:text-white capitalize">
-                        {donation.paymentMethod}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {donation.paymentMethodId && (
-                  <div className="flex items-center gap-3">
-                    <CreditCard className="w-4 h-4 text-neutral-400 shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-0.5">Payment Method ID</p>
-                      <p className="text-xs font-mono text-neutral-600 dark:text-neutral-400 truncate">
-                        {donation.paymentMethodId}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Recurring Details - Only show if not failed and not cancelled */}
-              {donation.isRecurring && donation.nextBillingDate && !isCancelled && donation.status !== 'FAILED' && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-xl p-5">
-                  <h3 className="text-sm font-black text-blue-900 dark:text-blue-100 mb-4 uppercase tracking-wide flex items-center gap-2">
-                    <RefreshCw className="w-4 h-4" />
-                    Next Billing
-                  </h3>
-                  <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                    {formatDate(new Date(donation.nextBillingDate))}
-                  </p>
-                  <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
-                    ${donation.totalAmount.toFixed(2)} will be charged {donation.recurringFrequency}
-                  </p>
-                </div>
-              )}
-
-              {/* Notes */}
               {donation.notes && (
-                <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5">
-                  <h3 className="text-sm font-black text-neutral-900 dark:text-white mb-3 uppercase tracking-wide flex items-center gap-2">
-                    <FileText className="w-4 h-4" />
-                    Notes
-                  </h3>
-                  <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">{donation.notes}</p>
-                </div>
+                <section>
+                  <p className={`${labelCls} mb-2`}>Notes</p>
+                  <p className="text-[13px] text-neutral-500 dark:text-neutral-400 leading-relaxed">{donation.notes}</p>
+                </section>
               )}
 
-              {/* Stripe Links */}
-              <div className="flex flex-col sm:flex-row gap-2">
+              <section className="flex items-center gap-4 pt-2">
                 {donation.stripeSubscriptionId && (
                   <button
-                    onClick={openStripeSubscription}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#635BFF] hover:bg-[#5851DF] text-white text-sm font-semibold rounded-lg transition-colors"
+                    onClick={() => openStripe('subscriptions', donation.stripeSubscriptionId!)}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors"
                   >
-                    <ExternalLink className="w-4 h-4" />
-                    View Subscription in Stripe
+                    Subscription in Stripe
+                    <ExternalLink className="w-3 h-3" aria-hidden="true" />
                   </button>
                 )}
+
                 {donation.paymentIntentId && (
                   <button
-                    onClick={openStripePayment}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white text-sm font-semibold rounded-lg transition-colors"
+                    onClick={() => openStripe('payments', donation.paymentIntentId!)}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
                   >
-                    <ExternalLink className="w-4 h-4" />
-                    View Payment in Stripe
+                    Latest payment in Stripe
+                    <ExternalLink className="w-3 h-3" aria-hidden="true" />
                   </button>
                 )}
-              </div>
+              </section>
 
-              {/* Internal IDs (for admins) */}
-              <div className="pt-6 border-t border-neutral-200 dark:border-neutral-800">
-                <details className="text-xs">
-                  <summary className="cursor-pointer text-neutral-600 dark:text-neutral-400 font-semibold mb-2">
-                    Technical Details
-                  </summary>
-                  <div className="space-y-1 font-mono text-neutral-500 dark:text-neutral-500 mt-2">
-                    <p>Order ID: {donation.id}</p>
-                    {donation.stripeSubscriptionId && <p>Subscription ID: {donation.stripeSubscriptionId}</p>}
-                    {donation.paymentIntentId && <p>Payment Intent: {donation.paymentIntentId}</p>}
-                    {donation.userId && <p>User ID: {donation.userId}</p>}
-                  </div>
-                </details>
-              </div>
+              <details className="text-xs pt-2 border-t border-neutral-100 dark:border-neutral-900">
+                <summary className="cursor-pointer text-neutral-400 dark:text-neutral-600 py-2">
+                  Technical details
+                </summary>
+                <div className="space-y-1 font-mono text-[11px] text-neutral-400 dark:text-neutral-600 pb-2">
+                  <p>Order: {donation.id}</p>
+                  {donation.stripeSubscriptionId && <p>Subscription: {donation.stripeSubscriptionId}</p>}
+                  {donation.paymentIntentId && <p>Intent: {donation.paymentIntentId}</p>}
+                  {donation.userId && <p>User: {donation.userId}</p>}
+                </div>
+              </details>
             </div>
           </motion.div>
         </>

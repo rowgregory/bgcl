@@ -1,138 +1,99 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { User, Mail, Calendar, CreditCard, RefreshCw, AlertCircle, Check, Tag } from 'lucide-react'
 import { formatDate } from '@/lib/utils/date-utils'
+import { formatCurrency } from '@/lib/utils/currency.utils'
 import { useDonationDrawer } from '@/stores/drawers'
 import { DonationWithRelations } from '../_types/donation.types'
 
-export default function DonationsTransactionOrderRow({
-  order,
-  index
-}: {
-  order: DonationWithRelations
-  index: number
-}) {
-  const isFailed = order?.status === 'FAILED'
-  const isCancelled = order?.status === 'CANCELLED'
+const STATUS_DOT: Record<string, string> = {
+  CONFIRMED: 'bg-emerald-500',
+  PENDING: 'bg-amber-500',
+  FAILED: 'bg-red-500',
+  CANCELLED: 'bg-neutral-300 dark:bg-neutral-700',
+  REFUNDED: 'bg-neutral-300 dark:bg-neutral-700'
+}
 
+const sentenceCase = (value?: string | null) => (value ? value.charAt(0) + value.slice(1).toLowerCase() : '—')
+
+export default function DonationsTransactionOrderRow({ order }: { order: DonationWithRelations }) {
   const open = useDonationDrawer((s) => s.open)
 
+  const isRecurring = order?.type === 'RECURRING_DONATION'
+  const isCancelled = order?.status === 'CANCELLED'
+
+  const cycleCount = order?.cycleCount ?? 1
+  const collected = order?.lifetimeAmount ?? order?.totalAmount ?? 0
+
   return (
-    <motion.tr
+    <tr
       onClick={() => open(order)}
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      transition={{ delay: index * 0.02 }}
-      className={`border-b border-neutral-100 dark:border-neutral-800/50 cursor-pointer transition-colors ${
-        isFailed
-          ? 'bg-red-50/50 dark:bg-red-900/5 hover:bg-red-50 dark:hover:bg-red-900/10 opacity-75'
-          : isCancelled
-            ? 'opacity-50 hover:bg-neutral-50 dark:hover:bg-neutral-900/30'
-            : 'hover:bg-neutral-50 dark:hover:bg-neutral-900/30'
+      className={`cursor-pointer transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-900/50 ${
+        isCancelled ? 'opacity-50' : ''
       }`}
     >
-      {/* Amount */}
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="flex items-center gap-1.5">
-          <span
-            className={`text-sm font-bold ${
-              isFailed
-                ? 'text-red-600 dark:text-red-400'
-                : isCancelled
-                  ? 'text-neutral-400 line-through'
-                  : 'text-emerald-600 dark:text-emerald-400'
-            }`}
+      <td className="py-3 pr-4 text-neutral-900 dark:text-white max-w-40 truncate">{order?.customerName ?? '—'}</td>
+
+      <td className="py-3 pr-4 max-w-48">
+        {order?.customerEmail ? (
+          <a
+            href={`mailto:${order.customerEmail}`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-sky-600 dark:text-sky-400 hover:underline truncate block"
           >
-            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(order?.totalAmount)}
-          </span>
-          {isFailed && <AlertCircle className="w-3.5 h-3.5 text-red-500 shrink-0" />}
-        </div>
-      </td>
-
-      {/* Name */}
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="flex items-center gap-1.5">
-          <User className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-          <span className="text-sm text-neutral-900 dark:text-white max-w-30 truncate">{order?.customerName}</span>
-        </div>
-      </td>
-
-      {/* Email */}
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="flex items-center gap-1.5">
-          <Mail className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-          {order?.customerEmail ? (
-            <a
-              href={`mailto:${order?.customerEmail}`}
-              onClick={(e) => e.stopPropagation()}
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline max-w-40 truncate block"
-            >
-              {order?.customerEmail}
-            </a>
-          ) : (
-            <span className="text-xs text-neutral-400">—</span>
-          )}
-        </div>
-      </td>
-
-      {/* Date */}
-      <td className="px-4 py-3 whitespace-nowrap">
-        <div className="flex items-center gap-1.5">
-          <Calendar className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-          <span className="text-sm text-neutral-700 dark:text-neutral-300">
-            {formatDate(order?.paidAt || order?.createdAt)}
-          </span>
-        </div>
-      </td>
-
-      {/* Campaign */}
-      <td className="px-4 py-3 whitespace-nowrap">
-        {order?.campaign ? (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 rounded-full text-xs font-semibold max-w-30 truncate">
-            <Tag className="w-3 h-3 shrink-0" />
-            {order?.campaign.name}
-          </span>
+            {order.customerEmail}
+          </a>
         ) : (
-          <span className="text-xs text-neutral-400">—</span>
+          <span className="text-neutral-400 dark:text-neutral-600">—</span>
         )}
       </td>
 
-      {/* Type */}
-      <td className="px-4 py-3 whitespace-nowrap">
-        {order?.isRecurring ? (
-          <div className="inline-flex items-center gap-1 px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 rounded-full">
-            <RefreshCw className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
-            <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 capitalize">
-              {order?.recurringFrequency || 'Sub'}
-            </span>
-          </div>
+      <td className="py-3 pr-4 text-neutral-500 dark:text-neutral-400 max-w-36 truncate">
+        {order?.campaign?.name ?? '—'}
+      </td>
+
+      <td className="py-3 pr-4 whitespace-nowrap text-neutral-500 dark:text-neutral-400">
+        {isRecurring ? (
+          <>
+            <span className="capitalize">{order?.recurringFrequency ?? 'Recurring'}</span>
+            {cycleCount > 1 && (
+              <span className="text-neutral-400 dark:text-neutral-600 tabular-nums"> · {cycleCount} payments</span>
+            )}
+          </>
         ) : (
-          <div className="inline-flex items-center gap-1 px-2 py-1 bg-neutral-100 dark:bg-neutral-800 rounded-full">
-            <CreditCard className="w-3 h-3 text-neutral-500 dark:text-neutral-400" />
-            <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400">Once</span>
-          </div>
+          'One-time'
         )}
       </td>
 
-      {/* Status */}
-      <td className="px-4 py-3 whitespace-nowrap">
-        <span
-          className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${
-            order?.status === 'CONFIRMED'
-              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-              : order?.status === 'FAILED'
-                ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-                : order?.status === 'CANCELLED'
-                  ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
-                  : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
-          }`}
-        >
-          <Check className="w-3 h-3" />
-          {order?.status}
+      <td className="py-3 pr-4 whitespace-nowrap text-neutral-500 dark:text-neutral-400 tabular-nums">
+        {formatDate(order?.paidAt || order?.createdAt)}
+      </td>
+
+      <td className="py-3 pr-4 whitespace-nowrap">
+        <span className="inline-flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+          <span
+            className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_DOT[order?.status] ?? 'bg-neutral-300'}`}
+            aria-hidden="true"
+          />
+          {sentenceCase(order?.status)}
         </span>
       </td>
-    </motion.tr>
+
+      <td
+        className={`py-3 pr-4 text-right whitespace-nowrap tabular-nums ${
+          isCancelled ? 'text-neutral-400 line-through' : 'text-neutral-500 dark:text-neutral-400'
+        }`}
+      >
+        {formatCurrency(order?.totalAmount ?? 0)}
+        {isRecurring && (
+          <span className="text-neutral-400 dark:text-neutral-600">
+            /{order?.recurringFrequency === 'yearly' ? 'yr' : 'mo'}
+          </span>
+        )}
+      </td>
+
+      <td className="py-3 text-right whitespace-nowrap font-medium text-neutral-900 dark:text-white tabular-nums">
+        {formatCurrency(collected)}
+      </td>
+    </tr>
   )
 }

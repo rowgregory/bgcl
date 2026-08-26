@@ -7,6 +7,7 @@ import Link from 'next/link'
 
 export const MissionSection = ({ mission }) => {
   const open = useVolunteerDrawer((s) => s.open)
+
   return (
     <section aria-labelledby="mission-heading" className="py-12 sm:py-16 md:py-20 dark:bg-neutral-950 bg-white">
       <div className="max-w-334 mx-auto">

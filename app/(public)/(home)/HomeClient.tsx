@@ -7,14 +7,15 @@ import { Program } from '@prisma/client'
 import RegistrationModal from '@/components/modals/RegistrationModal'
 import { MissionSection } from '@/components/home/MissionSection'
 import FacilitySection from '@/components/home/FacilitySection'
+import VolunteerDrawer from '@/components/drawers/VolunteerDrawer'
 
-interface HomeClientProps {
+interface Props {
   pageContent?: any
   programs: Program[]
   hero: IHero
 }
 
-const HomeClient = ({ pageContent, programs, hero }: HomeClientProps) => {
+export default function HomeClient({ pageContent, programs, hero }: Props) {
   const sections = pageContent?.sections
   const facility = sections?.facility
   const mission = sections?.mission
@@ -30,6 +31,7 @@ const HomeClient = ({ pageContent, programs, hero }: HomeClientProps) => {
   return (
     <>
       <RegistrationModal modal={sections?.modal} />
+      <VolunteerDrawer programs={programs} />
 
       <main id="main-content" className="dark:bg-neutral-950 bg-white">
         <Hero hero={hero} />
@@ -42,5 +44,3 @@ const HomeClient = ({ pageContent, programs, hero }: HomeClientProps) => {
     </>
   )
 }
-
-export default HomeClient

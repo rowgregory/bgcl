@@ -5,6 +5,7 @@ import { useVolunteerDrawer } from '@/stores/drawers'
 
 export default function InfoSidebar({ contactInfo, hours }) {
   const open = useVolunteerDrawer((s) => s.open)
+
   return (
     <motion.aside
       aria-label="Contact information"
@@ -77,7 +78,7 @@ export default function InfoSidebar({ contactInfo, hours }) {
         <div className="space-y-2 sm:space-y-3">
           <button
             type="button"
-            onClick={() => open()}
+            onClick={() => open({ type: 'VOLUNTEER', subject: '' })}
             className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg dark:bg-sky-500/10 bg-sky-50 dark:hover:bg-sky-500/20 hover:bg-sky-100 transition-colors group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           >
             <Heart className="w-4 h-4 sm:w-5 sm:h-5 dark:text-sky-400 text-sky-600" aria-hidden="true" />
