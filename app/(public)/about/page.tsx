@@ -1,7 +1,8 @@
-import AboutPageClient from '@/app/(public)/about/AboutClient'
+import AboutClient from '@/app/(public)/about/AboutClient'
 import { getPageBySlugClient } from '@/lib/actions/page/getPageBySlugClient'
+import { getPrograms } from '@/lib/actions/program/getPrograms'
 
 export default async function PublicAboutPage() {
-  const pageData = await getPageBySlugClient('about')
-  return <AboutPageClient initialPageData={pageData} />
+  const [pageData, programs] = await Promise.all([getPageBySlugClient('about'), getPrograms()])
+  return <AboutClient initialPageData={pageData} programs={programs.data} />
 }

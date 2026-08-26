@@ -3,10 +3,8 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Picture from '@/components/_shared/Picture'
-import { useYouthOfTheYearDrawer } from '@/stores/drawers'
 
 export default function YouthOfTheYearSection({ youth }) {
-  const open = useYouthOfTheYearDrawer((s) => s.open)
   return (
     <div className="dark:bg-neutral-950 bg-white">
       {/* Main Content */}
@@ -125,12 +123,6 @@ export default function YouthOfTheYearSection({ youth }) {
                 >
                   Donate
                 </Link>
-                <button
-                  onClick={() => open()}
-                  className="flex-1 px-6 py-3 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold rounded-lg transition-colors text-center text-sm sm:text-base"
-                >
-                  Volunteer
-                </button>
               </div>
             </motion.div>
           </motion.div>

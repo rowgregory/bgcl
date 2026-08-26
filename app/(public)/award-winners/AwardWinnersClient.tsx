@@ -7,8 +7,9 @@ import { containerVariants, itemVariants } from '@/lib/constants/motion'
 import Picture from '@/components/_shared/Picture'
 import YouthOfTheYearSection from '@/app/(public)/award-winners/_components/YouthOfTheYearSection'
 import { useVolunteerDrawer } from '@/stores/drawers'
+import VolunteerDrawer from '@/components/drawers/VolunteerDrawer'
 
-const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
+const AwardWinnersClient = ({ newsAndTeamMembers, pageData, programs }) => {
   const t = pageData?.sections?.awards
   const open = useVolunteerDrawer((s) => s.open)
   return (
@@ -19,6 +20,9 @@ const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
       >
         Skip to main content
       </a>
+
+      <VolunteerDrawer programs={programs} />
+
       <main id="main-content" className="dark:bg-neutral-950 bg-white">
         {/* Hero Section */}
         <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12" aria-label="Award Winners Hero">
@@ -256,7 +260,7 @@ const AwardWinnersClient = ({ newsAndTeamMembers, pageData }) => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
                   type="button"
-                  onClick={() => open()}
+                  onClick={() => open({ type: 'VOLUNTEER', subject: '' })}
                   className="cursor-pointer px-8 py-3 dark:bg-sky-600 dark:hover:bg-sky-700 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg transition-colors focus:outline-none focus:ring-4 focus:ring-sky-400 focus:ring-offset-2"
                 >
                   Volunteer
