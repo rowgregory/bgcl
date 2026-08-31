@@ -10,8 +10,15 @@ export const STATUS_CONFIG: Record<EventStatus, { label: string; color: string; 
 }
 
 export const TICKET_TYPE_CONFIG: Record<TicketType, { label: string; color: string }> = {
+  // Admits guests
   GENERAL: { label: 'General', color: 'text-sky-600 dark:text-sky-400' },
-  RAFFLE: { label: 'Raffle', color: 'text-purple-600 dark:text-purple-400' },
-  TOURNAMENT: { label: 'Tournament', color: 'text-orange-600 dark:text-orange-400' },
-  SPONSORSHIP: { label: 'Sponsorship', color: 'text-emerald-600 dark:text-emerald-400' }
+  TABLE: { label: 'Table', color: 'text-sky-600 dark:text-sky-400' },
+  SPONSORSHIP: { label: 'Sponsorship', color: 'text-sky-600 dark:text-sky-400' },
+
+  // Bought alongside a seat, admits nobody on its own
+  RAFFLE: { label: 'Raffle', color: 'text-amber-600 dark:text-amber-400' },
+  TOURNAMENT: { label: 'Tournament', color: 'text-amber-600 dark:text-amber-400' },
+
+  // Support only
+  AD: { label: 'Ad', color: 'text-emerald-600 dark:text-emerald-400' }
 }

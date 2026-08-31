@@ -2,7 +2,7 @@ import { UserWithAddress } from '@/types/user.types'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Mail, X, User, ShoppingBag, Phone, MapPin, Calendar, Briefcase, Building2, Badge } from 'lucide-react'
 import { RoleEditor } from './RoleEditor'
-import { ORDER_TYPE_LABEL, STATUS_COLORS } from '../_users.constants'
+import { ORDER_TYPE_LABEL, STATUS_COLORS } from '../_constants/users.constants'
 
 export function UserDetailDrawer({ user, onClose }: { user: UserWithAddress | null; onClose: () => void }) {
   const orders: any[] = (user as any)?.orders ?? []

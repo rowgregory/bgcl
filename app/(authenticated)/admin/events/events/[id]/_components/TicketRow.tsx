@@ -131,9 +131,9 @@ export function TicketRow({
                 <label className={labelCls}>Admits (guests per ticket)</label>
                 <input
                   type="number"
-                  min={1}
+                  min={0}
                   value={ticket.guestCount ?? ''}
-                  onChange={(e) => onUpdate('guestCount', parseInt(e.target.value) || 1)}
+                  onChange={(e) => onUpdate('guestCount', parseInt(e.target.value) || 0)}
                   className={inputCls}
                   placeholder="1"
                 />
@@ -147,8 +147,10 @@ export function TicketRow({
                   onChange={(e) => onUpdate('ticketType', e.target.value)}
                   className={inputCls}
                 >
+                  <option value="AD">Ad</option>
                   <option value="GENERAL">General</option>
                   <option value="RAFFLE">Raffle</option>
+                  <option value="TABLE">Table</option>
                   <option value="TOURNAMENT">Tournament</option>
                   <option value="SPONSORSHIP">Sponsorship</option>
                 </select>

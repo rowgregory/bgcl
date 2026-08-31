@@ -1,6 +1,6 @@
 import { JobApplicationWithReferences } from '@/types/job-application.types'
 import { createDrawerStore } from './createDrawerStore'
-import { CancelSubscriptionDetails } from '@/app/(authenticated)/supporter/_types/subscription.types'
+import { CancelSubscriptionDetails } from '@/app/(authenticated)/supporter/_types/supporter.types'
 import { CampaignWithCount } from '@/types/campaign.types'
 import { News } from '@/types/news.types'
 import { Closing } from '@/types/closing.types'

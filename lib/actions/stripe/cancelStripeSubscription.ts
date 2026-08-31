@@ -1,17 +1,11 @@
 'use server'
 
 import prisma from '@/prisma/client'
+import Stripe from 'stripe'
 import { requireUser } from '@/lib/utils/requireAdmin'
 import { stripe } from '@/lib/stripe/stripeClient'
 import { createLog } from '../log/createLog'
 
-/**
- * Cancel a Stripe subscription immediately and update the database
- * @param subscriptionId - Stripe subscription ID
- * @param cancellationReason - Reason for cancellation
- * @param cancellationComment - Additional feedback/comment
- * @returns The cancelled subscription
- */
 export async function cancelStripeSubscription(
   subscriptionId: string,
   cancellationReason?: string,
@@ -21,73 +15,67 @@ export async function cancelStripeSubscription(
   if (!auth.ok) return { success: false, data: null, error: auth.error }
 
   try {
-    // Find the order in the database
+    // Scoped to the caller, so nobody can cancel someone else's donation
     const order = await prisma.order.findFirst({
       where: {
         stripeSubscriptionId: subscriptionId,
-        type: 'RECURRING_DONATION'
-      }
+        type: 'RECURRING_DONATION',
+        OR: [{ userId: auth.user.id }, { customerEmail: auth.user.email }]
+      },
+      select: { id: true, userId: true, customerEmail: true, customerName: true, recurringFrequency: true }
     })
 
-    if (!order) {
-      return { success: false, data: null, error: `No order found for subscription ${subscriptionId}` }
-    }
+    if (!order) return { success: false, data: null, error: 'Subscription not found' }
 
-    // Cancel immediately in Stripe
-    const cancelledSubscription = await stripe.subscriptions.cancel(subscriptionId, {
+    const cancelled = await stripe.subscriptions.cancel(subscriptionId, {
       cancellation_details: cancellationReason
-        ? {
-            comment: cancellationComment,
-            feedback: cancellationReason as any
-          }
+        ? { comment: cancellationComment, feedback: cancellationReason as any }
         : undefined
     })
 
-    // Update order in database
-    const updatedOrder = await prisma.order.update({
-      where: { id: order.id },
+    // The status on each row records whether that charge collected, so it stays
+    // as it is. handleSubscriptionDeleted stamps subscriptionCanceledAt when the
+    // webhook lands; this write is here so the UI is correct immediately.
+    await prisma.order.updateMany({
+      where: { stripeSubscriptionId: subscriptionId },
       data: {
-        status: 'CANCELLED',
-        isRecurring: false,
-        nextBillingDate: null,
-        updatedAt: new Date()
+        subscriptionCanceledAt: cancelled.canceled_at ? new Date(cancelled.canceled_at * 1000) : new Date(),
+        subscriptionCancelsAt: null,
+        nextBillingDate: null
       }
     })
 
-    await createLog('info', `Subscription cancelled: ${subscriptionId}`, {
+    await createLog('info', 'Subscription cancelled by supporter', {
       subscriptionId,
       orderId: order.id,
       userId: order.userId,
       cancellationReason,
       cancellationComment,
       customerEmail: order.customerEmail,
-      customerName: order.customerName,
-      amount: order.totalAmount,
       frequency: order.recurringFrequency
     })
 
     return {
       success: true,
-      subscriptionId: cancelledSubscription.id,
-      status: cancelledSubscription.status,
-      canceledAt: cancelledSubscription.canceled_at
-        ? new Date(cancelledSubscription.canceled_at * 1000).toISOString()
-        : null,
-      order: {
-        id: updatedOrder.id,
-        status: updatedOrder.status,
-        isRecurring: updatedOrder.isRecurring,
-        nextBillingDate: updatedOrder.nextBillingDate?.toISOString() || null,
-        updatedAt: updatedOrder.updatedAt.toISOString()
+      error: null,
+      data: {
+        subscriptionId: cancelled.id,
+        status: cancelled.status,
+        canceledAt: cancelled.canceled_at ? new Date(cancelled.canceled_at * 1000).toISOString() : null
       }
     }
   } catch (error) {
-    await createLog('error', `Failed to cancel subscription: ${subscriptionId}`, {
+    await createLog('error', 'Failed to cancel subscription', {
       subscriptionId,
+      userId: auth.user.id,
       error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+      stripeCode: error instanceof Stripe.errors.StripeError ? error.code : undefined
     })
 
-    return { success: false, data: null, error: `Failed to cancel subscription` }
+    if (error instanceof Stripe.errors.StripeAuthenticationError) {
+      return { success: false, data: null, error: 'Payment provider is not configured correctly.' }
+    }
+
+    return { success: false, data: null, error: 'Could not cancel your donation. Please try again.' }
   }
 }

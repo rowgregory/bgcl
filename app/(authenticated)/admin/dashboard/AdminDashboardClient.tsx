@@ -93,6 +93,80 @@ export default function AdminDashboardClient({ stats }: { stats: DashboardStats 
         <motion.section
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.04, ease: [0.22, 1, 0.36, 1] }}
+          className="pt-8 pb-8 border-b border-neutral-200 dark:border-neutral-800"
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-400 dark:text-neutral-600 mb-4">
+            Where it came from
+          </p>
+
+          {(() => {
+            const total = stats.ticketRevenue + stats.donationRevenue
+
+            const sources = [
+              {
+                label: 'Events',
+                amount: stats.ticketRevenue,
+                count: stats.ticketOrders,
+                color: 'bg-sky-600',
+                share: total > 0 ? (stats.ticketRevenue / total) * 100 : 0
+              },
+              {
+                label: 'Donations',
+                amount: stats.donationRevenue,
+                count: stats.donationOrders,
+                color: 'bg-neutral-400 dark:bg-neutral-600',
+                share: total > 0 ? (stats.donationRevenue / total) * 100 : 0
+              }
+            ]
+
+            if (total === 0) {
+              return <p className="text-sm text-neutral-400 dark:text-neutral-600">No revenue recorded yet.</p>
+            }
+
+            return (
+              <>
+                <div className="flex h-2 rounded-full overflow-hidden gap-px mb-5">
+                  {sources.map((source) => (
+                    <motion.div
+                      key={source.label}
+                      className={source.color}
+                      initial={{ flexGrow: 0 }}
+                      animate={{ flexGrow: source.amount }}
+                      transition={{ duration: 0.6, ease: 'easeOut' }}
+                    />
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-2 gap-8 max-w-md">
+                  {sources.map((source) => (
+                    <div key={source.label}>
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className={`w-2 h-2 rounded-full shrink-0 ${source.color}`} aria-hidden="true" />
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-400 dark:text-neutral-600">
+                          {source.label}
+                        </p>
+                      </div>
+
+                      <p className="text-2xl font-semibold text-neutral-900 dark:text-white tabular-nums">
+                        {usdWhole(source.amount)}
+                      </p>
+
+                      <p className="mt-1 text-xs text-neutral-400 dark:text-neutral-600 tabular-nums">
+                        {source.share.toFixed(0)}% · {source.count.toLocaleString()}{' '}
+                        {source.count === 1 ? 'order' : 'orders'}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )
+          })()}
+        </motion.section>
+
+        <motion.section
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
           className="pt-8"
         >

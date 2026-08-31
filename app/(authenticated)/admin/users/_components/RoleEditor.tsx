@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { updateUserRole } from '@/lib/actions/user/updateUserRole'
 import { Check, Loader2 } from 'lucide-react'
-import { ROLE_COLORS, ROLE_LABEL } from '../_users.constants'
+import { ROLE_COLORS, ROLE_LABEL } from '../_constants/users.constants'
 
 const ASSIGNABLE_ROLES = ['SUPPORTER', 'PROGRAM', 'ADMIN'] as const
 

@@ -11,7 +11,7 @@ export const donationSchema = z.object({
 
   // Gift
   donationType: z.enum(DONATION_TYPES, { error: 'Please choose a donation frequency' }),
-  amount: z.coerce.number().gte(5, { error: 'Minimum donation is $5' }),
+  amount: z.number().gte(5, { error: 'Minimum donation is $5' }),
   coverFees: z.boolean().default(false),
   campaignId: z.string().trim().nullish(),
   notes: z.string().trim().nullish(),

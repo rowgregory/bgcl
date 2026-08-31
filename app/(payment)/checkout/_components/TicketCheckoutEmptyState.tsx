@@ -1,22 +1,21 @@
-import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
 
 export function EmptyState() {
   return (
-    <div className="min-h-screen">
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">Checkout</h1>
-          <p className="text-zinc-400 mb-8">Your cart is empty.</p>
-          <Link
-            href="/events"
-            className="inline-flex items-center space-x-2 px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Events</span>
-          </Link>
-        </motion.div>
+    <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="text-center">
+        <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">Your cart is empty</h1>
+
+        <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+          Add tickets to an event and they will show up here.
+        </p>
+
+        <Link
+          href="/events"
+          className="inline-block mt-6 text-sm font-medium text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors"
+        >
+          Browse events
+        </Link>
       </div>
     </div>
   )

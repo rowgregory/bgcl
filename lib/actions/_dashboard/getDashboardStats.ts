@@ -26,6 +26,10 @@ export interface DashboardStats {
   totalOrders: number
   totalFeesCovered: number
   recentOrders: RecentOrder[]
+  ticketRevenue: number
+  ticketOrders: number
+  donationRevenue: number
+  donationOrders: number
 }
 
 export async function getDashboardStats(): Promise<{
@@ -34,7 +38,7 @@ export async function getDashboardStats(): Promise<{
   error: string | null
 }> {
   const auth = await requireAdmin()
-  if (!auth.user) return { success: false, data: null, error: auth.error }
+  if (!auth.ok) return { success: false, data: null, error: auth.error }
 
   try {
     const now = new Date()
@@ -49,7 +53,7 @@ export async function getDashboardStats(): Promise<{
     const confirmed = { status: OrderStatus.CONFIRMED }
 
     // Summed in Postgres rather than in JS, so this stays flat as orders grow
-    const [allTime, thisMonth, lastMonth, totalSupporters, newSupportersThisMonth, ticketsSold, recentOrders] =
+    const [allTime, thisMonth, lastMonth, totalSupporters, newSupportersThisMonth, ticketsSold, byType, recentOrders] =
       await Promise.all([
         prisma.order.aggregate({
           where: revenueStatuses,
@@ -80,6 +84,13 @@ export async function getDashboardStats(): Promise<{
           _sum: { quantity: true }
         }),
 
+        prisma.order.groupBy({
+          by: ['type'],
+          where: revenueStatuses,
+          _sum: { totalAmount: true },
+          _count: true
+        }),
+
         prisma.order.findMany({
           take: 10,
           orderBy: { createdAt: 'desc' },
@@ -96,6 +107,15 @@ export async function getDashboardStats(): Promise<{
         })
       ])
 
+    const sumFor = (types: string[]) =>
+      byType.filter((row) => types.includes(row.type)).reduce((sum, row) => sum + Number(row._sum.totalAmount ?? 0), 0)
+
+    const countFor = (types: string[]) =>
+      byType.filter((row) => types.includes(row.type)).reduce((sum, row) => sum + row._count, 0)
+
+    const DONATION_TYPES = ['ONE_TIME_DONATION', 'RECURRING_DONATION']
+    const TICKET_TYPES = ['TICKET_PURCHASE']
+
     return {
       success: true,
       error: null,
@@ -111,7 +131,11 @@ export async function getDashboardStats(): Promise<{
         recentOrders: recentOrders.map((order) => ({
           ...order,
           totalAmount: Number(order.totalAmount)
-        }))
+        })),
+        ticketRevenue: sumFor(TICKET_TYPES),
+        ticketOrders: countFor(TICKET_TYPES),
+        donationRevenue: sumFor(DONATION_TYPES),
+        donationOrders: countFor(DONATION_TYPES)
       }
     }
   } catch (error) {

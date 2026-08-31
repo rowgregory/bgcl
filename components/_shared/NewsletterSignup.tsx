@@ -16,8 +16,6 @@ import {
   type SubscriberFormValues
 } from '@/lib/validations/subscriber.validation'
 
-// Tailwind can't build class names from interpolated values, so each accent
-// spells its classes out in full.
 const accents = {
   purple: {
     input: 'focus:ring-purple-600 dark:focus:ring-purple-500',

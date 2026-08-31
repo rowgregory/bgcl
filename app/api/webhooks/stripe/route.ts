@@ -287,7 +287,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 
       // Increment guest count — guard the update
       if (metadata?.eventId && order.attendingEvent !== false) {
-        const guestIncrement = tickets.reduce((sum, t) => sum + (t.guestCount ?? 1) * (t.quantity ?? 1), 0)
+        const guestIncrement = tickets.reduce((sum, t) => sum + t.guestCount * (t.quantity ?? 1), 0)
 
         if (guestIncrement > 0) {
           const eventExists = await prisma.event.findUnique({
@@ -544,10 +544,16 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   try {
     await prisma.order.updateMany({
-      where: {
-        stripeSubscriptionId: subscription.id,
-        status: 'PENDING'
-      },
+      where: { stripeSubscriptionId: subscription.id },
+      data: {
+        subscriptionCanceledAt: subscription.canceled_at ? new Date(subscription.canceled_at * 1000) : new Date(),
+        subscriptionCancelsAt: null
+      }
+    })
+
+    // Only cycles that never collected become CANCELLED
+    await prisma.order.updateMany({
+      where: { stripeSubscriptionId: subscription.id, status: { in: ['PENDING', 'FAILED'] } },
       data: { status: 'CANCELLED' }
     })
 
@@ -588,12 +594,24 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       return
     }
 
+    const item = subscription.items.data[0]
+    const periodEnd = item?.current_period_end ?? (subscription as any).current_period_end
+
+    const cancelsAt = subscription.cancel_at
+      ? new Date(subscription.cancel_at * 1000)
+      : subscription.cancel_at_period_end && periodEnd
+        ? new Date(periodEnd * 1000)
+        : null
+
+    await prisma.order.updateMany({
+      where: { stripeSubscriptionId: subscription.id },
+      data: { subscriptionCancelsAt: cancelsAt }
+    })
+
     const order = await prisma.order.update({
       where: { id: latestOrder.id },
       data: {
-        nextBillingDate: (subscription as any).current_period_end
-          ? new Date((subscription as any).current_period_end * 1000)
-          : null
+        nextBillingDate: periodEnd ? new Date(periodEnd * 1000) : null
       }
     })
 

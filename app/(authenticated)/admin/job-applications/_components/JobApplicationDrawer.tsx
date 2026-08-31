@@ -1,14 +1,51 @@
 'use client'
 
+import { useCallback, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { ApplicationStatus, PositionType } from '@prisma/client'
 import { updateJobApplicationStatus } from '@/lib/actions/job-application/updateJobApplicationStatus'
-import { POSITION_LABELS, STATUS_OPTIONS, STATUS_STYLES } from '@/lib/constants/job-application.constants'
+import { POSITION_LABELS, STATUS_OPTIONS } from '@/lib/constants/job-application.constants'
 import { useEscapeKey } from '@/lib/hooks/useEscapeKey'
 import { useLockBodyScroll } from '@/lib/hooks/useLockBodyScroll'
 import { useJobApplicationDrawer } from '@/stores/drawers'
-import { ApplicationStatus, PositionType } from '@prisma/client'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState } from 'react'
+
+const labelCls = 'text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-400 dark:text-neutral-600'
+const dtCls = 'text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-600'
+const ddCls = 'text-[13px] text-neutral-900 dark:text-white'
+const proseCls = 'text-[13px] text-neutral-700 dark:text-neutral-300 leading-relaxed whitespace-pre-wrap'
+
+const sentenceCase = (v?: string | null) => (v ? v.charAt(0) + v.slice(1).toLowerCase() : '—')
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <p className={`${labelCls} mb-3`}>{title}</p>
+      <div className="space-y-4">{children}</div>
+    </section>
+  )
+}
+
+function Row({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <>
+      <dt className={dtCls}>{label}</dt>
+      <dd className={ddCls}>{children}</dd>
+    </>
+  )
+}
+
+function Block({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className={`${dtCls} mb-1.5`}>{label}</p>
+      {children}
+    </div>
+  )
+}
+
+const dlCls = 'grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-2 items-baseline'
 
 export function JobApplicationDrawer() {
   const isOpen = useJobApplicationDrawer((s) => s.isOpen)
@@ -16,265 +53,225 @@ export function JobApplicationDrawer() {
   const open = useJobApplicationDrawer((s) => s.open)
   const close = useJobApplicationDrawer((s) => s.close)
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [pending, setPending] = useState<ApplicationStatus | null>(null)
   const [errorMsg, setErrorMsg] = useState('')
-  const overlayRef = useRef<HTMLDivElement>(null)
-  const router = useRouter()
 
+  const router = useRouter()
   const onClose = useCallback(() => close(), [close])
 
+  useLockBodyScroll(isOpen)
+  useEscapeKey(onClose, isOpen)
+
   const updateStatus = async (id: string, status: ApplicationStatus) => {
+    setPending(status)
+    setErrorMsg('')
+
     try {
-      setIsLoading(true)
-      setErrorMsg('')
-      await updateJobApplicationStatus(id, status)
+      const result = await updateJobApplicationStatus(id, status)
+
+      if (result && result.success === false) {
+        setErrorMsg(result.error ?? 'Could not update the status.')
+        return
+      }
+
       open({ ...application, status })
       router.refresh()
     } catch {
-      setErrorMsg(`Failed to update status to ${status}`)
+      setErrorMsg('Could not update the status.')
     } finally {
-      setIsLoading(false)
+      setPending(null)
     }
   }
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', handleKey)
-    return () => document.removeEventListener('keydown', handleKey)
-  }, [onClose])
-
-  useLockBodyScroll(isOpen)
-
-  useEscapeKey(onClose, isOpen)
-
   if (!application) return null
+
+  const certifications = [
+    { key: 'agreeToTerms', label: 'Agreed to terms' },
+    { key: 'certifyInformation', label: 'Certified information is accurate' },
+    { key: 'authorizeBackground', label: 'Authorized background check' },
+    { key: 'understandActiveStatus', label: 'Understands active status requirements' }
+  ]
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Overlay */}
           <motion.div
-            ref={overlayRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+            aria-hidden="true"
+            className="fixed inset-0 bg-black/40 z-40"
           />
 
-          {/* Drawer */}
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-white dark:bg-neutral-900 shadow-2xl z-50 flex flex-col overflow-hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Job application details"
+            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-white dark:bg-neutral-950 border-l border-neutral-200 dark:border-neutral-800 z-50 flex flex-col"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-linear-to-br from-sky-400 to-indigo-500 flex items-center justify-center">
-                  <span className="text-sm font-bold text-white">
-                    {application.applicantName
-                      .split(' ')
-                      .map((n: string) => n[0])
-                      .join('')
-                      .slice(0, 2)}
-                  </span>
-                </div>
-                <div>
-                  <h2 className="font-semibold text-neutral-900 dark:text-white">{application.applicantName}</h2>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">{application.email}</p>
-                </div>
+            <div className="shrink-0 h-11 flex items-center justify-between gap-4 px-5 border-b border-neutral-200 dark:border-neutral-800">
+              <div className="flex items-baseline gap-2.5 min-w-0">
+                <h2 className="text-sm font-semibold text-neutral-900 dark:text-white truncate">
+                  {application.applicantName}
+                </h2>
+                <span className="text-xs text-neutral-400 dark:text-neutral-600 truncate">{application.email}</span>
               </div>
+
               <button
                 onClick={onClose}
-                className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400 transition-colors"
+                aria-label="Close"
+                className="p-1.5 rounded text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors shrink-0"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
 
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
-              {/* Status Management */}
-              <div className="bg-neutral-50 dark:bg-neutral-800/50 rounded-xl p-4 space-y-3">
-                <h3 className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                  Application Status
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {STATUS_OPTIONS.map((status) => (
-                    <button
-                      key={status}
-                      onClick={() => updateStatus(application.id, status)}
-                      disabled={isLoading || application.status === status}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-full border-2 transition-all ${
-                        application.status === status
-                          ? `${STATUS_STYLES[status]} border-current`
-                          : 'border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 hover:border-neutral-400 dark:hover:border-neutral-500'
-                      } disabled:opacity-50 disabled:cursor-not-allowed`}
-                    >
-                      {status}
-                    </button>
-                  ))}
+            <div className="flex-1 overflow-y-auto px-5 py-6 space-y-8">
+              <section>
+                <p className={`${labelCls} mb-3`}>Status</p>
+
+                <div className="inline-flex rounded border border-neutral-200 dark:border-neutral-800 p-0.5">
+                  {STATUS_OPTIONS.map((status) => {
+                    const active = application.status === status
+
+                    return (
+                      <button
+                        key={status}
+                        type="button"
+                        onClick={() => updateStatus(application.id, status)}
+                        disabled={pending !== null || active}
+                        aria-pressed={active}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-sm transition-colors disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
+                          active
+                            ? 'bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white'
+                            : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200'
+                        } ${pending !== null && !active ? 'opacity-50' : ''}`}
+                      >
+                        {pending === status ? 'Saving…' : sentenceCase(status)}
+                      </button>
+                    )
+                  })}
                 </div>
 
-                {errorMsg ? (
-                  <p role="alert" className="text-xs font-medium text-red-600 dark:text-red-400">
+                {errorMsg && (
+                  <p role="alert" className="mt-2 text-xs text-red-600 dark:text-red-400">
                     {errorMsg}
                   </p>
-                ) : (
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                    Click a status above to update this application. The currently active status is highlighted.
-                  </p>
                 )}
-              </div>
+              </section>
 
-              {/* Position & Background */}
-              <Section title="Position & Background">
-                {application.positionTypes?.length > 0 && (
-                  <Field label="Positions Applied For">
-                    <div className="flex flex-wrap gap-1.5 mt-1">
-                      {application.positionTypes.map((p: PositionType) => (
-                        <span
-                          key={p}
-                          className="px-2.5 py-1 text-xs font-medium bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-full"
-                        >
-                          {POSITION_LABELS[p]}
-                        </span>
-                      ))}
-                    </div>
-                  </Field>
-                )}
+              <Section title="Position and background">
+                <dl className={dlCls}>
+                  {application.positionTypes?.length > 0 && (
+                    <Row label="Positions">
+                      {application.positionTypes.map((p: PositionType) => POSITION_LABELS[p] ?? p).join(', ')}
+                    </Row>
+                  )}
+
+                  <Row label="Employment">
+                    <span className="capitalize">
+                      {application.employmentType?.replace(/_/g, ' ').toLowerCase() ?? '—'}
+                    </span>
+                  </Row>
+
+                  <Row label="Hours available">{application.hoursAvailable ?? '—'}</Row>
+
+                  {application.languages && <Row label="Languages">{application.languages}</Row>}
+                </dl>
+
                 {application.youthOrgEmployment && (
-                  <Field label="Youth Organization Employment">
-                    <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                      {application.youthOrgEmployment}
-                    </p>
-                  </Field>
+                  <Block label="Youth organization employment">
+                    <p className={proseCls}>{application.youthOrgEmployment}</p>
+                  </Block>
                 )}
+
                 {application.education && (
-                  <Field label="Education">
-                    <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                      {application.education}
-                    </p>
-                  </Field>
+                  <Block label="Education">
+                    <p className={proseCls}>{application.education}</p>
+                  </Block>
                 )}
+
                 {application.extracurricularsSkills && (
-                  <Field label="Extracurricular Activities & Skills">
-                    <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                      {application.extracurricularsSkills}
-                    </p>
-                  </Field>
+                  <Block label="Extracurriculars and skills">
+                    <p className={proseCls}>{application.extracurricularsSkills}</p>
+                  </Block>
                 )}
               </Section>
 
-              {/* Personal Info */}
-              <Section title="Personal Information">
-                <div className="grid grid-cols-2 gap-4">
-                  <Field label="Employment Type">
-                    <p className="text-sm font-medium text-neutral-900 dark:text-white capitalize">
-                      {application.employmentType?.replace('_', ' ').toLowerCase()}
-                    </p>
-                  </Field>
-                  <Field label="Hours Available">
-                    <p className="text-sm font-medium text-neutral-900 dark:text-white">{application.hoursAvailable}</p>
-                  </Field>
-                </div>
-                {application.languages && (
-                  <Field label="Languages Spoken">
-                    <p className="text-sm font-medium text-neutral-900 dark:text-white">{application.languages}</p>
-                  </Field>
-                )}
-              </Section>
-
-              {/* References */}
               {application.references?.length > 0 && (
                 <Section title="References">
-                  <div className="space-y-3">
+                  <div className="divide-y divide-neutral-100 dark:divide-neutral-900">
                     {application.references.map((ref: any, i: number) => (
-                      <div key={i} className="p-3 bg-neutral-50 dark:bg-neutral-800/50 rounded-lg space-y-1">
-                        <p className="text-sm font-semibold text-neutral-900 dark:text-white">{ref.name}</p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{ref.positionAndCompany}</p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{ref.workRelationship}</p>
-                        <div className="flex gap-4 pt-1">
-                          <p className="text-xs text-neutral-700 dark:text-neutral-300">{ref.phone}</p>
-                          <p className="text-xs text-neutral-700 dark:text-neutral-300">{ref.email}</p>
-                        </div>
+                      <div key={i} className="py-3 first:pt-0">
+                        <p className="text-[13px] text-neutral-900 dark:text-white">{ref.name}</p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                          {[ref.positionAndCompany, ref.workRelationship].filter(Boolean).join(' · ')}
+                        </p>
+                        <p className="text-xs text-neutral-400 dark:text-neutral-600 mt-1 tabular-nums">
+                          {[ref.phone, ref.email].filter(Boolean).join(' · ')}
+                        </p>
                       </div>
                     ))}
                   </div>
                 </Section>
               )}
 
-              {/* Driving Info */}
-              <Section title="Driving Information">
-                <div className="grid grid-cols-2 gap-4">
-                  <Field label="Valid Driver's License">
-                    <p className="text-sm font-medium text-neutral-900 dark:text-white">
-                      {application.hasValidDriverLicense ? 'Yes' : 'No'}
-                    </p>
-                  </Field>
-                  {application.licenseNumber && (
-                    <Field label="License Number">
-                      <p className="text-sm font-medium text-neutral-900 dark:text-white">
-                        {application.licenseNumber}
-                      </p>
-                    </Field>
-                  )}
+              <Section title="Driving">
+                <dl className={dlCls}>
+                  <Row label="Valid license">{application.hasValidDriverLicense ? 'Yes' : 'No'}</Row>
+
                   {application.licenseExpiration && (
-                    <Field label="License Expiration">
-                      <p className="text-sm font-medium text-neutral-900 dark:text-white">
+                    <Row label="Expires">
+                      <span className="tabular-nums">
                         {new Date(application.licenseExpiration).toLocaleDateString('en-US', {
-                          month: 'long',
+                          month: 'short',
                           day: 'numeric',
-                          year: 'numeric'
+                          year: 'numeric',
+                          timeZone: 'America/New_York'
                         })}
-                      </p>
-                    </Field>
+                      </span>
+                    </Row>
                   )}
+
                   {application.licenseSuspended !== undefined && (
-                    <Field label="License Suspended">
-                      <p className="text-sm font-medium text-neutral-900 dark:text-white">
-                        {application.licenseSuspended ? 'Yes' : 'No'}
-                      </p>
-                    </Field>
+                    <Row label="Suspended">{application.licenseSuspended ? 'Yes' : 'No'}</Row>
                   )}
-                </div>
+                </dl>
+
                 {application.noLicenseReason && (
-                  <Field label="No License Reason">
-                    <p className="text-sm text-neutral-700 dark:text-neutral-300">{application.noLicenseReason}</p>
-                  </Field>
+                  <Block label="Reason for no license">
+                    <p className={proseCls}>{application.noLicenseReason}</p>
+                  </Block>
                 )}
+
                 {application.suspensionExplanation && (
-                  <Field label="Suspension Explanation">
-                    <p className="text-sm text-neutral-700 dark:text-neutral-300">
-                      {application.suspensionExplanation}
-                    </p>
-                  </Field>
+                  <Block label="Suspension explanation">
+                    <p className={proseCls}>{application.suspensionExplanation}</p>
+                  </Block>
                 )}
+
                 {application.trafficViolations && (
-                  <Field label="Traffic Violations">
-                    <p className="text-sm text-neutral-700 dark:text-neutral-300">{application.trafficViolations}</p>
-                  </Field>
+                  <Block label="Traffic violations">
+                    <p className={proseCls}>{application.trafficViolations}</p>
+                  </Block>
                 )}
               </Section>
 
-              {/* Resume */}
               {application.resumeUrl && (
                 <Section title="Resume">
-                  <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800/50 rounded-lg">
-                    <div>
-                      <p className="text-sm font-medium text-neutral-900 dark:text-white">
+                  <div className="flex items-baseline justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-[13px] text-neutral-900 dark:text-white truncate">
                         {application.resumeFileName}
                       </p>
                       {application.resumeFileSize && (
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                        <p className="text-xs text-neutral-400 dark:text-neutral-600 tabular-nums">
                           {(application.resumeFileSize / 1024).toFixed(1)} KB
                         </p>
                       )}
@@ -284,84 +281,56 @@ export function JobApplicationDrawer() {
                       href={application.resumeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-1.5 text-xs font-medium bg-sky-600 hover:bg-sky-700 text-white rounded-lg transition-colors"
+                      className="text-xs font-medium text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors shrink-0"
                     >
-                      View PDF
+                      Open PDF
                     </a>
                   </div>
                 </Section>
               )}
 
-              {/* Certification */}
               <Section title="Certification">
-                <div className="space-y-2">
-                  {[
-                    { key: 'agreeToTerms', label: 'Agreed to Terms' },
-                    { key: 'certifyInformation', label: 'Certified Information is Accurate' },
-                    { key: 'authorizeBackground', label: 'Authorized Background Check' },
-                    { key: 'understandActiveStatus', label: 'Understands Active Status Requirements' }
-                  ].map(({ key, label }) => (
-                    <div key={key} className="flex items-center gap-2">
-                      <div
-                        className={`w-4 h-4 rounded-full flex items-center justify-center ${application[key] ? 'bg-green-500' : 'bg-neutral-300 dark:bg-neutral-600'}`}
+                <dl className={dlCls}>
+                  {certifications.map(({ key, label }) => (
+                    <Row key={key} label={label}>
+                      <span
+                        className={
+                          application[key] ? 'text-neutral-900 dark:text-white' : 'text-red-600 dark:text-red-400'
+                        }
                       >
-                        {application[key] && (
-                          <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </div>
-                      <p className="text-sm text-neutral-700 dark:text-neutral-300">{label}</p>
-                    </div>
+                        {application[key] ? 'Yes' : 'No'}
+                      </span>
+                    </Row>
                   ))}
-                </div>
-                {application.signature && (
-                  <Field label="Digital Signature">
-                    <p className="text-sm italic text-neutral-900 dark:text-white">{application.signature}</p>
-                  </Field>
-                )}
+
+                  {application.signature && <Row label="Signature">{application.signature}</Row>}
+                </dl>
               </Section>
 
-              {/* Meta */}
-              <Section title="Submission Details">
-                <div className="grid grid-cols-2 gap-4">
-                  <Field label="Application ID">
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400 break-all">{application.id}</p>
-                  </Field>
-                  <Field label="Submitted">
-                    <p className="text-sm text-neutral-700 dark:text-neutral-300">
+              <Section title="Submission">
+                <dl className={dlCls}>
+                  <Row label="Submitted">
+                    <span className="tabular-nums">
                       {new Date(application.createdAt).toLocaleDateString('en-US', {
-                        month: 'long',
+                        month: 'short',
                         day: 'numeric',
-                        year: 'numeric'
+                        year: 'numeric',
+                        timeZone: 'America/New_York'
                       })}
-                    </p>
-                  </Field>
-                </div>
+                    </span>
+                  </Row>
+
+                  <Row label="Application ID">
+                    <span className="font-mono text-[11px] text-neutral-400 dark:text-neutral-600 break-all">
+                      {application.id}
+                    </span>
+                  </Row>
+                </dl>
               </Section>
             </div>
           </motion.div>
         </>
       )}
     </AnimatePresence>
-  )
-}
-
-// Helpers
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-3">
-      <h3 className="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">{title}</h3>
-      <div className="space-y-3">{children}</div>
-    </div>
-  )
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-0.5">{label}</p>
-      {children}
-    </div>
   )
 }

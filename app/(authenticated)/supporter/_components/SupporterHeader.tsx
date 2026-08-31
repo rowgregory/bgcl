@@ -1,14 +1,15 @@
 import { useSession } from 'next-auth/react'
-import { MotionLink } from '@/components/_shared/MotionLink'
+import Link from 'next/link'
+import { ShoppingCart } from 'lucide-react'
 import Picture from '@/components/_shared/Picture'
-import { Rocket, ShoppingCart } from 'lucide-react'
-import { useCartStore, useCartCount, useCartHasHydrated } from '@/stores/useCartStore'
 import LogoutButton from '@/components/_shared/LogoutButton'
+import { useCartStore, useCartCount, useCartHasHydrated } from '@/stores/useCartStore'
 
 export function SupporterHeader() {
   const session = useSession()
   const role = session?.data?.user?.role
   const email = session.data?.user?.email
+
   const hasItems = useCartStore((s) => s.items.length > 0)
   const storedCount = useCartCount()
   const hasHydrated = useCartHasHydrated()
@@ -17,80 +18,60 @@ export function SupporterHeader() {
   // rehydration lands rather than flashing the wrong count
   const cartCount = hasHydrated ? storedCount : 0
 
+  const isStaff = role === 'ADMIN' || role === 'PROGRAM' || role === 'SUPERUSER'
+
   return (
-    <header className="px-4 sm:px-6 md:px-8 lg:px-12 pb-4 pt-4 sm:pt-6 md:pt-8 dark:border-neutral-800 border-neutral-200 border-b">
-      <div className="max-w-334 mx-auto flex items-center justify-between gap-3">
-        {/* Logo */}
-        <MotionLink
+    <header className="sticky top-0 z-10 h-14 px-6 lg:px-8 flex items-center border-b border-neutral-200 dark:border-neutral-800 bg-white/85 dark:bg-neutral-950/85 backdrop-blur-sm">
+      <div className="w-full max-w-3xl mx-auto flex items-center justify-between gap-4">
+        <Link
           href="/"
-          aria-label="Boys &amp; Girls Club of Lynn, home"
-          className="flex shrink-0 w-20 sm:w-28 h-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
+          aria-label="Boys and Girls Club of Lynn, home"
+          className="flex shrink-0 w-16 h-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
         >
           <Picture
             src="/images/vertical-logo-light.png"
             alt="Boys & Girls Club of Lynn"
-            className="dark:hidden block w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
-            priority={true}
+            className="dark:hidden block w-full h-full object-contain hover:opacity-80 transition-opacity"
+            priority
           />
           <Picture
             src="/images/vertical-logo-dark.png"
             alt="Boys & Girls Club of Lynn"
-            className="dark:block hidden w-full h-full cursor-pointer hover:opacity-80 transition-opacity object-contain"
-            priority={true}
+            className="dark:block hidden w-full h-full object-contain hover:opacity-80 transition-opacity"
+            priority
           />
-        </MotionLink>
+        </Link>
 
-        {/* Right side */}
-        <div className="flex items-center gap-1.5 sm:gap-x-3 min-w-0">
-          {/* Profile */}
-          <div
-            className="flex items-center gap-2 px-2 sm:px-3 py-1.5 dark:bg-neutral-900 dark:border-neutral-800 bg-neutral-100 border-neutral-200 border rounded-lg min-w-0"
-            aria-label={`Signed in as ${email}`}
-          >
-            <div
-              className="shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-sky-600 flex items-center justify-center"
-              aria-hidden="true"
+        <div className="flex items-center gap-4 min-w-0">
+          {isStaff && (
+            <Link
+              href={role === 'PROGRAM' ? '/admin/job-applications' : '/admin/dashboard'}
+              className="text-xs font-medium text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors shrink-0 hidden sm:inline"
             >
-              <span className="text-white text-[10px] sm:text-xs font-bold leading-none">
-                {(email?.[0] ?? '?').toUpperCase()}
-              </span>
-            </div>
-            <p className="text-xs font-medium dark:text-neutral-400 text-neutral-600 truncate max-w-20 sm:max-w-30 lg:max-w-40 hidden xs:block">
-              {email}
-            </p>
-          </div>
+              Admin
+            </Link>
+          )}
 
-          {/* Cart */}
-          <MotionLink
+          <span className="text-xs text-neutral-500 dark:text-neutral-400 truncate hidden sm:inline max-w-40">
+            {email}
+          </span>
+
+          <Link
             href={hasHydrated && hasItems ? '/checkout' : '/cart'}
             aria-label={`View cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative p-2 dark:bg-neutral-800 dark:border-neutral-700 dark:hover:bg-neutral-700 bg-neutral-100 border-neutral-200 hover:bg-neutral-200 border rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 shrink-0"
+            className="relative p-1.5 rounded text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 shrink-0"
           >
-            <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 dark:text-neutral-400 text-neutral-600" aria-hidden="true" />
+            <ShoppingCart className="w-4 h-4" aria-hidden="true" />
+
             {cartCount > 0 && (
               <span
                 aria-hidden="true"
-                className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-sky-600 text-white text-[10px] font-black rounded-full flex items-center justify-center leading-none"
+                className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-sky-600 text-white text-[10px] font-medium rounded-full flex items-center justify-center leading-none tabular-nums"
               >
                 {cartCount > 9 ? '9+' : cartCount}
               </span>
             )}
-          </MotionLink>
-
-          {/* Admin */}
-          {(role === 'ADMIN' || role === 'PROGRAM' || role === 'SUPERUSER') && (
-            <MotionLink
-              href="/auth/login"
-              aria-label="Go to admin dashboard"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-zinc-700 bg-neutral-200 border-neutral-300 hover:bg-neutral-300 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 shrink-0 hidden sm:flex"
-            >
-              <Rocket className="w-4 h-4 sm:w-5 sm:h-5 dark:text-zinc-400 text-neutral-700" aria-hidden="true" />
-            </MotionLink>
-          )}
+          </Link>
 
           <LogoutButton />
         </div>

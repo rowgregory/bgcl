@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Trash2, Mail, Search } from 'lucide-react'
-import { deleteSubscriber } from '@/lib/actions/subscriber/deleteSubscriber'
+import { useState, useMemo } from 'react'
+import { Trash2, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { deleteSubscriber } from '@/lib/actions/subscriber/deleteSubscriber'
 import extractErrorMessage from '@/lib/utils/extractErrorMessage'
 import { InlineMessage, InlineMessageState } from '@/components/_shared/InlineMessage'
+import { AdminPageHeader } from '@/app/(authenticated)/admin/_components/AdminPageHeader'
 
 const TABS = ['All', 'Members', 'Non-Members', 'Donors'] as const
 type TabType = (typeof TABS)[number]
@@ -18,157 +18,197 @@ const TAB_TO_TYPE = {
   Donors: 'donor' as const
 }
 
+const TYPE_LABEL: Record<string, string> = {
+  member: 'Member',
+  'non-member': 'Non-member',
+  donor: 'Donor'
+}
+
+const thCls =
+  'py-2 pr-4 text-[11px] font-medium text-neutral-400 dark:text-neutral-600 uppercase tracking-wider whitespace-nowrap'
+
 export default function NewsletterEmailsClient({ subscribers }) {
   const [deleteId, setDeleteId] = useState<string | null>(null)
-  const [deleting, setDeleting] = useState(false)
   const [message, setMessage] = useState<InlineMessageState | null>(null)
-  const router = useRouter()
   const [activeTab, setActiveTab] = useState<TabType>('All')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const filterByTab = (tab: TabType) => {
-    setActiveTab(tab)
-  }
+  const router = useRouter()
 
   const handleDelete = async (id: string) => {
     setMessage(null)
     setDeleteId(id)
-    setDeleting(true)
 
     try {
       const res = await deleteSubscriber(id)
 
       if (res && res.success === false) {
-        setMessage({ type: 'error', message: 'Failed to delete subscriber.', description: extractErrorMessage(res) })
+        setMessage({
+          type: 'error',
+          message: 'Could not delete the subscriber.',
+          description: extractErrorMessage(res)
+        })
         return
       }
 
       router.refresh()
-      setMessage({ type: 'success', message: 'Subscriber deleted successfully.' })
+      setMessage({ type: 'success', message: 'Subscriber deleted.' })
     } catch (error: unknown) {
-      setMessage({ type: 'error', message: 'Failed to delete subscriber.', description: extractErrorMessage(error) })
+      setMessage({
+        type: 'error',
+        message: 'Could not delete the subscriber.',
+        description: extractErrorMessage(error)
+      })
     } finally {
-      setDeleting(false)
       setDeleteId(null)
     }
   }
 
-  const filteredSubscribers = subscribers?.filter((subscriber) => {
-    const matchesTab = TAB_TO_TYPE[activeTab] === 'All' || subscriber?.type === TAB_TO_TYPE[activeTab]
+  const filtered = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase()
 
-    const matchesSearch = searchQuery === '' || subscriber.email?.toLowerCase().includes(searchQuery.toLowerCase())
+    return (subscribers ?? []).filter((subscriber) => {
+      if (TAB_TO_TYPE[activeTab] !== 'All' && subscriber?.type !== TAB_TO_TYPE[activeTab]) return false
+      if (!q) return true
 
-    return matchesTab && matchesSearch
-  })
+      return subscriber.email?.toLowerCase().includes(q)
+    })
+  }, [subscribers, activeTab, searchQuery])
 
-  const typeColors = {
-    member: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
-    'non-member': 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300',
-    donor: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-  }
+  const isFiltered = searchQuery.trim().length > 0 || activeTab !== 'All'
 
   return (
-    <div className="h-screen bg-white dark:bg-neutral-950 flex flex-col">
-      <div className="fixed w-full border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-8 pb-3 lg:pb-0">
-        <div className="flex flex-col lg:flex-row lg:items-center gap-y-3 lg:gap-x-8">
-          <div className="flex gap-8">
-            {TABS.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => filterByTab(tab)}
-                className={`py-4 text-sm font-semibold transition-colors relative ${
-                  activeTab === tab
-                    ? 'dark:text-white text-neutral-900'
-                    : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-300'
-                }`}
-              >
-                {tab}
-                {activeTab === tab && (
-                  <motion.div
-                    layoutId="underline"
-                    className="absolute bottom-0 left-0 right-0 h-1 bg-sky-600"
-                    transition={{ duration: 0.3 }}
-                  />
-                )}
-              </button>
-            ))}
-          </div>
+    <div className="min-h-screen bg-white dark:bg-neutral-950">
+      <AdminPageHeader
+        title="Newsletter Emails"
+        meta={`${filtered.length} ${filtered.length === 1 ? 'subscriber' : 'subscribers'}`}
+      />
 
-          {/* Search Bar */}
-          <div className="relative max-w-xs w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+      <div className="px-6 lg:px-8">
+        <div className="flex flex-wrap items-center gap-3 pt-5">
+          <div className="relative w-full sm:w-72">
+            <Search
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 dark:text-neutral-600"
+              aria-hidden="true"
+            />
             <input
-              type="text"
-              placeholder="Search subscribers..."
+              type="search"
+              aria-label="Search subscribers by email"
+              placeholder="Search email"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+              className="w-full pl-8 pr-3 py-1.5 bg-transparent border border-neutral-200 dark:border-neutral-800 rounded text-[13px] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
             />
           </div>
-        </div>
-      </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto px-8 pb-6 pt-36 lg:pt-17">
-        <div className="mx-auto">
+          <select
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value as TabType)}
+            aria-label="Filter by subscriber type"
+            className="py-1.5 pl-2.5 pr-8 bg-transparent border border-neutral-200 dark:border-neutral-800 rounded text-[13px] text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
+          >
+            {TABS.map((tab) => {
+              const type = TAB_TO_TYPE[tab]
+              const count =
+                type === 'All' ? (subscribers ?? []).length : (subscribers ?? []).filter((s) => s.type === type).length
+
+              return (
+                <option key={tab} value={tab}>
+                  {tab} ({count})
+                </option>
+              )
+            })}
+          </select>
+
+          {isFiltered && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('')
+                setActiveTab('All')
+              }}
+              className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-neutral-900 dark:hover:text-neutral-300 transition-colors"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        <div className="pt-4 pb-6">
           <InlineMessage state={message} onDismiss={() => setMessage(null)} className="mb-4" />
 
-          {filteredSubscribers?.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 text-neutral-500 dark:text-neutral-400">
-              <Mail className="w-12 h-12 mb-3 opacity-30" />
-              <p className="text-lg font-medium">No subscribers</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {/* Subscriber List */}
-              {filteredSubscribers?.map((subscriber, index) => (
-                <motion.div
-                  key={subscriber.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, delay: index * 0.02 }}
-                  className="bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors group"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <p className="font-semibold dark:text-white text-neutral-900 truncate">{subscriber.email}</p>
-                        <span
-                          className={`inline-flex px-2.5 py-1 rounded text-xs font-semibold shrink-0 ${
-                            typeColors[subscriber.type]
-                          }`}
-                        >
-                          {subscriber.type === 'member'
-                            ? 'Member'
-                            : subscriber.type === 'non-member'
-                              ? 'Non-Member'
-                              : 'Donor'}
-                        </span>
-                      </div>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-500">
-                        Subscribed {new Date(subscriber.subscribedAt).toLocaleDateString()}
-                      </p>
-                    </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-neutral-200 dark:border-neutral-800">
+                  <th scope="col" className={`text-left ${thCls}`}>
+                    Email
+                  </th>
+                  <th scope="col" className={`text-left ${thCls}`}>
+                    Type
+                  </th>
+                  <th scope="col" className={`text-left ${thCls}`}>
+                    Subscribed
+                  </th>
+                  <th scope="col" className={`text-right ${thCls} pr-0`}>
+                    <span className="sr-only">Actions</span>
+                  </th>
+                </tr>
+              </thead>
 
-                    <motion.button
-                      whileHover={{ scale: deleting ? 1 : 1.1 }}
-                      whileTap={{ scale: deleting ? 1 : 0.95 }}
-                      onClick={() => handleDelete(subscriber.id)}
-                      disabled={deleting}
-                      aria-label={`Delete ${subscriber.email}`}
-                      className="shrink-0 text-neutral-400 hover:text-red-600 dark:hover:text-red-400 transition-all p-2 disabled:cursor-not-allowed"
+              <tbody className="divide-y divide-neutral-100 dark:divide-neutral-900">
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-16 text-center text-sm text-neutral-400 dark:text-neutral-600">
+                      {isFiltered
+                        ? 'No subscribers match this filter.'
+                        : 'Subscribers will appear here as people sign up.'}
+                    </td>
+                  </tr>
+                ) : (
+                  filtered.map((subscriber) => (
+                    <tr
+                      key={subscriber.id}
+                      className="group hover:bg-neutral-50 dark:hover:bg-neutral-900/50 transition-colors"
                     >
-                      {deleting && deleteId === subscriber.id ? (
-                        <div className="w-4 h-4 rounded-full border-2 border-neutral-300 dark:border-neutral-600 border-t-red-600 dark:border-t-red-400 animate-spin" />
-                      ) : (
-                        <Trash2 className="w-4 h-4" />
-                      )}
-                    </motion.button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
+                      <td className="py-3 pr-4 text-neutral-900 dark:text-white max-w-96 truncate">
+                        {subscriber.email}
+                      </td>
+
+                      <td className="py-3 pr-4 text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
+                        {TYPE_LABEL[subscriber.type] ?? subscriber.type}
+                      </td>
+
+                      <td className="py-3 pr-4 text-neutral-500 dark:text-neutral-400 whitespace-nowrap tabular-nums">
+                        {new Date(subscriber.subscribedAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                          timeZone: 'America/New_York'
+                        })}
+                      </td>
+
+                      <td className="py-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(subscriber.id)}
+                          disabled={deleteId !== null}
+                          aria-label={`Delete ${subscriber.email}`}
+                          className="p-1.5 rounded text-neutral-300 dark:text-neutral-700 group-hover:text-neutral-400 dark:group-hover:text-neutral-500 hover:text-red-500! dark:hover:text-red-400! transition-colors disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                        >
+                          {deleteId === subscriber.id ? (
+                            <span className="block w-4 h-4 rounded-full border-2 border-neutral-300 dark:border-neutral-700 border-t-red-500 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" aria-hidden="true" />
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

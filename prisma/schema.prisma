@@ -305,6 +305,9 @@ model Order {
 
   attendingEvent Boolean @default(true)
 
+  subscriptionCancelsAt  DateTime?
+  subscriptionCanceledAt DateTime?
+
   @@index([type])
   @@index([status])
   @@index([userId])
@@ -856,9 +859,11 @@ enum PositionType {
 
 enum TicketType {
   GENERAL
+  TABLE
   RAFFLE
   TOURNAMENT
   SPONSORSHIP
+  AD
 }
 
 enum AddressType {

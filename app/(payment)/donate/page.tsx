@@ -3,27 +3,29 @@ import { getPhoneNumber } from '@/lib/actions/user/getPhoneNumber'
 import { getSavedPaymentMethods } from '@/lib/actions/stripe/getSavedPaymentMethods'
 import { getUserAddress } from '@/lib/actions/user/getUserAddress'
 import { getUserName } from '@/lib/actions/user/getUserName'
-import { PublicDonateClient } from './PublicDonateClient'
 import { auth } from '@/lib/auth/auth'
+import { DonateCheckoutClient } from './DonateCheckoutClient'
 
-export default async function DonatePage() {
-  const [campaigns, name, address, paymentMethods, phone, session] = await Promise.all([
+export default async function DonateCheckoutPage() {
+  const session = await auth()
+  const isAuthed = Boolean(session?.user?.id)
+
+  const [campaigns, name, address, paymentMethods, phone] = await Promise.all([
     getCampaigns(),
-    getUserName(),
-    getUserAddress(),
-    getSavedPaymentMethods(),
-    getPhoneNumber(),
-    auth()
+    isAuthed ? getUserName() : null,
+    isAuthed ? getUserAddress() : null,
+    isAuthed ? getSavedPaymentMethods() : null,
+    isAuthed ? getPhoneNumber() : null
   ])
 
   return (
-    <PublicDonateClient
-      campaigns={campaigns.data}
-      name={name?.data}
-      address={address?.data}
+    <DonateCheckoutClient
+      campaigns={campaigns?.data ?? []}
+      name={name?.data ?? null}
+      address={address?.data ?? null}
       savedCards={paymentMethods?.data ?? []}
-      phone={phone?.data}
-      isAuthed={!!session?.user}
+      phone={phone?.data ?? null}
+      isAuthed={isAuthed}
     />
   )
 }

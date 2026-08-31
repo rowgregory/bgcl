@@ -1,17 +1,15 @@
 'use client'
 
-import { UpdateAddressModal } from '@/app/(authenticated)/supporter/_components/UpdateAddressModal'
-import CancelSubscriptionDrawer from '@/app/(authenticated)/supporter/_components/CancelSubscriptionDrawer'
 import { SupporterHeader } from '@/app/(authenticated)/supporter/_components/SupporterHeader'
 import { ReactNode } from 'react'
+import { SupporterFooter } from './SupporterFooter'
 
 export default function SupporterShell({ children }: { children: ReactNode }) {
   return (
-    <>
-      <CancelSubscriptionDrawer />
-      <UpdateAddressModal />
+    <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-950">
       <SupporterHeader />
-      {children}
-    </>
+      <main className="flex-1">{children}</main>
+      <SupporterFooter />
+    </div>
   )
 }

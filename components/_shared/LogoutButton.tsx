@@ -1,9 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import { signOut } from 'next-auth/react'
-import { AlertCircle, LogOut } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export default function LogoutButton() {
@@ -26,26 +25,19 @@ export default function LogoutButton() {
   }
 
   return (
-    <motion.button
+    <button
       type="button"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
       onClick={handleLogout}
       disabled={isLoading}
       aria-label={failed ? 'Log out failed, try again' : 'Log out'}
       title={failed ? 'Log out failed, try again' : 'Log out'}
-      className="relative p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-zinc-700 bg-neutral-200 border-neutral-300 hover:bg-neutral-300 rounded-lg transition-all disabled:opacity-50"
+      className={`p-1.5 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 shrink-0 ${
+        failed
+          ? 'text-red-500 hover:text-red-600 dark:hover:text-red-400'
+          : 'text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900'
+      }`}
     >
-      {isLoading ? (
-        <div
-          className="w-5 h-5 border-2 border-t-0 dark:border-t-indigo-500 border-t-indigo-600 animate-spin rounded-full dark:border-indigo-500 border-indigo-500"
-          aria-hidden="true"
-        />
-      ) : failed ? (
-        <AlertCircle className="w-5 h-5 text-red-500" aria-hidden="true" />
-      ) : (
-        <LogOut className="w-5 h-5 dark:text-zinc-400 text-neutral-700" aria-hidden="true" />
-      )}
-    </motion.button>
+      <LogOut className={`w-4 h-4 ${isLoading ? 'animate-pulse' : ''}`} aria-hidden="true" />
+    </button>
   )
 }

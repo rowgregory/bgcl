@@ -52,7 +52,7 @@ export function LeftSidebar({
             <SectionHeader icon={Zap} title="Options" />
             <div className="p-3 space-y-2">
               <FormSwitch name="isPublic" label="Public" />
-              <FormSwitch name="isRaffle" label="Raffle Event" />
+              <FormSwitch name="isRaffle" label="Raffle" />
             </div>
           </div>
         </div>

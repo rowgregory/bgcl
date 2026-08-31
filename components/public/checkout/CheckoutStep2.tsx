@@ -2,25 +2,16 @@
 
 import { useState } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
-import { User, MapPin, ChevronRight, Loader2, Phone } from 'lucide-react'
 
 import { US_STATES } from '@/lib/constants/states'
 import { formatPhone } from '@/lib/utils/phone.utils'
 import { TicketCheckoutFormInput } from '@/lib/validations/ticket-checkout.validation'
 
-const inputClass = `
-  w-full px-4 py-2.5 rounded-xl border
-  dark:border-neutral-700 border-neutral-200
-  dark:bg-neutral-900 bg-neutral-50
-  dark:text-white text-neutral-900
-  dark:placeholder-neutral-500 placeholder-neutral-400
-  text-sm focus:outline-none focus:ring-2 focus:ring-sky-500
-  focus:border-transparent transition-all
-`
-
-const labelClass = 'block text-xs font-medium dark:text-neutral-300 text-neutral-700 mb-1.5'
-const errorClass = 'mt-1.5 text-xs text-red-500 dark:text-red-400'
-const sectionLabelClass = 'text-xs font-bold uppercase tracking-widest dark:text-neutral-400 text-neutral-500'
+const fieldCls =
+  'w-full px-5 py-4 text-[15px] bg-transparent border border-neutral-200 dark:border-neutral-800 rounded-lg text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all'
+const labelCls = 'block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2'
+const errorCls = 'mt-2 text-sm text-red-600 dark:text-red-400'
+const groupCls = 'text-sm text-neutral-500 dark:text-neutral-400 mb-4'
 
 type Props = {
   /** Validates the step's fields, saves, and advances. */
@@ -48,75 +39,62 @@ export function CheckoutStep2({ onSubmit }: Props) {
   }
 
   return (
-    <div className="dark:bg-neutral-800/50 dark:border-neutral-700/50 bg-white border-neutral-200 rounded-2xl border p-5 sm:p-8 shadow-lg">
-      {/* Header */}
-      <h2 className="text-xl sm:text-2xl font-bold dark:text-white text-neutral-900 mb-6 flex items-center gap-3">
-        <div className="w-1.5 h-6 bg-linear-to-b from-sky-500 to-sky-600 rounded-full shrink-0" aria-hidden="true" />
-        Your Information
-      </h2>
+    <div>
+      <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white mb-8">Your information</h2>
 
-      <form onSubmit={handleSubmit} noValidate className="space-y-5">
-        {/* Name section */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <User className="w-4 h-4 dark:text-sky-400 text-sky-600 shrink-0" aria-hidden="true" />
-            <p className={sectionLabelClass}>Personal Details</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <form onSubmit={handleSubmit} noValidate className="flex flex-col">
+        <div className="pb-8 border-b border-neutral-200 dark:border-neutral-800">
+          <p className={groupCls}>Your name</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="firstName" className={labelClass}>
-                First Name *
+              <label htmlFor="firstName" className={labelCls}>
+                First name
               </label>
               <input
                 id="firstName"
                 type="text"
                 placeholder="Maria"
                 autoComplete="given-name"
-                className={inputClass}
+                className={fieldCls}
                 aria-invalid={!!errors.firstName}
                 aria-describedby={errors.firstName ? 'firstName-error' : undefined}
                 {...register('firstName')}
               />
               {errors.firstName && (
-                <p id="firstName-error" role="alert" className={errorClass}>
+                <p id="firstName-error" role="alert" className={errorCls}>
                   {errors.firstName.message}
                 </p>
               )}
             </div>
+
             <div>
-              <label htmlFor="lastName" className={labelClass}>
-                Last Name *
+              <label htmlFor="lastName" className={labelCls}>
+                Last name
               </label>
               <input
                 id="lastName"
                 type="text"
                 placeholder="Santos"
                 autoComplete="family-name"
-                className={inputClass}
+                className={fieldCls}
                 aria-invalid={!!errors.lastName}
                 aria-describedby={errors.lastName ? 'lastName-error' : undefined}
                 {...register('lastName')}
               />
               {errors.lastName && (
-                <p id="lastName-error" role="alert" className={errorClass}>
+                <p id="lastName-error" role="alert" className={errorCls}>
                   {errors.lastName.message}
                 </p>
               )}
             </div>
           </div>
-        </div>
 
-        {/* Phone section */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Phone className="w-4 h-4 dark:text-sky-400 text-sky-600 shrink-0" aria-hidden="true" />
-            <p className={sectionLabelClass}>Contact Information</p>
-          </div>
-
-          <div>
-            <label htmlFor="phone" className={labelClass}>
-              Phone Number *
+          <div className="mt-4">
+            <label htmlFor="phone" className={labelCls}>
+              Phone
             </label>
+
             {/* Display is formatted, stored value is digits only */}
             <Controller
               name="phone"
@@ -128,7 +106,7 @@ export function CheckoutStep2({ onSubmit }: Props) {
                   inputMode="tel"
                   placeholder="(978) 645-9865"
                   autoComplete="tel"
-                  className={inputClass}
+                  className={`${fieldCls} tabular-nums`}
                   aria-invalid={!!errors.phone}
                   aria-describedby={errors.phone ? 'phone-error' : undefined}
                   value={formatPhone(value ?? '')}
@@ -137,91 +115,90 @@ export function CheckoutStep2({ onSubmit }: Props) {
                 />
               )}
             />
+
             {errors.phone && (
-              <p id="phone-error" role="alert" className={errorClass}>
+              <p id="phone-error" role="alert" className={errorCls}>
                 {errors.phone.message}
               </p>
             )}
           </div>
         </div>
 
-        {/* Address section */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <MapPin className="w-4 h-4 dark:text-sky-400 text-sky-600 shrink-0" aria-hidden="true" />
-            <p className={sectionLabelClass}>Billing Address</p>
-          </div>
-          <div className="space-y-3">
+        <div className="py-8">
+          <p className={groupCls}>Billing address</p>
+
+          <div className="space-y-4">
             <div>
-              <label htmlFor="addressLine1" className={labelClass}>
-                Street Address *
+              <label htmlFor="addressLine1" className={labelCls}>
+                Street address
               </label>
               <input
                 id="addressLine1"
                 type="text"
                 placeholder="123 Main Street"
                 autoComplete="street-address"
-                className={inputClass}
+                className={fieldCls}
                 aria-invalid={!!errors.addressLine1}
                 aria-describedby={errors.addressLine1 ? 'addressLine1-error' : undefined}
                 {...register('addressLine1')}
               />
               {errors.addressLine1 && (
-                <p id="addressLine1-error" role="alert" className={errorClass}>
+                <p id="addressLine1-error" role="alert" className={errorCls}>
                   {errors.addressLine1.message}
                 </p>
               )}
             </div>
+
             <div>
-              <label htmlFor="addressLine2" className={labelClass}>
-                Unit/Apt #
+              <label htmlFor="addressLine2" className={labelCls}>
+                Apartment or unit <span className="text-neutral-400 dark:text-neutral-600 font-normal">(optional)</span>
               </label>
               <input
                 id="addressLine2"
                 type="text"
                 placeholder="Unit 1"
                 autoComplete="address-line2"
-                className={inputClass}
+                className={fieldCls}
                 {...register('addressLine2')}
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="sm:col-span-1">
-                <label htmlFor="city" className={labelClass}>
-                  City *
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="col-span-2">
+                <label htmlFor="city" className={labelCls}>
+                  City
                 </label>
                 <input
                   id="city"
                   type="text"
                   placeholder="Lynn"
                   autoComplete="address-level2"
-                  className={inputClass}
+                  className={fieldCls}
                   aria-invalid={!!errors.city}
                   aria-describedby={errors.city ? 'city-error' : undefined}
                   {...register('city')}
                 />
                 {errors.city && (
-                  <p id="city-error" role="alert" className={errorClass}>
+                  <p id="city-error" role="alert" className={errorCls}>
                     {errors.city.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <label htmlFor="state" className={labelClass}>
-                  State *
+                <label htmlFor="state" className={labelCls}>
+                  State
                 </label>
                 <select
                   id="state"
                   autoComplete="address-level1"
-                  className={inputClass}
+                  className={fieldCls}
                   aria-invalid={!!errors.state}
                   aria-describedby={errors.state ? 'state-error' : undefined}
                   {...register('state')}
                 >
                   <option value="" disabled>
-                    State
+                    ST
                   </option>
                   {US_STATES.map((state) => (
                     <option key={state} value={state}>
@@ -230,15 +207,15 @@ export function CheckoutStep2({ onSubmit }: Props) {
                   ))}
                 </select>
                 {errors.state && (
-                  <p id="state-error" role="alert" className={errorClass}>
+                  <p id="state-error" role="alert" className={errorCls}>
                     {errors.state.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <label htmlFor="zipPostalCode" className={labelClass}>
-                  ZIP Code *
+                <label htmlFor="zipPostalCode" className={labelCls}>
+                  ZIP
                 </label>
                 <input
                   id="zipPostalCode"
@@ -247,13 +224,13 @@ export function CheckoutStep2({ onSubmit }: Props) {
                   placeholder="01901"
                   autoComplete="postal-code"
                   maxLength={10}
-                  className={inputClass}
+                  className={`${fieldCls} tabular-nums`}
                   aria-invalid={!!errors.zipPostalCode}
                   aria-describedby={errors.zipPostalCode ? 'zipPostalCode-error' : undefined}
                   {...register('zipPostalCode')}
                 />
                 {errors.zipPostalCode && (
-                  <p id="zipPostalCode-error" role="alert" className={errorClass}>
+                  <p id="zipPostalCode-error" role="alert" className={errorCls}>
                     {errors.zipPostalCode.message}
                   </p>
                 )}
@@ -262,20 +239,12 @@ export function CheckoutStep2({ onSubmit }: Props) {
           </div>
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={isSaving}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] shadow-lg shadow-sky-500/25 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900"
+          className="w-full px-5 py-4 text-[15px] font-semibold bg-sky-600 hover:bg-sky-500 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
         >
-          {isSaving ? (
-            <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-          ) : (
-            <>
-              Continue to Payment
-              <ChevronRight className="w-4 h-4" aria-hidden="true" />
-            </>
-          )}
+          {isSaving ? 'Saving…' : 'Continue to payment'}
         </button>
       </form>
     </div>

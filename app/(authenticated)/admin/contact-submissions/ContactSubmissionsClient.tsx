@@ -1,229 +1,198 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
-import { MessageSquare, Search, Heart } from 'lucide-react'
+import { Search } from 'lucide-react'
+import { ContactSubmission } from '@prisma/client'
 import { formatDate } from '@/lib/utils/date-utils'
 import { useContactSubmissionDrawer } from '@/stores/drawers'
-import { ContactSubmission } from '@prisma/client'
 import { ContactSubmissionDrawer } from './_components/ContactSubmissionDrawer'
+import { AdminPageHeader } from '@/app/(authenticated)/admin/_components/AdminPageHeader'
+import { sentenceCase } from '@/lib/utils/sentenceCase'
+
+const FILTERS = ['All', 'New', 'Read', 'Archived', 'Volunteer', 'Contact'] as const
+type FilterType = (typeof FILTERS)[number]
+
+const STATUS_DOT: Record<string, string> = {
+  NEW: 'bg-sky-500',
+  READ: 'bg-emerald-500',
+  ARCHIVED: 'bg-neutral-300 dark:bg-neutral-700'
+}
+
+const thCls =
+  'py-2 pr-4 text-[11px] font-medium text-neutral-400 dark:text-neutral-600 uppercase tracking-wider whitespace-nowrap'
 
 export default function ContactSubmissionsClient({ contactSubmissions }: { contactSubmissions: ContactSubmission[] }) {
-  const [activeTab, setActiveTab] = useState('All')
+  const [activeFilter, setActiveFilter] = useState<FilterType>('All')
   const [searchQuery, setSearchQuery] = useState('')
   const open = useContactSubmissionDrawer((s) => s.open)
 
   const filtered = useMemo(() => {
-    return contactSubmissions
-      .filter(
-        (t) =>
-          activeTab === 'All' ||
-          t.status === activeTab.toUpperCase() ||
-          (activeTab === 'Volunteer' && t.type === 'VOLUNTEER') ||
-          (activeTab === 'General' && t.type === 'GENERAL')
-      )
-      .filter((t) => {
-        if (!searchQuery.trim()) return true
-        const q = searchQuery.toLowerCase()
-        return (
-          t.firstName?.toLowerCase().includes(q) ||
-          t.lastName?.toLowerCase().includes(q) ||
-          t.email?.toLowerCase().includes(q) ||
-          t.subject?.toLowerCase().includes(q)
-        )
-      })
-  }, [contactSubmissions, activeTab, searchQuery])
+    const q = searchQuery.trim().toLowerCase()
 
-  const stats = useMemo(
+    return contactSubmissions.filter((t) => {
+      const matchesFilter =
+        activeFilter === 'All' ||
+        t.status === activeFilter.toUpperCase() ||
+        (activeFilter === 'Volunteer' && t.type === 'VOLUNTEER') ||
+        (activeFilter === 'Contact' && t.type === 'GENERAL')
+
+      if (!matchesFilter) return false
+      if (!q) return true
+
+      return (
+        t.firstName?.toLowerCase().includes(q) ||
+        t.lastName?.toLowerCase().includes(q) ||
+        t.email?.toLowerCase().includes(q) ||
+        t.subject?.toLowerCase().includes(q)
+      )
+    })
+  }, [contactSubmissions, activeFilter, searchQuery])
+
+  const counts = useMemo(
     () => ({
-      total: contactSubmissions.length,
-      new: contactSubmissions.filter((t) => t.status === 'NEW').length,
-      read: contactSubmissions.filter((t) => t.status === 'READ').length,
-      archived: contactSubmissions.filter((t) => t.status === 'ARCHIVED').length
+      All: contactSubmissions.length,
+      New: contactSubmissions.filter((t) => t.status === 'NEW').length,
+      Read: contactSubmissions.filter((t) => t.status === 'READ').length,
+      Archived: contactSubmissions.filter((t) => t.status === 'ARCHIVED').length,
+      Volunteer: contactSubmissions.filter((t) => t.type === 'VOLUNTEER').length,
+      Contact: contactSubmissions.filter((t) => t.type === 'GENERAL').length
     }),
     [contactSubmissions]
   )
 
-  const TABS = ['All', 'New', 'Read', 'Archived', 'Volunteer', 'Contact']
+  const isFiltered = activeFilter !== 'All' || searchQuery.trim().length > 0
 
   return (
     <>
       <ContactSubmissionDrawer />
 
-      <div className="h-screen bg-white dark:bg-neutral-950 flex flex-col">
-        <div className="fixed w-full border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 px-4 sm:px-8 z-10 pb-3 lg:pb-0">
-          <div className="flex flex-col lg:flex-row lg:items-center gap-y-3 lg:gap-x-8">
-            <div className="flex gap-4 sm:gap-8 overflow-x-auto scrollbar-none">
-              {TABS.map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`py-4 text-sm font-semibold transition-colors relative shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded ${
-                    activeTab === tab
-                      ? 'dark:text-white text-neutral-900'
-                      : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-300'
-                  }`}
-                >
-                  {tab}
-                  {tab === 'New' && stats.new > 0 && (
-                    <span className="ml-2 px-1.5 py-0.5 text-xs bg-sky-500 text-white rounded-full">{stats.new}</span>
-                  )}
-                  {activeTab === tab && (
-                    <motion.div
-                      layoutId="underline"
-                      className="absolute bottom-0 left-0 right-0 h-1 bg-sky-600"
-                      transition={{ duration: 0.3 }}
-                    />
-                  )}
-                </button>
-              ))}
-            </div>
-            <div className="relative max-w-xs w-full">
+      <div className="min-h-screen bg-white dark:bg-neutral-950">
+        <AdminPageHeader
+          title="Contact Submissions"
+          meta={counts.New > 0 ? `${counts.New} new · ${counts.All} total` : `${counts.All} total`}
+        />
+
+        <div className="px-6 lg:px-8">
+          <div className="flex flex-wrap items-center gap-3 pt-5">
+            <div className="relative w-full sm:w-72">
               <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400"
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 dark:text-neutral-600"
                 aria-hidden="true"
               />
               <input
                 type="search"
-                placeholder="Search contactSubmissions..."
+                aria-label="Search submissions by name, email, or subject"
+                placeholder="Search name, email, or subject"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+                className="w-full pl-8 pr-3 py-1.5 bg-transparent border border-neutral-200 dark:border-neutral-800 rounded text-[13px] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
               />
             </div>
-          </div>
-        </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-8 pb-6 pt-36 lg:pt-17">
-          <div className="mx-auto">
-            {/* Stats */}
-            <div className="flex flex-wrap gap-4 sm:gap-6 mb-6">
-              {[
-                { label: 'Total', value: stats.total, color: 'text-neutral-900 dark:text-white' },
-                { label: 'New', value: stats.new, color: 'text-sky-600 dark:text-sky-400' },
-                { label: 'Read', value: stats.read, color: 'text-emerald-600 dark:text-emerald-400' },
-                { label: 'Archived', value: stats.archived, color: 'text-neutral-600 dark:text-neutral-400' }
-              ].map(({ label, value, color }) => (
-                <div key={label} className="flex items-center gap-2">
-                  <span className="text-sm text-neutral-500 dark:text-neutral-400">{label}:</span>
-                  <span className={`text-sm font-semibold ${color}`}>{value}</span>
-                </div>
+            <select
+              value={activeFilter}
+              onChange={(e) => setActiveFilter(e.target.value as FilterType)}
+              aria-label="Filter submissions"
+              className="py-1.5 pl-2.5 pr-8 bg-transparent border border-neutral-200 dark:border-neutral-800 rounded text-[13px] text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
+            >
+              {FILTERS.map((filter) => (
+                <option key={filter} value={filter}>
+                  {filter} ({counts[filter]})
+                </option>
               ))}
-            </div>
+            </select>
 
-            {filtered.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-neutral-500 dark:text-neutral-400">
-                <MessageSquare className="w-12 h-12 mb-3 opacity-30" aria-hidden="true" />
-                <p className="text-lg font-medium">No contactSubmissions</p>
-                <p className="text-sm">Incoming messages will appear here</p>
-              </div>
-            ) : (
-              <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse" aria-label="Transmissions">
-                    <thead>
-                      <tr className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
-                        {['Name', 'Email', 'Phone', 'Type', 'Date', 'Status', ''].map((col) => (
-                          <th
-                            key={col}
-                            scope="col"
-                            className="px-4 py-3 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap"
-                          >
-                            {col}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filtered.map((t, i) => (
-                        <motion.tr
-                          onClick={() => open(t)}
-                          key={t.id}
-                          initial={{ opacity: 0, y: 4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.03 }}
-                          className="border-b border-neutral-100 dark:border-neutral-800/50 hover:bg-neutral-50 dark:hover:bg-neutral-900/50 transition-colors cursor-pointer"
-                        >
-                          {/* Name */}
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <div className="flex items-center gap-2.5">
-                              <span className="text-sm font-medium text-neutral-900 dark:text-white">
-                                {t.firstName} {t.lastName}
-                              </span>
-                            </div>
-                          </td>
-
-                          {/* Email */}
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <span className="text-xs font-mono text-neutral-500 dark:text-neutral-400">{t.email}</span>
-                          </td>
-
-                          {/* Phone Number */}
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <span className="text-xs font-mono text-neutral-500 dark:text-neutral-400">{t.phone}</span>
-                          </td>
-
-                          {/* Type */}
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <span
-                              className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-full ${
-                                t.type === 'VOLUNTEER'
-                                  ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
-                                  : 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300'
-                              }`}
-                            >
-                              {t.type === 'VOLUNTEER' ? (
-                                <>
-                                  <Heart className="w-3 h-3" aria-hidden="true" />
-                                  Volunteer
-                                </>
-                              ) : (
-                                <>
-                                  <MessageSquare className="w-3 h-3" aria-hidden="true" />
-                                  Contact
-                                </>
-                              )}
-                            </span>
-                          </td>
-
-                          {/* Date */}
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <time
-                              dateTime={new Date(t.createdAt).toISOString()}
-                              className="text-xs text-neutral-500 dark:text-neutral-400"
-                            >
-                              {formatDate(t.createdAt)}
-                            </time>
-                          </td>
-
-                          {/* Status */}
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <span
-                              className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-                                t.status === 'NEW'
-                                  ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
-                                  : t.status === 'READ'
-                                    ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'
-                                    : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
-                              }`}
-                            >
-                              {t.status}
-                            </span>
-                          </td>
-
-                          <td className="px-4 py-3 text-right">
-                            <div className="text-xs font-medium text-sky-600 dark:text-sky-400 hover:underline whitespace-nowrap">
-                              View →
-                            </div>
-                          </td>
-                        </motion.tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+            {isFiltered && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('')
+                  setActiveFilter('All')
+                }}
+                className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-neutral-900 dark:hover:text-neutral-300 transition-colors"
+              >
+                Clear
+              </button>
             )}
+          </div>
+
+          <div className="pt-4 pb-6">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-160 text-sm" aria-label="Contact submissions">
+                <thead>
+                  <tr className="border-b border-neutral-200 dark:border-neutral-800">
+                    <th scope="col" className={`text-left ${thCls}`}>
+                      Name
+                    </th>
+                    <th scope="col" className={`text-left ${thCls}`}>
+                      Email
+                    </th>
+                    <th scope="col" className={`text-left ${thCls}`}>
+                      Phone
+                    </th>
+                    <th scope="col" className={`text-left ${thCls}`}>
+                      Type
+                    </th>
+                    <th scope="col" className={`text-left ${thCls}`}>
+                      Received
+                    </th>
+                    <th scope="col" className={`text-left ${thCls} pr-0`}>
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-neutral-100 dark:divide-neutral-900">
+                  {filtered.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-16 text-center text-sm text-neutral-400 dark:text-neutral-600">
+                        {isFiltered
+                          ? 'No submissions match this filter.'
+                          : 'Messages from the contact form will appear here.'}
+                      </td>
+                    </tr>
+                  ) : (
+                    filtered.map((t) => (
+                      <tr
+                        key={t.id}
+                        onClick={() => open(t)}
+                        className="cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-900/50 transition-colors"
+                      >
+                        <td className="py-3 pr-4 whitespace-nowrap text-neutral-900 dark:text-white">
+                          {[t.firstName, t.lastName].filter(Boolean).join(' ') || '—'}
+                        </td>
+
+                        <td className="py-3 pr-4 text-neutral-500 dark:text-neutral-400 max-w-56 truncate">
+                          {t.email ?? '—'}
+                        </td>
+
+                        <td className="py-3 pr-4 whitespace-nowrap text-neutral-500 dark:text-neutral-400 tabular-nums">
+                          {t.phone || '—'}
+                        </td>
+
+                        <td className="py-3 pr-4 whitespace-nowrap text-neutral-500 dark:text-neutral-400">
+                          {t.type === 'VOLUNTEER' ? 'Volunteer' : 'Contact'}
+                        </td>
+
+                        <td className="py-3 pr-4 whitespace-nowrap text-neutral-500 dark:text-neutral-400 tabular-nums">
+                          <time dateTime={new Date(t.createdAt).toISOString()}>{formatDate(t.createdAt)}</time>
+                        </td>
+
+                        <td className="py-3 whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_DOT[t.status] ?? 'bg-neutral-300'}`}
+                              aria-hidden="true"
+                            />
+                            {sentenceCase(t.status)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
