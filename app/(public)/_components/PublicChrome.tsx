@@ -8,7 +8,6 @@ import DonationNotification from '@/components/layout/DonationNotification'
 import CapitalCampaignTab from '@/components/layout/CapitalCampaignTab'
 import MobileNavigationDrawer from '@/components/layout/MobileNavigationDrawer'
 import WelcomeAnimation from '@/components/layout/WelcomeAnimation'
-import Confetti3D from '@/components/layout/Confetti3D'
 import { AnnouncementStrip } from '@/components/layout/AnnouncementStrip'
 import { HIDDEN_PATHS } from '@/lib/constants/navigation.constants'
 import { Page } from '@prisma/client'
@@ -28,7 +27,6 @@ export default function PublicChrome({ children, capitalPage, donations, hero }:
   return (
     <>
       <TicketSelectionDrawer />
-      <Confetti3D />
 
       {showChrome && (
         <>
