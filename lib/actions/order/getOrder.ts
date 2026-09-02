@@ -7,8 +7,8 @@ export const getOrder = async (id: string) => {
   if (!auth.ok) return { success: false, data: null, error: auth.error }
 
   try {
-    const order = await prisma.order.findUnique({
-      where: { id },
+    const order = await prisma.order.findFirst({
+      where: { id, OR: [{ userId: auth.user.id }, { customerEmail: auth.user.email }] },
       include: {
         campaign: {
           select: {

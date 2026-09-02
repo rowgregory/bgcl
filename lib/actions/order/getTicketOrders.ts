@@ -32,13 +32,22 @@ export async function getTicketOrders() {
       }
     })
 
+    const serialized = orders.map((order) => ({
+      ...order,
+      totalAmount: Number(order.totalAmount),
+      feesCovered: Number(order.feesCovered),
+      orderItems: order.orderItems.map((item) => ({
+        ...item,
+        pricePerUnit: item.pricePerUnit ? Number(item.pricePerUnit) : null,
+        totalPrice: item.totalPrice ? Number(item.totalPrice) : null
+      }))
+    }))
+
+    return { success: true, data: serialized, error: null }
+
     return {
       success: true,
-      data: JSON.parse(
-        JSON.stringify(orders, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value?.constructor?.name === 'Decimal' ? Number(value) : value
-        )
-      ),
+      data: serialized,
       error: null
     }
   } catch (error) {
