@@ -1,7 +1,6 @@
+import { formatCurrency } from '@/lib/utils/currency.utils'
 import { CartItem, useCartStore } from '@/stores/useCartStore'
 import { Minus, Plus } from 'lucide-react'
-
-const usd = (n: number) => `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
 const stepperCls =
   'w-7 h-7 flex items-center justify-center rounded border border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:border-neutral-300 dark:hover:border-neutral-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500'
@@ -19,7 +18,7 @@ export const CartItemRow = ({ item }: { item: CartItem }) => {
         </div>
 
         <p className="text-[15px] font-medium text-neutral-900 dark:text-white shrink-0 tabular-nums">
-          {usd(item.price * item.quantity)}
+          {formatCurrency(item.price * item.quantity)}
         </p>
       </div>
 
@@ -55,7 +54,7 @@ export const CartItemRow = ({ item }: { item: CartItem }) => {
           </button>
 
           <span className="ml-2 text-xs text-neutral-400 dark:text-neutral-600 tabular-nums hidden sm:inline">
-            {usd(item.price)} each
+            {formatCurrency(item.price)} each
           </span>
         </div>
 

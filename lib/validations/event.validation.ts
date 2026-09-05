@@ -88,7 +88,8 @@ export const eventSchema = z.object({
 
   // Display toggles
   showTicketMarquee: z.boolean().default(true),
-  showRaffleTicketNumbers: z.boolean().default(false)
+  showRaffleTicketNumbers: z.boolean().default(false),
+  showAttendingToggle: z.boolean().default(false)
 })
 
 export type EventFormInput = z.input<typeof eventSchema>
@@ -158,5 +159,6 @@ export const EMPTY_EVENT: EventFormInput = {
   raffleTicketPrice: '',
   rafflePrizes: [],
   raffleSchedule: [],
-  showRaffleTicketNumbers: false
+  showRaffleTicketNumbers: false,
+  showAttendingToggle: false
 }

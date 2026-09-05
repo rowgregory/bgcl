@@ -108,12 +108,17 @@ export default function EventsTransactionsClient({ data }: { data: IOrder[] }) {
             <table className="w-full min-w-160 text-sm" aria-label="Ticket purchase orders">
               <thead>
                 <tr className="border-b border-neutral-200 dark:border-neutral-800">
-                  <th scope="col" className={`text-right ${thCls}`}>
-                    Amount
-                  </th>
-                  {['Name', 'Email', 'Event', 'Qty', 'Date', 'Status'].map((col) => (
-                    <th key={col} scope="col" className={`text-left ${thCls}`}>
-                      {col}
+                  {[
+                    { label: 'Amount' },
+                    { label: 'Customer' },
+                    { label: 'Event' },
+                    { label: 'Qty' },
+                    { label: 'Date' },
+                    { label: 'Status' },
+                    { label: '' }
+                  ].map((col) => (
+                    <th key={col.label} scope="col" className={`text-left ${thCls}`}>
+                      {col.label}
                     </th>
                   ))}
                 </tr>

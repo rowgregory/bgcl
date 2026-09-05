@@ -6,6 +6,8 @@ import { stripe } from '../../stripe/stripeClient'
 import { createLog } from '../log/createLog'
 import { auth } from '@/lib/auth/auth'
 import { getOrCreateStripeCustomer } from './getOrCreateStripeCustomer'
+import { grossUpCents } from '@/lib/utils/stripeFees'
+import { trim } from '@/lib/stripe/metadata'
 
 interface TicketCheckoutParams {
   email: string
@@ -14,7 +16,6 @@ interface TicketCheckoutParams {
   description: string
   saveCard?: boolean
   coverFees?: boolean
-  feesCovered?: number
   address?: {
     addressLine1?: string
     addressLine2?: string
@@ -35,15 +36,6 @@ interface CartLine {
 }
 
 const MIN_AMOUNT_CENTS = 500
-const MAX_METADATA_LENGTH = 450
-
-const STRIPE_PERCENT = 0.029
-const STRIPE_FIXED_CENTS = 30
-
-const grossUpCents = (subtotalCents: number) =>
-  Math.round((subtotalCents + STRIPE_FIXED_CENTS) / (1 - STRIPE_PERCENT)) - subtotalCents
-
-const trim = (value?: string | null) => (value ?? '').slice(0, MAX_METADATA_LENGTH)
 
 const parseTickets = (tickets: string): CartLine[] => {
   try {
@@ -68,7 +60,6 @@ export async function createPaymentIntentForTicketCheckout({
   description,
   saveCard = false,
   coverFees = false,
-  feesCovered = 0,
   address,
   savedCardId,
   tickets,
@@ -92,11 +83,30 @@ export async function createPaymentIntentForTicketCheckout({
   }
 
   try {
-    // Price and availability come from the database, never from the cart
-    const ticketRows = await prisma.ticket.findMany({
-      where: { id: { in: lines.map((l) => l.ticketId) }, eventId },
-      select: { id: true, name: true, price: true, totalQuantity: true, quantitySold: true }
-    })
+    const [event, ticketRows] = await Promise.all([
+      prisma.event.findUnique({
+        where: { id: eventId },
+        select: { ticketSalesStartDate: true, ticketSalesEndDate: true }
+      }),
+      prisma.ticket.findMany({
+        where: { id: { in: lines.map((l) => l.ticketId) }, eventId },
+        select: { id: true, name: true, price: true, totalQuantity: true, quantitySold: true }
+      })
+    ])
+
+    if (!event) {
+      return { success: false, data: null, error: 'That event is no longer available.' }
+    }
+
+    const now = Date.now()
+
+    if (event.ticketSalesStartDate && new Date(event.ticketSalesStartDate).getTime() > now) {
+      return { success: false, data: null, error: 'Ticket sales have not opened for this event yet.' }
+    }
+
+    if (event.ticketSalesEndDate && new Date(event.ticketSalesEndDate).getTime() < now) {
+      return { success: false, data: null, error: 'Ticket sales have closed for this event.' }
+    }
 
     if (ticketRows.length !== lines.length) {
       return { success: false, data: null, error: 'One or more tickets are no longer available.' }
@@ -121,26 +131,27 @@ export async function createPaymentIntentForTicketCheckout({
 
     const feeCents = coverFees ? grossUpCents(subtotal) : 0
 
-    const expectedAmount = subtotal + feeCents
+    const chargeAmount = subtotal + feeCents
 
-    if (expectedAmount < MIN_AMOUNT_CENTS) {
+    if (subtotal < MIN_AMOUNT_CENTS) {
       return { success: false, data: null, error: 'Minimum purchase amount is $5.' }
     }
 
-    // The client's total is only a cross-check; the server's figure is charged
-    if (amount !== expectedAmount) {
+    if (amount !== subtotal) {
       await createLog('warn', 'Ticket checkout amount mismatch', {
         userId,
         eventId,
         clientAmount: amount,
-        expectedAmount
+        subtotal,
+        feeCents
       })
+      return { success: false, data: null, error: 'Your total has changed. Refresh the page and try again.' }
     }
 
     const customerId = await getOrCreateStripeCustomer(userId)
 
     const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
-      amount: expectedAmount,
+      amount: chargeAmount,
       currency: 'usd',
       customer: customerId,
       receipt_email: email,
@@ -153,7 +164,7 @@ export async function createPaymentIntentForTicketCheckout({
         email: trim(email),
         saveCard: saveCard ? 'true' : 'false',
         coverFees: coverFees ? 'true' : 'false',
-        feesCovered: String(feesCovered),
+        feesCovered: String(feeCents),
         addressLine1: trim(address?.addressLine1),
         addressLine2: trim(address?.addressLine2),
         city: trim(address?.city),

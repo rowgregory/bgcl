@@ -76,16 +76,17 @@ const ITEM_CONFIG: Record<
   }
 }
 
-const EVENT_STATUS_STYLES: Record<string, string> = {
-  UPCOMING: 'bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400',
-  ONGOING: 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400',
-  COMPLETED: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400',
-  CANCELLED: 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400',
-  POSTPONED: 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400',
-  ARCHIVED: 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400'
+const EVENT_STATUS_DOT: Record<string, string> = {
+  UPCOMING: 'bg-sky-500',
+  ONGOING: 'bg-emerald-500',
+  COMPLETED: 'bg-neutral-300 dark:bg-neutral-700',
+  CANCELLED: 'bg-red-500',
+  POSTPONED: 'bg-amber-500',
+  ARCHIVED: 'bg-neutral-300 dark:bg-neutral-700'
 }
 
-const DEFAULT_STATUS_STYLE = 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
+const actionCls =
+  'p-1.5 rounded text-neutral-400 dark:text-neutral-600 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500'
 
 /** First non-empty descriptive field, whatever the entity happens to call it. */
 function getSubtitle(item: any): string {
@@ -95,9 +96,7 @@ function getSubtitle(item: any): string {
     item.year ||
     item.url ||
     item.description ||
-    (item.date
-      ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-      : null) ||
+    (item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : null) ||
     item.tier ||
     'No description'
   )
@@ -154,6 +153,7 @@ export default function AdminListItem({
       router.push(`/admin/events/events/${item.id}`)
       return
     }
+
     config.openDrawer(item)
   }
 
@@ -169,14 +169,13 @@ export default function AdminListItem({
     }
   }
 
-  const dragClasses =
+  // The drop indicator is the only place a row gets a heavy border
+  const dropClasses =
     draggedOver === item.id
       ? dragPosition === 'top'
-        ? 'dark:border-sky-500/50 dark:bg-sky-950/20 border-t-2 dark:border-t-sky-500 border-t-sky-500'
-        : 'dark:border-sky-500/50 dark:bg-sky-950/20 border-b-2 dark:border-b-sky-500 border-b-sky-500'
-      : isArchived
-        ? 'dark:border-purple-900/40 dark:bg-purple-950/10 border-purple-200/60 bg-purple-50/50 opacity-60'
-        : 'dark:border-neutral-800/50 dark:bg-neutral-900/50 dark:hover:border-neutral-700/50 border-neutral-300/50 bg-neutral-50 hover:border-neutral-400/50'
+        ? 'border-t-2 border-t-sky-500'
+        : 'border-b-2 border-b-sky-500'
+      : 'border-b border-neutral-100 dark:border-neutral-900'
 
   return (
     <div
@@ -186,107 +185,78 @@ export default function AdminListItem({
       onDragLeave={handleDragLeave}
       onDrop={(e) => handleDropWithFeedback(e, item.id)}
       onDragEnd={handleDragEnd}
-      className={`group relative flex items-center gap-4 rounded-lg border transition-all duration-200 ${dragClasses} cursor-move px-4 py-4 md:px-6`}
+      className={`group relative flex items-center gap-3 px-2 py-3 cursor-move transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-900/50 ${dropClasses} ${
+        isArchived ? 'opacity-50' : ''
+      }`}
     >
-      <div className="shrink-0 dark:text-neutral-600 dark:group-hover:text-sky-400 text-neutral-400 group-hover:text-sky-600 transition-colors">
-        <GripVertical className="h-5 w-5" aria-hidden="true" />
-      </div>
+      <GripVertical
+        className="h-4 w-4 shrink-0 text-neutral-300 dark:text-neutral-700 group-hover:text-neutral-500 dark:group-hover:text-neutral-400 transition-colors"
+        aria-hidden="true"
+      />
 
-      <div className="shrink-0 w-8">
-        <span className="inline-flex items-center justify-center h-8 w-8 rounded-full dark:bg-neutral-800 dark:text-sky-200 bg-neutral-200 text-sky-700 text-xs font-medium">
-          {index + 1}
-        </span>
-      </div>
+      <span className="shrink-0 w-6 text-xs text-neutral-400 dark:text-neutral-600 tabular-nums">{index + 1}</span>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <h3 className="text-sm font-medium dark:text-neutral-100 text-neutral-900 truncate">
+        <div className="flex items-baseline gap-2">
+          <h3 className="text-sm text-neutral-900 dark:text-white truncate">
             {item.name || item.title || item.month || 'Unnamed'}
           </h3>
-          {isArchived && (
-            <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400">
-              Archived
-            </span>
-          )}
+          {isArchived && <span className="shrink-0 text-xs text-neutral-400 dark:text-neutral-600">Archived</span>}
         </div>
-        <p className="text-xs dark:text-neutral-500 text-neutral-600 truncate">{getSubtitle(item)}</p>
+        <p className="mt-0.5 text-xs text-neutral-400 dark:text-neutral-600 truncate">{getSubtitle(item)}</p>
       </div>
 
-      {isEvent && (
-        <div className="shrink-0">
+      {isEvent && item.status && (
+        <span className="shrink-0 hidden sm:inline-flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
           <span
-            className={`inline-flex items-center px-2 py-1 text-[10px] font-bold uppercase tracking-wide rounded ${
-              EVENT_STATUS_STYLES[item.status] ?? DEFAULT_STATUS_STYLE
-            }`}
-          >
-            {item.status?.replace(/_/g, ' ')}
-          </span>
-        </div>
+            className={`w-1.5 h-1.5 rounded-full shrink-0 ${EVENT_STATUS_DOT[item.status] ?? 'bg-neutral-300 dark:bg-neutral-700'}`}
+            aria-hidden="true"
+          />
+          {item.status.toLowerCase().replace(/_/g, ' ')}
+        </span>
       )}
 
-      {/* Action Buttons */}
-      <div className="shrink-0 flex items-center gap-2">
+      {/* Actions, revealed on hover but always reachable by keyboard */}
+      <div className="shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
         {config.publicPath && (
-          <div className="relative group/view">
-            <a
-              href={config.publicPath(item.id)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block p-2 dark:text-neutral-600 dark:hover:text-sky-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-sky-600 hover:bg-neutral-200 rounded-lg transition-colors"
-              title={`View ${itemType}`}
-            >
-              <ExternalLink className="h-4 w-4" aria-hidden="true" />
-            </a>
-            <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-1 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 text-[10px] font-medium rounded whitespace-nowrap opacity-0 group-hover/view:opacity-100 transition-opacity pointer-events-none z-50 shadow-sm">
-              View
-            </div>
-          </div>
+          <a
+            href={config.publicPath(item.id)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={actionCls}
+            aria-label={`View ${itemType}`}
+          >
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+          </a>
         )}
 
-        <div className="relative group/edit">
-          <button
-            onClick={handleEdit}
-            disabled={isBusy}
-            className="p-2 dark:text-neutral-600 dark:hover:text-sky-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-sky-600 hover:bg-neutral-200 rounded-lg transition-colors disabled:opacity-40"
-            title="Edit item"
-          >
-            <Edit2 className="h-4 w-4" aria-hidden="true" />
-          </button>
-          <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-1 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 text-[10px] font-medium rounded whitespace-nowrap opacity-0 group-hover/edit:opacity-100 transition-opacity pointer-events-none z-50 shadow-sm">
-            Edit
-          </div>
-        </div>
+        <button type="button" onClick={handleEdit} disabled={isBusy} className={actionCls} aria-label={`Edit ${itemType}`}>
+          <Edit2 className="h-3.5 w-3.5" aria-hidden="true" />
+        </button>
 
         {isEvent ? (
-          <div className="relative group/archive">
-            <button
-              onClick={handleArchive}
-              disabled={isBusy}
-              className={`p-2 dark:hover:bg-neutral-800 hover:bg-neutral-200 rounded-lg transition-colors disabled:opacity-40 ${
-                isArchived
-                  ? 'text-purple-500 dark:text-purple-400 hover:text-purple-600 dark:hover:text-purple-300'
-                  : 'dark:text-neutral-600 dark:hover:text-purple-400 text-neutral-600 hover:text-purple-600'
-              }`}
-              title={isArchived ? 'Unarchive event' : 'Archive event'}
-            >
-              {isArchived ? (
-                <ArchiveRestore className="h-4 w-4" aria-hidden="true" />
-              ) : (
-                <Archive className="h-4 w-4" aria-hidden="true" />
-              )}
-            </button>
-            <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-1 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 text-[10px] font-medium rounded whitespace-nowrap opacity-0 group-hover/archive:opacity-100 transition-opacity pointer-events-none z-50 shadow-sm">
-              {isArchived ? 'Unarchive' : 'Archive'}
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={handleArchive}
+            disabled={isBusy}
+            className={actionCls}
+            aria-label={isArchived ? 'Unarchive event' : 'Archive event'}
+          >
+            {isArchived ? (
+              <ArchiveRestore className="h-3.5 w-3.5" aria-hidden="true" />
+            ) : (
+              <Archive className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
+          </button>
         ) : (
           <button
+            type="button"
             onClick={handleDelete}
             disabled={isBusy}
-            className="p-2 dark:text-neutral-600 dark:hover:text-red-400 dark:hover:bg-neutral-800 text-neutral-600 hover:text-red-600 hover:bg-neutral-200 rounded-lg transition-colors disabled:opacity-40"
-            title="Delete item"
+            className={`${actionCls} hover:text-red-600 dark:hover:text-red-400`}
+            aria-label={`Delete ${itemType}`}
           >
-            <Trash2 className="h-4 w-4" aria-hidden="true" />
+            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
         )}
       </div>

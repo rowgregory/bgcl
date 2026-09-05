@@ -1,34 +1,27 @@
+'use client'
+
 import { motion } from 'framer-motion'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
-interface DetailCardProps {
-  title: string
-  delay?: number
-  className?: string
-  children: ReactNode
+export function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="pt-4 border-t border-neutral-200 dark:border-neutral-800"
+    >
+      <h2 className="text-[11px] font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3">{title}</h2>
+      <div className="space-y-3">{children}</div>
+    </motion.section>
+  )
 }
 
-export const DetailCard = ({ title, delay = 0, className = '', children }: DetailCardProps) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay }}
-    className={`border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 bg-neutral-50 dark:bg-neutral-800/50 ${className}`}
-  >
-    <h3 className="text-sm font-black text-neutral-900 dark:text-white mb-4 uppercase tracking-wide">{title}</h3>
-    {children}
-  </motion.div>
-)
-
-interface FieldProps {
-  label: string
-  children: ReactNode
-  className?: string
+export function Field({ label, className = '', children }: { label: string; className?: string; children: ReactNode }) {
+  return (
+    <div>
+      <p className="text-xs text-neutral-400 dark:text-neutral-600">{label}</p>
+      <div className={`mt-0.5 text-sm text-neutral-900 dark:text-white ${className}`}>{children}</div>
+    </div>
+  )
 }
-
-export const Field = ({ label, children, className = '' }: FieldProps) => (
-  <div>
-    <p className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-1">{label}</p>
-    <div className={`text-neutral-900 dark:text-white font-semibold ${className}`}>{children}</div>
-  </div>
-)

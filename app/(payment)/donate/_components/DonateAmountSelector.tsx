@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 
 type Plan = {
   id: string
@@ -20,6 +21,14 @@ type Props = {
   setAmount: (amount: number) => void
 }
 
+const formatAmountInput = (raw: string) => {
+  const cleaned = raw.replace(/[^\d.]/g, '')
+  const [whole = '', ...rest] = cleaned.split('.')
+  const withCommas = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
+  return rest.length ? `${withCommas}.${rest.join('').slice(0, 2)}` : withCommas
+}
+
 export function DonateAmountSelector({
   plans,
   customId,
@@ -36,6 +45,14 @@ export function DonateAmountSelector({
     if (plan.id !== customId && plan.amount != null) {
       setAmount(plan.amount)
     }
+  }
+
+  const [draft, setDraft] = useState(amount ? formatAmountInput(String(amount)) : '')
+
+  const handleAmountChange = (raw: string) => {
+    const formatted = formatAmountInput(raw)
+    setDraft(formatted)
+    setAmount(parseFloat(formatted.replace(/,/g, '')) || 0)
   }
 
   return (
@@ -99,15 +116,14 @@ export function DonateAmountSelector({
                   </span>
 
                   <input
-                    type="number"
-                    value={amount || ''}
-                    onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
+                    type="text"
+                    inputMode="decimal"
+                    value={draft}
+                    onChange={(e) => handleAmountChange(e.target.value)}
                     aria-label={`Custom amount${suffix ? ` ${suffix}` : ''}`}
                     placeholder="0"
-                    step="0.01"
-                    min="5"
                     autoFocus
-                    className={`w-full pl-12 py-4 text-2xl font-semibold tabular-nums bg-transparent border border-neutral-200 dark:border-neutral-800 rounded-lg text-neutral-900 dark:text-white placeholder:text-neutral-300 dark:placeholder:text-neutral-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                    className={`w-full pl-12 py-4 text-2xl font-semibold tabular-nums bg-transparent border border-neutral-200 dark:border-neutral-800 rounded-lg text-neutral-900 dark:text-white placeholder:text-neutral-300 dark:placeholder:text-neutral-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all ${
                       suffix ? 'pr-14' : 'pr-5'
                     }`}
                   />

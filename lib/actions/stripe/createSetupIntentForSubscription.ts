@@ -1,48 +1,51 @@
 'use server'
 
-import prisma from '@/prisma/client'
 import Stripe from 'stripe'
 import { stripe } from '../../stripe/stripeClient'
 import { createLog } from '../log/createLog'
-import { auth } from '@/lib/auth/auth'
 import { getOrCreateStripeCustomer } from './getOrCreateStripeCustomer'
+import { grossUpCents } from '@/lib/utils/stripeFees'
+import { trim } from '@/lib/stripe/metadata'
+import { requireUser } from '@/lib/utils/requireAdmin'
 
 interface SetupIntentParams {
   email: string
   name: string
-  amount: number // in cents
+  /** The donation itself, in cents. The fee is added downstream when covered. */
+  baseAmount: number
   frequency: 'monthly' | 'yearly'
   coverFees?: boolean
-  feesCovered?: number
   phone?: string
 }
 
-const MIN_AMOUNT_CENTS = 500
-const MAX_METADATA_LENGTH = 450
-
-const trim = (value?: string | null) => (value ?? '').slice(0, MAX_METADATA_LENGTH)
+const MIN_BASE_CENTS = 500
 
 export async function createSetupIntentForSubscription({
   email,
   name,
-  amount,
+  baseAmount,
   frequency,
-  coverFees,
-  feesCovered,
+  coverFees = false,
   phone
 }: SetupIntentParams): Promise<{
   success: boolean
   data: { clientSecret: string | null; setupIntentId: string } | null
   error: string | null
 }> {
-  const session = await auth()
-  const userId = session?.user?.id
+  const auth = await requireUser()
+  if (!auth.ok) return { success: false, data: null, error: 'You must be signed in to set up a recurring donation.' }
 
-  if (!userId) return { success: false, data: null, error: 'You must be signed in to set up a recurring donation.' }
+  const userId = auth.user!.id
 
-  if (!Number.isInteger(amount) || amount < MIN_AMOUNT_CENTS) {
+  if (!Number.isInteger(baseAmount) || baseAmount < MIN_BASE_CENTS) {
     return { success: false, data: null, error: 'Minimum donation is $5.' }
   }
+
+  // The fee is derived here, never taken from the caller. It is carried on the
+  // intent so createSubscriptionAfterSetup prices the subscription from what
+  // was agreed at card confirmation rather than recomputing it.
+  const feeCents = coverFees ? grossUpCents(baseAmount) : 0
+  const chargeAmount = baseAmount + feeCents
 
   try {
     const stripeCustomerId = await getOrCreateStripeCustomer(userId)
@@ -56,10 +59,11 @@ export async function createSetupIntentForSubscription({
         email: trim(email),
         name: trim(name),
         frequency,
-        amount: String(amount),
         type: 'RECURRING_DONATION',
         coverFees: coverFees ? 'true' : 'false',
-        feesCovered: String(feesCovered ?? 0),
+        baseAmount: String(baseAmount),
+        feesCovered: String(feeCents),
+        chargeAmount: String(chargeAmount),
         phone: trim(phone)
       }
     })
@@ -76,6 +80,8 @@ export async function createSetupIntentForSubscription({
     await createLog('error', 'SetupIntent creation error', {
       userId,
       email,
+      baseAmount,
+      chargeAmount,
       error: error instanceof Error ? error.message : 'Unknown error',
       stripeCode: error instanceof Stripe.errors.StripeError ? error.code : undefined
     })

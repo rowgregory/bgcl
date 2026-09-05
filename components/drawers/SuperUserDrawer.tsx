@@ -1,6 +1,6 @@
 import { STATUS_STYLES } from '@/lib/constants/job-application.constants'
 import { ORDER_TYPE_LABEL, ROLE_STYLES } from '@/lib/constants/super'
-import { usd } from '@/lib/utils/currency.utils'
+import { formatCurrency } from '@/lib/utils/currency.utils'
 import { fmt } from '@/lib/utils/date-utils'
 import { OrderStatus, User } from '@/types/super.types'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -31,9 +31,7 @@ export function SuperUserDrawer({ user, onClose }: { user: User | null; onClose:
             <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-200 dark:border-neutral-800 shrink-0">
               <div>
                 <p className="font-semibold text-neutral-900 dark:text-white text-sm">
-                  {user.firstName || user.lastName
-                    ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
-                    : 'No name'}
+                  {user.firstName || user.lastName ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() : 'No name'}
                 </p>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">{user.email}</p>
               </div>
@@ -48,13 +46,9 @@ export function SuperUserDrawer({ user, onClose }: { user: User | null; onClose:
             <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
               {/* Role + meta */}
               <div className="flex items-center gap-2 flex-wrap">
-                <span className={`px-2.5 py-0.5 rounded text-xs font-semibold ${ROLE_STYLES[user.role] ?? ''}`}>
-                  {user.role}
-                </span>
+                <span className={`px-2.5 py-0.5 rounded text-xs font-semibold ${ROLE_STYLES[user.role] ?? ''}`}>{user.role}</span>
                 <span className="text-xs text-neutral-400">Joined {fmt(user.createdAt)}</span>
-                {user.lastLoginAt && (
-                  <span className="text-xs text-neutral-400">· Last login {fmt(user.lastLoginAt)}</span>
-                )}
+                {user.lastLoginAt && <span className="text-xs text-neutral-400">· Last login {fmt(user.lastLoginAt)}</span>}
               </div>
 
               {/* Stripe */}
@@ -145,7 +139,7 @@ export function SuperUserDrawer({ user, onClose }: { user: User | null; onClose:
                               </span>
                             </td>
                             <td className="px-3 py-2.5 text-right font-semibold text-neutral-900 dark:text-white">
-                              {usd(o.totalAmount)}
+                              {formatCurrency(o.totalAmount)}
                             </td>
                           </tr>
                         ))}

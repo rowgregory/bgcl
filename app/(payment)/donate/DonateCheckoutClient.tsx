@@ -99,8 +99,8 @@ export function DonateCheckoutClient({ campaigns, name, address, savedCards, pho
   }
 
   return (
-    <DonateShell step={step}>
-      <FormProvider {...methods}>
+    <FormProvider {...methods}>
+      <DonateShell step={step}>
         {step === 1 && <CheckoutStep1 redirectTo="/donate" />}
 
         {step === 2 && (
@@ -115,14 +115,9 @@ export function DonateCheckoutClient({ campaigns, name, address, savedCards, pho
         )}
 
         {step === 3 && (
-          <DonateCheckoutForm
-            campaignName={campaignName}
-            campaigns={campaigns}
-            savedCards={savedCards}
-            setStep={setStep}
-          />
+          <DonateCheckoutForm campaignName={campaignName} campaigns={campaigns} savedCards={savedCards} setStep={setStep} />
         )}
-      </FormProvider>
-    </DonateShell>
+      </DonateShell>
+    </FormProvider>
   )
 }

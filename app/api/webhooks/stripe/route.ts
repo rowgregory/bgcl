@@ -144,7 +144,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         },
         notes: metadata.notes || null,
         coverFees: metadata.coverFees === 'true',
-        feesCovered: parseFloat(metadata?.feesCovered || '0'),
+        feesCovered: Number(metadata?.feesCovered || 0) / 100,
         isRecurring: metadata.donationType === 'monthly' || metadata.donationType === 'yearly',
         recurringFrequency:
           metadata.donationType === 'monthly' ? 'monthly' : metadata.donationType === 'yearly' ? 'yearly' : null,
@@ -286,7 +286,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       }
 
       // Increment guest count — guard the update
-      if (metadata?.eventId && order.attendingEvent !== false) {
+      if (metadata?.eventId) {
         const guestIncrement = tickets.reduce((sum, t) => sum + t.guestCount * (t.quantity ?? 1), 0)
 
         if (guestIncrement > 0) {

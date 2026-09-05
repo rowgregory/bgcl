@@ -3,9 +3,7 @@
 import { DashboardStats } from '@/lib/actions/_dashboard/getDashboardStats'
 import { motion } from 'framer-motion'
 import { AdminPageHeader } from '@/app/(authenticated)/admin/_components/AdminPageHeader'
-
-const usd = (n: number) => `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-const usdWhole = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`
+import { formatCurrency, formatCurrencyWhole } from '@/lib/utils/currency.utils'
 
 const ORDER_TYPE_LABEL: Record<string, string> = {
   TICKET_PURCHASE: 'Ticket',
@@ -35,12 +33,12 @@ export default function AdminDashboardClient({ stats }: { stats: DashboardStats 
     },
     { label: 'Orders', value: stats.totalOrders.toLocaleString(), sub: 'confirmed and cancelled' },
     { label: 'Tickets sold', value: stats.ticketsSold.toLocaleString(), sub: 'confirmed orders' },
-    { label: 'Fees covered', value: usdWhole(stats.totalFeesCovered), sub: 'paid by supporters' }
+    { label: 'Fees covered', value: formatCurrencyWhole(stats.totalFeesCovered), sub: 'paid by supporters' }
   ]
 
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-950">
-      <AdminPageHeader title="Dashboard" meta={`${usdWhole(stats.totalRevenue)} raised`} />
+      <AdminPageHeader title="Dashboard" meta={`${formatCurrencyWhole(stats.totalRevenue)} raised`} />
 
       <div className="px-6 py-8 lg:px-8">
         <motion.section
@@ -55,12 +53,12 @@ export default function AdminDashboardClient({ stats }: { stats: DashboardStats 
             </p>
 
             <p className="mt-3 text-5xl font-semibold tracking-tight text-neutral-900 dark:text-white tabular-nums">
-              {usdWhole(stats.totalRevenue)}
+              {formatCurrencyWhole(stats.totalRevenue)}
             </p>
 
             <div className="mt-4 flex items-baseline gap-2 text-sm">
               <span className="text-neutral-500 dark:text-neutral-400 tabular-nums">
-                {usd(stats.revenueThisMonth)} in {monthName}
+                {formatCurrency(stats.revenueThisMonth)} in {monthName}
               </span>
 
               {monthDeltaPct && (
@@ -81,9 +79,7 @@ export default function AdminDashboardClient({ stats }: { stats: DashboardStats 
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-400 dark:text-neutral-600">
                   {metric.label}
                 </p>
-                <p className="mt-2 text-2xl font-semibold text-neutral-900 dark:text-white tabular-nums">
-                  {metric.value}
-                </p>
+                <p className="mt-2 text-2xl font-semibold text-neutral-900 dark:text-white tabular-nums">{metric.value}</p>
                 <p className="mt-1 text-xs text-neutral-400 dark:text-neutral-600">{metric.sub}</p>
               </div>
             ))}
@@ -149,12 +145,11 @@ export default function AdminDashboardClient({ stats }: { stats: DashboardStats 
                       </div>
 
                       <p className="text-2xl font-semibold text-neutral-900 dark:text-white tabular-nums">
-                        {usdWhole(source.amount)}
+                        {formatCurrencyWhole(source.amount)}
                       </p>
 
                       <p className="mt-1 text-xs text-neutral-400 dark:text-neutral-600 tabular-nums">
-                        {source.share.toFixed(0)}% · {source.count.toLocaleString()}{' '}
-                        {source.count === 1 ? 'order' : 'orders'}
+                        {source.share.toFixed(0)}% · {source.count.toLocaleString()} {source.count === 1 ? 'order' : 'orders'}
                       </p>
                     </div>
                   ))}
@@ -241,7 +236,7 @@ export default function AdminDashboardClient({ stats }: { stats: DashboardStats 
                           </span>
                         </td>
                         <td className="py-3 text-right font-medium text-neutral-900 dark:text-white whitespace-nowrap tabular-nums">
-                          {usd(Number(order.totalAmount))}
+                          {formatCurrency(order.totalAmount)}
                         </td>
                       </tr>
                     )

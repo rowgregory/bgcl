@@ -3,7 +3,8 @@
 import Stripe from 'stripe'
 import { stripe } from '../../stripe/stripeClient'
 import { createLog } from '../log/createLog'
-import { auth } from '@/lib/auth/auth'
+import { trim } from '@/lib/stripe/metadata'
+import { requireUser } from '@/lib/utils/requireAdmin'
 
 interface CreateSubscriptionParams {
   setupIntentId: string
@@ -22,10 +23,7 @@ interface CreateSubscriptionParams {
   phone?: string
 }
 
-const MIN_AMOUNT_CENTS = 500
-const MAX_METADATA_LENGTH = 450
-
-const trim = (value?: string | null) => (value ?? '').slice(0, MAX_METADATA_LENGTH)
+const MIN_BASE_CENTS = 500
 
 export async function createSubscriptionAfterSetup({
   setupIntentId,
@@ -40,10 +38,10 @@ export async function createSubscriptionAfterSetup({
   data: { subscriptionId: string; status: string } | null
   error: string | null
 }> {
-  const session = await auth()
-  const userId = session?.user?.id
+  const auth = await requireUser()
+  if (!auth.ok) return { success: false, data: null, error: 'You must be signed in to set up a recurring donation.' }
 
-  if (!userId) return { success: false, data: null, error: 'You must be signed in to set up a recurring donation.' }
+  const userId = auth.user!.id
 
   try {
     const setupIntent = await stripe.setupIntents.retrieve(setupIntentId)
@@ -65,30 +63,50 @@ export async function createSubscriptionAfterSetup({
       return { success: false, data: null, error: 'Card setup is incomplete. Please try again.' }
     }
 
-    // Amount and frequency come from the setup intent, not the caller, so they
-    // can't be changed between confirming the card and creating the subscription
-    const amount = Number(setupIntent.metadata?.amount ?? 0)
+    // Amount, fee and frequency all come from the setup intent, not the caller,
+    // so they can't be changed between confirming the card and creating the
+    // subscription. The fee was derived server-side when the intent was made.
+    const baseAmount = Number(setupIntent.metadata?.baseAmount ?? 0)
+    const feeCents = Number(setupIntent.metadata?.feesCovered ?? 0)
+    const chargeAmount = Number(setupIntent.metadata?.chargeAmount ?? 0)
+    const coverFees = setupIntent.metadata?.coverFees === 'true'
     const frequency = setupIntent.metadata?.frequency === 'yearly' ? 'yearly' : 'monthly'
 
-    if (!Number.isInteger(amount) || amount < MIN_AMOUNT_CENTS) {
+    if (!Number.isInteger(baseAmount) || baseAmount < MIN_BASE_CENTS) {
       return { success: false, data: null, error: 'Minimum donation is $5.' }
+    }
+
+    if (!Number.isInteger(feeCents) || feeCents < 0) {
+      await createLog('warn', 'Setup intent carried an unusable fee', { userId, setupIntentId, feeCents })
+      return { success: false, data: null, error: 'Could not set up the recurring donation. Please try again.' }
     }
 
     const interval = frequency === 'monthly' ? 'month' : 'year'
     const intervalLabel = interval === 'month' ? 'Monthly' : 'Yearly'
 
-    const product = await stripe.products.create({
-      name: `${intervalLabel} Recurring Donation`,
-      metadata: { type: 'RECURRING_DONATION', interval }
-    })
+    const product = await stripe.products.create(
+      {
+        name: `${intervalLabel} Recurring Donation`,
+        metadata: { type: 'RECURRING_DONATION', interval }
+      },
+      { idempotencyKey: `sub_product_${setupIntentId}` }
+    )
 
-    const price = await stripe.prices.create({
-      product: product.id,
-      unit_amount: amount,
-      currency: 'usd',
-      recurring: { interval, usage_type: 'licensed' },
-      metadata: { frequency }
-    })
+    const price = await stripe.prices.create(
+      {
+        product: product.id,
+        // The donor covers the fee on every cycle, so it rides in unit_amount
+        unit_amount: chargeAmount,
+        currency: 'usd',
+        recurring: { interval, usage_type: 'licensed' },
+        metadata: {
+          frequency,
+          baseAmount: String(baseAmount),
+          feeCents: String(feeCents)
+        }
+      },
+      { idempotencyKey: `sub_price_${setupIntentId}` }
+    )
 
     const subscription = await stripe.subscriptions.create(
       {
@@ -96,14 +114,21 @@ export async function createSubscriptionAfterSetup({
         items: [{ price: price.id }],
         default_payment_method: paymentMethodId,
         payment_settings: { save_default_payment_method: 'on_subscription' },
+        // Nothing here can surface a second 3DS challenge, so a subscription
+        // that lands in `incomplete` would silently never collect. Fail loudly
+        // and let the StripeCardError branch below return the decline.
+        payment_behavior: 'error_if_incomplete',
+        off_session: true,
         metadata: {
           userId,
           email: trim(email),
           name: trim(name),
           orderType: 'RECURRING_DONATION',
           frequency,
-          coverFees: setupIntent.metadata?.coverFees ?? 'false',
-          feesCovered: setupIntent.metadata?.feesCovered ?? '0',
+          coverFees: coverFees ? 'true' : 'false',
+          baseAmount: String(baseAmount),
+          feesCovered: String(feeCents),
+          chargeAmount: String(chargeAmount),
           addressLine1: trim(address?.addressLine1),
           addressLine2: trim(address?.addressLine2),
           city: trim(address?.city),
@@ -125,7 +150,9 @@ export async function createSubscriptionAfterSetup({
       userId,
       subscriptionId: subscription.id,
       frequency,
-      amount
+      baseAmount,
+      feeCents,
+      chargeAmount
     })
 
     return {

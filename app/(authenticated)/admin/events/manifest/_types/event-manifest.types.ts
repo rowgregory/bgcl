@@ -12,3 +12,9 @@ export type EventGroup = {
     guestCount: number
   }[]
 }
+
+export type AttendeeLine = {
+  ticketName: string
+  quantity: number
+  guestCount: number
+}

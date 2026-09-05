@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import type { PaymentMethod } from '@prisma/client'
 
-import { calculateStripeFees } from '@/lib/utils/calculateStripeFees'
+import { grossUpCents } from '@/lib/utils/stripeFees'
 import { getDonateCheckoutAmount } from '@/lib/utils/getDonateCheckoutAmount'
 import { useDefaultCard } from '@/lib/hooks/useDefaultCard'
 import { useDonationSubmit } from '@/lib/hooks/useDonationSubmit'
@@ -19,6 +19,7 @@ import { DonateAmountSection } from './DonateAmountSection'
 import { CardElementField } from '../../_components/CardElementField'
 import { SaveCardToggle } from '../../_components/SaveCardToggle'
 import { CoverFeesToggle } from '../../_components/CoverFeesToggle'
+import { formatCents } from '@/lib/utils/currency.utils'
 
 type Props = {
   campaignName?: string | null
@@ -42,22 +43,29 @@ export function DonateCheckoutForm({ campaignName, campaigns, savedCards, setSte
 
   const values = watch()
 
-  // ── Derived ───────────────────────────────────────────────────────────────
+  const setDefaultCard = useCallback((value: string) => setValue('selectedCardId', value, { shouldDirty: true }), [setValue])
+  useDefaultCard(savedCards, setDefaultCard)
+
+  // Preselect the campaign the visitor arrived from
+  useEffect(() => {
+    if (!campaignName) return
+
+    const match = campaigns.find((campaign) => campaign.name === campaignName)
+    if (match) setValue('campaignId', match.id)
+  }, [campaignName, campaigns, setValue])
+
+  // ── Totals ────────────────────────────────────────────────────────────────
   const baseAmount = getDonateCheckoutAmount(values)
 
-  // One rounded figure drives the display, the charge, and the metadata, so
-  // what the donor is shown is exactly what they are billed
-  const processingFee = Math.round(calculateStripeFees(baseAmount) * 100) / 100
-  const feesCovered = values.coverFees ? processingFee : 0
-  const finalAmount = Math.round((baseAmount + feesCovered) * 100)
-  const finalAmountDisplay = (finalAmount / 100).toFixed(2)
+  const baseAmountInCents = Math.round(baseAmount * 100)
+  const feeCents = grossUpCents(baseAmountInCents)
+  const finalAmount = baseAmountInCents + (values.coverFees ? feeCents : 0)
 
+  // ── Donor ─────────────────────────────────────────────────────────────────
   const usingSavedCard = Boolean(values.selectedCardId && !values.useNewCard)
   const fullName = `${values.firstName?.trim() ?? ''} ${values.lastName?.trim() ?? ''}`.trim()
-
   const hasName = Boolean(values.firstName || values.lastName)
   const hasAddress = Boolean(values.addressLine1)
-  const meetsMinimum = baseAmount >= MIN_DONATION
 
   const derivedAddress = hasAddress
     ? {
@@ -69,31 +77,27 @@ export function DonateCheckoutForm({ campaignName, campaigns, savedCards, setSte
       }
     : null
 
-  const isValid = (usingSavedCard || cardComplete) && hasName && hasAddress && meetsMinimum
-
-  const setDefaultCard = useCallback(
-    (value: string) => setValue('selectedCardId', value, { shouldDirty: true }),
-    [setValue]
-  )
-  useDefaultCard(savedCards, setDefaultCard)
-
-  // Preselect the campaign the visitor arrived from
-  useEffect(() => {
-    if (!campaignName) return
-
-    const match = campaigns.find((campaign) => campaign.name === campaignName)
-    if (match) setValue('campaignId', match.id)
-  }, [campaignName, campaigns, setValue])
-
-  // ── Submit ─────────────────────────────────────────────────────────────────
   const { submitDonation, isProcessing } = useDonationSubmit({
-    finalAmount,
-    feesCovered,
+    baseAmount: baseAmountInCents,
     usingSavedCard,
     fullName
   })
 
   const onSubmit = handleSubmit(submitDonation)
+
+  // ── Gates ─────────────────────────────────────────────────────────────────
+  const meetsMinimum = baseAmount >= MIN_DONATION
+  const isValid = (usingSavedCard || cardComplete) && hasName && hasAddress && meetsMinimum
+  const isBusy = isSubmitting || isProcessing
+
+  // ── What renders ──────────────────────────────────────────────────────────
+  const showSavedCardSelector = savedCards.length > 0
+  const showCardElement = savedCards.length === 0 || values.useNewCard
+  const showSaveCardToggle = !usingSavedCard
+
+  const showMinimumNotice = !meetsMinimum
+  const showMissingInfoNotice = meetsMinimum && (!hasName || !hasAddress)
+  const missingField = !hasName ? 'name' : 'mailing address'
 
   return (
     <div>
@@ -120,7 +124,7 @@ export function DonateCheckoutForm({ campaignName, campaigns, savedCards, setSte
           </p>
 
           <div className="space-y-5">
-            {savedCards.length > 0 && (
+            {showSavedCardSelector && (
               <SavedCardSelector
                 savedCards={savedCards}
                 selectedCardId={values.selectedCardId}
@@ -138,33 +142,27 @@ export function DonateCheckoutForm({ campaignName, campaigns, savedCards, setSte
               />
             )}
 
-            {(savedCards.length === 0 || values.useNewCard) && <CardElementField onChange={setCardComplete} />}
+            {showCardElement && <CardElementField onChange={setCardComplete} />}
 
             {/* Nothing to save when paying with a card already on file */}
-            {!usingSavedCard && <SaveCardToggle />}
+            {showSaveCardToggle && <SaveCardToggle />}
 
-            <CoverFeesToggle processingFee={processingFee} />
+            <CoverFeesToggle feeCents={feeCents} />
           </div>
         </fieldset>
 
         <div className="space-y-4 pt-2">
           <FormError />
 
-          {!meetsMinimum && (
+          {showMinimumNotice && (
             <p className="text-[13px] text-neutral-500 dark:text-neutral-400">Donations start at ${MIN_DONATION}.</p>
           )}
 
-          {meetsMinimum && (!hasName || !hasAddress) && (
-            <p className="text-[13px] text-neutral-500 dark:text-neutral-400">
-              Add your {!hasName ? 'name' : 'mailing address'} above to continue.
-            </p>
+          {showMissingInfoNotice && (
+            <p className="text-[13px] text-neutral-500 dark:text-neutral-400">Add your {missingField} above to continue.</p>
           )}
 
-          <SubmitButton
-            isSubmitting={isSubmitting || isProcessing}
-            isValid={isValid}
-            label={`Donate $${finalAmountDisplay}`}
-          />
+          <SubmitButton isSubmitting={isBusy} isValid={isValid} label={`Donate ${formatCents(finalAmount)}`} />
 
           <p className="text-xs text-neutral-400 dark:text-neutral-600 text-center">
             Secured by Stripe · Powered by{' '}

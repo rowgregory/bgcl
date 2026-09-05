@@ -1,3 +1,4 @@
+import { formatCurrency } from '@/lib/utils/currency.utils'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 
@@ -24,7 +25,7 @@ export function Stats({ dashboard }) {
       <div>
         <dt className={labelCls}>{hero.label}</dt>
         <dd className="mt-3 text-4xl font-semibold tracking-tight text-neutral-900 dark:text-white tabular-nums">
-          {hero.value}
+          {formatCurrency(hero.value)}
         </dd>
         <dd className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">{hero.subtext}</dd>
       </div>
@@ -37,7 +38,7 @@ export function Stats({ dashboard }) {
             <>
               <dt className={`${labelCls} whitespace-nowrap`}>{stat.label}</dt>
               <dd className="mt-3 text-xl font-semibold text-neutral-900 dark:text-white tabular-nums group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
-                {stat.value}
+                {formatCurrency(stat.value)}
               </dd>
               <dd className="mt-1 text-xs text-neutral-400 dark:text-neutral-600">{stat.subtext}</dd>
             </>

@@ -1,7 +1,7 @@
 import EventsManifestClient from '@/app/(authenticated)/admin/events/manifest/EventsManifestClient'
-import { getEventsTransactions } from '@/lib/actions/_dashboard/getEventsTransactions'
+import { getEventsManifest } from '@/lib/actions/_dashboard/getEventsManifest'
 
 export default async function EventsManifestPage() {
-  const result = await getEventsTransactions()
+  const result = await getEventsManifest()
   return <EventsManifestClient data={result.data} />
 }

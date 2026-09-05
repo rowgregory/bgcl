@@ -71,7 +71,8 @@ export default async function sendConfirmationEmail(
         event?.location || '',
         event?.address || null,
         emailTickets,
-        amount,
+        Number(amount ?? 0),
+        Number(order.feesCovered ?? 0),
         order.id
       )
 

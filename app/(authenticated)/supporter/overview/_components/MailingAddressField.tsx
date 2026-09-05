@@ -51,7 +51,6 @@ export function MailingAddressField({ address }) {
   } = methods
 
   const onSubmit = handleSubmit(async (values) => {
-    console.log('address submit fired', values)
     try {
       const res = await updateAddress(values)
 
@@ -243,7 +242,6 @@ export function MailingAddressField({ address }) {
               <button
                 type="button"
                 onClick={() => {
-                  console.log('opening edit', { isSubmitting, errors })
                   setMessage(null)
                   setEditing(true)
                 }}

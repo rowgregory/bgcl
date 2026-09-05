@@ -73,6 +73,7 @@ export function toFormValues(event: Props['event']): EventFormInput {
     raffleTicketPrice: event.raffleTicketPrice ?? '',
     rafflePrizes: event.rafflePrizes ?? [],
     raffleSchedule: event.raffleSchedule ?? [],
-    showRaffleTicketNumbers: event.showRaffleTicketNumbers
+    showRaffleTicketNumbers: event.showRaffleTicketNumbers,
+    showAttendingToggle: event.showAttendingToggle
   }
 }

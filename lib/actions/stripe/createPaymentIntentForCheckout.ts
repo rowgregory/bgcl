@@ -5,8 +5,10 @@ import { stripe } from '../../stripe/stripeClient'
 import Stripe from 'stripe'
 import { createLog } from '../log/createLog'
 import { OrderType } from '@prisma/client'
-import { auth } from '@/lib/auth/auth'
 import { getOrCreateStripeCustomer } from './getOrCreateStripeCustomer'
+import { grossUpCents } from '@/lib/utils/stripeFees'
+import { trim } from '@/lib/stripe/metadata'
+import { requireUser } from '@/lib/utils/requireAdmin'
 
 interface DonateCheckoutParams {
   email: string
@@ -16,7 +18,6 @@ interface DonateCheckoutParams {
   description: string
   saveCard?: boolean
   coverFees?: boolean
-  feesCovered?: number
   address?: {
     addressLine1?: string
     addressLine2?: string
@@ -32,9 +33,6 @@ interface DonateCheckoutParams {
 }
 
 const MIN_AMOUNT_CENTS = 500
-const MAX_METADATA_LENGTH = 450
-
-const trim = (value?: string | null) => (value ?? '').slice(0, MAX_METADATA_LENGTH)
 
 export async function createPaymentIntentForCheckout({
   email,
@@ -44,7 +42,6 @@ export async function createPaymentIntentForCheckout({
   description,
   saveCard = false,
   coverFees = false,
-  feesCovered = 0,
   address,
   notes,
   campaignId,
@@ -55,9 +52,10 @@ export async function createPaymentIntentForCheckout({
   data: { clientSecret: string | null; paymentIntentId: string } | null
   error: string | null
 }> {
-  // The user comes from the session, never from the caller
-  const session = await auth()
-  const userId = session?.user?.id
+  const auth = await requireUser()
+  if (!auth.ok) return { success: false, data: null, error: auth.error }
+
+  const userId = auth.user!.id
 
   if (!userId) return { success: false, data: null, error: 'You must be signed in to complete this donation.' }
 
@@ -65,11 +63,15 @@ export async function createPaymentIntentForCheckout({
     return { success: false, data: null, error: 'Minimum purchase amount is $5.' }
   }
 
+  // The fee is derived here, never taken from the caller
+  const feeCents = coverFees ? grossUpCents(amount) : 0
+  const chargeAmount = amount + feeCents
+
   try {
     const customerId = await getOrCreateStripeCustomer(userId)
 
     const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
-      amount,
+      amount: chargeAmount,
       currency: 'usd',
       customer: customerId,
       receipt_email: email,
@@ -82,7 +84,7 @@ export async function createPaymentIntentForCheckout({
         email: trim(email),
         saveCard: saveCard ? 'true' : 'false',
         coverFees: coverFees ? 'true' : 'false',
-        feesCovered: String(feesCovered),
+        feesCovered: String(feeCents),
         addressLine1: trim(address?.addressLine1),
         addressLine2: trim(address?.addressLine2),
         city: trim(address?.city),

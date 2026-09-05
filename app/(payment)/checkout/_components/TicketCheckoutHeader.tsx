@@ -3,15 +3,12 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Picture from '@/components/_shared/Picture'
 import { ArrowLeft, User } from 'lucide-react'
-import { useCartStore } from '@/stores/useCartStore'
 
 export function TicketCheckoutHeader() {
   const session = useSession()
-  const items = useCartStore((s) => s.items)
-  const eventId = items?.[0]?.eventId ?? null
 
-  const backHref = eventId ? `/events/${eventId}` : '/cart'
-  const backLabel = eventId ? 'Back to event' : 'Back to cart'
+  const backHref = '/cart'
+  const backLabel = 'Back to cart'
 
   return (
     <div className="px-4 sm:px-6 md:px-12 py-4 border-b border-neutral-200 dark:border-neutral-800">

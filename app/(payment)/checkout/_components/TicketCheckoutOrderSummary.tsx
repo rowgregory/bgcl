@@ -1,12 +1,18 @@
+'use client'
+
 import { motion } from 'framer-motion'
-import { calculateStripeFees } from '@/lib/utils/calculateStripeFees'
+import { useFormContext } from 'react-hook-form'
+import { useCartStore } from '@/stores/useCartStore'
+import { useTicketTotals } from '@/lib/hooks/useTicketTotals'
+import type { TicketCheckoutFormInput } from '@/lib/validations/ticket-checkout.validation'
+import { formatCents } from '@/lib/utils/currency.utils'
 
-const usd = (n: number) => `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+export function TicketCheckoutOrderSummary() {
+  const items = useCartStore((s) => s.items)
+  const { watch } = useFormContext<TicketCheckoutFormInput>()
+  const coverFees = Boolean(watch('coverFees'))
 
-export function TicketCheckoutOrderSummary({ items, coverFees }) {
-  const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const processingFee = Math.round(calculateStripeFees(totalPrice) * 100) / 100
-  const finalTotal = coverFees ? totalPrice + processingFee : totalPrice
+  const { baseAmountInCents, feeCents, finalAmount } = useTicketTotals(items, coverFees)
 
   return (
     <motion.aside
@@ -35,7 +41,7 @@ export function TicketCheckoutOrderSummary({ items, coverFees }) {
             </div>
 
             <p className="text-[15px] font-medium text-neutral-900 dark:text-white shrink-0 tabular-nums">
-              {usd(item.price * item.quantity)}
+              {formatCents(Math.round(item.price * item.quantity * 100))}
             </p>
           </li>
         ))}
@@ -44,19 +50,21 @@ export function TicketCheckoutOrderSummary({ items, coverFees }) {
       <dl className="mt-4 space-y-2">
         <div className="flex items-baseline justify-between">
           <dt className="text-sm text-neutral-500 dark:text-neutral-400">Subtotal</dt>
-          <dd className="text-sm text-neutral-900 dark:text-white tabular-nums">{usd(totalPrice)}</dd>
+          <dd className="text-sm text-neutral-900 dark:text-white tabular-nums">{formatCents(baseAmountInCents)}</dd>
         </div>
 
         {coverFees && (
           <div className="flex items-baseline justify-between">
-            <dt className="text-sm text-neutral-500 dark:text-neutral-400">Processing fee</dt>
-            <dd className="text-sm text-neutral-900 dark:text-white tabular-nums">{usd(processingFee)}</dd>
+            <dt className="text-sm text-neutral-500 dark:text-neutral-400">
+              Processing fee <span className="text-neutral-400 dark:text-neutral-600">(optional)</span>
+            </dt>
+            <dd className="text-sm text-neutral-900 dark:text-white tabular-nums">{formatCents(feeCents)}</dd>
           </div>
         )}
 
         <div className="flex items-baseline justify-between pt-3 mt-3 border-t border-neutral-200 dark:border-neutral-800">
           <dt className="text-sm font-medium text-neutral-900 dark:text-white">Total</dt>
-          <dd className="text-xl font-semibold text-neutral-900 dark:text-white tabular-nums">{usd(finalTotal)}</dd>
+          <dd className="text-xl font-semibold text-neutral-900 dark:text-white tabular-nums">{formatCents(finalAmount)}</dd>
         </div>
       </dl>
 

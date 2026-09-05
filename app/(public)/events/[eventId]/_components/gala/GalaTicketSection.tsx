@@ -4,7 +4,6 @@ import { CalendarClock, Check, Minus, Plus, Ticket as TicketIcon, X } from 'luci
 import type { Ticket } from '@prisma/client'
 
 import { formatCurrency } from '@/lib/utils/currency.utils'
-import { formatDate } from '@/lib/utils/date-utils'
 import { getTicketStatus } from '@/lib/utils/getTicketStatus'
 import { useCartStore, useCartTotal } from '@/stores/useCartStore'
 import { usePreferencesStore } from '@/stores/usePreferencesStore'
@@ -65,7 +64,6 @@ export function GalaTicketSection({ tickets, eventTitle, ticketSalesStartDate, t
   const anyAvailable = published.some((t) => getTicketStatus(t).available)
   const allSoldOut = published.length > 0 && published.every((t) => t.totalQuantity - t.quantitySold <= 0)
 
-  const notOpenYet = ticketSalesStartDate ? new Date(ticketSalesStartDate).getTime() > now : false
   const closed = ticketSalesEndDate ? new Date(ticketSalesEndDate).getTime() < now : false
 
   const wrapper = 'mx-auto max-w-325 scroll-mt-8 pt-10 pb-20'
@@ -127,9 +125,7 @@ export function GalaTicketSection({ tickets, eventTitle, ticketSalesStartDate, t
                 } ${available ? '' : 'opacity-50'}`}
               >
                 <h3 className="text-2xl font-bold">{ticket.name}</h3>
-                <p className="mt-1 text-xl font-semibold tabular-nums text-white/90">
-                  {formatCurrency(Number(ticket.price))}
-                </p>
+                <p className="mt-1 text-xl font-semibold tabular-nums text-white/90">{formatCurrency(Number(ticket.price))}</p>
                 <p className="mt-1 text-xs text-white/40">Admits {ticket.guestCount}</p>
                 {low && <p className="mt-2 text-xs font-semibold text-amber-400">Only {remaining} left</p>}
 
@@ -233,9 +229,7 @@ export function GalaTicketSection({ tickets, eventTitle, ticketSalesStartDate, t
             href="/checkout"
             aria-disabled={items.length === 0}
             className={`mt-6 block rounded-md py-3.5 text-center text-xs font-bold uppercase tracking-[0.2em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#12121c] ${
-              items.length === 0
-                ? 'pointer-events-none bg-white/10 text-white/30'
-                : 'bg-[#9b1b3c] text-white hover:bg-[#b52148]'
+              items.length === 0 ? 'pointer-events-none bg-white/10 text-white/30' : 'bg-[#9b1b3c] text-white hover:bg-[#b52148]'
             }`}
           >
             Checkout

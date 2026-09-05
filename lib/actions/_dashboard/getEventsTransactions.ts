@@ -1,59 +1,30 @@
 import prisma from '@/prisma/client'
 import { createLog } from '../log/createLog'
 import { requireAdmin } from '@/lib/utils/requireAdmin'
+import { serialize } from '@/lib/utils/serializers.utils'
 
 export async function getEventsTransactions() {
   const auth = await requireAdmin()
-  if (!auth.user) return { success: false, data: null, error: auth.error }
+  if (!auth.ok) return { success: false, data: null, error: auth.error }
 
   try {
+    // Every ticket order, whatever its status. This is the transaction log, so
+    // failed and refunded rows belong here.
     const orders = await prisma.order.findMany({
-      where: {
-        type: 'TICKET_PURCHASE'
-      },
+      where: { type: 'TICKET_PURCHASE' },
       include: {
         campaign: true,
+        event: true,
         orderItems: {
           include: {
-            ticket: {
-              include: {
-                event: true
-              }
-            }
+            ticket: { include: { event: true } }
           }
         }
       },
-      orderBy: {
-        createdAt: 'desc'
-      }
+      orderBy: { createdAt: 'desc' }
     })
 
-    return {
-      success: true,
-      data: orders.map((order) => ({
-        ...order,
-        totalAmount: Number(order.totalAmount),
-        feesCovered: Number(order.feesCovered),
-        orderItems: order.orderItems.map((item) => ({
-          ...item,
-          pricePerUnit: item.pricePerUnit ? Number(item.pricePerUnit) : null,
-          totalPrice: item.totalPrice ? Number(item.totalPrice) : null,
-          ticket: {
-            ...item.ticket,
-            ticketSalesStartDate: item.ticket.event?.ticketSalesStartDate ?? null,
-            ticketSalesEndDate: item.ticket.event?.ticketSalesEndDate ?? null,
-            event: {
-              ...item.ticket.event,
-              rafflePrizes: (item.ticket.event?.rafflePrizes as { place: string; amount: string }[] | null) ?? [],
-              raffleSchedule: (item.ticket.event?.raffleSchedule as { time: string; label: string }[] | null) ?? [],
-              dressCodeItems:
-                (item.ticket.event?.dressCodeItems as { label: string; description: string }[] | null) ?? []
-            }
-          }
-        }))
-      })),
-      error: null
-    }
+    return { success: true, data: serialize(orders), error: null }
   } catch (error) {
     await createLog('error', 'Error fetching events transactions', {
       error: error instanceof Error ? error.message : 'Unknown error'

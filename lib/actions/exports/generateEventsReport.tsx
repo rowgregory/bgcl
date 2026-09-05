@@ -1,5 +1,6 @@
 'use server'
 
+import { formatCurrency } from '@/lib/utils/currency.utils'
 import { requireAdmin } from '@/lib/utils/requireAdmin'
 import prisma from '@/prisma/client'
 import jsPDF from 'jspdf'
@@ -126,7 +127,6 @@ function calculateStats(orders: any[]): EventStats {
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
-const usd = (n: number) => `$${n.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
 
 function drawPageNumber(doc: jsPDF) {
   const pw = doc.internal.pageSize.getWidth()
@@ -155,13 +155,9 @@ function parseAddress(raw: any): string {
   try {
     const addr = typeof raw === 'string' ? JSON.parse(raw) : raw
     if (Array.isArray(addr) || !addr || Object.keys(addr).length === 0) return '—'
-    const parts = [
-      addr.addressLine1,
-      addr.addressLine2,
-      addr.city,
-      addr.state,
-      addr.zipCode || addr.zipPostalCode
-    ].filter(Boolean)
+    const parts = [addr.addressLine1, addr.addressLine2, addr.city, addr.state, addr.zipCode || addr.zipPostalCode].filter(
+      Boolean
+    )
     return parts.length ? parts.join(', ') : '—'
   } catch {
     return '—'
@@ -220,10 +216,10 @@ function createPDF(orders: any[], stats: EventStats, filters: ReportFilters): js
     startY: y,
     head: [],
     body: [
-      ['Total Revenue', usd(stats.totalRevenue)],
+      ['Total Revenue', formatCurrency(stats.totalRevenue)],
       ['Total Events', stats.uniqueEventCount.toString()],
-      ['Fees Covered by Supporters', usd(stats.totalFeesCovered)],
-      ['Event Orders', `${stats.ticketPurchases.count} orders (${usd(stats.ticketPurchases.total)})`]
+      ['Fees Covered by Supporters', formatCurrency(stats.totalFeesCovered)],
+      ['Event Orders', `${stats.ticketPurchases.count} orders (${formatCurrency(stats.ticketPurchases.total)})`]
     ],
     theme: 'plain',
     styles: { fontSize: 9.5, cellPadding: { top: 2.5, bottom: 2.5, left: 3, right: 3 } },
@@ -242,7 +238,7 @@ function createPDF(orders: any[], stats: EventStats, filters: ReportFilters): js
     autoTable(doc, {
       startY: y,
       head: [['Event', 'Orders', 'Revenue']],
-      body: stats.byEvent.map((e) => [e.title, e.count.toString(), usd(e.total)]),
+      body: stats.byEvent.map((e) => [e.title, e.count.toString(), formatCurrency(e.total)]),
       theme: 'striped',
       headStyles: {
         fillColor: C.navy,
@@ -289,11 +285,7 @@ function createPDF(orders: any[], stats: EventStats, filters: ReportFilters): js
   doc.setFont('helvetica', 'italic')
   doc.setTextColor(...C.slateLight)
   const uniqueSupporters = new Set(orders.map((o) => o.userId || o.customerEmail)).size
-  doc.text(
-    `${uniqueSupporters} unique supporters · showing ${Math.min(orders.length, 200)} most recent transactions`,
-    margin,
-    y
-  )
+  doc.text(`${uniqueSupporters} unique supporters · showing ${Math.min(orders.length, 200)} most recent transactions`, margin, y)
   y += 7
 
   // Build supporter name/address map (first occurrence wins)
@@ -332,7 +324,7 @@ function createPDF(orders: any[], stats: EventStats, filters: ReportFilters): js
       order.event?.title ?? '—',
       ticketName,
       tickets.toString(),
-      usd(order.totalAmount)
+      formatCurrency(order.totalAmount)
     ]
   })
 

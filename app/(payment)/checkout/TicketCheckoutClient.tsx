@@ -11,8 +11,6 @@ import { updateAddress } from '@/lib/actions/address/updateAddress'
 import { updatePhoneNumber } from '@/lib/actions/user/updatePhoneNumber'
 import { CheckoutStep1 } from '@/components/public/checkout/CheckoutStep1'
 import { CheckoutStep2 } from '@/components/public/checkout/CheckoutStep2'
-import { useCartStore } from '@/stores/useCartStore'
-import { EmptyState } from './_components/TicketCheckoutEmptyState'
 import { TicketCheckoutForm } from './_components/TicketCheckoutForm'
 import {
   EMPTY_TICKET_CHECKOUT,
@@ -29,14 +27,22 @@ type Props = {
   userEmail: string | null
   isAuthed: boolean
   userPhone: string | null
+  showAttendingToggle: boolean
 }
 
 // Fields step 2 collects, validated before advancing
 const STEP_2_FIELDS = ['firstName', 'lastName', 'phone', 'addressLine1', 'city', 'state', 'zipPostalCode'] as const
 
-export function TicketCheckoutClient({ savedCards, userAddress, userName, userEmail, isAuthed, userPhone }: Props) {
+export function TicketCheckoutClient({
+  savedCards,
+  userAddress,
+  userName,
+  userEmail,
+  isAuthed,
+  userPhone,
+  showAttendingToggle
+}: Props) {
   const router = useRouter()
-  const items = useCartStore((s) => s.items)
 
   const hasUserInfo = Boolean(userName && userAddress && userPhone)
 
@@ -58,9 +64,7 @@ export function TicketCheckoutClient({ savedCards, userAddress, userName, userEm
     }
   })
 
-  const { watch, setValue, trigger, getValues } = methods
-
-  const coverFees = watch('coverFees')
+  const { setValue, trigger, getValues } = methods
 
   const [step, setStep] = useState(() => {
     if (!isAuthed) return 1
@@ -107,11 +111,9 @@ export function TicketCheckoutClient({ savedCards, userAddress, userName, userEm
     }
   }
 
-  if (items.length === 0) return <EmptyState />
-
   return (
-    <TicketCheckoutShell step={step} items={items} coverFees={coverFees}>
-      <FormProvider {...methods}>
+    <FormProvider {...methods}>
+      <TicketCheckoutShell step={step}>
         {step === 1 && <CheckoutStep1 redirectTo="/checkout" />}
 
         {step === 2 && (
@@ -125,8 +127,8 @@ export function TicketCheckoutClient({ savedCards, userAddress, userName, userEm
           </>
         )}
 
-        {step === 3 && <TicketCheckoutForm savedCards={savedCards} setStep={setStep} />}
-      </FormProvider>
-    </TicketCheckoutShell>
+        {step === 3 && <TicketCheckoutForm savedCards={savedCards} setStep={setStep} showAttendingToggle={showAttendingToggle} />}
+      </TicketCheckoutShell>
+    </FormProvider>
   )
 }

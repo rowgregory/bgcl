@@ -2,25 +2,12 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend
-} from 'recharts'
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { generateDonationReport } from '@/lib/actions/exports/generateDonationsReport'
-import { formatCurrency } from '@/lib/utils/currency.utils'
+import { formatCurrency, formatCurrencyWhole } from '@/lib/utils/currency.utils'
 import { useFailedPaymentDrawer } from '@/stores/drawers'
 import { usePreferencesStore } from '@/stores/usePreferencesStore'
 import { AdminPageHeader } from '@/app/(authenticated)/admin/_components/AdminPageHeader'
-
-const usdWhole = (n: number) => `$${Math.round(n ?? 0).toLocaleString('en-US')}`
 
 const labelCls = 'text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-400 dark:text-neutral-600'
 const thCls =
@@ -90,11 +77,11 @@ export default function DonationsOverviewClient({ stats }: { stats: any }) {
 
   const metrics = [
     { label: 'Orders', value: (stats?.total ?? 0).toLocaleString(), sub: `${stats?.activeCount ?? 0} active` },
-    { label: 'Avg donation', value: `$${(stats?.avgDonation ?? 0).toFixed(2)}`, sub: 'per donor' },
-    { label: 'Monthly MRR', value: usdWhole(stats?.monthlyRecurring), sub: `${stats?.monthly ?? 0} subscriptions` },
+    { label: 'Avg donation', value: `${formatCurrency(stats?.avgDonation ?? 0)}`, sub: 'per donor' },
+    { label: 'Monthly MRR', value: formatCurrencyWhole(stats?.monthlyRecurring), sub: `${stats?.monthly ?? 0} subscriptions` },
     {
       label: 'Annual ARR',
-      value: usdWhole(stats?.annualArr),
+      value: formatCurrencyWhole(stats?.annualArr),
       sub: `${(stats?.monthly ?? 0) + (stats?.yearly ?? 0)} recurring`
     },
     { label: 'Retention', value: `${100 - (stats?.churnRate ?? 0)}%`, sub: 'month over month' }
@@ -104,7 +91,7 @@ export default function DonationsOverviewClient({ stats }: { stats: any }) {
     <div className="min-h-screen bg-white dark:bg-neutral-950">
       <AdminPageHeader
         title="Donations"
-        meta={`${usdWhole(stats?.totalRaised)} raised · ${stats?.total ?? 0} orders`}
+        meta={`${formatCurrencyWhole(stats?.totalRaised)} raised · ${stats?.total ?? 0} orders`}
         actions={<ExportReportButton />}
       />
 
@@ -118,7 +105,7 @@ export default function DonationsOverviewClient({ stats }: { stats: any }) {
           <div>
             <p className={labelCls}>Total raised</p>
             <p className="mt-3 text-5xl font-semibold tracking-tight text-neutral-900 dark:text-white tabular-nums">
-              {usdWhole(stats?.totalRaised)}
+              {formatCurrencyWhole(stats?.totalRaised)}
             </p>
 
             <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
@@ -178,7 +165,7 @@ export default function DonationsOverviewClient({ stats }: { stats: any }) {
                   <CartesianGrid strokeDasharray="3 3" stroke={grid} vertical={false} />
                   <XAxis dataKey="name" stroke={axis} tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
                   <YAxis stroke={axis} tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
-                  <Tooltip contentStyle={tooltipStyle} formatter={(v) => `$${Number(v).toFixed(2)}`} />
+                  <Tooltip contentStyle={tooltipStyle} formatter={(v) => `${formatCurrency(Number(v))}`} />
                   <Legend wrapperStyle={{ fontSize: '11px' }} />
                   <Line
                     type="monotone"
@@ -205,7 +192,7 @@ export default function DonationsOverviewClient({ stats }: { stats: any }) {
                   <CartesianGrid strokeDasharray="3 3" stroke={grid} vertical={false} />
                   <XAxis dataKey="name" stroke={axis} tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
                   <YAxis stroke={axis} tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
-                  <Tooltip contentStyle={tooltipStyle} formatter={(v) => `$${Number(v).toFixed(2)}`} />
+                  <Tooltip contentStyle={tooltipStyle} formatter={(v) => `${formatCurrency(Number(v))}`} />
                   <Legend wrapperStyle={{ fontSize: '11px' }} />
                   <Bar dataKey="donations" fill="rgb(2, 132, 199)" name="Revenue" />
                   <Bar dataKey="donors" fill={axis} name="New donors" />
@@ -246,7 +233,7 @@ export default function DonationsOverviewClient({ stats }: { stats: any }) {
               {[
                 {
                   label: 'Monthly',
-                  amount: `${usdWhole(stats?.monthlyRecurring)}/mo`,
+                  amount: `${formatCurrencyWhole(stats?.monthlyRecurring)}/mo`,
                   count: stats?.monthly ?? 0,
                   avg: stats?.monthly > 0 ? Math.round(stats.monthlyRecurring / stats.monthly) : 0,
                   unit: 'mo',
@@ -254,7 +241,7 @@ export default function DonationsOverviewClient({ stats }: { stats: any }) {
                 },
                 {
                   label: 'Yearly',
-                  amount: `${usdWhole(stats?.yearlyRecurring)}/yr`,
+                  amount: `${formatCurrencyWhole(stats?.yearlyRecurring)}/yr`,
                   count: stats?.yearly ?? 0,
                   avg: stats?.yearly > 0 ? Math.round(stats.yearlyRecurring / stats.yearly) : 0,
                   unit: 'yr',
@@ -264,9 +251,7 @@ export default function DonationsOverviewClient({ stats }: { stats: any }) {
                 <div key={row.label}>
                   <div className="flex items-baseline justify-between mb-2">
                     <span className="text-sm text-neutral-700 dark:text-neutral-300">{row.label}</span>
-                    <span className="text-sm font-medium text-neutral-900 dark:text-white tabular-nums">
-                      {row.amount}
-                    </span>
+                    <span className="text-sm font-medium text-neutral-900 dark:text-white tabular-nums">{row.amount}</span>
                   </div>
 
                   <div className="h-1.5 bg-neutral-100 dark:bg-neutral-900 rounded-full overflow-hidden">
@@ -301,7 +286,7 @@ export default function DonationsOverviewClient({ stats }: { stats: any }) {
               {[
                 {
                   term: 'Projected annual revenue',
-                  value: usdWhole((stats?.monthlyRecurring ?? 0) * 12 + (stats?.yearlyRecurring ?? 0))
+                  value: formatCurrencyWhole((stats?.monthlyRecurring ?? 0) * 12 + (stats?.yearlyRecurring ?? 0))
                 },
                 {
                   term: 'Recurring share of orders',
@@ -344,9 +329,7 @@ export default function DonationsOverviewClient({ stats }: { stats: any }) {
                 ) : (
                   stats.campaigns.map((campaign: any, idx: number) => (
                     <tr key={idx} className="hover:bg-neutral-50 dark:hover:bg-neutral-900/50 transition-colors">
-                      <td className="py-3 pr-4 text-neutral-900 dark:text-white">
-                        {campaign.campaignName || 'No campaign'}
-                      </td>
+                      <td className="py-3 pr-4 text-neutral-900 dark:text-white">{campaign.campaignName || 'No campaign'}</td>
                       <td className="py-3 pr-4 text-right text-neutral-500 dark:text-neutral-400 tabular-nums">
                         {campaign.count}
                       </td>

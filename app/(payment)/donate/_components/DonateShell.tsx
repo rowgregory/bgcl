@@ -6,8 +6,6 @@ import { CheckoutStepIndicator } from '@/components/public/checkout/CheckoutStep
 import { DonateFormHeader } from './DonateFormHeader'
 import { DonateFormLeftColumn } from './DonateFormLeftColumn'
 
-const STEP_LABELS = ['Sign in', 'Your info', 'Donate']
-
 export function DonateShell({ step, children }: { step: number; children: ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-950">
@@ -23,7 +21,7 @@ export function DonateShell({ step, children }: { step: number; children: ReactN
             transition={{ duration: 0.4 }}
             className="lg:col-span-2 order-1 lg:order-2"
           >
-            <CheckoutStepIndicator current={step} labels={STEP_LABELS} />
+            <CheckoutStepIndicator current={step} />
             {children}
           </motion.div>
         </div>

@@ -100,8 +100,7 @@ export async function getSupporterDashboard() {
     const subs = Array.from(subscriptions.values())
     const activeSubs = subs.filter((s) => s.isActive)
 
-    const byFrequency = (list: SubscriptionSummary[], frequency: string) =>
-      list.filter((s) => s.frequency === frequency)
+    const byFrequency = (list: SubscriptionSummary[], frequency: string) => list.filter((s) => s.frequency === frequency)
 
     // Recurring support is what will be charged next period, so it sums the
     // per-cycle amount of each active subscription, not everything collected
@@ -127,7 +126,7 @@ export async function getSupporterDashboard() {
     const myUpcomingEvents = ticketOrders
       .filter((o) => {
         const event = o.event ?? o.orderItems[0]?.ticket?.event
-        // console.log('EVENT: ', event)
+
         return event?.date && new Date(event.date) >= new Date()
       })
       .sort((a, b) => {
@@ -230,27 +229,24 @@ export async function getSupporterDashboard() {
         })),
         hero: {
           label: 'Total contributed',
-          value: `$${totalSpend.toFixed(2)}`,
+          value: totalSpend,
           subtext: `${donationCount} ${donationCount === 1 ? 'donation' : 'donations'} and ${totalTickets} ${totalTickets === 1 ? 'ticket' : 'tickets'}`
         },
         stats: [
           {
             label: 'Donations',
-            value: `$${totalDonated.toFixed(2)}`,
+            value: totalDonated,
             subtext: `${donationCount} ${donationCount === 1 ? 'donation' : 'donations'}`
           },
           {
             label: 'Monthly support',
-            value: `$${monthlyAmount.toFixed(2)}`,
-            subtext:
-              activeMonthly > 0 ? `${activeMonthly} active` : endedMonthly > 0 ? `${endedMonthly} ended` : 'none active'
+            value: monthlyAmount,
+            subtext: activeMonthly > 0 ? `${activeMonthly} active` : endedMonthly > 0 ? `${endedMonthly} ended` : 'none active'
           },
-          ...(activeYearly > 0
-            ? [{ label: 'Yearly support', value: `$${yearlyAmount.toFixed(2)}`, subtext: `${activeYearly} active` }]
-            : []),
+          ...(activeYearly > 0 ? [{ label: 'Yearly support', value: yearlyAmount, subtext: `${activeYearly} active` }] : []),
           {
             label: 'Event tickets',
-            value: `$${totalTicketSpend.toFixed(2)}`,
+            value: totalTicketSpend,
             subtext: `${totalTickets} ${totalTickets === 1 ? 'ticket' : 'tickets'}`
           }
         ]

@@ -1,8 +1,10 @@
-export function CheckoutStepIndicator({ current, labels }: { current: number; labels: string[] }) {
+const STEP_INDICATOR_LABELS = ['Sign in', 'Your info', 'Payment']
+
+export function CheckoutStepIndicator({ current }: { current: number }) {
   return (
     <div className="mb-10" role="list" aria-label="Checkout steps">
       <div className="flex items-center gap-4">
-        {labels.map((label, i) => {
+        {STEP_INDICATOR_LABELS.map((label, i) => {
           const stepNum = i + 1
           const isDone = stepNum < current
           const isActive = stepNum === current
@@ -22,7 +24,7 @@ export function CheckoutStepIndicator({ current, labels }: { current: number; la
                 {label}
               </span>
 
-              {i < labels.length - 1 && (
+              {i < STEP_INDICATOR_LABELS.length - 1 && (
                 <div
                   aria-hidden="true"
                   className={`flex-1 h-px min-w-4 transition-colors ${

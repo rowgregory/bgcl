@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import type { PaymentMethod } from '@prisma/client'
-
-import { calculateStripeFees } from '@/lib/utils/calculateStripeFees'
 import { useDefaultCard } from '@/lib/hooks/useDefaultCard'
 import { useTicketCheckoutSubmit } from '@/lib/hooks/useTicketCheckoutSubmit'
 import { SavedCardSelector } from '@/app/(payment)/_components/SavedCardSelector'
@@ -18,13 +16,16 @@ import { ToggleCard } from '@/components/_shared/ToggleCard'
 import { CardElementField } from '../../_components/CardElementField'
 import { SaveCardToggle } from '../../_components/SaveCardToggle'
 import { CoverFeesToggle } from '../../_components/CoverFeesToggle'
+import { formatCents } from '@/lib/utils/currency.utils'
+import { useTicketTotals } from '@/lib/hooks/useTicketTotals'
 
 type Props = {
   savedCards: PaymentMethod[]
   setStep: (step: number) => void
+  showAttendingToggle: boolean
 }
 
-export function TicketCheckoutForm({ savedCards, setStep }: Props) {
+export function TicketCheckoutForm({ savedCards, setStep, showAttendingToggle }: Props) {
   const items = useCartStore((s) => s.items)
   const hasHydrated = useCartHasHydrated()
 
@@ -40,43 +41,44 @@ export function TicketCheckoutForm({ savedCards, setStep }: Props) {
   const [cardComplete, setCardComplete] = useState(false)
 
   const values = watch()
+  const coverFees = values.coverFees
 
-  const setDefaultCard = useCallback(
-    (value: string) => setValue('selectedCardId', value, { shouldDirty: true }),
-    [setValue]
-  )
+  const setDefaultCard = useCallback((value: string) => setValue('selectedCardId', value, { shouldDirty: true }), [setValue])
   useDefaultCard(savedCards, setDefaultCard)
 
-  const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const processingFee = Math.round(calculateStripeFees(totalPrice) * 100) / 100
-  const finalAmount = values.coverFees ? totalPrice + processingFee : totalPrice
-  const amountInCents = Math.round(finalAmount * 100)
-  const finalAmountDisplay = (amountInCents / 100).toFixed(2)
+  const { baseAmountInCents, feeCents, finalAmount } = useTicketTotals(items, coverFees)
 
+  // ── Buyer ─────────────────────────────────────────────────────────────────
   const usingSavedCard = Boolean(values.selectedCardId && !values.useNewCard)
   const fullName = `${values.firstName?.trim() ?? ''} ${values.lastName?.trim() ?? ''}`.trim()
   const hasName = Boolean(values.firstName || values.lastName)
   const hasAddress = Boolean(values.addressLine1)
 
+  const derivedAddress = hasAddress
+    ? {
+        addressLine1: values.addressLine1,
+        addressLine2: values.addressLine2,
+        city: values.city,
+        state: values.state,
+        zipPostalCode: values.zipPostalCode
+      }
+    : null
+
   const { submitCheckout, isProcessing } = useTicketCheckoutSubmit({
-    amountInCents,
-    processingFee,
+    baseAmount: baseAmountInCents,
     usingSavedCard,
     fullName
   })
 
   const onSubmit = handleSubmit(submitCheckout)
 
+  // ── Sales window ──────────────────────────────────────────────────────────
   // A cart holds one event at a time, so the first item carries the window
   const salesStartDate = items[0]?.ticketSalesStartDate ?? null
   const salesEndDate = items[0]?.ticketSalesEndDate ?? null
 
-  const [salesStarted, setSalesStarted] = useState(
-    () => !salesStartDate || new Date(salesStartDate).getTime() <= Date.now()
-  )
-  const [salesEnded, setSalesEnded] = useState(() =>
-    Boolean(salesEndDate && new Date(salesEndDate).getTime() < Date.now())
-  )
+  const [salesStarted, setSalesStarted] = useState(() => !salesStartDate || new Date(salesStartDate).getTime() <= Date.now())
+  const [salesEnded, setSalesEnded] = useState(() => Boolean(salesEndDate && new Date(salesEndDate).getTime() < Date.now()))
 
   useEffect(() => {
     if (!salesStartDate && !salesEndDate) return
@@ -94,9 +96,25 @@ export function TicketCheckoutForm({ savedCards, setStep }: Props) {
     return () => clearInterval(id)
   }, [salesStartDate, salesEndDate])
 
+  // ── Gates ─────────────────────────────────────────────────────────────────
   const isEmpty = hasHydrated && items.length === 0
-  const canPay = hasHydrated && !isEmpty && salesStarted && !salesEnded && hasName && hasAddress
+  const salesOpen = salesStarted && !salesEnded
+  const canPay = hasHydrated && !isEmpty && salesOpen && hasName && hasAddress
   const isValid = canPay && (usingSavedCard || cardComplete)
+  const isBusy = isSubmitting || isProcessing
+
+  useEffect(() => {
+    if (!canPay) setCardComplete(false)
+  }, [canPay])
+
+  // ── What renders ──────────────────────────────────────────────────────────
+  const showSavedCardSelector = savedCards.length > 0
+  const showCardElement = savedCards.length === 0 || values.useNewCard
+  const showSaveCardToggle = !usingSavedCard
+
+  const showMissingInfoNotice = !isEmpty && salesOpen && (!hasName || !hasAddress)
+  const showSalesWindowNotice = !isEmpty && !salesOpen
+  const missingField = !hasName ? 'name' : 'mailing address'
 
   return (
     <div>
@@ -104,28 +122,25 @@ export function TicketCheckoutForm({ savedCards, setStep }: Props) {
 
       <form onSubmit={onSubmit} noValidate className="flex flex-col">
         <div className="pb-8 border-b border-neutral-200 dark:border-neutral-800">
-          <CheckoutStep3UserInfo
-            address={hasAddress ? values : null}
-            name={fullName}
-            setStep={setStep}
-            phone={values.phone}
-          />
+          <CheckoutStep3UserInfo address={derivedAddress} name={fullName} setStep={setStep} phone={values.phone} />
         </div>
 
-        <div className="py-8 border-b border-neutral-200 dark:border-neutral-800">
-          <Controller
-            name="attendingEvent"
-            control={control}
-            render={({ field: { value, onChange } }) => (
-              <ToggleCard
-                checked={value ?? true}
-                onChange={onChange}
-                title="I will be attending the event"
-                description="Let us know if you plan to join us on the night"
-              />
-            )}
-          />
-        </div>
+        {showAttendingToggle && (
+          <div className="py-8 border-b border-neutral-200 dark:border-neutral-800">
+            <Controller
+              name="attendingEvent"
+              control={control}
+              render={({ field: { value, onChange } }) => (
+                <ToggleCard
+                  checked={value ?? true}
+                  onChange={onChange}
+                  title="I will be attending the event"
+                  description="Let us know if you plan to join us on the night"
+                />
+              )}
+            />
+          </div>
+        )}
 
         {canPay && (
           <fieldset className="border-0 p-0 m-0 py-8">
@@ -136,7 +151,7 @@ export function TicketCheckoutForm({ savedCards, setStep }: Props) {
             </p>
 
             <div className="space-y-5">
-              {savedCards.length > 0 && (
+              {showSavedCardSelector && (
                 <SavedCardSelector
                   savedCards={savedCards}
                   selectedCardId={values.selectedCardId}
@@ -154,11 +169,12 @@ export function TicketCheckoutForm({ savedCards, setStep }: Props) {
                 />
               )}
 
-              {(savedCards.length === 0 || values.useNewCard) && <CardElementField onChange={setCardComplete} />}
+              {showCardElement && <CardElementField onChange={setCardComplete} />}
 
-              {!usingSavedCard && <SaveCardToggle />}
+              {/* Nothing to save when paying with a card already on file */}
+              {showSaveCardToggle && <SaveCardToggle />}
 
-              <CoverFeesToggle processingFee={processingFee} />
+              <CoverFeesToggle feeCents={feeCents} />
             </div>
           </fieldset>
         )}
@@ -172,13 +188,11 @@ export function TicketCheckoutForm({ savedCards, setStep }: Props) {
             </p>
           )}
 
-          {!isEmpty && salesStarted && !salesEnded && (!hasName || !hasAddress) && (
-            <p className="text-[13px] text-neutral-500 dark:text-neutral-400">
-              Add your {!hasName ? 'name' : 'mailing address'} above to continue.
-            </p>
+          {showMissingInfoNotice && (
+            <p className="text-[13px] text-neutral-500 dark:text-neutral-400">Add your {missingField} above to continue.</p>
           )}
 
-          {!isEmpty && (!salesStarted || salesEnded) && (
+          {showSalesWindowNotice && (
             <TicketCheckoutSalesWindowNotice
               salesEndDate={salesEndDate}
               salesEnded={salesEnded}
@@ -187,11 +201,7 @@ export function TicketCheckoutForm({ savedCards, setStep }: Props) {
             />
           )}
 
-          <SubmitButton
-            isSubmitting={isSubmitting || isProcessing}
-            isValid={isValid}
-            label={`Pay $${finalAmountDisplay}`}
-          />
+          <SubmitButton isSubmitting={isBusy} isValid={isValid} label={`Pay ${formatCents(finalAmount)}`} />
         </div>
       </form>
     </div>
