@@ -3,10 +3,9 @@
 import { useState, useMemo } from 'react'
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { UserWithAddress } from '@/types/user.types'
-import { UserDetailDrawer } from './_components/UserDetailDrawer'
-import { useUserDrawer } from '@/stores/drawers'
 import { AdminPageHeader } from '@/app/(authenticated)/admin/_components/AdminPageHeader'
-import { Role } from '@prisma/client'
+import { formatDate } from '@/lib/utils/date-utils'
+import { useRouter } from 'next/navigation'
 
 const TABS = ['All', 'Admin', 'Program', 'Supporters'] as const
 type TabType = (typeof TABS)[number]
@@ -30,23 +29,11 @@ const thCls =
 
 const PAGE_SIZE = 50
 
-export const UsersClient = ({
-  users,
-  currentUser
-}: {
-  users: UserWithAddress[]
-  currentUser?: { email?: string | null; role?: Role }
-}) => {
+export const UsersClient = ({ users }: { users: UserWithAddress[] }) => {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState<TabType>('All')
   const [searchQuery, setSearchQuery] = useState('')
   const [page, setPage] = useState(1)
-  const [selectedUser, setSelectedUser] = useState<UserWithAddress | null>(null)
-  const open = useUserDrawer((s) => s.open)
-
-  const superEmail = process.env.NEXT_PUBLIC_SUPER_USER_EMAIL
-
-  const canManage = (user: UserWithAddress) =>
-    currentUser?.email === superEmail || (currentUser?.role === 'ADMIN' && user?.email !== superEmail)
 
   const filteredUsers = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
@@ -54,7 +41,6 @@ export const UsersClient = ({
     return (users ?? []).filter((user) => {
       if (TAB_TO_TYPE[activeTab] !== 'All' && user?.role !== TAB_TO_TYPE[activeTab]) return false
       if (!q) return true
-      if (user.role === 'SUPERUSER') return false
 
       return (
         user.firstName?.toLowerCase().includes(q) ||
@@ -79,13 +65,8 @@ export const UsersClient = ({
 
   return (
     <>
-      <UserDetailDrawer user={selectedUser} onClose={() => setSelectedUser(null)} />
-
       <div className="min-h-screen bg-white dark:bg-neutral-950">
-        <AdminPageHeader
-          title="Users"
-          meta={`${filteredUsers.length} ${filteredUsers.length === 1 ? 'user' : 'users'}`}
-        />
+        <AdminPageHeader title="Users" meta={`${filteredUsers.length} ${filteredUsers.length === 1 ? 'user' : 'users'}`} />
 
         <div className="px-6 lg:px-8">
           <div className="flex flex-wrap items-center gap-3 pt-5">
@@ -143,10 +124,22 @@ export const UsersClient = ({
                 <thead>
                   <tr className="border-b border-neutral-200 dark:border-neutral-800">
                     <th scope="col" className={`text-left ${thCls}`}>
-                      Email
+                      Name
                     </th>
-                    <th scope="col" className={`text-left ${thCls} pr-0`}>
+                    <th scope="col" className={`text-left ${thCls}`}>
                       Role
+                    </th>
+                    <th scope="col" className={`text-left ${thCls} hidden md:table-cell`}>
+                      Phone
+                    </th>
+                    <th scope="col" className={`text-left ${thCls} hidden lg:table-cell`}>
+                      Joined
+                    </th>
+                    <th scope="col" className={`text-left ${thCls} hidden lg:table-cell`}>
+                      Last login
+                    </th>
+                    <th scope="col" className={`${thCls} w-8 pr-0`}>
+                      <span className="sr-only">Open</span>
                     </th>
                   </tr>
                 </thead>
@@ -154,24 +147,50 @@ export const UsersClient = ({
                 <tbody className="divide-y divide-neutral-100 dark:divide-neutral-900">
                   {paginated.length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="py-16 text-center text-sm text-neutral-400 dark:text-neutral-600">
+                      <td colSpan={6} className="py-16 text-center text-sm text-neutral-400 dark:text-neutral-600">
                         No users match this filter.
                       </td>
                     </tr>
                   ) : (
-                    paginated.map((user) => (
-                      <tr
-                        key={user.id}
-                        onClick={() => (canManage(user) ? open({ ...user }) : setSelectedUser(user))}
-                        className="cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-900/50 transition-colors"
-                      >
-                        <td className="py-3 pr-4 text-neutral-900 dark:text-white max-w-96 truncate">{user.email}</td>
+                    paginated.map((user) => {
+                      const name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
 
-                        <td className="py-3 text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
-                          {ROLE_LABEL[user.role] ?? user.role}
-                        </td>
-                      </tr>
-                    ))
+                      return (
+                        <tr
+                          key={user.id}
+                          onClick={() => router.push(`/admin/users/${user.id}`)}
+                          className="group cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-900/50 transition-colors"
+                        >
+                          <td className="py-3 pr-4 max-w-72">
+                            <span className="block text-neutral-900 dark:text-white truncate">{name || '—'}</span>
+                            <span className="block text-xs text-neutral-400 dark:text-neutral-600 truncate">{user.email}</span>
+                          </td>
+
+                          <td className="py-3 pr-4 text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
+                            {ROLE_LABEL[user.role] ?? user.role}
+                          </td>
+
+                          <td className="py-3 pr-4 text-neutral-500 dark:text-neutral-400 whitespace-nowrap hidden md:table-cell tabular-nums">
+                            {user.phone || '—'}
+                          </td>
+
+                          <td className="py-3 pr-4 text-neutral-500 dark:text-neutral-400 whitespace-nowrap hidden lg:table-cell tabular-nums">
+                            {formatDate(user.createdAt)}
+                          </td>
+
+                          <td className="py-3 pr-4 text-neutral-500 dark:text-neutral-400 whitespace-nowrap hidden lg:table-cell tabular-nums">
+                            {(user as any).lastLoginAt ? formatDate((user as any).lastLoginAt) : 'Never'}
+                          </td>
+
+                          <td className="py-3 w-8">
+                            <ChevronRight
+                              className="w-3.5 h-3.5 text-neutral-300 dark:text-neutral-700 group-hover:text-neutral-500 dark:group-hover:text-neutral-400 transition-colors"
+                              aria-hidden="true"
+                            />
+                          </td>
+                        </tr>
+                      )
+                    })
                   )}
                 </tbody>
               </table>
@@ -180,8 +199,7 @@ export const UsersClient = ({
             {totalPages > 1 && (
               <div className="flex items-center justify-between gap-4 mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-900">
                 <span className="text-xs text-neutral-400 dark:text-neutral-600 tabular-nums">
-                  {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredUsers.length)} of{' '}
-                  {filteredUsers.length}
+                  {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredUsers.length)} of {filteredUsers.length}
                 </span>
 
                 <div className="flex items-center gap-1">

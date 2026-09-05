@@ -88,16 +88,13 @@ export const CampaignDrawer = () => {
 
           <Drawer>
             <FormProvider {...methods}>
-              <form id="campaignForm" onSubmit={onSubmit} noValidate>
+              <form id="campaignForm" onSubmit={onSubmit} noValidate className="flex h-full flex-col">
                 {errors.root && (
                   <div
                     role="alert"
                     className="flex items-start gap-3 p-4 mb-6 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
                   >
-                    <AlertCircle
-                      className="w-5 h-5 shrink-0 mt-0.5 text-red-600 dark:text-red-400"
-                      aria-hidden="true"
-                    />
+                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-red-600 dark:text-red-400" aria-hidden="true" />
                     <p className="text-sm text-red-800 dark:text-red-300">{errors.root.message}</p>
                   </div>
                 )}

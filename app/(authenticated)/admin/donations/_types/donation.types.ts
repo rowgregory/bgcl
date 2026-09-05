@@ -9,12 +9,16 @@ export interface BillingAddress {
   country?: string | null
 }
 
+export type SubscriptionState = 'ACTIVE' | 'CANCELLING' | 'CANCELLED' | null
+
 export type DonationWithRelations = Omit<Order, 'feesCovered' | 'billingAddress'> & {
   feesCovered: number
   billingAddress: BillingAddress | null
   campaign: Campaign | null
   lifetimeAmount: number
+  lifetimeFeesCovered: number
   cycleCount: number
   cycles: { id: string; totalAmount: number; status: string; createdAt: Date; paidAt: Date | null }[]
   firstPaidAt: string
+  subscriptionState: SubscriptionState
 }

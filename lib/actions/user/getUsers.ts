@@ -4,27 +4,24 @@ import { requireAdmin } from '@/lib/utils/requireAdmin'
 
 export async function getUsers() {
   const auth = await requireAdmin()
-  if (!auth.user) return { success: false, data: null, error: auth.error }
+  if (!auth.ok) return { success: false, data: null, error: auth.error }
 
   try {
     const users = await prisma.user.findMany({
       orderBy: { createdAt: 'desc' },
-      include: {
-        orders: {
-          orderBy: { createdAt: 'desc' },
-          select: {
-            id: true,
-            type: true,
-            status: true,
-            totalAmount: true,
-            createdAt: true
-          }
-        },
-        address: true
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        role: true,
+        createdAt: true,
+        lastLoginAt: true
       }
     })
 
-    return { success: true, data: users }
+    return { success: true, data: users, error: null }
   } catch (error) {
     await createLog('error', 'Failed to fetch users', {
       error: error instanceof Error ? error.message : 'Unknown error'

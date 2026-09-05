@@ -5,6 +5,26 @@ import { createLog } from '../log/createLog'
 import { BillingAddress } from '@/app/(authenticated)/admin/donations/_types/donation.types'
 import { requireAdmin } from '@/lib/utils/requireAdmin'
 
+export type SubscriptionState = 'ACTIVE' | 'CANCELLING' | 'CANCELLED' | null
+
+/**
+ * Order.status answers "did this charge collect", so it stays CONFIRMED on a
+ * cancelled subscription's historic cycles. Whether the subscription itself is
+ * still running comes from the two subscription columns instead.
+ */
+const subscriptionState = (donation: {
+  type: string
+  stripeSubscriptionId?: string | null
+  subscriptionCanceledAt?: Date | null
+  subscriptionCancelsAt?: Date | null
+}): SubscriptionState => {
+  if (donation.type !== 'RECURRING_DONATION' || !donation.stripeSubscriptionId) return null
+  if (donation.subscriptionCanceledAt) return 'CANCELLED'
+  if (donation.subscriptionCancelsAt) return 'CANCELLING'
+
+  return 'ACTIVE'
+}
+
 export async function getDonations() {
   const auth = await requireAdmin()
   if (!auth.ok) return { success: false, data: null, error: auth.error }
@@ -32,6 +52,7 @@ export async function getDonations() {
         lifetimeAmount: number
         lifetimeFeesCovered: number
         firstPaidAt: Date
+        subscriptionState: SubscriptionState
         cycles: { id: string; totalAmount: number; status: string; createdAt: Date; paidAt: Date | null }[]
       }
     >()
@@ -62,6 +83,7 @@ export async function getDonations() {
           lifetimeAmount: donation.status === 'CONFIRMED' ? donation.totalAmount : 0,
           lifetimeFeesCovered: donation.status === 'CONFIRMED' ? donation.feesCovered : 0,
           firstPaidAt: donation.createdAt,
+          subscriptionState: subscriptionState(donation),
           cycles: [cycle]
         })
         continue
@@ -71,6 +93,17 @@ export async function getDonations() {
         existing.cycleCount += 1
         existing.lifetimeAmount += donation.totalAmount
         existing.lifetimeFeesCovered += donation.feesCovered
+      }
+
+      // Cancellation is written to whichever cycle rows the webhook touched, so
+      // any cycle reporting a cancellation settles it for the whole subscription
+      if (existing.subscriptionState === 'ACTIVE' || existing.subscriptionState === 'CANCELLING') {
+        const state = subscriptionState(donation)
+        if (state === 'CANCELLED' || (state === 'CANCELLING' && existing.subscriptionState === 'ACTIVE')) {
+          existing.subscriptionState = state
+          existing.subscriptionCanceledAt = donation.subscriptionCanceledAt
+          existing.subscriptionCancelsAt = donation.subscriptionCancelsAt
+        }
       }
 
       existing.firstPaidAt = donation.createdAt
@@ -84,6 +117,7 @@ export async function getDonations() {
         lifetimeAmount: r.status === 'CONFIRMED' ? r.totalAmount : 0,
         lifetimeFeesCovered: r.status === 'CONFIRMED' ? r.feesCovered : 0,
         firstPaidAt: r.createdAt,
+        subscriptionState: subscriptionState(r),
         cycles: []
       })),
       ...bySubscription.values()

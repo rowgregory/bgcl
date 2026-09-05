@@ -9,7 +9,6 @@ import { FailedPayment } from '@/types/failed-payment.types'
 import { DonationWithRelations } from '@/app/(authenticated)/admin/donations/_types/donation.types'
 import { EventWithTickets } from '@/types/event.types'
 import { SelectableTicket } from '@/types/ticket.types'
-import { UserWithAddress } from '@/types/user.types'
 import { Newsletter } from '@/types/newsletter.types'
 import { ProgramRecord } from '@/types/program.types'
 import { TeamMemberRecord } from '@/types/team-member.types'
@@ -31,7 +30,6 @@ export const useYouthOfTheYearDrawer = createDrawerStore()
 export const useFailedPaymentDrawer = createDrawerStore<FailedPayment[]>()
 export const useDonationDrawer = createDrawerStore<DonationWithRelations>()
 export const useTicketSelectionDrawer = createDrawerStore<SelectableTicket>()
-export const useUserDrawer = createDrawerStore<UserWithAddress>()
 export const useTeamMemberDrawer = createDrawerStore<TeamMemberRecord>()
 export const usePartnerDrawer = createDrawerStore<PartnerDrawerPayload>()
 export const useAddressModal = createDrawerStore<Address>()
