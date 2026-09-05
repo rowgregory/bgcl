@@ -3,8 +3,8 @@ import prisma from '@/prisma/client'
 
 export const getEventIds = async (): Promise<{
   success: boolean
-  data?: { id: string; title: string }[]
-  error?: string
+  data: { id: string; title: string }[] | null
+  error: string | null
 }> => {
   const auth = await requireAdmin()
   if (!auth.user) return { success: false, data: null, error: auth.error }

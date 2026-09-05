@@ -5,28 +5,20 @@ import { formatCurrency } from '@/lib/utils/currency.utils'
 import { formatDate } from '@/lib/utils/date-utils'
 import { IOrder } from '@/types/entities/order'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Calendar, MapPin, Ticket, User, FileText, Hash, Receipt, DollarSign } from 'lucide-react'
+import { X } from 'lucide-react'
+import type { ReactNode } from 'react'
 
-// ── Section wrapper ───────────────────────────────────────────────────────────
-const Section = ({ title, icon: Icon, children }: { title: string; icon: any; children: React.ReactNode }) => (
-  <div className="space-y-3">
-    <div className="flex items-center gap-2">
-      <Icon className="w-3.5 h-3.5 dark:text-neutral-500 text-neutral-400 shrink-0" aria-hidden="true" />
-      <p className="text-xs font-bold dark:text-neutral-500 text-neutral-400 uppercase tracking-widest">{title}</p>
-    </div>
-    <div className="dark:bg-neutral-900 bg-neutral-50 border dark:border-neutral-800 border-neutral-200 rounded-xl p-4 space-y-3">
-      {children}
-    </div>
-  </div>
+const Section = ({ title, children }: { title: string; children: ReactNode }) => (
+  <section className="pt-4 border-t border-neutral-200 dark:border-neutral-800">
+    <h3 className="text-[11px] font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3">{title}</h3>
+    <div className="space-y-2">{children}</div>
+  </section>
 )
 
-// ── Field row ─────────────────────────────────────────────────────────────────
-const Field = ({ label, value, mono = false }: { label: string; value: React.ReactNode; mono?: boolean }) => (
-  <div className="flex items-start justify-between gap-4 min-w-0">
-    <p className="text-xs dark:text-neutral-500 text-neutral-500 shrink-0">{label}</p>
-    <p
-      className={`text-xs font-semibold dark:text-neutral-200 text-neutral-800 text-right truncate ${mono ? 'font-mono' : ''}`}
-    >
+const Field = ({ label, value, mono = false }: { label: string; value: ReactNode; mono?: boolean }) => (
+  <div className="flex items-baseline justify-between gap-4">
+    <p className="text-xs text-neutral-400 dark:text-neutral-600 shrink-0">{label}</p>
+    <p className={`text-[13px] text-neutral-900 dark:text-white text-right break-all ${mono ? 'font-mono text-xs' : ''}`}>
       {value ?? '—'}
     </p>
   </div>
@@ -41,18 +33,16 @@ export const TicketOrderDrawer = ({ order, open, onClose }: { order: IOrder; ope
     <AnimatePresence>
       {open && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-neutral-950/40 z-40"
             onClick={onClose}
             aria-hidden="true"
           />
 
-          {/* Drawer */}
           <motion.aside
             role="dialog"
             aria-modal="true"
@@ -61,161 +51,116 @@ export const TicketOrderDrawer = ({ order, open, onClose }: { order: IOrder; ope
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-white dark:bg-neutral-950 border-l dark:border-neutral-800 border-neutral-200 z-50 flex flex-col shadow-2xl"
+            className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-white dark:bg-neutral-950 border-l border-neutral-200 dark:border-neutral-800 z-50 flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-start justify-between gap-4 px-6 py-5 border-b dark:border-neutral-800 border-neutral-200 shrink-0">
-              <div className="min-w-0">
-                <p className="text-xs font-semibold dark:text-neutral-500 text-neutral-500 uppercase tracking-widest mb-1">
-                  Ticket Order
-                </p>
-                <h2 className="text-lg font-black dark:text-white text-neutral-900 truncate">{order.customerName}</h2>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <StatusBadge status={order.status} />
-                  <span className="text-xs dark:text-neutral-500 text-neutral-400">
-                    {totalQuantity} ticket{totalQuantity !== 1 ? 's' : ''}
-                  </span>
-                </div>
-              </div>
+            <div className="shrink-0 h-11 flex items-center justify-between gap-4 px-5 border-b border-neutral-200 dark:border-neutral-800">
+              <h2 className="text-sm font-semibold text-neutral-900 dark:text-white truncate">{order.customerName}</h2>
+
               <button
+                type="button"
                 onClick={onClose}
                 aria-label="Close order details"
-                className="shrink-0 p-2 rounded-lg dark:hover:bg-neutral-800 hover:bg-neutral-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="shrink-0 p-1.5 rounded text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
               >
-                <X className="w-5 h-5 dark:text-neutral-400 text-neutral-600" aria-hidden="true" />
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
 
             {/* Scrollable content */}
-            <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
-              {/* Event */}
+            <div className="flex-1 overflow-y-auto px-5 py-5 space-y-6">
+              {/* Amount, mirroring the confirmation page */}
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <div className="min-w-0">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                    Ticket purchase
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold text-neutral-900 dark:text-white tabular-nums">
+                    {formatCurrency(order.totalAmount)}
+                  </p>
+                </div>
+
+                <StatusBadge status={order.status} />
+              </div>
+
               {event && (
-                <Section title="Event" icon={Calendar}>
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="shrink-0 w-10 h-10 rounded-lg dark:bg-sky-500/10 bg-sky-50 flex items-center justify-center"
-                      aria-hidden="true"
-                    >
-                      <Calendar className="w-5 h-5 text-sky-500" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold dark:text-white text-neutral-900 truncate">{event.title}</p>
-                      {event.date && (
-                        <time
-                          dateTime={new Date(event.date).toISOString()}
-                          className="text-xs dark:text-neutral-500 text-neutral-500 mt-0.5 block"
-                        >
-                          {new Date(event.date).toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
-                        </time>
-                      )}
-                      {event.location && (
-                        <p className="flex items-center gap-1 text-xs dark:text-neutral-500 text-neutral-500 mt-1">
-                          <MapPin className="w-3 h-3 shrink-0" aria-hidden="true" />
-                          {event.location}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                <Section title="Event">
+                  <Field label="Name" value={event.title} />
+                  {event.date && <Field label="Date" value={formatDate(event.date)} />}
+                  {event.location && <Field label="Location" value={event.location} />}
                 </Section>
               )}
 
-              {/* Tickets */}
               {order.orderItems && order.orderItems.length > 0 && (
-                <Section title="Tickets" icon={Ticket}>
-                  <ul role="list" className="space-y-2 list-none p-0 m-0">
+                <Section title={`Tickets · ${totalQuantity}`}>
+                  <ul role="list" className="list-none p-0 m-0 space-y-2">
                     {order.orderItems.map((item) => (
-                      <li key={item.id} className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-2 min-w-0 flex-1">
-                          <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5" aria-hidden="true" />
-                          <div className="min-w-0">
-                            <p className="text-xs font-semibold dark:text-neutral-200 text-neutral-800 truncate">
-                              {item.ticketName}
-                            </p>
-                            {item.ticketDescription && (
-                              <p className="text-xs dark:text-neutral-600 text-neutral-400 mt-0.5 truncate">
-                                {item.ticketDescription}
-                              </p>
-                            )}
-                          </div>
+                      <li key={item.id} className="flex items-baseline justify-between gap-4">
+                        <div className="min-w-0">
+                          <p className="text-[13px] text-neutral-900 dark:text-white truncate">{item.ticketName}</p>
+                          <p className="text-xs text-neutral-400 dark:text-neutral-600 tabular-nums">
+                            {item.quantity} × {formatCurrency(item.pricePerUnit)}
+                          </p>
                         </div>
-                        <div className="flex items-center gap-3 shrink-0 text-right">
-                          <span
-                            className="text-xs dark:text-neutral-500 text-neutral-500"
-                            aria-label={`${item.quantity} at ${formatCurrency(item.pricePerUnit)} each`}
-                          >
-                            x{item.quantity} @ {formatCurrency(item.pricePerUnit)}
-                          </span>
-                          <span className="text-xs font-bold dark:text-white text-neutral-900 tabular-nums min-w-13">
-                            {formatCurrency(item.totalPrice)}
-                          </span>
-                        </div>
+
+                        <span className="shrink-0 text-[13px] text-neutral-900 dark:text-white tabular-nums">
+                          {formatCurrency(item.totalPrice)}
+                        </span>
                       </li>
                     ))}
                   </ul>
                 </Section>
               )}
 
-              {/* Financials */}
-              <Section title="Financials" icon={DollarSign}>
-                <Field label="Order total" value={formatCurrency(order.totalAmount)} />
+              <Section title="Payment">
                 {order.coverFees && <Field label="Fees covered" value={formatCurrency(order.feesCovered)} />}
-                <Field label="Payment method" value={order.paymentMethod ?? '—'} />
+                <Field label="Method" value={order.paymentMethod} />
                 <Field
-                  label="Paid at"
+                  label="Paid"
                   value={order.paidAt ? formatDate(order.paidAt, { hour: '2-digit', minute: '2-digit' }) : '—'}
                 />
               </Section>
 
-              {/* Customer */}
-              <Section title="Customer" icon={User}>
-                <Field label="Name" value={order.customerName} />
-                <Field label="Email" value={order.customerEmail} mono />
+              <Section title="Customer">
+                <Field label="Email" value={order.customerEmail} />
                 {order.customerPhone && <Field label="Phone" value={order.customerPhone} />}
               </Section>
 
-              {/* Billing address */}
               {billingAddress && (
-                <Section title="Billing Address" icon={MapPin}>
-                  {billingAddress.addressLine1 && <Field label="Street" value={billingAddress.addressLine1} />}
-                  {billingAddress.addressLine2 && <Field label="Unit/Apt" value={billingAddress.addressLine2} />}
-                  {billingAddress.city && <Field label="City" value={billingAddress.city} />}
-                  {billingAddress.state && <Field label="State" value={billingAddress.state} />}
-                  {billingAddress.zipPostalCode && <Field label="ZIP" value={billingAddress.zipPostalCode} />}
-                  {billingAddress.country && <Field label="Country" value={billingAddress.country} />}
+                <Section title="Billing address">
+                  <div className="text-[13px] text-neutral-900 dark:text-white space-y-0.5">
+                    <p>{billingAddress.addressLine1}</p>
+                    {billingAddress.addressLine2 && <p>{billingAddress.addressLine2}</p>}
+                    <p>
+                      {billingAddress.city}, {billingAddress.state} {billingAddress.zipPostalCode}
+                    </p>
+                    <p>{billingAddress.country}</p>
+                  </div>
                 </Section>
               )}
 
-              {/* Payment IDs */}
-              <Section title="References" icon={Hash}>
-                <Field label="Order ID" value={order.id} mono />
-                {order.paymentIntentId && <Field label="Payment Intent" value={order.paymentIntentId} mono />}
-                {order.paymentMethodId && <Field label="Payment Method ID" value={order.paymentMethodId} mono />}
+              <Section title="References">
+                <Field label="Order" value={order.id} mono />
+                {order.paymentIntentId && <Field label="Payment intent" value={order.paymentIntentId} mono />}
+                {order.paymentMethodId && <Field label="Payment method" value={order.paymentMethodId} mono />}
               </Section>
 
-              {/* Notes */}
               {order.notes && (
-                <Section title="Notes" icon={FileText}>
-                  <p className="text-xs dark:text-neutral-300 text-neutral-700 leading-relaxed">{order.notes}</p>
+                <Section title="Notes">
+                  <p className="text-[13px] text-neutral-900 dark:text-white whitespace-pre-line">{order.notes}</p>
                 </Section>
               )}
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t dark:border-neutral-800 border-neutral-200 shrink-0">
+            <div className="shrink-0 px-5 py-3 border-t border-neutral-200 dark:border-neutral-800 flex justify-end">
               <a
                 href={`/order-confirmation/${order.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="View order confirmation page, opens in new tab"
-                className="flex items-center justify-center gap-2 w-full px-4 py-2.5 dark:bg-neutral-800 dark:hover:bg-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:text-neutral-200 text-neutral-700 font-semibold text-sm rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="text-sm text-sky-600 dark:text-sky-400 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded"
               >
-                <Receipt className="w-4 h-4" aria-hidden="true" />
-                View Order Confirmation
+                View confirmation
               </a>
             </div>
           </motion.aside>

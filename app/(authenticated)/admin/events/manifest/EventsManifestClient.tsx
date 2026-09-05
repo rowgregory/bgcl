@@ -244,8 +244,11 @@ export default function EventsManifestClient({ data }: { data: IOrder[] }) {
                           {isOpen && (
                             <div className="pb-3 pl-7">
                               <ul role="list" className="list-none p-0 m-0 space-y-1 max-w-sm">
-                                {buyer.lines.map((line) => (
-                                  <li key={line.ticketName} className="flex items-baseline justify-between gap-4 text-[13px]">
+                                {buyer.lines.map((line, i) => (
+                                  <li
+                                    key={`${line.ticketName}-${i}`}
+                                    className="flex items-baseline justify-between gap-4 text-[13px]"
+                                  >
                                     <span className="text-neutral-500 dark:text-neutral-400 truncate">
                                       {line.quantity} × {line.ticketName}
                                     </span>
